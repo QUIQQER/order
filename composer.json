@@ -1,0 +1,34 @@
+{
+    "name" : "quiqqer/order",
+    "type" : "quiqqer-module",
+    "description" : "ERP ordersystem",
+    "version" : "dev-master",
+    "license" : "",
+
+    "authors" : [{
+        "name": "Henning Leutz",
+        "email": "support@pcsg.de",
+        "homepage": "http://www.pcsg.de",
+        "role": "Developer"
+    }],
+
+    "support" : {
+        "email": "support@pcsg.de",
+        "url": "http://www.pcsg.de"
+    },
+
+    "require": {
+        "php" : ">=5.3",
+        "quiqqer/quiqqer": "*@dev",
+        "quiqqer/areas": "*",
+        "quiqqer/products": "*",
+        "quiqqer/tax": "*"
+    },
+
+    "autoload": {
+        "psr-4" : {
+             "QUI\\ERP\\Order\\": "src/QUI/ERP/Order",
+             "QUITests\\ERP\\Order\\": "tests/QUITests/ERP/Order"
+        }
+    }
+}
