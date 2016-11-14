@@ -2,7 +2,7 @@
     "name" : "quiqqer/order",
     "type" : "quiqqer-module",
     "description" : "ERP ordersystem",
-    "version" : "dev-master",
+    "version" : "dev-dev",
     "license" : "",
 
     "authors" : [{
