@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales>
+
+    <groups name="quiqqer/order" datatype="php,js">
+        <locale name="package.title">
+            <de><![CDATA[QUIQQER - Shop - Bestellungen]]></de>
+            <en><![CDATA[QUIQQER - Shop - Orders]]></en>
+        </locale>
+        <locale name="package.description">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+
+        <locale name="erp.panel.order.text">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
+    </groups>
+
+    <groups name="quiqqer/order" datatype="js">
+        <locale name="order.panel.title">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
+    </groups>
+
+</locales>
