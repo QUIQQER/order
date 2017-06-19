@@ -87,5 +87,6 @@ class Factory extends QUI\Utils\Singleton
             'hash',
             'c_date',
             'c_user'
+        );
     }
 }
