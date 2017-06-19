@@ -14,10 +14,18 @@ use QUI\ERP\Order\Search;
  * @return array
  */
 QUI::$Ajax->registerFunction(
-    'package_quiqqer_order_ajax_backend_list',
-    function ($params) {
+    'package_quiqqer_order_ajax_backend_search',
+    function ($params, $filter) {
         $Search = Search::getInstance();
         $Grid   = new QUI\Utils\Grid();
+
+
+        // filter
+        $filter = json_decode($filter);
+
+        foreach ($filter as $entry => $value) {
+            $Search->setFilter($entry, $value);
+        }
 
         // query params
         $query = $Grid->parseDBParams(json_decode($params, true));
@@ -28,8 +36,8 @@ QUI::$Ajax->registerFunction(
             $Search->limit($limit[0], $limit[1]);
         }
 
-        return $Search->search();
+        return $Search->searchForGrid();
     },
-    array('params'),
+    array('params', 'filter'),
     'Permission::checkAdminUser'
 );

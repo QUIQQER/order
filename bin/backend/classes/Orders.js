@@ -1,5 +1,9 @@
 /**
  * @module package/quiqqer/order/bin/backend/classes/Orders
+ *
+ * @require qui/QUI
+ * @require qui/classes/DOM
+ * @require Ajax
  */
 define('package/quiqqer/order/bin/backend/classes/Orders', [
 
@@ -30,6 +34,101 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
                 QUIAjax.get('package_quiqqer_order_ajax_backend_list', resolve, {
                     'package': 'quiqqer/order',
                     params   : JSON.encode(params),
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
+         * Search orders
+         *
+         * @param {Object} params - Grid Query Params
+         * @param {Object} filter - Filter
+         * @returns {Promise}
+         */
+        search: function (params, filter) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_backend_search', resolve, {
+                    'package': 'quiqqer/order',
+                    params   : JSON.encode(params),
+                    filter   : JSON.encode(filter),
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
+         * Create a new order
+         *
+         * @returns {Promise}
+         */
+        createOrder: function () {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_create', function (newId) {
+                    self.fireEvent('createOrder', [self, newId]);
+                    resolve(newId);
+                }, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
+         * Delete an order
+         *
+         * @param {String|Number} orderId
+         * @returns {Promise}
+         */
+        deleteOrder: function (orderId) {
+            var self = this;
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_delete', function () {
+                    self.fireEvent('deleteOrder', [self, orderId]);
+                    resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
+         * Alias for update
+         *
+         * @param {String} orderId
+         * @param {Object} data
+         * @returns {Promise}
+         */
+        saveOrder: function (orderId, data) {
+            return this.updateOrder(orderId, data);
+        },
+
+        /**
+         * Update an order
+         *
+         * @param {String} orderId
+         * @param {Object} data
+         * @returns {Promise}
+         */
+        updateOrder: function (orderId, data) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_update', function () {
+                    self.fireEvent('saveOrder', [self, orderId, data]);
+                    resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    data     : JSON.encode(data),
                     onError  : reject,
                     showError: false
                 });

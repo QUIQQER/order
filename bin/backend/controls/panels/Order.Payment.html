@@ -1,0 +1,103 @@
+<form>
+    <table class="data-table data-table-flexbox order-data">
+        <thead>
+        <tr>
+            <th>{{textOrderRecipient}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textCustomer}}">
+                        {{textCustomer}}
+                    </span>
+                    <input type="text" class="field-container-field" name="customer" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                <span class="field-container-item" title="{{textCompany}}">
+                    {{textCompany}}
+                </span>
+                    <input type="text" class="field-container-field" name="company" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                <span class="field-container-item" title="{{textStreet}}">
+                    {{textStreet}}
+                </span>
+                    <input type="text" class="field-container-field" name="street_no" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                <span class="field-container-item" title="{{textZip}}">
+                    {{textZip}}
+                </span>
+                    <input type="text" class="field-container-field" name="zip" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                <span class="field-container-item" title="{{textCity}}">
+                    {{textCity}}
+                </span>
+                    <input type="text" class="field-container-field" name="city" disabled/>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="data-table data-table-flexbox order-data">
+        <thead>
+        <tr>
+            <th>{{textOrderData}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textOrderDate}}">
+                        {{textOrderDate}}
+                    </span>
+                    <input class="field-container-field"
+                           type="text"
+                           name="date"
+                           value="{{date}}"
+                           disabled
+                    />
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textOrderedBy}}">
+                        {{textOrderedBy}}
+                    </span>
+                    <input class="field-container-field"
+                           type="text"
+                           name="orderedBy"
+                           value="{{ordered_by}}"
+                           disabled
+                    />
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>

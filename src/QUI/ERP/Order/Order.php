@@ -11,16 +11,13 @@ use QUI;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 
 /**
- * Class Order
+ * Class OrderBooked
+ * - This order was ordered by the user
  *
  * @package QUI\ERP\Order
  */
-class Order
+class Order extends AbstractOrder
 {
-    const STATUS_CREATED = 0;
-
-    const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
-
     /**
      * @var bool
      */
@@ -33,17 +30,9 @@ class Order
      */
     public function __construct($orderId)
     {
-        $data = Handler::getInstance()->getOrderData($orderId);
-
-        $this->id         = $data['id'];
-        $this->invoice_id = $data['invoice_id'];
-        $this->uid        = $data['uid'];
-        $this->user       = $data['user'];
-        $this->address    = $data['address'];
-        $this->products   = $data['products'];
-        $this->data       = $data['data'];
-        $this->hash       = $data['hash'];
-        $this->c_date     = $data['c_date'];
+        parent::__construct(
+            Handler::getInstance()->getOrderData($orderId)
+        );
     }
 
     /**
@@ -55,16 +44,6 @@ class Order
     public function getInvoice()
     {
         return InvoiceHandler::getInstance()->getInvoice($this->id);
-    }
-
-    /**
-     * Return the order id
-     *
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

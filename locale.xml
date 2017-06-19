@@ -15,12 +15,182 @@
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
         </locale>
+
+        <locale name="cutomerData">
+            <de><![CDATA[Kundendaten]]></de>
+            <en><![CDATA[Customer data]]></en>
+        </locale>
+        <locale name="customer">
+            <de><![CDATA[Kunde]]></de>
+            <en><![CDATA[Customer]]></en>
+        </locale>
+        <locale name="address">
+            <de><![CDATA[Adresse]]></de>
+            <en><![CDATA[Address]]></en>
+        </locale>
+        <locale name="company">
+            <de><![CDATA[Firma]]></de>
+            <en><![CDATA[Company]]></en>
+        </locale>
+        <locale name="street">
+            <de><![CDATA[Straße]]></de>
+            <en><![CDATA[Street]]></en>
+        </locale>
+        <locale name="zip">
+            <de><![CDATA[PLZ]]></de>
+            <en><![CDATA[ZIP]]></en>
+        </locale>
+        <locale name="city">
+            <de><![CDATA[Ort]]></de>
+            <en><![CDATA[City]]></en>
+        </locale>
+
+        <locale name="exception.order.construct.needle.missing">
+            <de><![CDATA[Fehlender wert für Bestellungs Konstruktor [needle]]]></de>
+            <en><![CDATA[Missing needle for order construct [needle]]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
-        <locale name="order.panel.title">
+        <locale name="orders.panel.title">
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="order.panel.title">
+            <de><![CDATA[Bestellung: #[orderId]]]></de>
+            <en><![CDATA[Order: #[orderId]]]></en>
+        </locale>
+        <locale name="erp.panel.orderProcess.text">
+            <de><![CDATA[Bestellungen (in Bearbeitung)]]></de>
+            <en><![CDATA[Orders (in process)]]></en>
+        </locale>
+
+        <locale name="panel.btn.createOrder">
+            <de><![CDATA[Bestellung anlegen]]></de>
+            <en><![CDATA[Create ordner]]></en>
+        </locale>
+        <locale name="panel.btn.copyOrder">
+            <de><![CDATA[Bestellung kopieren]]></de>
+            <en><![CDATA[Copy ordner]]></en>
+        </locale>
+        <locale name="panel.btn.deleteOrder">
+            <de><![CDATA[Bestellung löschen]]></de>
+            <en><![CDATA[Delete ordner]]></en>
+        </locale>
+        <locale name="panel.btn.actions">
+            <de><![CDATA[Aktionen]]></de>
+            <en><![CDATA[Actions]]></en>
+        </locale>
+        <locale name="panel.btn.total">
+            <de><![CDATA[Summe anzeigen]]></de>
+            <en><![CDATA[Show total]]></en>
+        </locale>
+
+        <locale name="panel.order.category.data">
+            <de><![CDATA[Rechnungsdaten]]></de>
+            <en><![CDATA[Invoicedata]]></en>
+        </locale>
+        <locale name="panel.order.category.articles">
+            <de><![CDATA[Artikel]]></de>
+            <en><![CDATA[Articles]]></en>
+        </locale>
+        <locale name="panel.order.category.payment">
+            <de><![CDATA[Zahlungsinformationen]]></de>
+            <en><![CDATA[Payment information]]></en>
+        </locale>
+
+        <locale name="panel.order.data.title">
+            <de><![CDATA[Bestellungsdaten]]></de>
+            <en><![CDATA[Order data]]></en>
+        </locale>
+        <locale name="panel.order.data.date">
+            <de><![CDATA[Bestellt am]]></de>
+            <en><![CDATA[Ordered at]]></en>
+        </locale>
+        <locale name="panel.order.data.orderedBy">
+            <de><![CDATA[Bestellt durch]]></de>
+            <en><![CDATA[Ordered by]]></en>
+        </locale>
+
+        <locale name="grid.orderNo">
+            <de><![CDATA[Bestell-Nr]]></de>
+            <en><![CDATA[Order no]]></en>
+        </locale>
+        <locale name="grid.invoiceNo">
+            <de><![CDATA[Rech.-Nr]]></de>
+            <en><![CDATA[Invoice no]]></en>
+        </locale>
+        <locale name="grid.customerNo">
+            <de><![CDATA[Kunden-Nr]]></de>
+            <en><![CDATA[Custome no]]></en>
+        </locale>
+        <locale name="grid.status">
+            <de><![CDATA[Zahlungsstatus]]></de>
+            <en><![CDATA[Payment status]]></en>
+        </locale>
+        <locale name="grid.vat">
+            <de><![CDATA[MwSt]]></de>
+            <en><![CDATA[VAT]]></en>
+        </locale>
+        <locale name="grid.sum">
+            <de><![CDATA[Summe]]></de>
+            <en><![CDATA[Total]]></en>
+        </locale>
+        <locale name="grid.paymentMethod">
+            <de><![CDATA[Zahlungsart]]></de>
+            <en><![CDATA[Payment method]]></en>
+        </locale>
+        <locale name="grid.timeForPayment">
+            <de><![CDATA[Zahlungsziel (In Tagen)]]></de>
+            <en><![CDATA[Payment term (days)]]></en>
+        </locale>
+        <locale name="grid.paymentDate">
+            <de><![CDATA[Zahlungsdatum]]></de>
+            <en><![CDATA[Payment date]]></en>
+        </locale>
+        <locale name="grid.paid">
+            <de><![CDATA[bezahlt]]></de>
+            <en><![CDATA[paid]]></en>
+        </locale>
+        <locale name="grid.open">
+            <de><![CDATA[offen]]></de>
+            <en><![CDATA[open]]></en>
+        </locale>
+        <locale name="grid.brutto">
+            <de><![CDATA[Brutto]]></de>
+            <en><![CDATA[Gross]]></en>
+        </locale>
+        <locale name="grid.netto">
+            <de><![CDATA[Netto]]></de>
+            <en><![CDATA[Net]]></en>
+        </locale>
+        <locale name="grid.taxId">
+            <de><![CDATA[Umsatzsteuer ID]]></de>
+            <en><![CDATA[Tax ID]]></en>
+        </locale>
+        <locale name="grid.orderDate">
+            <de><![CDATA[Bestelldatum]]></de>
+            <en><![CDATA[Order date]]></en>
+        </locale>
+        <locale name="grid.dunning">
+            <de><![CDATA[Mahnstufe]]></de>
+            <en><![CDATA[Dunning level]]></en>
+        </locale>
+        <locale name="grid.processingStatus">
+            <de><![CDATA[Rechnungsstatus]]></de>
+            <en><![CDATA[Processing status]]></en>
+        </locale>
+        <locale name="grid.comments">
+            <de><![CDATA[Bemerkungen]]></de>
+            <en><![CDATA[Comments]]></en>
+        </locale>
+        <locale name="grid.paymentData">
+            <de><![CDATA[Zahlungsdaten]]></de>
+            <en><![CDATA[Payment data]]></en>
+        </locale>
+        <locale name="grid.hash">
+            <de><![CDATA[Eindeutige ID]]></de>
+            <en><![CDATA[Unique ID]]></en>
         </locale>
     </groups>
 

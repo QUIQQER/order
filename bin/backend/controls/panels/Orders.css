@@ -1,0 +1,44 @@
+/** Total Display
+ ================================================= */
+
+.order-total {
+    background: #fff;
+    border-top: 2px solid #DEDEDE;
+    bottom: -20px;
+    display: none;
+    float: left;
+    height: 100px;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+}
+
+.order-total header,
+.order-total-row {
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+.order-total header > div,
+.order-total-row > div {
+    float: left;
+    line-height: 25px;
+    padding: 0 10px;
+    text-align: right;
+    width: 25%;
+}
+
+.order-total-row > div:first-child {
+    text-align: left;
+}
+
+.order-total-row:nth-child(even) {
+    background: #f7f7f7;
+}
+
+.order-total-row:hover {
+    background: #eaeff4;
+}

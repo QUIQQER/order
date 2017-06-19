@@ -17,6 +17,10 @@ use QUI\Utils\Singleton;
  */
 class Handler extends Singleton
 {
+    const EMPTY_VALUE = '---';
+
+    //region Order
+
     /**
      * Return the order table
      *
@@ -66,11 +70,58 @@ class Handler extends Singleton
         return $result[0];
     }
 
-    /**
-     *
-     */
-    public function search()
-    {
+    //endregion
 
+    //region Order Process
+
+    /**
+     * Return the order process table
+     *
+     * @return string
+     */
+    public function tableOrderProcess()
+    {
+        return QUI::getDBTableName('orderProcess');
     }
+
+    /**
+     * Return a Order which is in processing
+     *
+     * @param $orderId
+     * @return OrderProcess
+     */
+    public function getOrderInProcess($orderId)
+    {
+        return new OrderProcess($orderId);
+    }
+
+    /**
+     * Return the data of a wanted order
+     *
+     * @param string|integer $orderId
+     * @return array
+     *
+     * @throws QUI\Erp\Order\Exception
+     */
+    public function getOrderProcessData($orderId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => $this->table(),
+            'where' => array(
+                'id' => $orderId
+            ),
+            'limit' => 1
+        ));
+
+        if (!isset($result[0])) {
+            throw new QUI\Erp\Order\Exception(
+                'Order not found',
+                404
+            );
+        }
+
+        return $result[0];
+    }
+
+    //endregion
 }
