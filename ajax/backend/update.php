@@ -15,7 +15,20 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
+        $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
+        $data  = json_decode($data, true);
 
+
+        if (isset($data['addressInvoice'])) {
+            $Order->setInvoiceAddress($data['addressInvoice']);
+        }
+
+        if (isset($data['addressDelivery'])) {
+            $Order->setDeliveryAddress($data['addressInvoice']);
+        }
+
+
+        $Order->update();
     },
     array('orderId', 'data'),
     'Permission::checkAdminUser'

@@ -20,6 +20,14 @@
             <de><![CDATA[Kundendaten]]></de>
             <en><![CDATA[Customer data]]></en>
         </locale>
+        <locale name="invoiceAddress">
+            <de><![CDATA[Rechnungsadresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="deliveryAddress">
+            <de><![CDATA[Lieferadresse]]></de>
+            <en><![CDATA[Delivery address]]></en>
+        </locale>
         <locale name="customer">
             <de><![CDATA[Kunde]]></de>
             <en><![CDATA[Customer]]></en>
@@ -46,8 +54,13 @@
         </locale>
 
         <locale name="exception.order.construct.needle.missing">
-            <de><![CDATA[Fehlender wert für Bestellungs Konstruktor [needle]]]></de>
+            <de><![CDATA[Fehlender Eert für Bestellungs-Konstruktor [needle]]]></de>
             <en><![CDATA[Missing needle for order construct [needle]]]></en>
+        </locale>
+
+        <locale name="message.select.customer">
+            <de><![CDATA[Bitte wählen Sie einen Kunden aus.]]></de>
+            <en><![CDATA[Please select a customer.]]></en>
         </locale>
     </groups>
 
@@ -84,6 +97,23 @@
         <locale name="panel.btn.total">
             <de><![CDATA[Summe anzeigen]]></de>
             <en><![CDATA[Show total]]></en>
+        </locale>
+
+        <locale name="panel.order.button.buttonAdd">
+            <de><![CDATA[Artikel hinzufügen]]></de>
+            <en><![CDATA[Add Article]]></en>
+        </locale>
+        <locale name="panel.order.article.buttonAdd.custom">
+            <de><![CDATA[Freier Artikel]]></de>
+            <en><![CDATA[Custom Article]]></en>
+        </locale>
+        <locale name="panel.order.article.buttonAdd.text">
+            <de><![CDATA[Text]]></de>
+            <en><![CDATA[Text]]></en>
+        </locale>
+        <locale name="panel.order.button.article.sort.text">
+            <de><![CDATA[Artikel sortieren]]></de>
+            <en><![CDATA[Sort articles]]></en>
         </locale>
 
         <locale name="panel.order.category.data">
@@ -191,6 +221,15 @@
         <locale name="grid.hash">
             <de><![CDATA[Eindeutige ID]]></de>
             <en><![CDATA[Unique ID]]></en>
+        </locale>
+
+        <locale name="order.address.confirm.title">
+            <de><![CDATA[Bitte wählen Sie eine Adresse aus]]></de>
+            <en><![CDATA[Please choose an address]]></en>
+        </locale>
+        <locale name="order.address.confirm.information">
+            <de><![CDATA[Der Benutzer besitzt mehrere Adressen. Welche Adresse soll verwendet werden?]]></de>
+            <en><![CDATA[The user has several addresses. Which address should be used?]]></en>
         </locale>
     </groups>
 

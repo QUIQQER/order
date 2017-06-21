@@ -21,6 +21,7 @@
     "quiqqer/quiqqer": "*@dev",
     "quiqqer/areas": "*",
     "quiqqer/products": "*",
+    "quiqqer/invoice": "*",
     "quiqqer/tax": "*",
     "ramsey/uuid": "3.*"
   },

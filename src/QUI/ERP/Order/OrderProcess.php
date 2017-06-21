@@ -26,4 +26,10 @@ class OrderProcess extends AbstractOrder
             Handler::getInstance()->getOrderProcessData($orderId)
         );
     }
+
+
+    public function update($PermissionUser = null)
+    {
+        // TODO: Implement update() method.
+    }
 }

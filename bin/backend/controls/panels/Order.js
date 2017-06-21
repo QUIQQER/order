@@ -3,6 +3,9 @@
  *
  * @requnre qui/QUI
  * @requnre qui/controls/desktop/Panel
+ * @require qui/controls/buttons/Button
+ * @require qui/controls/buttons/ButtonMultiple
+ * @require qui/controls/buttons/Separator
  * @requnre package/quiqqer/order/bin/backend/Orders
  * @requnre Locale
  * @requnre Mustache
@@ -12,13 +15,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
+    'qui/controls/buttons/Button',
+    'qui/controls/buttons/ButtonMultiple',
+    'qui/controls/buttons/Separator',
     'package/quiqqer/order/bin/backend/Orders',
+    'package/quiqqer/invoice/bin/backend/controls/articles/Text',
     'Locale',
     'Mustache',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
 
-], function (QUI, QUIPanel, Orders, QUILocale, Mustache, templateData) {
+], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator,
+             Orders, TextArticle, QUILocale, Mustache, templateData) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -29,19 +37,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         Type   : 'package/quiqqer/order/bin/backend/controls/panels/Order',
 
         Binds: [
+            'update',
+            'save',
             'refresh',
             'openInfo',
             'openPayments',
             'openArticles',
+            'toggleSort',
             '$onCreate',
             '$onResize',
             '$onInject'
         ],
 
         options: {
-            orderId : false,
-            data    : {},
-            articles: []
+            orderId        : false,
+            user           : {},
+            addressInvoice : {},
+            addressDelivery: {},
+            data           : {},
+            articles       : []
         },
 
         initialize: function (options) {
@@ -53,6 +67,20 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     orderId: this.getAttribute('orderId')
                 })
             });
+
+            this.$Customer        = null;
+            this.$AddressInvoice  = null;
+            this.$AddressDelivery = null;
+
+            this.$ArticleList        = null;
+            this.$ArticleListSummary = null;
+
+            this.$AddProduct    = null;
+            this.$ArticleSort   = null;
+            this.$AddSeparator  = null;
+            this.$SortSeparator = null;
+
+            this.$serializedList = {};
 
             this.addEvents({
                 onCreate: this.$onCreate,
@@ -69,9 +97,130 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         },
 
         /**
+         * Update the order, save all data
+         *
+         * @return {Promise}
+         */
+        update: function () {
+            var self    = this,
+                orderId = this.getAttribute('orderId');
+
+            this.Loader.show();
+            this.$unLoadCategory();
+
+            var data = {
+                user           : this.getAttribute('user'),
+                addressInvoice : this.getAttribute('addressInvoice'),
+                addressDelivery: this.getAttribute('addressDelivery'),
+                data           : this.getAttribute('data'),
+                articles       : this.getAttribute('articles')
+            };
+
+            console.warn(orderId);
+            console.warn(data);
+
+            return new Promise(function (resolve) {
+                Orders.updateOrder(orderId, data).then(function () {
+                    resolve();
+                    self.Loader.hide();
+                });
+            });
+        },
+
+        /**
+         * Alias for update
+         *
+         * @return {Promise}
+         */
+        save: function () {
+            return this.update();
+        },
+
+        /**
          * event : on create
          */
         $onCreate: function () {
+            var self = this;
+
+            this.$AddProduct = new QUIButtonMultiple({
+                textimage: 'fa fa-plus',
+                text     : QUILocale.get(lg, 'panel.order.button.buttonAdd'),
+                events   : {
+                    onClick: function () {
+                        if (self.$ArticleList) {
+                            self.openProductSearch();
+                        }
+                    }
+                }
+            });
+
+            this.$AddProduct.hide();
+
+            this.$AddProduct.appendChild({
+                text  : QUILocale.get(lg, 'panel.order.article.buttonAdd.custom'),
+                events: {
+                    onClick: function () {
+                        if (self.$ArticleList) {
+                            self.$ArticleList.insertNewProduct();
+                        }
+                    }
+                }
+            });
+
+            this.$AddProduct.appendChild({
+                text  : QUILocale.get(lg, 'panel.order.article.buttonAdd.text'),
+                events: {
+                    onClick: function () {
+                        if (self.$ArticleList) {
+                            self.$ArticleList.addArticle(new TextArticle());
+                        }
+                    }
+                }
+            });
+
+            this.$AddSeparator  = new QUISeparator();
+            this.$SortSeparator = new QUISeparator();
+
+            this.$ArticleSort = new QUIButton({
+                name     : 'sort',
+                textimage: 'fa fa-sort',
+                text     : QUILocale.get(lg, 'panel.order.button.article.sort.text'),
+                events   : {
+                    onClick: this.toggleSort
+                }
+            });
+
+            this.$ArticleSort.hide();
+
+            // insert buttons
+            this.addButton({
+                textimage: 'fa fa-save',
+                text     : QUILocale.get('quiqqer/quiqqer', 'save'),
+                events   : {
+                    onClick: this.update
+                }
+            });
+
+            this.addButton(this.$AddSeparator);
+            this.addButton(this.$AddProduct);
+            this.addButton(this.$SortSeparator);
+            this.addButton(this.$ArticleSort);
+
+
+            this.addButton({
+                icon  : 'fa fa-trash',
+                title : QUILocale.get('quiqqer/quiqqer', 'delete'),
+                styles: {
+                    'float': 'right'
+                },
+                events: {
+                    onClick: function () {
+                    }
+                }
+            });
+
+
+            // categories
             this.addCategory({
                 icon  : 'fa fa-info',
                 name  : 'info',
@@ -131,20 +280,89 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             return this.$closeCategory().then(function (Container) {
                 Container.set({
                     html: Mustache.render(templateData, {
-                        textOrderRecipient: QUILocale.get(lg, 'cutomerData'),
-                        textCustomer      : QUILocale.get(lg, 'customer'),
-                        textCompany       : QUILocale.get(lg, 'company'),
-                        textStreet        : QUILocale.get(lg, 'street'),
-                        textZip           : QUILocale.get(lg, 'zip'),
-                        textCity          : QUILocale.get(lg, 'city'),
-                        textOrderData     : QUILocale.get(lg, 'panel.order.data.title'),
-                        textOrderDate     : QUILocale.get(lg, 'panel.order.data.date'),
-                        textOrderedBy     : QUILocale.get(lg, 'panel.order.data.orderedBy')
+                        textOrderInvoiceAddress : QUILocale.get(lg, 'invoiceAddress'),
+                        textOrderDeliveryAddress: QUILocale.get(lg, 'deliveryAddress'),
+                        textAddresses           : QUILocale.get(lg, 'address'),
+                        textCustomer            : QUILocale.get(lg, 'customer'),
+                        textCompany             : QUILocale.get(lg, 'company'),
+                        textStreet              : QUILocale.get(lg, 'street'),
+                        textZip                 : QUILocale.get(lg, 'zip'),
+                        textCity                : QUILocale.get(lg, 'city'),
+                        textOrderData           : QUILocale.get(lg, 'panel.order.data.title'),
+                        textOrderDate           : QUILocale.get(lg, 'panel.order.data.date'),
+                        textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy')
                     })
                 });
 
-
+                return QUI.parse(Container);
             }).then(function () {
+                var Content        = self.getContent(),
+                    deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
+
+                deliverAddress.addEvent('change', function (event) {
+                    var Table     = deliverAddress.getParent('table'),
+                        closables = Table.getElements('.closable');
+
+                    var data = self.$AddressInvoice.getValue();
+
+                    if (!data.uid) {
+                        if (event) {
+                            event.stop();
+                        }
+
+                        var Customer = QUI.Controls.getById(
+                            Content.getElement('[name="customer"]').get('data-quiid')
+                        );
+
+                        this.checked = false;
+
+                        QUI.getMessageHandler().then(function (MH) {
+                            MH.addInformation(
+                                QUILocale.get(lg, 'message.select.customer'),
+                                Customer.getElm()
+                            );
+                        });
+
+                        return;
+                    }
+
+                    if (this.checked) {
+                        closables.setStyle('display', null);
+                        return;
+                    }
+
+                    closables.setStyle('display', 'none');
+                });
+
+                self.$AddressDelivery = QUI.Controls.getById(
+                    Content.getElement('.order-delivery').get('data-quiid')
+                );
+
+                if (self.getAttribute('addressDelivery')) {
+                    self.$AddressDelivery.setValue(self.getAttribute('addressDelivery'));
+                    deliverAddress.checked = true;
+
+                    deliverAddress.getParent('table')
+                                  .getElements('.closable')
+                                  .setStyle('display', null);
+                }
+
+
+                self.$AddressInvoice = QUI.Controls.getById(
+                    Content.getElement('.order-invoice').get('data-quiid')
+                );
+
+                if (self.getAttribute('addressInvoice')) {
+                    self.$AddressInvoice.setValue(self.getAttribute('addressInvoice'));
+                }
+
+                self.$AddressInvoice.addEvent('change', function () {
+                    self.$AddressDelivery.setAttribute(
+                        'userId',
+                        self.$AddressInvoice.getValue().uid
+                    );
+                });
+
                 return self.$openCategory();
             }).then(function () {
                 self.Loader.hide();
@@ -161,6 +379,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getCategory('payment').setActive();
 
             return this.$closeCategory().then(function (Container) {
+
 
             }).then(function () {
                 return self.$openCategory();
@@ -179,7 +398,46 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getCategory('articles').setActive();
 
             return this.$closeCategory().then(function (Container) {
+                return new Promise(function (resolve, reject) {
+                    require([
+                        'package/quiqqer/invoice/bin/backend/controls/InvoiceArticleList',
+                        'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoice.Summary'
+                    ], function (ArticleList, Summary) {
+                        Container.setStyle('height', '100%');
 
+                        self.$ArticleList = new ArticleList({
+                            styles: {
+                                height: 'calc(100% - 120px)'
+                            }
+                        }).inject(Container);
+
+                        if (self.$serializedList) {
+                            self.$ArticleList.unserialize(self.$serializedList);
+                        }
+
+                        self.$ArticleListSummary = new Summary({
+                            List  : self.$ArticleList,
+                            styles: {
+                                bottom  : -20,
+                                left    : 0,
+                                opacity : 0,
+                                position: 'absolute'
+                            }
+                        }).inject(Container.getParent());
+
+                        moofx(self.$ArticleListSummary.getElm()).animate({
+                            bottom : 0,
+                            opacity: 1
+                        });
+
+                        self.$AddProduct.show();
+                        self.$AddSeparator.show();
+                        self.$SortSeparator.show();
+                        self.$ArticleSort.show();
+
+                        resolve();
+                    }, reject);
+                });
             }).then(function () {
                 return self.$openCategory();
             }).then(function () {
@@ -219,7 +477,32 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @returns {Promise}
          */
         $closeCategory: function () {
+            var self = this;
+
             this.getContent().setStyle('padding', 0);
+
+            // unload
+            this.$unLoadCategory();
+
+            if (this.$AddProduct) {
+                this.$AddProduct.hide();
+                this.$AddSeparator.hide();
+                this.$SortSeparator.hide();
+                this.$ArticleSort.hide();
+            }
+
+            if (this.$ArticleListSummary) {
+                moofx(this.$ArticleListSummary.getElm()).animate({
+                    bottom : -20,
+                    opacity: 0
+                }, {
+                    duration: 250,
+                    callback: function () {
+                        this.$ArticleListSummary.destroy();
+                        this.$ArticleListSummary = null;
+                    }.bind(this)
+                });
+            }
 
             return new Promise(function (resolve) {
                 var Container = this.getContent().getElement('.container');
@@ -242,6 +525,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }, {
                     duration: 200,
                     callback: function () {
+                        if (self.$AddressDelivery) {
+                            self.$AddressDelivery.destroy();
+                        }
+
+                        if (self.$AddressInvoice) {
+                            self.$AddressInvoice.destroy();
+                        }
+
                         Container.set('html', '');
                         Container.setStyle('padding', 20);
 
@@ -249,8 +540,84 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }.bind(this)
                 });
             }.bind(this));
-        }
+        },
+
+        /**
+         * helper for unloading the data
+         * drop the data into the order
+         */
+        $unLoadCategory: function () {
+            var Content        = this.getContent(),
+                deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
+
+            if (this.$AddressInvoice) {
+                this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
+            }
+
+            if (this.$AddressDelivery) {
+                this.setAttribute('addressDelivery', this.$AddressDelivery.getValue());
+            }
+
+            if (deliverAddress && deliverAddress.checked === false) {
+                this.setAttribute('addressDelivery', {});
+            }
+
+            if (this.$ArticleList) {
+                this.setAttribute('articles', this.$ArticleList.save());
+                this.$serializedList = this.$ArticleList.serialize();
+            }
+        },
 
         //endregion categories
+
+        /**
+         * Toggle the article sorting
+         */
+        toggleSort: function () {
+            this.$ArticleList.toggleSorting();
+
+            if (this.$ArticleList.isSortingEnabled()) {
+                this.$ArticleSort.setActive();
+                return;
+            }
+
+            this.$ArticleSort.setNormal();
+        },
+
+
+        /**
+         * Opens the product search
+         *
+         * @todo only if products are installed
+         */
+        openProductSearch: function () {
+            var self = this;
+
+            this.$AddProduct.setAttribute('textimage', 'fa fa-spinner fa-spin');
+
+            return new Promise(function (resolve) {
+                require([
+                    'package/quiqqer/invoice/bin/backend/controls/panels/product/AddProductWindow',
+                    'package/quiqqer/invoice/bin/backend/controls/articles/Article'
+                ], function (Win, Article) {
+                    new Win({
+                        events: {
+                            onSubmit: function (Win, article) {
+                                var Instance = new Article(article);
+
+                                if ("calculated_vatArray" in article) {
+                                    Instance.setVat(article.calculated_vatArray.vat);
+                                }
+
+                                self.$ArticleList.addArticle(Instance);
+                                resolve(Instance);
+                            }
+                        }
+                    }).open();
+
+                    self.$AddProduct.setAttribute('textimage', 'fa fa-plus');
+                });
+            });
+        }
     });
 });

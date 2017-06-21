@@ -17,10 +17,13 @@
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(10) NOT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
             <field type="INT NOT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="INT NOT NULL">uid</field>
             <field type="INT NOT NULL">status</field>
-            <field type="TEXT NULL">user</field>
-            <field type="TEXT NULL">address</field>
+
+            <field type="INT NOT NULL">customerId</field>
+            <field type="TEXT NULL">customer</field>
+            <field type="TEXT NULL">addressInvoice</field>
+            <field type="TEXT NULL">addressDelivery</field>
+
             <field type="TEXT NULL">articles</field>
             <field type="TEXT NULL">data</field>
 
@@ -44,10 +47,13 @@
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(10) NOT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
             <field type="INT NOT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="INT NOT NULL">uid</field>
             <field type="INT NOT NULL">status</field>
-            <field type="TEXT NULL">user</field>
-            <field type="TEXT NULL">address</field>
+
+            <field type="INT NOT NULL">customerId</field>
+            <field type="TEXT NULL">customer</field>
+            <field type="TEXT NULL">addressInvoice</field>
+            <field type="TEXT NULL">addressDelivery</field>
+
             <field type="TEXT NULL">articles</field>
             <field type="TEXT NULL">data</field>
 

@@ -20,11 +20,20 @@ class Factory extends QUI\Utils\Singleton
     /**
      * Creates a new order
      *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      * @return Order
-     * @todo permissions
      */
-    public function create()
+    public function create($PermissionUser = null)
     {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.edit',
+            $PermissionUser
+        );
+
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->table();
@@ -43,11 +52,20 @@ class Factory extends QUI\Utils\Singleton
     /**
      * Creates a new order in processing
      *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      * @return OrderProcess
-     * @todo permissions
      */
-    public function createOrderProcess()
+    public function createOrderProcess($PermissionUser = null)
     {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.edit',
+            $PermissionUser
+        );
+
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->table();
@@ -72,11 +90,12 @@ class Factory extends QUI\Utils\Singleton
     {
         return array(
             'id',
-            'uid',
             'status',
-            'user',
-            'address',
-            'articles',
+            'customerId',
+            'customer',
+            'addressInvoice',
+            'addressInvoice',
+            'addressDelivery',
             'data',
 
             'payment_method',

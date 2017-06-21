@@ -82,4 +82,71 @@ class Order extends AbstractOrder
 
         return true;
     }
+
+    /**
+     * @param null|QUI\Interfaces\Users\User $PermissionUser
+     */
+    public function update($PermissionUser = null)
+    {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.update',
+            $PermissionUser
+        );
+
+        $InvoiceAddress  = $this->getInvoiceAddress();
+        $DeliveryAddress = $this->getDeliveryAddress();
+        $deliveryAddress = '';
+
+        if ($DeliveryAddress) {
+            $deliveryAddress = $DeliveryAddress->toJSON();
+        }
+
+        QUI\System\Log::writeRecursive(array(
+            'parent_order' => '',
+            'invoice_id'   => '',
+            'status'       => '',
+
+            'customerId'      => '',
+            'customer'        => '',
+            'addressInvoice'  => $InvoiceAddress->toJSON(),
+            'addressDelivery' => $deliveryAddress,
+
+            'articles' => $this->Articles->toJSON(),
+            'data'     => '',
+
+            'payment_method'  => '', // verschlüsselt
+            'payment_data'    => '', // verschlüsselt
+            'payment_time'    => '', // verschlüsselt
+            'payment_address' => ''  // verschlüsselt
+        ));
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            array(
+                'parent_order' => '',
+                'invoice_id'   => '',
+                'status'       => '',
+
+                'customerId'      => '',
+                'customer'        => '',
+                'addressInvoice'  => $InvoiceAddress->toJSON(),
+                'addressDelivery' => $deliveryAddress,
+
+                'articles' => $this->Articles->toJSON(),
+                'data'     => '',
+
+                'payment_method'  => '', // verschlüsselt
+                'payment_data'    => '', // verschlüsselt
+                'payment_time'    => '', // verschlüsselt
+                'payment_address' => ''  // verschlüsselt
+            ),
+            array(
+                'id' => $this->getId()
+            )
+        );
+    }
 }

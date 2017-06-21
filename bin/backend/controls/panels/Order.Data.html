@@ -1,8 +1,10 @@
-<form>
-    <table class="data-table data-table-flexbox order-data">
+<form name="invoice">
+    <table class="data-table data-table-flexbox order-invoice"
+           data-qui="package/quiqqer/order/bin/backend/controls/panels/order/InvoiceAddress"
+    >
         <thead>
         <tr>
-            <th>{{textOrderRecipient}}</th>
+            <th>{{textOrderInvoiceAddress}}</th>
         </tr>
         </thead>
 
@@ -13,16 +15,20 @@
                     <span class="field-container-item" title="{{textCustomer}}">
                         {{textCustomer}}
                     </span>
-                    <input type="text" class="field-container-field" name="customer" disabled/>
+                    <input type="text"
+                           class="field-container-field"
+                           name="customer"
+                           disabled
+                    />
                 </label>
             </td>
         </tr>
         <tr>
             <td>
                 <label class="field-container">
-                <span class="field-container-item" title="{{textCompany}}">
-                    {{textCompany}}
-                </span>
+                    <span class="field-container-item" title="{{textCompany}}">
+                        {{textCompany}}
+                    </span>
                     <input type="text" class="field-container-field" name="company" disabled/>
                 </label>
             </td>
@@ -30,9 +36,9 @@
         <tr>
             <td>
                 <label class="field-container">
-                <span class="field-container-item" title="{{textStreet}}">
-                    {{textStreet}}
-                </span>
+                    <span class="field-container-item" title="{{textStreet}}">
+                        {{textStreet}}
+                    </span>
                     <input type="text" class="field-container-field" name="street_no" disabled/>
                 </label>
             </td>
@@ -40,9 +46,9 @@
         <tr>
             <td>
                 <label class="field-container">
-                <span class="field-container-item" title="{{textZip}}">
-                    {{textZip}}
-                </span>
+                    <span class="field-container-item" title="{{textZip}}">
+                        {{textZip}}
+                    </span>
                     <input type="text" class="field-container-field" name="zip" disabled/>
                 </label>
             </td>
@@ -50,16 +56,90 @@
         <tr>
             <td>
                 <label class="field-container">
-                <span class="field-container-item" title="{{textCity}}">
-                    {{textCity}}
-                </span>
+                    <span class="field-container-item" title="{{textCity}}">
+                        {{textCity}}
+                    </span>
                     <input type="text" class="field-container-field" name="city" disabled/>
                 </label>
             </td>
         </tr>
         </tbody>
     </table>
+</form>
 
+<form name="delivery">
+    <table class="data-table data-table-flexbox order-delivery"
+           data-qui="package/quiqqer/order/bin/backend/controls/panels/order/DeliveryAddress"
+    >
+        <thead>
+        <tr>
+            <th>{{textOrderDeliveryAddress}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <input type="checkbox" name="differentDeliveryAddress"/>
+                    <span>Der Lieferadresse weicht von der Rechnungsadresse ab</span>
+                </label>
+            </td>
+        </tr>
+        <tr class="closable" style="display: none">
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textCustomer}}">
+                        {{textAddresses}}
+                    </span>
+                    <select name="addresses" class="field-container-field" disabled></select>
+                </label>
+            </td>
+        </tr>
+        <tr class="closable" style="display: none">
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textCompany}}">
+                        {{textCompany}}
+                    </span>
+                    <input type="text" class="field-container-field" name="company" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr class="closable" style="display: none">
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textStreet}}">
+                        {{textStreet}}
+                    </span>
+                    <input type="text" class="field-container-field" name="street_no" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr class="closable" style="display: none">
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textZip}}">
+                        {{textZip}}
+                    </span>
+                    <input type="text" class="field-container-field" name="zip" disabled/>
+                </label>
+            </td>
+        </tr>
+        <tr class="closable" style="display: none">
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textCity}}">
+                        {{textCity}}
+                    </span>
+                    <input type="text" class="field-container-field" name="city" disabled/>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+<form>
     <table class="data-table data-table-flexbox order-data">
         <thead>
         <tr>
