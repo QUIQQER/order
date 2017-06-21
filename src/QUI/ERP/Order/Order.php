@@ -110,17 +110,17 @@ class Order extends AbstractOrder
             'invoice_id'   => '',
             'status'       => '',
 
-            'customerId'      => '',
-            'customer'        => '',
+            'customerId'      => $this->customerId,
+            'customer'        => $this->getCustomer()->getAttributes(),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
             'articles' => $this->Articles->toJSON(),
-            'data'     => '',
+            'data'     => json_encode($this->data),
 
-            'payment_method'  => '', // verschlüsselt
+            'payment_method'  => '',
+            'payment_time'    => '',
             'payment_data'    => '', // verschlüsselt
-            'payment_time'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
         ));
 
@@ -131,17 +131,17 @@ class Order extends AbstractOrder
                 'invoice_id'   => '',
                 'status'       => '',
 
-                'customerId'      => '',
-                'customer'        => '',
+                'customerId'      => $this->customerId,
+                'customer'        => $this->getCustomer()->getAttributes(),
                 'addressInvoice'  => $InvoiceAddress->toJSON(),
                 'addressDelivery' => $deliveryAddress,
 
                 'articles' => $this->Articles->toJSON(),
-                'data'     => '',
+                'data'     => json_encode($this->data),
 
-                'payment_method'  => '', // verschlüsselt
+                'payment_method'  => '',
+                'payment_time'    => '',
                 'payment_data'    => '', // verschlüsselt
-                'payment_time'    => '', // verschlüsselt
                 'payment_address' => ''  // verschlüsselt
             ),
             array(

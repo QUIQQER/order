@@ -26,6 +26,23 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
         /**
          * Return orders for a grid
          *
+         * @param {Number} orderId - Grid params
+         * @returns {Promise}
+         */
+        get: function (orderId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_backend_get', resolve, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
+         * Return orders for a grid
+         *
          * @param {Object} params - Grid params
          * @returns {Promise}
          */

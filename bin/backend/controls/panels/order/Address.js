@@ -1,5 +1,5 @@
 /**
- * @module package/quiqqer/order/bin/backend/controls/panels/order/Customer
+ * @module package/quiqqer/order/bin/backend/controls/panels/order/Address
  *
  * @require qui/QUI
  * @require qui/controls/Control
@@ -7,7 +7,7 @@
  * @require Users
  * @require Locale
  */
-define('package/quiqqer/order/bin/backend/controls/panels/order/DeliveryAddress', [
+define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -23,7 +23,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/DeliveryAddress'
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/quiqqer/order/bin/backend/controls/panels/order/DeliveryAddress',
+        Type   : 'package/quiqqer/order/bin/backend/controls/panels/order/Address',
 
         Binds: [
             'refresh',

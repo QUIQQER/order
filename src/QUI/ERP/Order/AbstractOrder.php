@@ -93,7 +93,7 @@ abstract class AbstractOrder
     /**
      * @var null|QUI\ERP\User
      */
-    protected $User = null;
+    protected $Customer = null;
 
     /**
      * Order constructor.
@@ -115,17 +115,22 @@ abstract class AbstractOrder
             }
         }
 
-        $this->id        = $data['id'];
+        $this->id        = (int)$data['id'];
         $this->invoiceId = $data['invoice_id'];
         $this->hash      = $data['hash'];
         $this->cDate     = $data['c_date'];
 
-        $this->customerId = $data['customerId'];
-        $this->customer   = json_decode($data['customer'], true);
-
         $this->addressDelivery = json_decode($data['addressDelivery'], true);
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);
         $this->data            = json_decode($data['data'], true);
+
+
+        // user
+        $this->customerId = (int)$data['customerId'];
+
+        if (isset($data['customer'])) {
+            $this->setCustomer(json_decode($data['customer'], true));
+        }
 
 
         // articles
@@ -142,15 +147,44 @@ abstract class AbstractOrder
                 }
             }
         }
-
-
-        // user
-        if (isset($data['user'])) {
-            $this->setUser(json_decode($data['user'], true));
-        }
     }
 
+
+    //region API
+
+    /**
+     * Updates the order
+     *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     */
+    abstract public function update($PermissionUser = null);
+
+    //endregion
+
     //region getter
+
+    /**
+     * Return the order as an array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'id'        => $this->id,
+            'invoiceId' => $this->invoiceId,
+            'hash'      => $this->hash,
+            'cDate'     => $this->cDate,
+            'data'      => $this->data,
+
+            'customerId' => $this->customerId,
+            'customer'   => $this->customer,
+
+            'articles'        => $this->getArticles()->toArray(),
+            'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
+            'addressInvoice'  => $this->getInvoiceAddress()->getAttributes(),
+        );
+    }
 
     /**
      * Return the order id
@@ -227,15 +261,33 @@ abstract class AbstractOrder
     }
 
     /**
+     * Return the customer of the order
+     *
      * @return QUI\ERP\User
      */
     public function getCustomer()
     {
-        if (!$this->customer) {
-            return QUI\ERP\User::convertUserToErpUser(QUI::getUsers()->getNobody());
+        $Nobody = QUI\ERP\User::convertUserToErpUser(QUI::getUsers()->getNobody());
+
+        if (!$this->customerId && !$this->Customer) {
+            return $Nobody;
         }
 
-        return new QUI\ERP\User($this->customer);
+        if ($this->Customer) {
+            return $this->Customer;
+        }
+
+        try {
+            $User     = QUI::getUsers()->get($this->customerId);
+            $Customer = QUI\ERP\User::convertUserToErpUser($User);
+
+            $this->Customer = $Customer;
+
+            return $this->Customer;
+        } catch (QUI\Exception $Exception) {
+        }
+
+        return $Nobody;
     }
 
     //endregion
@@ -316,24 +368,27 @@ abstract class AbstractOrder
     }
 
     /**
-     * Set an user to the order
+     * Set an customer to the order
      *
      * @param array|QUI\ERP\User|QUI\Interfaces\Users\User $User
      */
-    public function setUser($User)
+    public function setCustomer($User)
     {
         if (is_array($User)) {
-            $this->User = new QUI\ERP\User($User);
+            $this->Customer   = new QUI\ERP\User($User);
+            $this->customerId = $this->Customer->getId();
             return;
         }
 
         if ($User instanceof QUI\ERP\User) {
-            $this->User = $User;
+            $this->Customer   = $User;
+            $this->customerId = $User->getId();
             return;
         }
 
         if ($User instanceof QUI\Interfaces\Users\User) {
-            $this->User = QUI\ERP\User::convertUserToErpUser($User);
+            $this->Customer   = QUI\ERP\User::convertUserToErpUser($User);
+            $this->customerId = $this->Customer->getId();
         }
     }
 
@@ -368,19 +423,58 @@ abstract class AbstractOrder
             unset($this->data[$key]);
         }
     }
-
-
-
     //endregion
 
-    //region API
+    //region articles
 
     /**
-     * Updates the order
+     * Add an Product to the order
      *
-     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @param QUI\ERP\Accounting\Article $Article
      */
-    abstract public function update($PermissionUser = null);
+    public function addArticle(QUI\ERP\Accounting\Article $Article)
+    {
+        $this->Articles->addArticle($Article);
+    }
+
+    /**
+     * Remove an article by its index position
+     *
+     * @param integer $index
+     */
+    public function removeArticle($index)
+    {
+        $this->Articles->removeArticle($index);
+    }
+
+    /**
+     * Replace an article at a specific position
+     *
+     * @param QUI\ERP\Accounting\Article $Article
+     * @param integer $index
+     */
+    public function replaceArticle(QUI\ERP\Accounting\Article $Article, $index)
+    {
+        $this->Articles->replaceArticle($Article, $index);
+    }
+
+    /**
+     * Clears the article list
+     */
+    public function clearArticles()
+    {
+        $this->Articles->clear();
+    }
+
+    /**
+     * Return the length of the article list
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->Articles->count();
+    }
 
     //endregion
 }

@@ -1,10 +1,8 @@
-<form name="invoice">
-    <table class="data-table data-table-flexbox order-invoice"
-           data-qui="package/quiqqer/order/bin/backend/controls/panels/order/InvoiceAddress"
-    >
+<form name="customer">
+    <table class="data-table data-table-flexbox">
         <thead>
         <tr>
-            <th>{{textOrderInvoiceAddress}}</th>
+            <th>{{textOrderCustomer}}</th>
         </tr>
         </thead>
 
@@ -18,8 +16,36 @@
                     <input type="text"
                            class="field-container-field"
                            name="customer"
+                           data-qui="controls/users/Select"
+                           data-qui-options-max="1"
+                           data-qui-options-multiple="0"
                            disabled
                     />
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+<form name="invoice">
+    <table class="data-table data-table-flexbox order-invoice"
+           data-qui="package/quiqqer/order/bin/backend/controls/panels/order/Address"
+    >
+        <thead>
+        <tr>
+            <th>{{textOrderInvoiceAddress}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textCustomer}}">
+                        {{textAddresses}}
+                    </span>
+                    <select name="addresses" class="field-container-field" disabled></select>
                 </label>
             </td>
         </tr>
@@ -69,7 +95,7 @@
 
 <form name="delivery">
     <table class="data-table data-table-flexbox order-delivery"
-           data-qui="package/quiqqer/order/bin/backend/controls/panels/order/DeliveryAddress"
+           data-qui="package/quiqqer/order/bin/backend/controls/panels/order/Address"
     >
         <thead>
         <tr>

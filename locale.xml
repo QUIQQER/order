@@ -32,6 +32,10 @@
             <de><![CDATA[Kunde]]></de>
             <en><![CDATA[Customer]]></en>
         </locale>
+        <locale name="customerTitle">
+            <de><![CDATA[Kundendaten]]></de>
+            <en><![CDATA[Customer data]]></en>
+        </locale>
         <locale name="address">
             <de><![CDATA[Adresse]]></de>
             <en><![CDATA[Address]]></en>

@@ -51,7 +51,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         options: {
             orderId        : false,
-            user           : {},
+            customerId     : false,
+            customer       : {},
             addressInvoice : {},
             addressDelivery: {},
             data           : {},
@@ -93,7 +94,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Refresh the grid
          */
         refresh: function () {
+            var self    = this,
+                orderId = this.getAttribute('orderId');
 
+            return new Promise(function (resolve, reject) {
+                Orders.get(orderId).then(function (data) {
+
+                    self.setAttribute('customerId', data.customerId);
+                    self.setAttribute('customer', data.customer);
+                    self.setAttribute('data', data.data);
+                    self.setAttribute('addressInvoice', data.addressInvoice);
+                    self.setAttribute('addressDelivery', data.addressDelivery);
+
+                    if (data.articles) {
+                        self.$serializedList = data.articles;
+                    }
+
+                    resolve();
+                }, reject);
+            });
         },
 
         /**
@@ -109,7 +128,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$unLoadCategory();
 
             var data = {
-                user           : this.getAttribute('user'),
+                customerId     : this.getAttribute('customerId'),
+                customer       : this.getAttribute('customer'),
                 addressInvoice : this.getAttribute('addressInvoice'),
                 addressDelivery: this.getAttribute('addressDelivery'),
                 data           : this.getAttribute('data'),
@@ -263,7 +283,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * event: on inject
          */
         $onInject: function () {
-            this.openInfo();
+            this.refresh().then(this.openInfo);
         },
 
         //region categories
@@ -280,6 +300,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             return this.$closeCategory().then(function (Container) {
                 Container.set({
                     html: Mustache.render(templateData, {
+                        textOrderCustomer       : QUILocale.get(lg, 'customerTitle'),
                         textOrderInvoiceAddress : QUILocale.get(lg, 'invoiceAddress'),
                         textOrderDeliveryAddress: QUILocale.get(lg, 'deliveryAddress'),
                         textAddresses           : QUILocale.get(lg, 'address'),
@@ -298,6 +319,24 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }).then(function () {
                 var Content        = self.getContent(),
                     deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
+
+                self.$Customer = QUI.Controls.getById(
+                    Content.getElement('input[name="customer"]').get('data-quiid')
+                );
+
+                self.$AddressDelivery = QUI.Controls.getById(
+                    Content.getElement('.order-delivery').get('data-quiid')
+                );
+
+                self.$AddressInvoice = QUI.Controls.getById(
+                    Content.getElement('.order-invoice').get('data-quiid')
+                );
+
+                // events
+                self.$Customer.addEvent('change', function (Select) {
+                    self.$AddressInvoice.setAttribute('userId', Select.getValue());
+                    self.$AddressDelivery.setAttribute('userId', Select.getValue());
+                });
 
                 deliverAddress.addEvent('change', function (event) {
                     var Table     = deliverAddress.getParent('table'),
@@ -334,34 +373,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     closables.setStyle('display', 'none');
                 });
 
-                self.$AddressDelivery = QUI.Controls.getById(
-                    Content.getElement('.order-delivery').get('data-quiid')
-                );
+
+                // values
+                if (self.getAttribute('customerId') !== false) {
+                    self.$Customer.addItem(self.getAttribute('customerId'));
+                }
+
+                if (self.getAttribute('addressInvoice')) {
+                    self.$AddressInvoice.setValue(self.getAttribute('addressInvoice'));
+                }
 
                 if (self.getAttribute('addressDelivery')) {
                     self.$AddressDelivery.setValue(self.getAttribute('addressDelivery'));
+
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
                                   .getElements('.closable')
                                   .setStyle('display', null);
                 }
-
-
-                self.$AddressInvoice = QUI.Controls.getById(
-                    Content.getElement('.order-invoice').get('data-quiid')
-                );
-
-                if (self.getAttribute('addressInvoice')) {
-                    self.$AddressInvoice.setValue(self.getAttribute('addressInvoice'));
-                }
-
-                self.$AddressInvoice.addEvent('change', function () {
-                    self.$AddressDelivery.setAttribute(
-                        'userId',
-                        self.$AddressInvoice.getValue().uid
-                    );
-                });
 
                 return self.$openCategory();
             }).then(function () {
