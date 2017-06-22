@@ -18,10 +18,63 @@ QUI::$Ajax->registerFunction(
         $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
         $data  = json_decode($data, true);
 
-        if (isset($data['customer'])) {
-            $Order->setCustomer($data['customer']);
+        // customer
+        $Customer = null;
+
+        if (isset($data['customerId']) && !isset($data['customer'])) {
+            $Customer = QUI::getUsers()->get($data['customerId']);
         }
 
+        if (!$Customer && isset($data['customer'])) {
+            if (isset($data['customerId'])
+                && !isset($data['customer']['id'])
+            ) {
+                $data['customer']['id'] = (int)$data['customerId'];
+            }
+
+            if (isset($data['addressInvoice']['country'])
+                && !isset($data['customer']['country'])
+            ) {
+                $data['customer']['country'] = $data['addressInvoice']['country'];
+            }
+
+            if (!isset($data['customer']['username'])) {
+                $data['customer']['username'] = '';
+            }
+
+            if (!isset($data['customer']['firstname'])
+                && isset($data['addressInvoice']['firstname'])
+            ) {
+                $data['customer']['firstname'] = $data['addressInvoice']['firstname'];
+            } elseif (!isset($data['customer']['firstname'])) {
+                $data['customer']['firstname'] = '';
+            }
+
+            if (!isset($data['customer']['lastname'])
+                && isset($data['addressInvoice']['lastname'])
+            ) {
+                $data['customer']['lastname'] = $data['addressInvoice']['lastname'];
+            } elseif (!isset($data['customer']['lastname'])) {
+                $data['customer']['lastname'] = '';
+            }
+
+            if (!isset($data['customer']['lang'])) {
+                $data['customer']['lang'] = QUI::getLocale()->getCurrent();
+            }
+
+            if (!isset($data['customer']['isCompany'])) {
+                $data['customer']['isCompany'] = false;
+            }
+
+            $Customer = new QUI\ERP\User($data['customer']);
+        }
+
+        if ($Customer) {
+            $Order->setCustomer($Customer);
+        }
+
+
+        // addresses
         if (isset($data['addressInvoice'])) {
             $Order->setInvoiceAddress($data['addressInvoice']);
         }
@@ -31,6 +84,8 @@ QUI::$Ajax->registerFunction(
         }
 
         if (isset($data['articles'])) {
+            $Order->clearArticles();
+
             foreach ($data['articles'] as $article) {
                 try {
                     $Order->addArticle(

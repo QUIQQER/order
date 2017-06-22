@@ -99,19 +99,29 @@ class Order extends AbstractOrder
 
         $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
+
         $deliveryAddress = '';
+        $customer        = '';
 
         if ($DeliveryAddress) {
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
-        QUI\System\Log::writeRecursive(array(
+        try {
+            $Customer = $this->getCustomer();
+            $customer = $Customer->getAttributes();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeRecursive($Exception);
+        }
+
+
+        $data = array(
             'parent_order' => '',
             'invoice_id'   => '',
             'status'       => '',
 
             'customerId'      => $this->customerId,
-            'customer'        => $this->getCustomer()->getAttributes(),
+            'customer'        => json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
@@ -122,28 +132,13 @@ class Order extends AbstractOrder
             'payment_time'    => '',
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
-        ));
+        );
+
+        QUI\System\Log::writeRecursive($data);
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            array(
-                'parent_order' => '',
-                'invoice_id'   => '',
-                'status'       => '',
-
-                'customerId'      => $this->customerId,
-                'customer'        => $this->getCustomer()->getAttributes(),
-                'addressInvoice'  => $InvoiceAddress->toJSON(),
-                'addressDelivery' => $deliveryAddress,
-
-                'articles' => $this->Articles->toJSON(),
-                'data'     => json_encode($this->data),
-
-                'payment_method'  => '',
-                'payment_time'    => '',
-                'payment_data'    => '', // verschlüsselt
-                'payment_address' => ''  // verschlüsselt
-            ),
+            $data,
             array(
                 'id' => $this->getId()
             )

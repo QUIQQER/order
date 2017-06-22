@@ -99,7 +99,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return new Promise(function (resolve, reject) {
                 Orders.get(orderId).then(function (data) {
-
+                    console.log(data);
                     self.setAttribute('customerId', data.customerId);
                     self.setAttribute('customer', data.customer);
                     self.setAttribute('data', data.data);
@@ -138,6 +138,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             console.warn(orderId);
             console.warn(data);
+            console.warn(data.articles);
 
             return new Promise(function (resolve) {
                 Orders.updateOrder(orderId, data).then(function () {
@@ -283,7 +284,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * event: on inject
          */
         $onInject: function () {
-            this.refresh().then(this.openInfo);
+            this.refresh().then(this.openInfo).catch(function (Err) {
+                QUI.getMessageHandler().then(function (MH) {
+                    MH.addError(Err.getMessage());
+                });
+            }.bind(this));
         },
 
         //region categories
@@ -309,6 +314,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textStreet              : QUILocale.get(lg, 'street'),
                         textZip                 : QUILocale.get(lg, 'zip'),
                         textCity                : QUILocale.get(lg, 'city'),
+                        textCountry             : QUILocale.get(lg, 'country'),
                         textOrderData           : QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate           : QUILocale.get(lg, 'panel.order.data.date'),
                         textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy')
@@ -334,8 +340,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                 // events
                 self.$Customer.addEvent('change', function (Select) {
-                    self.$AddressInvoice.setAttribute('userId', Select.getValue());
-                    self.$AddressDelivery.setAttribute('userId', Select.getValue());
+                    var userId = parseInt(Select.getValue());
+
+                    self.$AddressInvoice.setAttribute('userId', userId);
+                    self.$AddressDelivery.setAttribute('userId', userId);
+                    self.setAttribute('customerId', userId);
                 });
 
                 deliverAddress.addEvent('change', function (event) {
@@ -426,6 +435,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             this.Loader.show();
             this.getCategory('articles').setActive();
+
+            console.log('articles');
 
             return this.$closeCategory().then(function (Container) {
                 return new Promise(function (resolve, reject) {

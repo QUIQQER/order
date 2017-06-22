@@ -129,7 +129,18 @@ abstract class AbstractOrder
         $this->customerId = (int)$data['customerId'];
 
         if (isset($data['customer'])) {
-            $this->setCustomer(json_decode($data['customer'], true));
+            $customer = json_decode($data['customer'], true);
+
+            if (!isset($customer['id'])) {
+                $customer['id'] = $this->customerId;
+            }
+
+            try {
+                $this->setCustomer($customer);
+            } catch (QUi\Exception $Exception) {
+                QUI\System\Log::writeRecursive($customer);
+                QUI\System\Log::addWarning($Exception->getMessage());
+            }
         }
 
 
@@ -374,6 +385,10 @@ abstract class AbstractOrder
      */
     public function setCustomer($User)
     {
+        if (empty($User)) {
+            return;
+        }
+
         if (is_array($User)) {
             $this->Customer   = new QUI\ERP\User($User);
             $this->customerId = $this->Customer->getId();

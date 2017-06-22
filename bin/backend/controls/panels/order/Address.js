@@ -12,13 +12,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/windows/Confirm',
-    'Users',
-    'Locale'
+    'package/quiqqer/countries/bin/Countries',
+    'Users'
 
-], function (QUI, QUIControl, QUIConfirm, Users, QUILocale) {
+], function (QUI, QUIControl, QUIConfirm, Countries, Users) {
     "use strict";
-
-    var lg = 'quiqqer/order';
 
     return new Class({
 
@@ -44,7 +42,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             this.$Street    = null;
             this.$ZIP       = null;
             this.$City      = null;
+            this.$Country   = null;
 
+            this.$loaded = false;
             this.$userId = this.getAttribute('userId');
 
             this.addEvents({
@@ -57,12 +57,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          * event: on import
          */
         $onImport: function () {
-            var Elm = this.getElm();
+            var self = this,
+                Elm  = this.getElm();
 
             this.$Company = Elm.getElement('[name="company"]');
             this.$Street  = Elm.getElement('[name="street_no"]');
             this.$ZIP     = Elm.getElement('[name="zip"]');
             this.$City    = Elm.getElement('[name="city"]');
+            this.$Country = Elm.getElement('[name="country"]');
 
             this.$Addresses = Elm.getElement('[name="addresses"]');
             this.$Addresses.addEvent('change', this.$onSelectChange);
@@ -71,6 +73,31 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             this.$Street.disabled  = false;
             this.$ZIP.disabled     = false;
             this.$City.disabled    = false;
+
+            Countries.getCountries().then(function (result) {
+                new Element('option', {
+                    value: '',
+                    html : ''
+                }).inject(self.$Country);
+
+                for (var code in result) {
+                    if (!result.hasOwnProperty(code)) {
+                        continue;
+                    }
+
+                    new Element('option', {
+                        value: code,
+                        html : result[code]
+                    }).inject(self.$Country);
+                }
+
+                if (self.getAttribute('country')) {
+                    self.$Country.value = self.getAttribute('country');
+                }
+
+                self.$Country.disabled = false;
+                self.$loaded           = true;
+            });
         },
 
         /**
@@ -84,7 +111,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                 company  : this.$Company.value,
                 street_no: this.$Street.value,
                 zip      : this.$ZIP.value,
-                city     : this.$City.value
+                city     : this.$City.value,
+                country  : this.$Country.value
             };
         },
 
@@ -112,6 +140,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
 
             if ("city" in value) {
                 this.$City.value = value.city;
+            }
+
+            if ("country" in value) {
+                if (this.$loaded) {
+                    this.$Country.value = value.country;
+                } else {
+                    this.setAttribute('country', value.country);
+                }
             }
 
             if ("uid" in value) {
