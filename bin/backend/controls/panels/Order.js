@@ -633,7 +633,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 Win.close();
                             });
                         }).then(function () {
-                            Win.Loader.show();
+                            Win.Loader.hide();
                         });
                     }
                 }

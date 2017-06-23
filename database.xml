@@ -17,6 +17,7 @@
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(10) NOT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
             <field type="INT NOT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
+            <field type="INT NOT NULL">temporary_invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
             <field type="INT NOT NULL">status</field>
 
             <field type="INT NOT NULL">customerId</field>

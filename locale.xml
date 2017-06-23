@@ -260,7 +260,7 @@
 
         <locale name="dialog.order.delete.title">
             <de><![CDATA[Bestellung löschen]]></de>
-            <en><![CDATA[Order invoice]]></en>
+            <en><![CDATA[Delete order]]></en>
         </locale>
         <locale name="dialog.order.delete.text">
             <de><![CDATA[Möchten Sie die Bestellung wirklich löschen?]]></de>
@@ -273,7 +273,7 @@
 
         <locale name="dialog.order.copy.title">
             <de><![CDATA[Bestellung kopieren]]></de>
-            <en><![CDATA[Copy invoice]]></en>
+            <en><![CDATA[Copy order]]></en>
         </locale>
         <locale name="dialog.order.copy.text">
             <de><![CDATA[Möchten Sie die Bestellung wirklich kopieren?]]></de>
@@ -288,6 +288,27 @@
                 The order <b>#[id]</b> would be copied with all the data contained therein. <br />
                 After the creation, the order would be opened for further processing.
             ]]></en>
+        </locale>
+
+        <locale name="dialog.order.create.title">
+            <de><![CDATA[Bestellung erstellen]]></de>
+            <en><![CDATA[Create order]]></en>
+        </locale>
+        <locale name="dialog.order.create.text">
+            <de><![CDATA[Möchten Sie eine neue Bestellung erstellen?]]></de>
+            <en><![CDATA[Do you want to create a new order?]]></en>
+        </locale>
+        <locale name="dialog.order.create.information">
+            <de><![CDATA[
+                Die neue Bestellung wird sofort geöffnet und kann weiter bearbeitet werden.
+            ]]></de>
+            <en><![CDATA[
+                The new order is opened immediately and can be edited further.
+            ]]></en>
+        </locale>
+        <locale name="dialog.order.create.button">
+            <de><![CDATA[Bestellung anlegen]]></de>
+            <en><![CDATA[Create order]]></en>
         </locale>
     </groups>
 
