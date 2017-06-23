@@ -47,6 +47,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openPayments',
             'openArticles',
             'openDeleteDialog',
+            'openCopyDialog',
             'toggleSort',
             '$onCreate',
             '$onDestroy',
@@ -257,7 +258,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             });
 
             Actions.appendChild({
-                name  : 'copy',
+                name  : 'create',
                 text  : QUILocale.get(lg, 'panel.btn.createInvoice'),
                 icon  : 'fa fa-money',
                 events: {
@@ -271,8 +272,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 text  : QUILocale.get(lg, 'panel.btn.copyOrder'),
                 icon  : 'fa fa-copy',
                 events: {
-                    onClick: function () {
-                    }
+                    onClick: this.openCopyDialog
                 }
             });
 
@@ -584,6 +584,54 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                         Orders.deleteOrder(self.getAttribute('orderId')).then(function () {
                             Win.close();
+                        }).then(function () {
+                            Win.Loader.show();
+                        });
+                    }
+                }
+            }).open();
+        },
+
+        /**
+         * Copy the order and opens the new copy
+         */
+        openCopyDialog: function () {
+            var self = this;
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.copy.title'),
+                text       : QUILocale.get(lg, 'dialog.order.copy.text'),
+                information: QUILocale.get(lg, 'dialog.order.copy.information', {
+                    id: this.getAttribute('orderId')
+                }),
+                icon       : 'fa fa-copy',
+                texticon   : 'fa fa-copy',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get('quiqqer/system', 'copy'),
+                    textimage: 'fa fa-copy'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
+
+                        var orderId = self.getAttribute('orderId');
+
+                        Orders.copyOrder(orderId).then(function (newOrderId) {
+                            require([
+                                'package/quiqqer/order/bin/backend/controls/panels/Order',
+                                'utils/Panels'
+                            ], function (Order, PanelUtils) {
+                                var Panel = new Order({
+                                    orderId: newOrderId,
+                                    '#id'  : newOrderId
+                                });
+
+                                PanelUtils.openPanelInTasks(Panel);
+                                Win.close();
+                            });
                         }).then(function () {
                             Win.Loader.show();
                         });

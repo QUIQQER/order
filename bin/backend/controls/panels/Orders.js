@@ -71,9 +71,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             Orders.addEvents({
-                orderCreate: this.$onOrderChange,
-                orderDelete: this.$onOrderChange,
-                orderSave  : this.$onOrderChange
+                onOrderCreate: this.$onOrderChange,
+                onOrderDelete: this.$onOrderChange,
+                onOrderSave  : this.$onOrderChange,
+                onOrderCopy  : this.$onOrderChange
             });
         },
 
@@ -395,9 +396,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          */
         $onDestroy: function () {
             Orders.removeEvents({
-                orderCreate: this.$onOrderChange,
-                orderDelete: this.$onOrderChange,
-                orderSave  : this.$onOrderChange
+                onOrderCreate: this.$onOrderChange,
+                onOrderCopy  : this.$onOrderChange,
+                onOrderDelete: this.$onOrderChange,
+                onOrderSave  : this.$onOrderChange
             });
         },
 

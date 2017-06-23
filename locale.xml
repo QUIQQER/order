@@ -270,6 +270,25 @@
             <de><![CDATA[Die Bestellung <b>[id]</b> wird unwiderruflich gelöscht.]]></de>
             <en><![CDATA[The Order <b>[id]</b> will be irrevocably deleted.]]></en>
         </locale>
+
+        <locale name="dialog.order.copy.title">
+            <de><![CDATA[Bestellung kopieren]]></de>
+            <en><![CDATA[Copy invoice]]></en>
+        </locale>
+        <locale name="dialog.order.copy.text">
+            <de><![CDATA[Möchten Sie die Bestellung wirklich kopieren?]]></de>
+            <en><![CDATA[Are you sure you want to copy the order?]]></en>
+        </locale>
+        <locale name="dialog.order.copy.information">
+            <de><![CDATA[
+                Die Bestellung <b>#[id]</b> wird mit allen darin enthaltenen Daten kopiert. <br />
+                Nach der Erstellung wird die Bestellung zur weiteren bearbeitung geöffnet.
+            ]]></de>
+            <en><![CDATA[
+                The order <b>#[id]</b> would be copied with all the data contained therein. <br />
+                After the creation, the order would be opened for further processing.
+            ]]></en>
+        </locale>
     </groups>
 
 </locales>

@@ -176,7 +176,6 @@ abstract class AbstractOrder
         $this->paymentId = $data['payment_id'];
     }
 
-
     //region API
 
     /**

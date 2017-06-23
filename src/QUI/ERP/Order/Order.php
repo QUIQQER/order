@@ -84,19 +84,12 @@ class Order extends AbstractOrder
     }
 
     /**
-     * @param null|QUI\Interfaces\Users\User $PermissionUser
+     * Return the order data for saving
+     *
+     * @return array
      */
-    public function update($PermissionUser = null)
+    protected function getDataForSaving()
     {
-        if ($PermissionUser === null) {
-            $PermissionUser = QUI::getUserBySession();
-        }
-
-        QUI\Permissions\Permission::hasPermission(
-            'quiqqer.order.update',
-            $PermissionUser
-        );
-
         $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
 
@@ -126,8 +119,7 @@ class Order extends AbstractOrder
             $paymentMethod = $Payment->getPaymentType()->getTitle();
         }
 
-
-        $data = array(
+        return array(
             'parent_order' => '',
             'invoice_id'   => '',
             'status'       => '',
@@ -146,6 +138,23 @@ class Order extends AbstractOrder
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
         );
+    }
+
+    /**
+     * @param null|QUI\Interfaces\Users\User $PermissionUser
+     */
+    public function update($PermissionUser = null)
+    {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.update',
+            $PermissionUser
+        );
+
+        $data = $this->getDataForSaving();
 
         QUI\System\Log::writeRecursive($data);
 
@@ -172,5 +181,23 @@ class Order extends AbstractOrder
             Handler::getInstance()->table(),
             array('id' => $this->getId())
         );
+    }
+
+    /**
+     * Copy the order and create a new one
+     *
+     * @return Order
+     */
+    public function copy()
+    {
+        $NewOrder = Factory::getInstance()->create();
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            $this->getDataForSaving(),
+            array('id' => $NewOrder->getId())
+        );
+
+        return $NewOrder;
     }
 }

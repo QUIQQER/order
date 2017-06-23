@@ -7,6 +7,7 @@
  *
  * @event onOrderCreate [self, newId]
  * @event onOrderDelete [self, orderId]
+ * @event onOrderCopy [self, newOrderId, orderId]
  * @event onOrderSave [self, orderId, data]
  */
 define('package/quiqqer/order/bin/backend/classes/Orders', [
@@ -113,6 +114,28 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
                 QUIAjax.post('package_quiqqer_order_ajax_backend_delete', function () {
                     self.fireEvent('orderDelete', [self, orderId]);
                     resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
+         * Delete an order
+         *
+         * @param {String|Number} orderId
+         * @returns {Promise}
+         */
+        copyOrder: function (orderId) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_copy', function (newOrderId) {
+                    self.fireEvent('orderCopy', [self, newOrderId, orderId]);
+                    resolve(newOrderId, orderId);
                 }, {
                     'package': 'quiqqer/order',
                     orderId  : orderId,
