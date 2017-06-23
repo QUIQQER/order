@@ -8,6 +8,7 @@ namespace QUI\ERP\Order;
 
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Payments\Payments;
 
 /**
  * Class AbstractOrder
@@ -95,6 +96,18 @@ abstract class AbstractOrder
      */
     protected $Customer = null;
 
+    // payments
+
+    /**
+     * @var integer
+     */
+    protected $paymentId;
+
+    /**
+     * @var integer
+     */
+    protected $paymentMethod;
+
     /**
      * Order constructor.
      *
@@ -158,6 +171,9 @@ abstract class AbstractOrder
                 }
             }
         }
+
+        // payment
+        $this->paymentId = $data['payment_id'];
     }
 
 
@@ -170,6 +186,13 @@ abstract class AbstractOrder
      */
     abstract public function update($PermissionUser = null);
 
+    /**
+     * Delete the order
+     *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     */
+    abstract public function delete($PermissionUser = null);
+
     //endregion
 
     //region getter
@@ -181,6 +204,13 @@ abstract class AbstractOrder
      */
     public function toArray()
     {
+        $paymentId = '';
+        $Payment   = $this->getPayment();
+
+        if ($Payment) {
+            $paymentId = $Payment->getId();
+        }
+
         return array(
             'id'        => $this->id,
             'invoiceId' => $this->invoiceId,
@@ -194,6 +224,7 @@ abstract class AbstractOrder
             'articles'        => $this->getArticles()->toArray(),
             'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'  => $this->getInvoiceAddress()->getAttributes(),
+            'paymentId'       => $paymentId
         );
     }
 
@@ -301,6 +332,23 @@ abstract class AbstractOrder
         return $Nobody;
     }
 
+    /**
+     * Return the payment
+     *
+     * @return null|QUI\ERP\Accounting\Payments\Types\Payment
+     */
+    public function getPayment()
+    {
+        $Payments = Payments::getInstance();
+
+        try {
+            return $Payments->getPayment($this->paymentId);
+        } catch (QUI\Exception $Exception) {
+        }
+
+        return null;
+    }
+
     //endregion
 
     //region setter
@@ -405,6 +453,33 @@ abstract class AbstractOrder
             $this->Customer   = QUI\ERP\User::convertUserToErpUser($User);
             $this->customerId = $this->Customer->getId();
         }
+    }
+
+    /**
+     * Set the payment method to the order
+     *
+     * @param string|integer $paymentId
+     * @throws Exception
+     */
+    public function setPayment($paymentId)
+    {
+        $Payments = Payments::getInstance();
+
+        try {
+            $Payment = $Payments->getPayment($paymentId);
+        } catch (QUI\ERP\Accounting\Payments\Exception $Exception) {
+            throw new Exception(
+                $Exception->getMessage(),
+                $Exception->getCode(),
+                array(
+                    'order'   => $this->getId(),
+                    'payment' => $paymentId
+                )
+            );
+        }
+
+        $this->paymentId     = $Payment->getId();
+        $this->paymentMethod = $Payment->getType();
     }
 
     //endregion

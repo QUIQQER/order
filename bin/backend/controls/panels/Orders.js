@@ -25,7 +25,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Total.html',
     'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css'
 
-], function (QUI, QUIPanel, QUIButton, QUISelect, Grid, Orders, TimeFilter, QUILocale,
+], function (QUI, QUIPanel, QUIButton, QUISelect,
+             Grid, Orders, TimeFilter, QUILocale,
              Mustache, templateTotal) {
     "use strict";
 
@@ -40,12 +41,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             'refresh',
             'toggleTotal',
             '$onCreate',
+            '$onDestroy',
             '$onResize',
             '$onInject',
             '$clickCreateOrder',
             '$clickCopyOrder',
             '$clickDeleteOrder',
-            '$refreshButtonStatus'
+            '$refreshButtonStatus',
+            '$onOrderChange'
         ],
 
         initialize: function (options) {
@@ -61,9 +64,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$TimeFilter = null;
 
             this.addEvents({
-                onCreate: this.$onCreate,
-                onResize: this.$onResize,
-                onInject: this.$onInject
+                onCreate : this.$onCreate,
+                onDestroy: this.$onDestroy,
+                onResize : this.$onResize,
+                onInject : this.$onInject
+            });
+
+            Orders.addEvents({
+                orderCreate: this.$onOrderChange,
+                orderDelete: this.$onOrderChange,
+                orderSave  : this.$onOrderChange
             });
         },
 
@@ -172,8 +182,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.addButton(this.$TimeFilter);
 
-            // Grid
-
             var Actions = new QUIButton({
                 name      : 'actions',
                 text      : QUILocale.get(lg, 'panel.btn.actions'),
@@ -182,7 +190,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     'float': 'right'
                 }
             });
-
 
             Actions.appendChild({
                 name  : 'cancel',
@@ -202,6 +209,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
+            this.addButton(Actions);
+
+            // Grid
             var Container = new Element('div').inject(
                 this.getContent()
             );
@@ -377,6 +387,24 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: on panel inject
          */
         $onInject: function () {
+            this.refresh();
+        },
+
+        /**
+         * event: on panel destroy
+         */
+        $onDestroy: function () {
+            Orders.removeEvents({
+                orderCreate: this.$onOrderChange,
+                orderDelete: this.$onOrderChange,
+                orderSave  : this.$onOrderChange
+            });
+        },
+
+        /**
+         * event: on order change, if an order has been changed
+         */
+        $onOrderChange: function () {
             this.refresh();
         },
 

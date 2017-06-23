@@ -28,12 +28,6 @@ class ErpProvider extends AbstractErpProvider
             'panel' => 'package/quiqqer/order/bin/backend/controls/panels/Orders'
         );
 
-        $menu[] = array(
-            'icon'  => 'fa fa-shopping-cart',
-            'text'  => array('quiqqer/order', 'erp.panel.orderProcess.text'),
-            'panel' => 'package/quiqqer/order/bin/backend/controls/panels/OrdersProcess'
-        );
-
         return $menu;
     }
 }

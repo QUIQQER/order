@@ -23,6 +23,7 @@
     "quiqqer/areas": "*",
     "quiqqer/products": "*",
     "quiqqer/invoice": "*",
+    "quiqqer/payments": "*",
     "quiqqer/tax": "*",
     "ramsey/uuid": "3.*"
   },

@@ -96,6 +96,13 @@ QUI::$Ajax->registerFunction(
             }
         }
 
+        if (isset($data['paymentId'])) {
+            try {
+                $Order->setPayment($data['paymentId']);
+            } catch (QUI\ERP\Order\Exception $Exception) {
+            }
+        }
+
         \QUI\System\Log::writeRecursive($data);
 
 

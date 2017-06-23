@@ -107,11 +107,23 @@ class Order extends AbstractOrder
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
+        // customer
         try {
             $Customer = $this->getCustomer();
             $customer = $Customer->getAttributes();
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeRecursive($Exception);
+            QUI\System\Log::writeException($Exception);
+        }
+
+        //payment
+        $paymentId     = '';
+        $paymentMethod = '';
+
+        $Payment = $this->getPayment();
+
+        if ($Payment) {
+            $paymentId     = $Payment->getId();
+            $paymentMethod = $Payment->getPaymentType()->getTitle();
         }
 
 
@@ -128,7 +140,8 @@ class Order extends AbstractOrder
             'articles' => $this->Articles->toJSON(),
             'data'     => json_encode($this->data),
 
-            'payment_method'  => '',
+            'payment_id'      => $paymentId,
+            'payment_method'  => $paymentMethod,
             'payment_time'    => '',
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
@@ -139,9 +152,25 @@ class Order extends AbstractOrder
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
-            array(
-                'id' => $this->getId()
-            )
+            array('id' => $this->getId())
+        );
+    }
+
+    /**
+     * Delete the order
+     *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     */
+    public function delete($PermissionUser = null)
+    {
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.delete',
+            $PermissionUser
+        );
+
+        QUI::getDataBase()->delete(
+            Handler::getInstance()->table(),
+            array('id' => $this->getId())
         );
     }
 }

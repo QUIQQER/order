@@ -18,15 +18,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'qui/controls/buttons/Button',
     'qui/controls/buttons/ButtonMultiple',
     'qui/controls/buttons/Separator',
+    'qui/controls/windows/Confirm',
     'package/quiqqer/order/bin/backend/Orders',
+    'package/quiqqer/payments/bin/backend/Payments',
     'package/quiqqer/invoice/bin/backend/controls/articles/Text',
     'Locale',
     'Mustache',
 
-    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
+    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html',
+    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Payment.html'
 
-], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator,
-             Orders, TextArticle, QUILocale, Mustache, templateData) {
+], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
+             Orders, Payments, TextArticle, QUILocale, Mustache, templateData, templatePayment) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -43,10 +46,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openInfo',
             'openPayments',
             'openArticles',
+            'openDeleteDialog',
             'toggleSort',
             '$onCreate',
-            '$onResize',
-            '$onInject'
+            '$onDestroy',
+            '$onInject',
+            '$onOrderDelete'
         ],
 
         options: {
@@ -56,7 +61,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             addressInvoice : {},
             addressDelivery: {},
             data           : {},
-            articles       : []
+            articles       : [],
+
+            paymentId     : '',
+            paymentMethod : '',
+            paymentData   : '',
+            paymentTime   : '',
+            paymentAddress: ''
         },
 
         initialize: function (options) {
@@ -73,6 +84,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$AddressInvoice  = null;
             this.$AddressDelivery = null;
 
+            this.$Actions            = null;
             this.$ArticleList        = null;
             this.$ArticleListSummary = null;
 
@@ -84,9 +96,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$serializedList = {};
 
             this.addEvents({
-                onCreate: this.$onCreate,
-                onResize: this.$onResize,
-                onInject: this.$onInject
+                onCreate : this.$onCreate,
+                onDestroy: this.$onDestroy,
+                onInject : this.$onInject
+            });
+
+            Orders.addEvents({
+                onOrderDelete: this.$onOrderDelete
             });
         },
 
@@ -105,6 +121,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('data', data.data);
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
+
+                    self.setAttribute('paymentId', data.paymentId);
+                    self.setAttribute('paymentMethod', data.paymentMethod);
 
                     if (data.articles) {
                         self.$serializedList = data.articles;
@@ -133,12 +152,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 addressInvoice : this.getAttribute('addressInvoice'),
                 addressDelivery: this.getAttribute('addressDelivery'),
                 data           : this.getAttribute('data'),
-                articles       : this.getAttribute('articles')
+                articles       : this.getAttribute('articles'),
+                paymentId      : this.getAttribute('paymentId')
             };
 
             console.warn(orderId);
             console.warn(data);
-            console.warn(data.articles);
 
             return new Promise(function (resolve) {
                 Orders.updateOrder(orderId, data).then(function () {
@@ -228,17 +247,46 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.addButton(this.$ArticleSort);
 
 
-            this.addButton({
-                icon  : 'fa fa-trash',
-                title : QUILocale.get('quiqqer/quiqqer', 'delete'),
-                styles: {
+            var Actions = new QUIButton({
+                name      : 'actions',
+                text      : QUILocale.get(lg, 'panel.btn.actions'),
+                menuCorner: 'topRight',
+                styles    : {
                     'float': 'right'
-                },
+                }
+            });
+
+            Actions.appendChild({
+                name  : 'copy',
+                text  : QUILocale.get(lg, 'panel.btn.createInvoice'),
+                icon  : 'fa fa-money',
                 events: {
                     onClick: function () {
                     }
                 }
             });
+
+            Actions.appendChild({
+                name  : 'copy',
+                text  : QUILocale.get(lg, 'panel.btn.copyOrder'),
+                icon  : 'fa fa-copy',
+                events: {
+                    onClick: function () {
+                    }
+                }
+            });
+
+            Actions.appendChild({
+                name  : 'copy',
+                text  : QUILocale.get(lg, 'panel.btn.deleteOrder'),
+                icon  : 'fa fa-trash',
+                events: {
+                    onClick: this.openDeleteDialog
+                }
+            });
+
+
+            this.addButton(Actions);
 
 
             // categories
@@ -274,10 +322,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         },
 
         /**
-         * event : on resize
+         * event: on panel destroy
          */
-        $onResize: function () {
-
+        $onDestroy: function () {
+            Orders.removeEvents({
+                onOrderDelete: this.$onOrderDelete
+            });
         },
 
         /**
@@ -418,8 +468,31 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getCategory('payment').setActive();
 
             return this.$closeCategory().then(function (Container) {
+                Container.set({
+                    html: Mustache.render(templatePayment, {
+                        textPaymentTitle: QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
+                        textPayment     : QUILocale.get(lg, 'order.payment.panel.payment')
+                    })
+                });
 
+                var Select = Container.getElement('[name="paymentId"]');
 
+                return Payments.getPayments().then(function (payments) {
+                    new Element('option', {
+                        html : '',
+                        value: ''
+                    }).inject(Select);
+
+                    for (var i = 0, len = payments.length; i < len; i++) {
+                        new Element('option', {
+                            html : payments[i].title,
+                            value: payments[i].id
+                        }).inject(Select);
+                    }
+
+                    Select.disabled = false;
+                    Select.value    = self.getAttribute('paymentId');
+                });
             }).then(function () {
                 return self.$openCategory();
             }).then(function () {
@@ -435,8 +508,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             this.Loader.show();
             this.getCategory('articles').setActive();
-
-            console.log('articles');
 
             return this.$closeCategory().then(function (Container) {
                 return new Promise(function (resolve, reject) {
@@ -484,6 +555,50 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }).then(function () {
                 self.Loader.hide();
             });
+        },
+
+        /**
+         * Opens the delete dialog
+         */
+        openDeleteDialog: function () {
+            var self = this;
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.delete.title'),
+                text       : QUILocale.get(lg, 'dialog.order.delete.text'),
+                information: QUILocale.get(lg, 'dialog.order.delete.information', {
+                    id: this.getAttribute('orderId')
+                }),
+                icon       : 'fa fa-trash',
+                texticon   : 'fa fa-trash',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get('quiqqer/system', 'delete'),
+                    textimage: 'fa fa-trash'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
+
+                        Orders.deleteOrder(self.getAttribute('orderId')).then(function () {
+                            Win.close();
+                        }).then(function () {
+                            Win.Loader.show();
+                        });
+                    }
+                }
+            }).open();
+        },
+
+        /**
+         * event: on order deletion
+         */
+        $onOrderDelete: function (Handler, orderId) {
+            if (parseInt(this.getAttribute('orderId')) === parseInt(orderId)) {
+                this.destroy();
+            }
         },
 
         /**
@@ -589,7 +704,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          */
         $unLoadCategory: function () {
             var Content        = this.getContent(),
-                deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
+                deliverAddress = Content.getElement('[name="differentDeliveryAddress"]'),
+                PaymentForm    = Content.getElement('form[name="payment"]');
 
             if (this.$AddressInvoice) {
                 this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
@@ -606,6 +722,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             if (this.$ArticleList) {
                 this.setAttribute('articles', this.$ArticleList.save());
                 this.$serializedList = this.$ArticleList.serialize();
+            }
+
+            if (PaymentForm) {
+                this.setAttribute('paymentId', PaymentForm.elements.paymentId.value);
             }
         },
 

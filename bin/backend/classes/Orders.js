@@ -4,6 +4,10 @@
  * @require qui/QUI
  * @require qui/classes/DOM
  * @require Ajax
+ *
+ * @event onOrderCreate [self, newId]
+ * @event onOrderDelete [self, orderId]
+ * @event onOrderSave [self, orderId, data]
  */
 define('package/quiqqer/order/bin/backend/classes/Orders', [
 
@@ -86,7 +90,7 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_create', function (newId) {
-                    self.fireEvent('createOrder', [self, newId]);
+                    self.fireEvent('orderCreate', [self, newId]);
                     resolve(newId);
                 }, {
                     'package': 'quiqqer/order',
@@ -104,9 +108,10 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          */
         deleteOrder: function (orderId) {
             var self = this;
+
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_delete', function () {
-                    self.fireEvent('deleteOrder', [self, orderId]);
+                    self.fireEvent('orderDelete', [self, orderId]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
@@ -140,7 +145,7 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_update', function () {
-                    self.fireEvent('saveOrder', [self, orderId, data]);
+                    self.fireEvent('orderSave', [self, orderId, data]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',

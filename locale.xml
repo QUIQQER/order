@@ -56,6 +56,10 @@
             <de><![CDATA[Ort]]></de>
             <en><![CDATA[City]]></en>
         </locale>
+        <locale name="country">
+            <de><![CDATA[Land]]></de>
+            <en><![CDATA[Country]]></en>
+        </locale>
 
         <locale name="exception.order.construct.needle.missing">
             <de><![CDATA[Fehlender Eert für Bestellungs-Konstruktor [needle]]]></de>
@@ -82,14 +86,23 @@
             <en><![CDATA[Orders (in process)]]></en>
         </locale>
 
+        <locale name="panel.btn.createInvoice">
+            <de><![CDATA[Rechnung erstellen]]></de>
+            <en><![CDATA[Create invoice]]></en>
+        </locale>
         <locale name="panel.btn.createOrder">
             <de><![CDATA[Bestellung anlegen]]></de>
-            <en><![CDATA[Create ordner]]></en>
+            <en><![CDATA[Create order]]></en>
         </locale>
         <locale name="panel.btn.copyOrder">
             <de><![CDATA[Bestellung kopieren]]></de>
-            <en><![CDATA[Copy ordner]]></en>
+            <en><![CDATA[Copy order]]></en>
         </locale>
+        <locale name="panel.btn.deleteOrder">
+            <de><![CDATA[Bestellung löschen]]></de>
+            <en><![CDATA[Delete order]]></en>
+        </locale>
+
         <locale name="panel.btn.deleteOrder">
             <de><![CDATA[Bestellung löschen]]></de>
             <en><![CDATA[Delete ordner]]></en>
@@ -234,6 +247,28 @@
         <locale name="order.address.confirm.information">
             <de><![CDATA[Der Benutzer besitzt mehrere Adressen. Welche Adresse soll verwendet werden?]]></de>
             <en><![CDATA[The user has several addresses. Which address should be used?]]></en>
+        </locale>
+
+        <locale name="order.payment.panel.paymentTitle">
+            <de><![CDATA[Zahlungsinformationen]]></de>
+            <en><![CDATA[Payment informations]]></en>
+        </locale>
+        <locale name="order.payment.panel.payment">
+            <de><![CDATA[Bezahltmethode]]></de>
+            <en><![CDATA[Payment method]]></en>
+        </locale>
+
+        <locale name="dialog.order.delete.title">
+            <de><![CDATA[Bestellung löschen]]></de>
+            <en><![CDATA[Order invoice]]></en>
+        </locale>
+        <locale name="dialog.order.delete.text">
+            <de><![CDATA[Möchten Sie die Bestellung wirklich löschen?]]></de>
+            <en><![CDATA[Are you sure you want to delete the order?]]></en>
+        </locale>
+        <locale name="dialog.order.delete.information">
+            <de><![CDATA[Die Bestellung <b>[id]</b> wird unwiderruflich gelöscht.]]></de>
+            <en><![CDATA[The Order <b>[id]</b> will be irrevocably deleted.]]></en>
         </locale>
     </groups>
 
