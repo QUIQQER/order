@@ -67,6 +67,21 @@ QUI::$Ajax->registerFunction(
             }
 
             $Customer = new QUI\ERP\User($data['customer']);
+
+
+            if (isset($data['customer']['quiqqer.erp.taxNumber'])) {
+                $Customer->setAttribute(
+                    'quiqqer.erp.taxNumber',
+                    $data['customer']['quiqqer.erp.taxNumber']
+                );
+            }
+
+            if (isset($data['customer']['quiqqer.erp.euVatId'])) {
+                $Customer->setAttribute(
+                    'quiqqer.erp.euVatId',
+                    $data['customer']['quiqqer.erp.euVatId']
+                );
+            }
         }
 
         if ($Customer) {

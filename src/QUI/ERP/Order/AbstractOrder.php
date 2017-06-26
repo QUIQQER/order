@@ -150,16 +150,16 @@ abstract class AbstractOrder
         $this->customerId = (int)$data['customerId'];
 
         if (isset($data['customer'])) {
-            $customer = json_decode($data['customer'], true);
+            $this->customer = json_decode($data['customer'], true);
 
-            if (!isset($customer['id'])) {
-                $customer['id'] = $this->customerId;
+            if (!isset($this->customer['id'])) {
+                $this->customer['id'] = $this->customerId;
             }
 
             try {
-                $this->setCustomer($customer);
+                $this->setCustomer($this->customer);
             } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeRecursive($customer);
+                QUI\System\Log::writeRecursive($this->customer);
                 QUI\System\Log::addWarning($Exception->getMessage());
             }
         }
@@ -226,7 +226,7 @@ abstract class AbstractOrder
             'data'      => $this->data,
 
             'customerId' => $this->customerId,
-            'customer'   => $this->customer,
+            'customer'   => $this->getCustomer()->getAttributes(),
 
             'articles'        => $this->getArticles()->toArray(),
             'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
@@ -327,6 +327,17 @@ abstract class AbstractOrder
 
         if ($this->Customer) {
             return $this->Customer;
+        }
+
+        if ($this->customer) {
+            try {
+                $this->setCustomer($this->customer);
+
+                return $this->Customer;
+            } catch (QUi\Exception $Exception) {
+                QUI\System\Log::writeRecursive($this->customer);
+                QUI\System\Log::addWarning($Exception->getMessage());
+            }
         }
 
         try {
@@ -459,8 +470,24 @@ abstract class AbstractOrder
         }
 
         if (is_array($User)) {
+            $missing = QUI\ERP\User::getMissingAttributes($User);
+
+            // if something is missing
+            if (!empty($missing)) {
+                try {
+                    $Customer = QUI::getUsers()->get($User['id']);
+
+                    foreach ($missing as $missingAttribute) {
+                        $User[$missingAttribute] = $Customer->getAttribute($missingAttribute);
+                    }
+                } catch (QUI\Exception $Exception) {
+                    // we have a problem, we cant set the user
+                }
+            }
+
             $this->Customer   = new QUI\ERP\User($User);
             $this->customerId = $this->Customer->getId();
+
             return;
         }
 

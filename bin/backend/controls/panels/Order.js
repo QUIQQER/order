@@ -388,7 +388,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     if ("quiqqer.erp.taxNumber" in customer) {
                         TaxId.value = customer['quiqqer.erp.taxNumber'];
                     }
-                    
+
                     if ("quiqqer.erp.euVatId" in customer) {
                         EUVAT.value = customer['quiqqer.erp.euVatId'];
                     }
