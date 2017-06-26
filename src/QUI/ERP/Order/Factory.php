@@ -40,7 +40,7 @@ class Factory extends QUI\Utils\Singleton
 
         QUI::getDataBase()->insert($table, array(
             'c_user' => $User->getId(),
-            'c_date' => time(),
+            'c_date' => date('Y-m-d H:i:s'),
             'hash'   => Uuid::uuid1()->toString()
         ));
 
@@ -72,7 +72,7 @@ class Factory extends QUI\Utils\Singleton
 
         QUI::getDataBase()->insert($table, array(
             'c_user' => $User->getId(),
-            'c_date' => time(),
+            'c_date' => date('Y-m-d H:i:s'),
             'hash'   => Uuid::uuid1()->toString()
         ));
 

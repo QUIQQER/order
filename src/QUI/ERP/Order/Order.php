@@ -43,7 +43,7 @@ class Order extends AbstractOrder
      */
     public function getInvoice()
     {
-        return InvoiceHandler::getInstance()->getInvoice($this->id);
+        return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
     }
 
     /**
@@ -150,6 +150,16 @@ class Order extends AbstractOrder
     }
 
     /**
+     * Alias for isPosted
+     *
+     * @return bool
+     */
+    public function hasInvoice()
+    {
+        return $this->isPosted();
+    }
+
+    /**
      * Return the order data for saving
      *
      * @return array
@@ -222,12 +232,20 @@ class Order extends AbstractOrder
 
         $data = $this->getDataForSaving();
 
-        QUI\System\Log::writeRecursive($data);
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderUpdateBegin',
+            array($this, $data)
+        );
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
             array('id' => $this->getId())
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderUpdate',
+            array($this, $data)
         );
     }
 
@@ -243,9 +261,19 @@ class Order extends AbstractOrder
             $PermissionUser
         );
 
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderDeleteBegin',
+            array($this)
+        );
+
         QUI::getDataBase()->delete(
             Handler::getInstance()->table(),
             array('id' => $this->getId())
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderDelete',
+            array($this->getId(), $this->getDataForSaving())
         );
     }
 
@@ -258,10 +286,20 @@ class Order extends AbstractOrder
     {
         $NewOrder = Factory::getInstance()->create();
 
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderCopyBegin',
+            array($this)
+        );
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $this->getDataForSaving(),
             array('id' => $NewOrder->getId())
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderCopy',
+            array($this)
         );
 
         return $NewOrder;

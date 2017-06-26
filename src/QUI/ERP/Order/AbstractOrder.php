@@ -276,6 +276,9 @@ abstract class AbstractOrder
      */
     public function getArticles()
     {
+        $this->Articles->setUser($this->getCustomer());
+        $this->Articles->calc();
+
         return $this->Articles;
     }
 

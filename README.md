@@ -41,3 +41,12 @@ Lizenz
 
 Entwickler
 --------
+
+onQuiqqerOrderDeleteBegin [Order]
+onQuiqqerOrderDelete [$orderId, $orderData]
+
+onQuiqqerOrderCopyBegin [Order]
+onQuiqqerOrderCopy [Order]
+
+onQuiqqerOrderUpdateBegin [Order]
+onQuiqqerOrderUpdate [Order]

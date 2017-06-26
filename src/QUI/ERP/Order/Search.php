@@ -309,6 +309,7 @@ class Search extends Singleton
         $Orders   = Handler::getInstance();
         $Locale   = QUI::getLocale();
         $Payments = Payments::getInstance();
+        $Currency = QUI\ERP\Defaults::getCurrency();
 
         $localeCode = QUI::getLocale()->getLocalesByLang(
             QUI::getLocale()->getCurrent()
@@ -322,18 +323,16 @@ class Search extends Singleton
 
         // helper
         $needleFields = array(
-            'invoiceId',
+            'invoice_id',
             'customer_id',
             'customer_name',
             'comments',
             'c_user',
             'c_username',
-            'date',
-            'display_missing',
-            'display_paid',
+            'c_date',
+            'display_nettosum',
             'display_vatsum',
             'display_sum',
-            'dunning_level',
             'hash',
             'id',
             'isbrutto',
@@ -341,14 +340,11 @@ class Search extends Singleton
             'order_id',
             'orderdate',
             'paid_status',
-            'paid_date',
             'processing',
             'payment_data',
             'payment_method',
-            'payment_time',
             'payment_title',
             'processing_status',
-            'sum',
             'taxId'
         );
 
@@ -368,14 +364,53 @@ class Search extends Singleton
                 continue;
             }
 
-            $invoiceData = $entry;
+            $Order     = $Orders->get($entry['id']);
+            $orderData = $entry;
 
-            $fillFields($invoiceData);
+            $orderData['hash'] = $Order->getHash();
 
+            if (empty($orderData['customer_id'])) {
+                $orderData['customer_id'] = $Order->getCustomer()->getId();
 
-            // @todo datan aufbereiten
+                if (!$orderData['customer_id']) {
+                    $orderData['customer_id'] = Handler::EMPTY_VALUE;
+                } else {
+                    $orderData['customer_name'] = $Order->getCustomer()->getName();
+                }
+            }
 
-            $result[] = $invoiceData;
+            if (empty($orderData['c_date'])) {
+                $orderData['c_date'] = $DateFormatter->format(
+                    strtotime($Order->getCreateDate())
+                );
+            }
+
+            // payment
+            $Payment = $Order->getPayment();
+
+            if ($Payment) {
+                $orderData['payment_title'] = $Payment->getTitle($Locale);
+            }
+
+            // articles
+            $calculations = $Order->getArticles()->getCalculations();
+
+            $vatSum = array_map(function ($data) {
+                if (!isset($data['sum'])) {
+                    return 0;
+                }
+                return $data['sum'];
+            }, $calculations['vatArray']);
+
+            // display
+            $orderData['display_nettosum'] = $Currency->format($calculations['nettoSum']);
+            $orderData['display_sum']      = $Currency->format($calculations['sum']);
+            $orderData['display_subsum']   = $Currency->format($calculations['subSum']);
+            $orderData['display_vatsum']   = $Currency->format(array_sum($vatSum));
+
+            $fillFields($orderData);
+
+            $result[] = $orderData;
         }
 
 

@@ -194,6 +194,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             Actions.appendChild({
+                name  : 'create',
+                text  : QUILocale.get(lg, 'panel.btn.createInvoice'),
+                icon  : 'fa fa-money',
+                events: {
+                    onClick: function () {
+                    }
+                }
+            });
+
+            Actions.appendChild({
                 name  : 'cancel',
                 text  : QUILocale.get(lg, 'panel.btn.deleteOrder'),
                 icon  : 'fa fa-times-circle-o',
@@ -230,6 +240,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                             self.$clickCreateOrder(Btn).then(function () {
                                 Btn.setAttribute('textimage', 'fa fa-plus');
+                            }).catch(function () {
+                                Btn.setAttribute('textimage', 'fa fa-plus');
                             });
                         }
                     }
@@ -245,11 +257,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'integer',
                     width    : 80
                 }, {
-                    header   : QUILocale.get(lg, 'grid.invoiceNo'),
-                    dataIndex: 'invoice_id',
-                    dataType : 'integer',
-                    width    : 100
-                }, {
                     header   : QUILocale.get(lg, 'grid.customerNo'),
                     dataIndex: 'customer_id',
                     dataType : 'integer',
@@ -260,15 +267,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 130
                 }, {
-                    header   : QUILocale.get('quiqqer/system', 'date'),
-                    dataIndex: 'date',
+                    header   : QUILocale.get(lg, 'grid.orderDate'),
+                    dataIndex: 'c_date',
                     dataType : 'date',
                     width    : 100
-                }, {
-                    header   : QUILocale.get(lg, 'grid.status'),
-                    dataIndex: 'paid_status_display',
-                    dataType : 'string',
-                    width    : 120
                 }, {
                     header   : QUILocale.get(lg, 'grid.netto'),
                     dataIndex: 'display_nettosum',
@@ -293,62 +295,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 180
                 }, {
-                    header   : QUILocale.get(lg, 'grid.paymentTerm'),
-                    dataIndex: 'time_for_payment',
-                    dataType : 'date',
-                    width    : 120
-                }, {
-                    header   : QUILocale.get(lg, 'grid.paymentDate'),
-                    dataIndex: 'paid_date',
-                    dataType : 'date',
-                    width    : 120
-                }, {
-                    header   : QUILocale.get(lg, 'grid.paid'),
-                    dataIndex: 'display_paid',
-                    dataType : 'currency',
-                    width    : 100,
-                    className: 'payment-status-amountCell'
-                }, {
-                    header   : QUILocale.get(lg, 'grid.open'),
-                    dataIndex: 'display_toPay',
-                    dataType : 'currency',
-                    width    : 100,
-                    className: 'payment-status-amountCell'
-                }, {
-                    header   : QUILocale.get(lg, 'grid.brutto'),
-                    dataIndex: 'isbrutto',
-                    dataType : 'integer',
-                    width    : 50
-                }, {
                     header   : QUILocale.get(lg, 'grid.taxId'),
                     dataIndex: 'taxId',
                     dataType : 'string',
                     width    : 120
-                }, {
-                    header   : QUILocale.get(lg, 'grid.orderDate'),
-                    dataIndex: 'orderdate',
-                    dataType : 'date',
-                    width    : 130
-                }, {
-                    header   : QUILocale.get(lg, 'grid.dunning'),
-                    dataIndex: 'dunning_level_display',
-                    dataType : 'string',
-                    width    : 80
                 }, {
                     header   : QUILocale.get(lg, 'grid.processingStatus'),
                     dataIndex: 'processing',
                     dataType : 'string',
                     width    : 150
                 }, {
-                    header   : QUILocale.get(lg, 'grid.paymentData'),
-                    dataIndex: 'payment_data',
-                    dataType : 'string',
+                    header   : QUILocale.get(lg, 'grid.invoiceNo'),
+                    dataIndex: 'invoice_id',
+                    dataType : 'integer',
                     width    : 100
                 }, {
-                    header   : QUILocale.get(lg, 'grid.hash'),
-                    dataIndex: 'hash',
-                    dataType : 'string',
-                    width    : 200
+                    header   : QUILocale.get(lg, 'grid.brutto'),
+                    dataIndex: 'isbrutto',
+                    dataType : 'integer',
+                    width    : 50
                 }]
             });
 

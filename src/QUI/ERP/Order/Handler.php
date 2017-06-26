@@ -60,7 +60,7 @@ class Handler extends Singleton
             'limit' => 1
         ));
 
-        if (!isset($result[0])) {
+        if (!isset($result[0])) { // #locale
             throw new QUI\Erp\Order\Exception(
                 'Order not found',
                 404
