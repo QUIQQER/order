@@ -267,7 +267,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 130
                 }, {
-                    header   : QUILocale.get(lg, 'grid.orderDate'),
+                    der   : QUILocale.get(lg, 'grid.orderDate'),
                     dataIndex: 'c_date',
                     dataType : 'date',
                     width    : 100
