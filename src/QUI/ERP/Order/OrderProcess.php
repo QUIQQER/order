@@ -28,6 +28,16 @@ class OrderProcess extends AbstractOrder
     }
 
     /**
+     * Alias for update
+     *
+     * @param null $PermissionUser
+     */
+    public function save($PermissionUser = null)
+    {
+        $this->update($PermissionUser);
+    }
+
+    /**
      * @param null $PermissionUser
      */
     public function update($PermissionUser = null)

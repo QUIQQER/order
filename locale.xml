@@ -212,8 +212,12 @@
             <en><![CDATA[Net]]></en>
         </locale>
         <locale name="grid.taxId">
-            <de><![CDATA[Umsatzsteuer ID]]></de>
-            <en><![CDATA[Tax ID]]></en>
+            <de><![CDATA[Steuernummer]]></de>
+            <en><![CDATA[Tax number]]></en>
+        </locale>
+        <locale name="grid.euVatId">
+            <de><![CDATA[Umsatzsteuer-ID]]></de>
+            <en><![CDATA[EU VAT ID]]></en>
         </locale>
         <locale name="grid.orderDate">
             <de><![CDATA[Bestelldatum]]></de>

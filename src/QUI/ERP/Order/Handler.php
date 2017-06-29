@@ -96,6 +96,61 @@ class Handler extends Singleton
     }
 
     /**
+     * Return all orders in process from a user
+     *
+     * @param QUI\Interfaces\Users\User $User
+     * @return array
+     */
+    public function getOrdersInProcessFromUser(QUI\Interfaces\Users\User $User)
+    {
+        $result = array();
+
+        $list = QUI::getDataBase()->fetch(array(
+            'from'  => $this->table(),
+            'where' => array(
+                'customerId' => $User->getId()
+            )
+        ));
+
+        foreach ($list as $entry) {
+            try {
+                $result[] = $this->getOrderInProcess($entry['id']);
+            } catch (QUI\Erp\Order\Exception $Exception) {
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return the last order in process from a user
+     *
+     * @param QUI\Interfaces\Users\User $User
+     * @return OrderProcess
+     * @throws QUI\Erp\Order\Exception
+     */
+    public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => $this->table(),
+            'where' => array(
+                'customerId' => $User->getId()
+            ),
+            'limit' => 1,
+            'order' => 'c_date DESC'
+        ));
+
+        if (!isset($result[0])) {
+            throw new QUI\Erp\Order\Exception(
+                'Order not found',
+                404
+            );
+        }
+
+        return $this->getOrderInProcess($result[0]['id']);
+    }
+
+    /**
      * Return the data of a wanted order
      *
      * @param string|integer $orderId

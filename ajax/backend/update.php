@@ -69,10 +69,10 @@ QUI::$Ajax->registerFunction(
             $Customer = new QUI\ERP\User($data['customer']);
 
 
-            if (isset($data['customer']['quiqqer.erp.taxNumber'])) {
+            if (isset($data['customer']['quiqqer.erp.taxId'])) {
                 $Customer->setAttribute(
-                    'quiqqer.erp.taxNumber',
-                    $data['customer']['quiqqer.erp.taxNumber']
+                    'quiqqer.erp.taxId',
+                    $data['customer']['quiqqer.erp.taxId']
                 );
             }
 

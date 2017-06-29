@@ -300,6 +300,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 120
                 }, {
+                    header   : QUILocale.get(lg, 'grid.euVatId'),
+                    dataIndex: 'euVatId',
+                    dataType : 'string',
+                    width    : 120
+                }, {
                     header   : QUILocale.get(lg, 'grid.processingStatus'),
                     dataIndex: 'processing',
                     dataType : 'string',

@@ -9,6 +9,10 @@ namespace QUI\ERP\Order\Basket;
 use DusanKasan\Knapsack\Collection;
 use QUI;
 
+use QUI\ERP\Order\Handler;
+use QUI\ERP\Order\Factory;
+use QUI\ERP\Order\OrderProcess;
+
 /**
  * Class Basket
  * A Shopping Basket with roducts from an user
@@ -17,142 +21,90 @@ use QUI;
  */
 class Basket
 {
-    const STATUS_DEFAULT = 0;
-
-    const STATUS_IN_PROGRESS = 1;
-
-    const STATUS_ARCHIVE = 2;
-
     /**
-     * @var Collection|null
+     * @var OrderProcess
      */
-    protected $List = null;
-
-    /**
-     * @var
-     */
-    protected $id;
-
-    /**
-     * @var null|QUI\Interfaces\Users\User
-     */
-    protected $User;
+    protected $Order = null;
 
     /**
      * Basket constructor.
      *
-     * @param $basketId
-     * @param null $User
+     * @param $orderId
      */
-    public function __construct($basketId, $User = null)
+    public function __construct($orderId = false)
     {
-        if ($User === null) {
-            $User = QUI::getUserBySession();
+        $User   = QUI::getUserBySession();
+        $Orders = Handler::getInstance();
+
+        try {
+            if ($orderId !== false) {
+                $this->Order = $Orders->getOrderInProcess($orderId);
+            }
+        } catch (QUI\Erp\Order\Exception $Exception) {
         }
 
-        $data = Handler::getInstance()->getBasketData($basketId, $User->getId());
+        if ($this->Order === null) {
+            // select the last order in processing
+        }
+
 
         $this->id   = $basketId;
         $this->User = $User;
-
-        $this->List = Collection::from([]);
     }
 
-
-    public function serialize()
-    {
-
-    }
-
-    public function unserialize()
-    {
-
-    }
-
+    /**
+     * Create the order
+     * (Kostenpflichtig bestellen, start the pay process)
+     */
     public function createOrder()
     {
-
+        $this->Order->createOrder();
     }
-
 
     /**
      * Return the watchlist ID
      *
      * @return int
      */
-    public function getId()
+    public function getOrderId()
     {
-        return $this->id;
+        return $this->Order->getId();
     }
 
     /**
      * Return the article list
      *
-     * @return Collection
+     * @return QUI\ERP\Accounting\ArticleList
      */
     public function getArticles()
     {
-        return $this->List;
+        return $this->Order->getArticles();
     }
 
     /**
      * Add a article to the basket
      *
-     * @param Article $Article
+     * @param QUI\ERP\Accounting\Article $Article
      */
-    public function addArticle(Article $Article)
+    public function addArticle(QUI\ERP\Accounting\Article $Article)
     {
-        $this->List->append($Article);
+        $this->Order->addArticle($Article);
     }
 
     /**
-     * Clear the watchlist
+     * Clear the basket
+     * All articles in the processing order would be deleted
      */
     public function clear()
     {
-        $this->List = new Collection([]);
+        $this->Order->clearArticles();
     }
 
     /**
-     * Save the watchlist
+     * Save the basket to the order
      */
     public function save()
     {
-        // save only product ids with custom fields, we need not more
-        $result   = array();
-        $articles = $this->List->toArray();
-
-        foreach ($articles as $Article) {
-            /* @var $Article Article */
-            $fields = $Article->getFields();
-
-            $productData = array(
-                'id'          => $Article->getId(),
-                'title'       => $Article->getTitle(),
-                'description' => $Article->getDescription(),
-                'quantity'    => $Article->getQuantity(),
-                'fields'      => array()
-            );
-
-            /* @var $Field QUI\ERP\Products\Field\UniqueField */
-            foreach ($fields as $Field) {
-                if ($Field->isCustomField()) {
-                    $productData['fields'][] = $Field->getAttributes();
-                }
-            }
-
-            $result[] = $productData;
-        }
-
-        QUI::getDataBase()->update(
-            Handler::getInstance()->table(),
-            array(
-                'articles' => json_encode($result)
-            ),
-            array(
-                'id'  => $this->getId(),
-                'uid' => $this->User->getId()
-            )
-        );
+        $this->Order->update();
     }
 }

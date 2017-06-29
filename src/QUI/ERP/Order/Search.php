@@ -345,7 +345,8 @@ class Search extends Singleton
             'payment_method',
             'payment_title',
             'processing_status',
-            'taxId'
+            'taxId',
+            'euVatId'
         );
 
         $fillFields = function (&$data) use ($needleFields) {
@@ -365,17 +366,19 @@ class Search extends Singleton
             }
 
             $Order     = $Orders->get($entry['id']);
+            $Customer  = $Order->getCustomer();
             $orderData = $entry;
 
             $orderData['hash'] = $Order->getHash();
 
+
             if (empty($orderData['customer_id'])) {
-                $orderData['customer_id'] = $Order->getCustomer()->getId();
+                $orderData['customer_id'] = $Customer->getId();
 
                 if (!$orderData['customer_id']) {
                     $orderData['customer_id'] = Handler::EMPTY_VALUE;
                 } else {
-                    $orderData['customer_name'] = $Order->getCustomer()->getName();
+                    $orderData['customer_name'] = $Customer->getName();
                 }
             }
 
@@ -401,6 +404,15 @@ class Search extends Singleton
                 }
                 return $data['sum'];
             }, $calculations['vatArray']);
+
+            if ($Customer->getAttribute('quiqqer.erp.taxId')) {
+                $orderData['taxId'] = $Customer->getAttribute('quiqqer.erp.taxId');
+            }
+
+            if ($Customer->getAttribute('quiqqer.erp.euVatId')) {
+                $orderData['euVatId'] = $Customer->getAttribute('quiqqer.erp.euVatId');
+            }
+
 
             // display
             $orderData['display_nettosum'] = $Currency->format($calculations['nettoSum']);

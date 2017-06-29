@@ -360,7 +360,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textOrderInvoiceAddress : QUILocale.get(lg, 'invoiceAddress'),
                         textOrderDeliveryAddress: QUILocale.get(lg, 'deliveryAddress'),
                         textEUVAT               : QUILocale.get('quiqqer/erp', 'user.settings.euVatId'),
-                        textTAXNo               : QUILocale.get('quiqqer/erp', 'user.settings.taxNumber'),
+                        textTAXNo               : QUILocale.get('quiqqer/erp', 'user.settings.taxId'),
                         textAddresses           : QUILocale.get(lg, 'address'),
                         textCustomer            : QUILocale.get(lg, 'customer'),
                         textCompany             : QUILocale.get(lg, 'company'),
@@ -380,13 +380,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
 
                 var TaxId = Content.getElement('[name="quiqqer.erp.euVatId"]');
-                var EUVAT = Content.getElement('[name="quiqqer.erp.taxNumber"]');
+                var EUVAT = Content.getElement('[name="quiqqer.erp.taxId"]');
 
                 var customer = self.getAttribute('customer');
 
                 if (customer) {
-                    if ("quiqqer.erp.taxNumber" in customer) {
-                        TaxId.value = customer['quiqqer.erp.taxNumber'];
+                    if ("quiqqer.erp.taxId" in customer) {
+                        TaxId.value = customer['quiqqer.erp.taxId'];
                     }
 
                     if ("quiqqer.erp.euVatId" in customer) {
@@ -470,7 +470,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
 
                         if (TaxId.value === '') {
-                            TaxId.value = User.getAttribute('quiqqer.erp.taxNumber');
+                            TaxId.value = User.getAttribute('quiqqer.erp.taxId');
                         }
                     });
                 }
@@ -822,7 +822,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             if (this.$Customer) {
                 var customer = this.getAttribute('customer'),
                     EUVAT    = Content.getElement('[name="quiqqer.erp.euVatId"]'),
-                    TaxNo    = Content.getElement('[name="quiqqer.erp.taxNumber"]');
+                    TaxNo    = Content.getElement('[name="quiqqer.erp.taxId"]');
 
                 if (typeOf(customer) !== 'object') {
                     customer = {};
@@ -832,8 +832,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     customer['quiqqer.erp.euVatId'] = '';
                 }
 
-                if (!customer.hasOwnProperty('quiqqer.erp.taxNumber')) {
-                    customer['quiqqer.erp.taxNumber'] = '';
+                if (!customer.hasOwnProperty('quiqqer.erp.taxId')) {
+                    customer['quiqqer.erp.taxId'] = '';
                 }
 
                 if (EUVAT) {
@@ -841,7 +841,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 if (TaxNo) {
-                    customer['quiqqer.erp.taxNumber'] = TaxNo.value;
+                    customer['quiqqer.erp.taxId'] = TaxNo.value;
                 }
 
                 var customerId = parseInt(this.$Customer.getValue()),
@@ -857,8 +857,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         customer['quiqqer.erp.euVatId'] = User.getAttribute('quiqqer.erp.euVatId');
                     }
 
-                    if (customer['quiqqer.erp.taxNumber'] === '') {
-                        customer['quiqqer.erp.taxNumber'] = User.getAttribute('quiqqer.erp.taxNumber');
+                    if (customer['quiqqer.erp.taxId'] === '') {
+                        customer['quiqqer.erp.taxId'] = User.getAttribute('quiqqer.erp.taxId');
                     }
                 }
 
