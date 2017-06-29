@@ -379,8 +379,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 var Content        = self.getContent(),
                     deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
 
-                var TaxId = Content.getElement('[name="quiqqer.erp.euVatId"]');
-                var EUVAT = Content.getElement('[name="quiqqer.erp.taxId"]');
+                var TaxId = Content.getElement('[name="quiqqer.erp.taxId"]');
+                var EUVAT = Content.getElement('[name="quiqqer.erp.euVatId"]');
 
                 var customer = self.getAttribute('customer');
 
