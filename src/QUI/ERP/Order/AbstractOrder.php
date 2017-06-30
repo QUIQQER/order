@@ -104,6 +104,11 @@ abstract class AbstractOrder
     protected $Comments = null;
 
     /**
+     * @var QUI\ERP\Comments
+     */
+    protected $History = null;
+
+    /**
      * @var null|QUI\ERP\User
      */
     protected $Customer = null;
@@ -191,6 +196,17 @@ abstract class AbstractOrder
         if (isset($data['comments'])) {
             try {
                 $this->Comments = QUI\ERP\Comments::unserialize($data['comments']);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+        }
+
+        // history
+        $this->History = new QUI\ERP\Comments();
+
+        if (isset($data['history'])) {
+            try {
+                $this->History = QUI\ERP\Comments::unserialize($data['history']);
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::addError($Exception->getMessage());
             }
@@ -667,6 +683,31 @@ abstract class AbstractOrder
     public function getComments()
     {
         return $this->Comments;
+    }
+
+    //endregion
+
+
+    //region history
+
+    /**
+     * Add a history entry
+     *
+     * @param string $message
+     */
+    public function addHistory($message)
+    {
+        $this->History->addComment($message);
+    }
+
+    /**
+     * Return the history object
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getHistory()
+    {
+        return $this->History;
     }
 
     //endregion

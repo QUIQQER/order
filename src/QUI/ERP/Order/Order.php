@@ -207,6 +207,7 @@ class Order extends AbstractOrder
 
             'articles' => $this->Articles->toJSON(),
             'comments' => $this->Comments->toJSON(),
+            'history'  => $this->History->toJSON(),
             'data'     => json_encode($this->data),
 
             'payment_id'      => $paymentId,
@@ -302,6 +303,14 @@ class Order extends AbstractOrder
             'quiqqerOrderCopy',
             array($this)
         );
+
+        $NewOrder->addHistory(
+            QUI::getLocale()->get('quiqqer/order', 'message.copy.from', array(
+                'orderId' => $this->getId()
+            ))
+        );
+
+        $NewOrder->update(QUI::getUsers()->getSystemUser());
 
         return $NewOrder;
     }
