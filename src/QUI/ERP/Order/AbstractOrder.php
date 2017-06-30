@@ -99,6 +99,11 @@ abstract class AbstractOrder
     protected $Articles = null;
 
     /**
+     * @var QUI\ERP\Comments
+     */
+    protected $Comments = null;
+
+    /**
      * @var null|QUI\ERP\User
      */
     protected $Customer = null;
@@ -180,6 +185,17 @@ abstract class AbstractOrder
             }
         }
 
+        // comments
+        $this->Comments = new QUI\ERP\Comments();
+
+        if (isset($data['comments'])) {
+            try {
+                $this->Comments = QUI\ERP\Comments::unserialize($data['comments']);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+        }
+
         // payment
         $this->paymentId = $data['payment_id'];
     }
@@ -228,6 +244,7 @@ abstract class AbstractOrder
             'customerId' => $this->customerId,
             'customer'   => $this->getCustomer()->getAttributes(),
 
+            'comments'        => $this->getComments()->toArray(),
             'articles'        => $this->getArticles()->toArray(),
             'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'  => $this->getInvoiceAddress()->getAttributes(),
@@ -277,6 +294,7 @@ abstract class AbstractOrder
     public function getArticles()
     {
         $this->Articles->setUser($this->getCustomer());
+        $this->Articles->setCurrency($this->getCurrency());
         $this->Articles->calc();
 
         return $this->Articles;
@@ -351,6 +369,18 @@ abstract class AbstractOrder
         }
 
         return $Nobody;
+    }
+
+    /**
+     * Return the currency of the order
+     * - At the moment its the default currency of the system
+     * - If we want to have different currencies, this can be implemented here
+     *
+     * @return QUI\ERP\Currency\Currency
+     */
+    public function getCurrency()
+    {
+        return QUI\ERP\Defaults::getCurrency();
     }
 
     /**
@@ -612,6 +642,31 @@ abstract class AbstractOrder
     public function count()
     {
         return $this->Articles->count();
+    }
+
+    //endregion
+
+
+    //region comments
+
+    /**
+     * Add a comment
+     *
+     * @param string $message
+     */
+    public function addComment($message)
+    {
+        $this->Comments->addComment($message);
+    }
+
+    /**
+     * Return the comments
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getComments()
+    {
+        return $this->Comments;
     }
 
     //endregion

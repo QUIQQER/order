@@ -24,11 +24,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'Mustache',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Total.html',
+    'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Details.html',
     'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUISelect, QUIConfirm,
              Grid, Orders, TimeFilter, QUILocale,
-             Mustache, templateTotal) {
+             Mustache, templateTotal, templateOrderDetails) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -49,7 +50,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$clickCopyOrder',
             '$clickDeleteOrder',
             '$refreshButtonStatus',
-            '$onOrderChange'
+            '$onOrderChange',
+            '$onClickOrderDetails'
         ],
 
         initialize: function (options) {
@@ -229,8 +231,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             );
 
             this.$Grid = new Grid(Container, {
-                pagination : true,
-                buttons    : [Actions, {
+                accordion            : true,
+                autoSectionToggle    : false,
+                openAccordionOnClick : false,
+                toggleiconTitle      : '',
+                accordionLiveRenderer: this.$onClickOrderDetails,
+                pagination           : true,
+                buttons              : [Actions, {
                     name     : 'create',
                     text     : QUILocale.get(lg, 'panel.btn.createOrder'),
                     textimage: 'fa fa-plus',
@@ -246,7 +253,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         }
                     }
                 }],
-                columnModel: [{
+                columnModel          : [{
                     header   : '&nbsp;',
                     dataIndex: 'opener',
                     dataType : 'int',
@@ -260,14 +267,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     header   : QUILocale.get(lg, 'grid.customerNo'),
                     dataIndex: 'customer_id',
                     dataType : 'integer',
-                    width    : 100
+                    width    : 100,
+                    className: 'clickable'
                 }, {
                     header   : QUILocale.get('quiqqer/system', 'name'),
                     dataIndex: 'customer_name',
                     dataType : 'string',
-                    width    : 130
+                    width    : 130,
+                    className: 'clickable'
                 }, {
-                    der   : QUILocale.get(lg, 'grid.orderDate'),
+                    der      : QUILocale.get(lg, 'grid.orderDate'),
                     dataIndex: 'c_date',
                     dataType : 'date',
                     width    : 100
@@ -553,6 +562,47 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         onClose : reject
                     }
                 }).open();
+            });
+        },
+
+        /**
+         * Open the accordion details of the order
+         *
+         * @param {Object} data
+         */
+        $onClickOrderDetails: function (data) {
+            var row        = data.row,
+                ParentNode = data.parent;
+
+            ParentNode.setStyle('padding', 10);
+            ParentNode.set('html', '<div class="fa fa-spinner fa-spin"></div>');
+
+            Orders.get(this.$Grid.getDataByRow(row).id).then(function (result) {
+                console.warn(result);
+
+                var articles = [];
+
+                if ("articles" in result) {
+                    articles = result.articles;
+                }
+
+                var list = articles.articles;
+
+                for (var i = 0, len = list.length; i < len; i++) {
+                    list[i].position  = i + 1;
+                    list[i].articleNo = list[i].articleNo || '---';
+                }
+
+                ParentNode.set('html', Mustache.render(templateOrderDetails, {
+                    articles       : list,
+                    calculations   : articles.calculations,
+                    textPosition   : '#',
+                    textArticleNo  : QUILocale.get(lg, 'order.products.articleNo'),
+                    textDescription: QUILocale.get(lg, 'order.products.description'),
+                    textQuantity   : QUILocale.get(lg, 'order.products.quantity'),
+                    textUnitPrice  : QUILocale.get(lg, 'order.products.unitPrice'),
+                    textTotalPrice : QUILocale.get(lg, 'order.products.price')
+                }));
             });
         },
 

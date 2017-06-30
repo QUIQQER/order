@@ -61,6 +61,15 @@
             <en><![CDATA[Country]]></en>
         </locale>
 
+        <locale name="statusMailsTitle">
+            <de><![CDATA[Status Mails]]></de>
+            <en><![CDATA[Status Mails]]></en>
+        </locale>
+        <locale name="commentsTitle">
+            <de><![CDATA[Kommentare]]></de>
+            <en><![CDATA[Comments]]></en>
+        </locale>
+
         <locale name="exception.order.construct.needle.missing">
             <de><![CDATA[Fehlender Eert für Bestellungs-Konstruktor [needle]]]></de>
             <en><![CDATA[Missing needle for order construct [needle]]]></en>
@@ -69,6 +78,27 @@
         <locale name="message.select.customer">
             <de><![CDATA[Bitte wählen Sie einen Kunden aus.]]></de>
             <en><![CDATA[Please select a customer.]]></en>
+        </locale>
+
+        <locale name="order.products.articleNo">
+            <de><![CDATA[Artikel Nr.]]></de>
+            <en><![CDATA[Article No.]]></en>
+        </locale>
+        <locale name="order.products.description">
+            <de><![CDATA[Produkt Beschreibung]]></de>
+            <en><![CDATA[Product description]]></en>
+        </locale>
+        <locale name="order.products.quantity">
+            <de><![CDATA[Menge]]></de>
+            <en><![CDATA[Quantity]]></en>
+        </locale>
+        <locale name="order.products.unitPrice">
+            <de><![CDATA[Einzelpreis]]></de>
+            <en><![CDATA[Unit price]]></en>
+        </locale>
+        <locale name="order.products.price">
+            <de><![CDATA[Preis]]></de>
+            <en><![CDATA[Price]]></en>
         </locale>
     </groups>
 
@@ -257,9 +287,10 @@
             <de><![CDATA[Zahlungsinformationen]]></de>
             <en><![CDATA[Payment informations]]></en>
         </locale>
-        <locale name="order.payment.panel.payment">
-            <de><![CDATA[Bezahltmethode]]></de>
-            <en><![CDATA[Payment method]]></en>
+
+        <locale name="panel.order.category.communication">
+            <de><![CDATA[Benachrichtigungen]]></de>
+            <en><![CDATA[Notifications]]></en>
         </locale>
 
         <locale name="dialog.order.delete.title">
@@ -313,6 +344,11 @@
         <locale name="dialog.order.create.button">
             <de><![CDATA[Bestellung anlegen]]></de>
             <en><![CDATA[Create order]]></en>
+        </locale>
+
+        <locale name="dialog.add.comment.title">
+            <de><![CDATA[Kommentar hinzufügen]]></de>
+            <en><![CDATA[Add a comment]]></en>
         </locale>
     </groups>
 

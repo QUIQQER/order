@@ -26,11 +26,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'Mustache',
     'Users',
 
-    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html',
-    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Payment.html'
+    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
-             Orders, Payments, TextArticle, QUILocale, Mustache, Users, templateData, templatePayment) {
+             Orders, Payments, TextArticle, QUILocale, Mustache, Users, templateData) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -45,7 +44,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'save',
             'refresh',
             'openInfo',
-            'openPayments',
+            'openCommunication',
             'openArticles',
             'openDeleteDialog',
             'openCopyDialog',
@@ -86,10 +85,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$AddressInvoice  = null;
             this.$AddressDelivery = null;
 
-            this.$Actions            = null;
             this.$ArticleList        = null;
             this.$ArticleListSummary = null;
 
+            this.$Actions       = null;
             this.$AddProduct    = null;
             this.$ArticleSort   = null;
             this.$AddSeparator  = null;
@@ -117,7 +116,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return new Promise(function (resolve, reject) {
                 Orders.get(orderId).then(function (data) {
+
+                    console.log('refresh');
                     console.log(data);
+
                     self.setAttribute('customerId', data.customerId);
                     self.setAttribute('customer', data.customer);
                     self.setAttribute('data', data.data);
@@ -302,16 +304,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             });
 
             this.addCategory({
-                icon  : 'fa fa-credit-card',
-                name  : 'payment',
-                title : QUILocale.get(lg, 'panel.order.category.payment'),
-                text  : QUILocale.get(lg, 'panel.order.category.payment'),
-                events: {
-                    onClick: this.openPayments
-                }
-            });
-
-            this.addCategory({
                 icon  : 'fa fa-shopping-basket',
                 name  : 'articles',
                 title : QUILocale.get(lg, 'panel.order.category.articles'),
@@ -320,6 +312,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     onClick: this.openArticles
                 }
             });
+
+            this.addCategory({
+                icon  : 'fa fa-comments-o',
+                name  : 'communication',
+                title : QUILocale.get(lg, 'panel.order.category.communication'),
+                text  : QUILocale.get(lg, 'panel.order.category.communication'),
+                events: {
+                    onClick: this.openCommunication
+                }
+            });
+
         },
 
         /**
@@ -370,7 +373,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textCountry             : QUILocale.get(lg, 'country'),
                         textOrderData           : QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate           : QUILocale.get(lg, 'panel.order.data.date'),
-                        textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy')
+                        textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy'),
+                        textPaymentTitle        : QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
+                        textPayment             : QUILocale.get(lg, 'order.payment.panel.payment')
                     })
                 });
 
@@ -492,30 +497,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 EUVAT.disabled = false;
                 TaxId.disabled = false;
 
-                return self.$openCategory();
             }).then(function () {
-                self.Loader.hide();
-            });
-        },
-
-        /**
-         * Open payment informations
-         */
-        openPayments: function () {
-            var self = this;
-
-            this.Loader.show();
-            this.getCategory('payment').setActive();
-
-            return this.$closeCategory().then(function (Container) {
-                Container.set({
-                    html: Mustache.render(templatePayment, {
-                        textPaymentTitle: QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
-                        textPayment     : QUILocale.get(lg, 'order.payment.panel.payment')
-                    })
-                });
-
-                var Select = Container.getElement('[name="paymentId"]');
+                // payments
+                var Select = self.getContent().getElement('[name="paymentId"]');
 
                 return Payments.getPayments().then(function (payments) {
                     new Element('option', {
@@ -532,6 +516,36 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     Select.disabled = false;
                     Select.value    = self.getAttribute('paymentId');
+                });
+
+            }).then(function () {
+                return self.$openCategory();
+            }).then(function () {
+                self.Loader.hide();
+            });
+        },
+
+        /**
+         * Open communication
+         */
+        openCommunication: function () {
+            var self = this;
+
+            this.Loader.show();
+            this.getCategory('communication').setActive();
+
+            return this.$closeCategory().then(function (Container) {
+                return new Promise(function (resolve) {
+                    require([
+                        'package/quiqqer/order/bin/backend/controls/panels/order/Communication'
+                    ], function (Communication) {
+                        new Communication({
+                            orderId: self.getAttribute('orderId'),
+                            events : {
+                                onLoad: resolve
+                            }
+                        }).inject(Container);
+                    });
                 });
             }).then(function () {
                 return self.$openCategory();
@@ -735,6 +749,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 this.$ArticleSort.hide();
             }
 
+            if (this.$Comments) {
+                this.$Comments.destroy();
+                this.$Comments = null;
+            }
+
             if (this.$ArticleListSummary) {
                 moofx(this.$ArticleListSummary.getElm()).animate({
                     bottom : -20,
@@ -791,7 +810,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * drop the data into the order
          */
         $unLoadCategory: function () {
-            console.warn('$unLoadCategory');
             var Content        = this.getContent(),
                 deliverAddress = Content.getElement('[name="differentDeliveryAddress"]'),
                 PaymentForm    = Content.getElement('form[name="payment"]');

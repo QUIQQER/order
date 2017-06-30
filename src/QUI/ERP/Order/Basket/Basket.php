@@ -6,7 +6,6 @@
 
 namespace QUI\ERP\Order\Basket;
 
-use DusanKasan\Knapsack\Collection;
 use QUI;
 
 use QUI\ERP\Order\Handler;
@@ -15,7 +14,7 @@ use QUI\ERP\Order\OrderProcess;
 
 /**
  * Class Basket
- * A Shopping Basket with roducts from an user
+ * Coordinates the order process, (order -> payment -> invoice)
  *
  * @package QUI\ERP\Order\Basket
  */
@@ -29,7 +28,7 @@ class Basket
     /**
      * Basket constructor.
      *
-     * @param $orderId
+     * @param integer|bool $orderId - optional, if given the selected order
      */
     public function __construct($orderId = false)
     {
@@ -38,17 +37,25 @@ class Basket
 
         try {
             if ($orderId !== false) {
-                $this->Order = $Orders->getOrderInProcess($orderId);
+                $Order = $Orders->getOrderInProcess($orderId);
+
+                if ($Order->getCustomer()->getId() == $User->getId()) {
+                    $this->Order = $Order;
+                }
             }
         } catch (QUI\Erp\Order\Exception $Exception) {
         }
 
         if ($this->Order === null) {
-            // select the last order in processing
+            try {
+                // select the last order in processing
+                $this->Order = $Orders->getLastOrderInProcessFromUser($User);
+            } catch (QUI\Erp\Order\Exception $Exception) {
+                // if no order exists, we create one
+                $this->Order = Factory::getInstance()->createOrderProcess();
+            }
         }
 
-
-        $this->id   = $basketId;
         $this->User = $User;
     }
 

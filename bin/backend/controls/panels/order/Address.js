@@ -4,8 +4,8 @@
  * @require qui/QUI
  * @require qui/controls/Control
  * @require qui/controls/windows/Confirm
+ * @require package/quiqqer/countries/bin/Countries
  * @require Users
- * @require Locale
  */
 define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
 

@@ -1,0 +1,40 @@
+<div class="orders-order-details">
+    <div class="orders-order-details-header">
+        <div class="orders-order-details-header-pos">{{textPosition}}</div>
+        <div class="orders-order-details-header-articleNo">{{textArticleNo}}</div>
+        <div class="orders-order-details-header-description">{{{textDescription}}}</div>
+        <div class="orders-order-details-header-quantity">{{{textQuantity}}}</div>
+        <div class="orders-order-details-header-netto">{{{textUnitPrice}}}</div>
+        <div class="orders-order-details-header-brutto">{{{textTotalPrice}}}</div>
+    </div>
+    {{#articles}}
+    <div class="orders-order-details-article">
+        <div class="orders-order-details-article-pos">{{position}}</div>
+        <div class="orders-order-details-article-articleNo">{{articleNo}}</div>
+        <div class="orders-order-details-article-description">
+            <span class="title">{{title}}</span>
+            <span class="description">{{{description}}}</span>
+        </div>
+        {{#quantity}}
+        <div class="orders-order-details-article-quantity">{{quantity}}</div>
+        <div class="orders-order-details-article-netto">
+            {{display_unitPrice}}
+        </div>
+        <div class="orders-order-details-article-brutto">{{display_sum}}</div>
+        {{/quantity}}
+    </div>
+    {{/articles}}
+
+    <div class="orders-order-details-calculation">
+        <div class="orders-order-details-calculation-container">
+            <span>Zwischensumme:</span>
+            <span>{{calculations.display_subSum}}</span>
+            <br/>
+            <span>Mwst:</span>
+            <span>{{calculations.display_vatSum}}</span>
+            <br/>
+            <span>Gesamtsumme</span>:
+            <span>{{calculations.display_sum}}</span>
+        </div>
+    </div>
+</div>

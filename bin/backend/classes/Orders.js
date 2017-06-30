@@ -178,6 +178,31 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
                     showError: false
                 });
             });
+        },
+
+
+        /**
+         * Add a comment to the order
+         *
+         * @param {String} orderId
+         * @param {String} message
+         * @returns {Promise}
+         */
+        addComment: function (orderId, message) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_addComment', function () {
+                    self.fireEvent('orderAddComment', [self, orderId, message]);
+                    resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    message  : message,
+                    onError  : reject,
+                    showError: false
+                });
+            });
         }
     });
 });

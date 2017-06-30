@@ -206,6 +206,7 @@ class Order extends AbstractOrder
             'addressDelivery' => $deliveryAddress,
 
             'articles' => $this->Articles->toJSON(),
+            'comments' => $this->Comments->toJSON(),
             'data'     => json_encode($this->data),
 
             'payment_id'      => $paymentId,

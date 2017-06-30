@@ -21,6 +21,18 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
         initialize: function (options) {
             this.parent(options);
+        },
+
+        loadLastOrder: function () {
+
+        },
+
+        getOrder: function () {
+
+        },
+
+        addArticle: function () {
+
         }
 
     });
