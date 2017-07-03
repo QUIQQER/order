@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+    <types>
+        <type type="types/basket" icon="fa fa-shopping-basket">
+            <locale group="quiqqer/order" var="admin.types.order"/>
+            <desc>
+                <locale group="quiqqer/order" var="admin.types.order.desc"/>
+            </desc>
+        </type>
+    </types>
+
+</site>

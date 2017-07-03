@@ -31,18 +31,52 @@ class OrderProcess extends AbstractOrder
      * Alias for update
      *
      * @param null $PermissionUser
+     * @throws QUI\Permissions\Exception
      */
     public function save($PermissionUser = null)
     {
+        if ($this->hasPermissions($PermissionUser) === false) {
+            throw new QUI\Permissions\Exception(
+                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
+                403
+            );
+        }
+
         $this->update($PermissionUser);
     }
 
     /**
      * @param null $PermissionUser
+     * @throws QUI\Permissions\Exception
+     *
+     * @todo Implement update() method.
      */
     public function update($PermissionUser = null)
     {
-        // TODO: Implement update() method.
+        if ($this->hasPermissions($PermissionUser) === false) {
+            throw new QUI\Permissions\Exception(
+                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
+                403
+            );
+        }
+
+        $data = $this->getDataForSaving();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderProcessUpdateBegin',
+            array($this, $data)
+        );
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            $data,
+            array('id' => $this->getId())
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderProcessUpdate',
+            array($this, $data)
+        );
     }
 
     /**
@@ -54,19 +88,7 @@ class OrderProcess extends AbstractOrder
      */
     public function delete($PermissionUser = null)
     {
-        $isAllowedToDelete = function () use ($PermissionUser) {
-            if ($this->cUser === QUI::getUserBySession()->getId()) {
-                return true;
-            }
-
-            if ($PermissionUser && $this->cUser === $PermissionUser->getId()) {
-                return true;
-            }
-
-            return false;
-        };
-
-        if ($isAllowedToDelete() === false) {
+        if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
                 QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
                 403
@@ -82,7 +104,87 @@ class OrderProcess extends AbstractOrder
     /**
      * Create the order
      */
-    public function createOrder()
+    public function createOrder($PermissionUser = null)
     {
+        if ($this->hasPermissions($PermissionUser) === false) {
+            throw new QUI\Permissions\Exception(
+                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
+                403
+            );
+        }
+
+    }
+
+    /**
+     * Has the user permissions to do things
+     *
+     * @param null|QUI\Interfaces\Users\User $PermissionUser
+     * @return bool
+     */
+    protected function hasPermissions($PermissionUser = null)
+    {
+        if ($this->cUser === QUI::getUserBySession()->getId()) {
+            return true;
+        }
+
+        if ($PermissionUser && $this->cUser === $PermissionUser->getId()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the order data for saving
+     *
+     * @return array
+     */
+    protected function getDataForSaving()
+    {
+        $InvoiceAddress  = $this->getInvoiceAddress();
+        $DeliveryAddress = $this->getDeliveryAddress();
+
+        $deliveryAddress = '';
+        $customer        = '';
+
+        if ($DeliveryAddress) {
+            $deliveryAddress = $DeliveryAddress->toJSON();
+        }
+
+        // customer
+        try {
+            $Customer = $this->getCustomer();
+            $customer = $Customer->getAttributes();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+
+        //payment
+        $paymentId     = '';
+        $paymentMethod = '';
+
+        $Payment = $this->getPayment();
+
+        if ($Payment) {
+            $paymentId     = $Payment->getId();
+            $paymentMethod = $Payment->getPaymentType()->getTitle();
+        }
+
+        return array(
+            'customerId'      => $this->customerId,
+            'customer'        => json_encode($customer),
+            'addressInvoice'  => $InvoiceAddress->toJSON(),
+            'addressDelivery' => $deliveryAddress,
+
+            'articles' => $this->Articles->toJSON(),
+            'comments' => $this->Comments->toJSON(),
+            'data'     => json_encode($this->data),
+
+            'payment_id'      => $paymentId,
+            'payment_method'  => $paymentMethod,
+            'payment_time'    => '',
+            'payment_data'    => '', // verschlüsselt
+            'payment_address' => ''  // verschlüsselt
+        );
     }
 }
