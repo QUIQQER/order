@@ -40,10 +40,28 @@ class Basket extends QUI\Control
     }
 
     /**
+     * @return QUI\ERP\Order\Basket\Basket
+     */
+    public function getBasket()
+    {
+        return $this->Basket;
+    }
+
+    /**
      * @return string
      */
     public function getBody()
     {
-        return 'Basket';
+        $Engine = QUI::getTemplateManager()->getEngine();
+
+        $Articles = $this->Basket->getArticles()->toUniqueList();
+        $Articles->hideHeader();
+
+        $Engine->assign(array(
+            'articles' => $Articles->toHTMLWithCSS(),
+            'count'    => $Articles->count()
+        ));
+
+        return $Engine->fetch(dirname(__FILE__) . '/Basket.html');
     }
 }

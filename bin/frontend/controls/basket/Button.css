@@ -1,0 +1,21 @@
+.quiqqer-order-basketButton {
+    cursor: pointer;
+    padding-right: 5px;
+    position: relative;
+}
+
+.quiqqer-order-basketButton-icon {
+    padding: 5px;
+}
+
+.quiqqer-order-basketButton-batch {
+    background: #d9232b;
+    border-radius: 10px;
+    color: #fff;
+    line-height: 20px;
+    opacity: 0;
+    padding: 0 5px;
+    position: absolute;
+    top: 0;
+    right: -16px;
+}

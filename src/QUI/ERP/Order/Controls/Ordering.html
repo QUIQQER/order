@@ -1,0 +1,52 @@
+<div class="quiqqer-order-ordering-timeline">
+    <ul>
+        <li class="active">
+            <span class="title">Warenkorb</span>
+            <span class="fa fa-check-circle"></span>
+        </li>
+        <li>
+            <span class="title">Rechnungsadresse</span>
+            <span class="fa fa-check-circle"></span>
+        </li>
+        <li>
+            <span class="title">Versand</span>
+            <span class="fa fa-check-circle"></span>
+        </li>
+        <li>
+            <span class="title">Zahlungsweise</span>
+            <span class="fa fa-check-circle"></span>
+        </li>
+        <li>
+            <span class="title">Überprüfen & bestellen</span>
+            <span class="fa fa-check-circle"></span>
+        </li>
+        <li>
+            <span class="title">Fertig</span>
+            <span class="fa fa-check-circle"></span>
+        </li>
+    </ul>
+</div>
+
+<div class="quiqqer-order-ordering-step">
+    {$CurrentStep->create()}
+</div>
+
+<div class="quiqqer-order-ordering-buttons">
+    <a href="{url id=1}" class="button">Zurück zum Shop</a>
+
+    {if $previous}
+    <a href="{url site=$Site step=$previous}"
+       class="button quiqqer-order-ordering-buttons-previous"
+    >
+        Zurück
+    </a>
+    {/if}
+
+    {if $next}
+    <a href="{url site=$Site step=$next}"
+       class="button quiqqer-order-ordering-buttons-next"
+    >
+        Weiter
+    </a>
+    {/if}
+</div>

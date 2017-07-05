@@ -68,12 +68,15 @@ class Factory extends QUI\Utils\Singleton
 
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
-        $table  = $Orders->table();
+        $table  = $Orders->tableOrderProcess();
+
+        // @todo set default from customer
 
         QUI::getDataBase()->insert($table, array(
-            'c_user' => $User->getId(),
-            'c_date' => date('Y-m-d H:i:s'),
-            'hash'   => Uuid::uuid1()->toString()
+            'c_user'     => $User->getId(),
+            'c_date'     => date('Y-m-d H:i:s'),
+            'hash'       => Uuid::uuid1()->toString(),
+            'customerId' => $User->getId()
         ));
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();

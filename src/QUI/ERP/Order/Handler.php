@@ -19,6 +19,11 @@ class Handler extends Singleton
 {
     const EMPTY_VALUE = '---';
 
+    /**
+     * @var array
+     */
+    protected $cache = array();
+
     //region Order
 
     /**
@@ -61,7 +66,7 @@ class Handler extends Singleton
         ));
 
         if (!isset($result[0])) { // #locale
-            throw new QUI\Erp\Order\Exception(
+            throw new Exception(
                 'Order not found',
                 404
             );
@@ -81,7 +86,7 @@ class Handler extends Singleton
      */
     public function tableOrderProcess()
     {
-        return QUI::getDBTableName('orderProcess');
+        return QUI::getDBTableName('ordersProcess');
     }
 
     /**
@@ -92,7 +97,11 @@ class Handler extends Singleton
      */
     public function getOrderInProcess($orderId)
     {
-        return new OrderProcess($orderId);
+        if (!isset($this->cache[$orderId])) {
+            $this->cache[$orderId] = new OrderProcess($orderId);
+        }
+
+        return $this->cache[$orderId];
     }
 
     /**
@@ -106,7 +115,7 @@ class Handler extends Singleton
         $result = array();
 
         $list = QUI::getDataBase()->fetch(array(
-            'from'  => $this->table(),
+            'from'  => $this->tableOrderProcess(),
             'where' => array(
                 'customerId' => $User->getId()
             )
@@ -115,7 +124,7 @@ class Handler extends Singleton
         foreach ($list as $entry) {
             try {
                 $result[] = $this->getOrderInProcess($entry['id']);
-            } catch (QUI\Erp\Order\Exception $Exception) {
+            } catch (Exception $Exception) {
             }
         }
 
@@ -132,7 +141,7 @@ class Handler extends Singleton
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => $this->table(),
+            'from'  => $this->tableOrderProcess(),
             'where' => array(
                 'customerId' => $User->getId()
             ),
@@ -141,7 +150,7 @@ class Handler extends Singleton
         ));
 
         if (!isset($result[0])) {
-            throw new QUI\Erp\Order\Exception(
+            throw new Exception(
                 'Order not found',
                 404
             );
@@ -161,7 +170,7 @@ class Handler extends Singleton
     public function getOrderProcessData($orderId)
     {
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => $this->table(),
+            'from'  => $this->tableOrderProcess(),
             'where' => array(
                 'id' => $orderId
             ),
@@ -169,7 +178,7 @@ class Handler extends Singleton
         ));
 
         if (!isset($result[0])) {
-            throw new QUI\Erp\Order\Exception(
+            throw new Exception(
                 'Order not found',
                 404
             );

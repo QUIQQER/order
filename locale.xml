@@ -105,6 +105,32 @@
             <de><![CDATA[Kopie von Bestellung #[orderId]]]></de>
             <en><![CDATA[Copy from order #[orderId]]]></en>
         </locale>
+        <locale name="message.basket.is.empty">
+            <de><![CDATA[Ihr Warenkorb enthält keine Produkte.]]></de>
+            <en><![CDATA[There are no products in your shopping cart.]]></en>
+        </locale>
+
+        <locale name="control.watchlist.buttonAdd.text">
+            <de><![CDATA[Zum Warenkorb]]></de>
+            <en><![CDATA[To the Basket]]></en>
+        </locale>
+    </groups>
+
+    <groups name="quiqqer/order" datatype="php">
+        <locale name="admin.types.orderingProcess">
+            <de><![CDATA[Bestellprozess]]></de>
+            <en><![CDATA[Ordering process]]></en>
+        </locale>
+        <locale name="admin.types.orderingProcess.desc">
+            <de><![CDATA[
+            Legen Sie fest unter welche Adresse der Bestellprozess aufrufbar ist.
+            Unter dieser Adresse findet Ihr Kunde dann auch seinen Warenkorb
+            ]]></de>
+            <en><![CDATA[
+            Specify the address at which the order process can be called.
+            At this address, your customer will also find his shopping cart
+            ]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
@@ -354,6 +380,13 @@
         <locale name="dialog.add.comment.title">
             <de><![CDATA[Kommentar hinzufügen]]></de>
             <en><![CDATA[Add a comment]]></en>
+        </locale>
+
+
+        <!-- frontend controls -->
+        <locale name="control.basket.button.text">
+            <de><![CDATA[Warenkorb]]></de>
+            <en><![CDATA[Basket]]></en>
         </locale>
     </groups>
 

@@ -1,0 +1,11 @@
+<section>
+    <header>
+        <h1>Warenkorb</h1>
+    </header>
+
+    {if $count}
+        {$articles}
+    {else}
+        {locale group="quiqqer/order" var="message.basket.is.empty"}
+    {/if}
+</section>

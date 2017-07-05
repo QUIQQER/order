@@ -1,0 +1,17 @@
+
+.quiqqer-order-button-add {
+    float: left;
+    overflow: hidden;
+    padding: 9px;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quiqqer-order-button-add input {
+    border: 1px solid #ddd;
+    line-height: 26px;
+    margin-right: 10px;
+    text-align: center;
+    width: 40px;
+}

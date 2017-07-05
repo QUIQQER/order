@@ -2,10 +2,10 @@
 <site>
 
     <types>
-        <type type="types/basket" icon="fa fa-shopping-basket">
-            <locale group="quiqqer/order" var="admin.types.order"/>
+        <type type="types/orderingProcess" icon="fa fa-shopping-basket">
+            <locale group="quiqqer/order" var="admin.types.orderingProcess"/>
             <desc>
-                <locale group="quiqqer/order" var="admin.types.order.desc"/>
+                <locale group="quiqqer/order" var="admin.types.orderingProcess.desc"/>
             </desc>
         </type>
     </types>
