@@ -4,8 +4,10 @@
     </header>
 
     {if $count}
-        {$articles}
+    {$articles}
     {else}
+    <div class="quiqqer-order-basket-isEmpty">
         {locale group="quiqqer/order" var="message.basket.is.empty"}
+    </div>
     {/if}
 </section>

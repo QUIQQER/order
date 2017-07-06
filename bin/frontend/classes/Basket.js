@@ -23,10 +23,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         Extends: QUIDOM,
         Type   : 'package/quiqqer/order/bin/frontend/classes/Basket',
 
+        Binds: [
+            '$onArticleChange'
+        ],
+
         initialize: function (options) {
             this.parent(options);
 
-            this.$isLoaded = false;
             this.$articles = [];
             this.$orders   = {};
             this.$orderid  = false;
@@ -42,13 +45,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             // basket from user
             if (QUIQQER_USER && QUIQQER_USER.id) {
                 return this.loadLastOrder().then(function () {
+                    console.warn(this.$articles);
                     this.$isLoaded = true;
                     this.fireEvent('refresh', [this]);
                 }.bind(this));
             }
 
             var articles = [],
-                data     = QUI.Storage.get('product-order');
+                data     = QUI.Storage.get('quiqqer-basket-articles');
 
             this.$orderid = String.uniqueID();
 
@@ -90,12 +94,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             return Promise.all(proms).then(function () {
                 var self = this;
 
-                if (this.getAttribute('productsNotExists')) {
+                if (this.getAttribute('articlesNotExists')) {
                     QUI.getMessageHandler().then(function (MH) {
                         MH.addError(
                             QUILocale.get(lg, 'message.article.removed')
                         );
-                        self.getAttribute('productsNotExists', false);
+                        self.getAttribute('articlesNotExists', false);
                     });
                 }
 
@@ -105,8 +109,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
-         * Return the loading status of the watchlist
-         * is the watchlist already loaded?
+         * Return the loading status of the basket
+         * is the basket already loaded?
          *
          * @returns {boolean}
          */
@@ -115,7 +119,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
-         * Return the quantity of the products in the current list
+         * Return the quantity of the articles in the current list
          *
          * @returns {Number}
          */
@@ -154,6 +158,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         $loadOrderData: function (data) {
             var articles = data.articles;
 
+            this.$orderid  = data.id;
+            this.$articles = [];
+
             if (typeof data.articles.articles === 'undefined') {
                 return Promise.resolve();
             }
@@ -162,13 +169,25 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
+            var promiseList = [];
 
-            console.log('######');
-            console.log(articles);
+            articles = articles.articles;
 
-            return new Promise(function (resolve) {
-                resolve();
-            });
+            for (var i = 0, len = articles.length; i < len; i++) {
+                promiseList.push(
+                    this.addArticle(
+                        articles[i].id,
+                        articles[i].quantity,
+                        articles[i].fields
+                    )
+                );
+            }
+
+            if (!promiseList.length) {
+                return Promise.resolve();
+            }
+
+            return Promise.all(promiseList);
         },
 
         /**
@@ -237,18 +256,20 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 quantity = 1;
             }
 
-            if (typeOf(article) === 'package/quiqqer/watchlist/bin/classes/Product') {
+            if (typeOf(article) === 'package/quiqqer/order/bin/frontend/classes/Article') {
                 articleId = parseInt(article.getId());
+                fields    = article.getFields();
+                quantity  = article.getQuantity();
             }
 
             return this.existsProduct(articleId).then(function (available) {
                 if (!available) {
-                    self.setAttribute('productsNotExists', true);
+                    self.setAttribute('articlesNotExists', true);
                     return Promise.resolve();
                 }
 
-                this.fireEvent('refreshBegin', [this]);
-                this.fireEvent('addBegin');
+                self.fireEvent('refreshBegin', [this]);
+                self.fireEvent('addBegin');
 
                 return new Promise(function (resolve) {
                     require([
@@ -279,10 +300,111 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                             self.fireEvent('refresh', [self]);
                             self.fireEvent('add', [self]);
                         });
-
                     });
                 });
+            }).catch(function (err) {
+                console.error(err);
             });
+        },
+
+        /**
+         * Saves the basket to the temporary order
+         *
+         * @param {Boolean} [force] - force the save delay, prevent homemade ddos
+         * @return {Promise}
+         */
+        save: function (force) {
+            force = force || false;
+
+            return new Promise(function (resolve) {
+
+                if (force === false) {
+                    // save delay, prevent homemade ddos
+                    if (this.$saveDelay) {
+                        clearTimeout(this.$saveDelay);
+                    }
+
+                    this.$saveDelay = (function () {
+                        this.save(true).then(resolve);
+                    }).delay(100, this);
+
+                    return;
+                }
+
+                if (!this.$orderid) {
+                    resolve();
+                    return;
+                }
+
+                var articles = [];
+
+                for (var i = 0, len = this.$articles.length; i < len; i++) {
+                    articles.push(this.$articles[i].getAttributes());
+                }
+
+                // locale storage
+                if (QUIQQER_USER && QUIQQER_USER.id) {
+                    QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_save', resolve, {
+                        'package': 'quiqqer/order',
+                        orderId  : this.$orderid,
+                        articles : JSON.encode(articles)
+                    });
+
+                    return;
+                }
+
+
+                var data = QUI.Storage.get('quiqqer-basket-articles');
+
+                if (!data) {
+                    data = {};
+                } else {
+                    data = JSON.decode(data);
+
+                    if (!data) {
+                        data = {};
+                    }
+                }
+
+                if (typeof data.articles === 'undefined') {
+                    data.articles = {};
+                }
+
+                data.currentList            = this.$listid;
+                data.articles[this.$listid] = articles;
+
+                QUI.Storage.set('quiqqer-basket-articles', JSON.encode(data));
+
+                resolve();
+
+            }.bind(this));
+        },
+
+        /**
+         * Exists the article? Is it available?
+         *
+         * @param {String|Number} productId
+         * @return {Promise}
+         */
+        existsProduct: function (productId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_existsProduct', resolve, {
+                    'package': 'quiqqer/order',
+                    productId: productId,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * event : on change
+         */
+        $onArticleChange: function () {
+            this.fireEvent('refreshBegin', [this]);
+
+            this.save().then(function () {
+                this.fireEvent('refresh', [this]);
+            }.bind(this));
         }
     });
 });

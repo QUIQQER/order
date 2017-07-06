@@ -11,6 +11,7 @@ use QUI;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\OrderProcess;
+use QUI\ERP\Products\Handler\Products;
 
 /**
  * Class Basket
@@ -57,6 +58,33 @@ class Basket
         }
 
         $this->User = $User;
+    }
+
+    /**
+     * Import a product array
+     *
+     * @param array $articles
+     */
+    public function import(array $articles)
+    {
+        $this->Order->clearArticles();
+
+        foreach ($articles as $article) {
+            try {
+                $Product = Products::getProduct($article['id']);
+                $Unique  = $Product->createUniqueProduct();
+
+                if (isset($productData['quantity'])) {
+                    $Unique->setQuantity($productData['quantity']);
+                }
+
+                $this->addArticle($Unique->toArticle());
+            } catch (QUI\Exception $Exception) {
+                QUI::getMessagesHandler()->addAttention(
+                    $Exception->getMessage()
+                );
+            }
+        }
     }
 
     /**

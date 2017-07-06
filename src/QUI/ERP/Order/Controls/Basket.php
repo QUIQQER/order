@@ -10,7 +10,7 @@ use QUI;
 
 /**
  * Class Basket
- * Coordinates the order process, (order -> payment -> invoice)
+ * Basket display
  *
  * @package QUI\ERP\Order\Basket
  */
@@ -37,6 +37,8 @@ class Basket extends QUI\Control
         }
 
         parent::__construct($attributes);
+
+        $this->addCSSFile(dirname(__FILE__) . '/Basket.css');
     }
 
     /**

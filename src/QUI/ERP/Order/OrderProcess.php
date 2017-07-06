@@ -48,8 +48,6 @@ class OrderProcess extends AbstractOrder
     /**
      * @param null $PermissionUser
      * @throws QUI\Permissions\Exception
-     *
-     * @todo Implement update() method.
      */
     public function update($PermissionUser = null)
     {
@@ -68,7 +66,7 @@ class OrderProcess extends AbstractOrder
         );
 
         QUI::getDataBase()->update(
-            Handler::getInstance()->table(),
+            Handler::getInstance()->tableOrderProcess(),
             $data,
             array('id' => $this->getId())
         );
