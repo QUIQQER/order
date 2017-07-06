@@ -127,6 +127,16 @@ class Basket
     }
 
     /**
+     * Return the number of articles in the basket
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->Order->getArticles()->count();
+    }
+
+    /**
      * Clear the basket
      * All articles in the processing order would be deleted
      */

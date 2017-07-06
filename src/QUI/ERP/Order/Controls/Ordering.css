@@ -61,10 +61,12 @@
     width: 50%;
 }
 
+.quiqqer-order-ordering-timeline li.current:after,
 .quiqqer-order-ordering-timeline li.active:after {
     background-color: #75b947;
 }
 
+.quiqqer-order-ordering-timeline li.current .fa,
 .quiqqer-order-ordering-timeline li.active .fa {
     color: #75b947;
 }

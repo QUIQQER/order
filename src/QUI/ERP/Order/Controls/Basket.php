@@ -14,7 +14,7 @@ use QUI;
  *
  * @package QUI\ERP\Order\Basket
  */
-class Basket extends QUI\Control
+class Basket extends AbstractOrderingStep
 {
     /**
      * @var QUI\ERP\Order\Basket\Basket
@@ -47,6 +47,19 @@ class Basket extends QUI\Control
     public function getBasket()
     {
         return $this->Basket;
+    }
+
+    /**
+     * @throws QUI\ERP\Order\Exception
+     */
+    public function validate()
+    {
+        if (!$this->Basket->count()) {
+            throw new QUI\ERP\Order\Exception(array(
+                'quiqqer/order',
+                'exception.basket.has.no.articles'
+            ));
+        }
     }
 
     /**

@@ -131,6 +131,27 @@
             At this address, your customer will also find his shopping cart
             ]]></en>
         </locale>
+
+        <locale name="ordering.step.title.Basket">
+            <de><![CDATA[Warenkorb]]></de>
+            <en><![CDATA[Basket]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address">
+            <de><![CDATA[Rechnungsadresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Delivery">
+            <de><![CDATA[Versand]]></de>
+            <en><![CDATA[Delivery]]></en>
+        </locale>
+        <locale name="ordering.step.title.Payment">
+            <de><![CDATA[Zahlungsweise]]></de>
+            <en><![CDATA[Payment]]></en>
+        </locale>
+        <locale name="ordering.step.title.Checkout">
+            <de><![CDATA[Überprüfen & bestellen]]></de>
+            <en><![CDATA[Checkout & order]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

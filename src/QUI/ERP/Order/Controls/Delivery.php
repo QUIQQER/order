@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Controls\Address
+ * This file contains QUI\ERP\Order\Controls\Delivery
  */
 
 namespace QUI\ERP\Order\Controls;
@@ -10,12 +10,11 @@ use QUI;
 use QUI\ERP\Order\Handler;
 
 /**
- * Class Address
- * - Tab / Panel for the address
+ * Class Delivery
  *
  * @package QUI\ERP\Order\Controls
  */
-class Address extends AbstractOrderingStep
+class Delivery extends AbstractOrderingStep
 {
     /**
      * @return string
@@ -30,7 +29,7 @@ class Address extends AbstractOrderingStep
             'User' => $Order->getCustomer()
         ));
 
-        return $Engine->fetch(dirname(__FILE__) . '/Address.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Delivery.html');
     }
 
     public function validate()

@@ -1,9 +1,19 @@
 <div class="quiqqer-order-ordering-timeline">
     <ul>
-        <li class="active">
-            <span class="title">Warenkorb</span>
-            <span class="fa fa-check-circle"></span>
-        </li>
+        {assign var=cssClass value="active"}
+        {foreach $steps as $step => $Step}
+            {if $CurrentStep == $Step}
+                {assign var=cssClass value="current"}
+            {/if}
+            <li class="{$cssClass}">
+                <span class="title">{$Step->getTitle()}</span>
+                <span class="fa fa-check-circle"></span>
+            </li>
+            {if $CurrentStep == $Step}
+                {assign var=cssClass value=""}
+            {/if}
+        {/foreach}
+        {*
         <li>
             <span class="title">Rechnungsadresse</span>
             <span class="fa fa-check-circle"></span>
@@ -24,6 +34,7 @@
             <span class="title">Fertig</span>
             <span class="fa fa-check-circle"></span>
         </li>
+        *}
     </ul>
 </div>
 

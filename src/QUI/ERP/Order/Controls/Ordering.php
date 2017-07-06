@@ -37,6 +37,19 @@ class Ordering extends QUI\Control
         ));
 
         $this->addCSSFile(dirname(__FILE__) . '/Ordering.css');
+
+        $steps = $this->getSteps();
+        $step  = $this->getAttribute('step');
+
+        if (!$step && isset($_REQUEST['step'])) {
+            $step = $_REQUEST['step'];
+            $this->setAttribute('step', $step);
+        }
+
+        if (!$step || !isset($steps[$step])) {
+            reset($steps);
+            $this->setAttribute('step', key($steps));
+        }
     }
 
     /**
@@ -46,29 +59,20 @@ class Ordering extends QUI\Control
     {
         $Engine  = QUI::getTemplateManager()->getEngine();
         $Current = $this->getCurrentStep();
+        $next    = $this->getNextStepName();
 
-        switch (get_class($Current)) {
-            case Basket::class:
-                $next     = 'address';
-                $previous = false;
-
-                /* @var $Current Basket */
-                if (!$Current->getBasket()->getArticles()->count()) {
-                    $next = false;
-                }
-                break;
-
-            default:
-                $next     = 'address';
-                $previous = false;
+        // @todo check all previous steps
+        if ($Current->isValid() === false) {
+            $next = false;
         }
 
         $Engine->assign(array(
             'this'        => $this,
-            'CurrentStep' => $this->getCurrentStep(),
+            'CurrentStep' => $Current,
             'Site'        => $this->getSite(),
             'next'        => $next,
-            'previous'    => $previous
+            'previous'    => $this->getPreviousStepName(),
+            'steps'       => $this->getSteps()
         ));
 
         return $Engine->fetch(dirname(__FILE__) . '/Ordering.html');
@@ -77,11 +81,73 @@ class Ordering extends QUI\Control
     /**
      * Return the current Step
      *
-     * @return QUI\Control
+     * @return OrderingStepInterface
      */
     public function getCurrentStep()
     {
-        return $this->getSteps()[0];
+        $steps = $this->getSteps();
+
+        return $steps[$this->getCurrentStepName()];
+    }
+
+    /**
+     * Return the current step name / key
+     *
+     * @return string
+     */
+    protected function getCurrentStepName()
+    {
+        $step  = $this->getAttribute('step');
+        $steps = $this->getSteps();
+
+        if (isset($steps[$step])) {
+            return $step;
+        }
+
+        reset($steps);
+        return key($steps);
+    }
+
+    /**
+     * Return the next step
+     *
+     * @return bool|string
+     */
+    protected function getNextStepName()
+    {
+        $step  = $this->getCurrentStepName();
+        $steps = $this->getSteps();
+
+        $keys = array_keys($steps);
+        $pos  = array_search($step, $keys);
+        $next = $pos + 1;
+
+        if (isset($keys[$next])) {
+            return $keys[$next];
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the previous step
+     *
+     * @return bool|string
+     */
+    protected function getPreviousStepName()
+    {
+        $step  = $this->getCurrentStepName();
+        $steps = $this->getSteps();
+
+        $keys = array_keys($steps);
+        $pos  = array_search($step, $keys);
+        $prev = $pos - 1;
+
+        if (isset($keys[$prev])) {
+            return $keys[$prev];
+        }
+
+        return false;
     }
 
     /**
@@ -148,15 +214,9 @@ class Ordering extends QUI\Control
     }
 
     /**
-     *
-     */
-    protected function getProcess()
-    {
-
-    }
-
-    /**
      * @return array
+     *
+     * @todo implement API
      */
     protected function getSteps()
     {
@@ -165,8 +225,11 @@ class Ordering extends QUI\Control
         );
 
         return array(
-            new Basket($params),
-            new Address($params)
+            'basket'   => new Basket($params),
+            'address'  => new Address($params),
+            'delivery' => new Delivery($params),
+            'payment'  => new Payment($params),
+            'checkout' => new Checkout($params)
         );
     }
 }
