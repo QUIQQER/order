@@ -71,8 +71,12 @@
         </locale>
 
         <locale name="exception.order.construct.needle.missing">
-            <de><![CDATA[Fehlender Eert für Bestellungs-Konstruktor [needle]]]></de>
+            <de><![CDATA[Fehlender Wert für Bestellungs-Konstruktor [needle]]]></de>
             <en><![CDATA[Missing needle for order construct [needle]]]></en>
+        </locale>
+        <locale name="exception.order.is.not.finished">
+            <de><![CDATA[Die Bestellung wurde noch nicht zu ende geführt.]]></de>
+            <en><![CDATA[The order has not yet been completed.]]></en>
         </locale>
 
         <locale name="message.select.customer">
@@ -151,6 +155,25 @@
         <locale name="ordering.step.title.Checkout">
             <de><![CDATA[Überprüfen & bestellen]]></de>
             <en><![CDATA[Checkout & order]]></en>
+        </locale>
+        <locale name="ordering.step.title.Finish">
+            <de><![CDATA[Fertig!]]></de>
+            <en><![CDATA[Done!]]></en>
+        </locale>
+
+        <locale name="ordering.step.title.Address.description">
+            <de><![CDATA[
+                Bitte wählen Sie eine Rechnungsadresse aus dem Adressbuch unten aus
+                oder geben Sie eine neue Rechnungsadresse ein.
+            ]]></de>
+            <en><![CDATA[
+                Please select an invoice address from the address book below
+                or enter a new billing address.
+            ]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.addButton">
+            <de><![CDATA[Neue Adresse hinzufügen]]></de>
+            <en><![CDATA[Add new address]]></en>
         </locale>
     </groups>
 

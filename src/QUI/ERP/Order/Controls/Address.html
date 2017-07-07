@@ -1,7 +1,54 @@
-<section>
+<section class="quiqqer-order-step-address">
     <header>
         <h1>{locale group="quiqqer/order" var="ordering.step.title.Address"}</h1>
     </header>
 
+    <div class="quiqqer-order-step-address-description">
+        <div class="quiqqer-order-step-address-description-text">
+            {locale group="quiqqer/order" var="ordering.step.title.Address.description"}
+        </div>
 
+        <button class="quiqqer-order-step-address-description-button">
+            <span class="fa fa-plus"></span>
+            <span>{locale group="quiqqer/order" var="ordering.step.title.Address.addButton"}</span>
+        </button>
+    </div>
+
+    <form>
+        <div class="quiqqer-order-step-address-list">
+            {if $User->getId()}
+            {* Logged in user *}
+
+            {foreach $addresses as $Address}
+            <div class="quiqqer-order-step-address-list-entry">
+                <header>
+                    <label>
+                        <span class="fa fa-address-card-o"></span>
+                        Rechnungsadresse
+                        <input type="radio" name="address_invoice" value="{$Address->getId()}">
+                    </label>
+                </header>
+                <address>
+                    {$UserAddress->render()}
+                </address>
+                <div class="quiqqer-order-step-address-list-entry-buttons">
+                    <button>
+                        <span class="fa fa-edit"></span>
+                        <span>Ändern</span>
+                    </button>
+                    <button>
+                        <span class="fa fa-trash"></span>
+                        <span>Löschen</span>
+                    </button>
+                </div>
+            </div>
+            {/foreach}
+
+            {else}
+            {* Unregistered user*}
+
+            {/if}
+
+        </div>
+    </form>
 </section>

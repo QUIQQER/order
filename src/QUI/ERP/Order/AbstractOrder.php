@@ -232,6 +232,13 @@ abstract class AbstractOrder
      */
     abstract public function delete($PermissionUser = null);
 
+    /**
+     * Is the order posted / submitted
+     *
+     * @return bool
+     */
+    abstract public function isPosted();
+
     //endregion
 
     //region getter
@@ -425,7 +432,6 @@ abstract class AbstractOrder
     {
         return !empty($this->addressDelivery);
     }
-
 
     //endregion
 

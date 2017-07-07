@@ -1,0 +1,65 @@
+
+.quiqqer-order-step-payments-list {
+    display: inline-block;
+    width: 100%;
+}
+
+.quiqqer-order-step-payments form {
+    margin-top: 20px;
+}
+
+.quiqqer-order-step-payments-list-entry {
+    align-content: stretch;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    clear: both;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    position: relative;
+    width: 100%;
+}
+
+.quiqqer-order-step-payments-list-entry-select {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    -webkit-flex: 1;
+    justify-content: center;
+    text-align: center;
+    width: 80px;
+}
+
+.quiqqer-order-step-payments-list-entry:hover .quiqqer-order-step-payments-list-entry-select {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.quiqqer-order-step-payments-list-entry-selected .quiqqer-order-step-payments-list-entry-select {
+    background: #75b947;
+}
+
+.quiqqer-order-step-payments-list-entry-icon {
+    float: left;
+    padding: 20px;
+    width: 25%;
+}
+
+.quiqqer-order-step-payments-list-entry-icon img {
+    max-width: 100%;
+}
+
+.quiqqer-order-step-payments-list-entry-text {
+    float: left;
+    padding: 20px;
+    width: calc(75% - 80px);
+}
+
+.quiqqer-order-step-payments-list-entry-text label {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.quiqqer-order-step-payments-list-entry-text-description {
+    font-size: 14px;
+}

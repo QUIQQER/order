@@ -6,35 +6,15 @@
                 {assign var=cssClass value="current"}
             {/if}
             <li class="{$cssClass}">
-                <span class="title">{$Step->getTitle()}</span>
-                <span class="fa fa-check-circle"></span>
+                <a href="{url site=$Site step=$step}">
+                    <span class="title">{$Step->getTitle()}</span>
+                    <span class="fa fa-check-circle"></span>
+                </a>
             </li>
             {if $CurrentStep == $Step}
                 {assign var=cssClass value=""}
             {/if}
         {/foreach}
-        {*
-        <li>
-            <span class="title">Rechnungsadresse</span>
-            <span class="fa fa-check-circle"></span>
-        </li>
-        <li>
-            <span class="title">Versand</span>
-            <span class="fa fa-check-circle"></span>
-        </li>
-        <li>
-            <span class="title">Zahlungsweise</span>
-            <span class="fa fa-check-circle"></span>
-        </li>
-        <li>
-            <span class="title">Überprüfen & bestellen</span>
-            <span class="fa fa-check-circle"></span>
-        </li>
-        <li>
-            <span class="title">Fertig</span>
-            <span class="fa fa-check-circle"></span>
-        </li>
-        *}
     </ul>
 </div>
 

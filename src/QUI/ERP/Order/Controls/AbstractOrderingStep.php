@@ -33,6 +33,16 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     }
 
     /**
+     * Return the current order
+     *
+     * @return QUI\ERP\Order\OrderProcess
+     */
+    public function getOrder()
+    {
+        return $this->getAttribute('Order');
+    }
+
+    /**
      * Is the step valid?
      *
      * @return bool

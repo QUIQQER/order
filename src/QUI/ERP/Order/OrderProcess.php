@@ -100,7 +100,20 @@ class OrderProcess extends AbstractOrder
     }
 
     /**
+     * An order in process is never finished
+     *
+     * @return bool
+     */
+    public function isPosted()
+    {
+        return false;
+    }
+
+    /**
      * Create the order
+     *
+     * @param null|QUI\Interfaces\Users\User $PermissionUser
+     * @throws QUI\Permissions\Exception
      */
     public function createOrder($PermissionUser = null)
     {

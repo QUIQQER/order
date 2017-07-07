@@ -221,7 +221,8 @@ class Ordering extends QUI\Control
     protected function getSteps()
     {
         $params = array(
-            'orderId' => $this->getOrder()->getId()
+            'orderId' => $this->getOrder()->getId(),
+            'Order'   => $this->getOrder()
         );
 
         return array(
@@ -229,7 +230,8 @@ class Ordering extends QUI\Control
             'address'  => new Address($params),
             'delivery' => new Delivery($params),
             'payment'  => new Payment($params),
-            'checkout' => new Checkout($params)
+            'checkout' => new Checkout($params),
+            'finish'   => new Finish($params)
         );
     }
 }
