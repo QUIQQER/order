@@ -1,9 +1,10 @@
-<div class="quiqqer-order-ordering-timeline">
-    <ul>
-        {assign var=cssClass value="active"}
-        {foreach $steps as $step => $Step}
+<form name="order" action="{url site=$Site}" method="post">
+    <div class="quiqqer-order-ordering-timeline">
+        <ul>
+            {assign var=cssClass value="active"}
+            {foreach $steps as $step => $Step}
             {if $CurrentStep == $Step}
-                {assign var=cssClass value="current"}
+            {assign var=cssClass value="current"}
             {/if}
             <li class="{$cssClass}">
                 <a href="{url site=$Site step=$step}">
@@ -12,32 +13,40 @@
                 </a>
             </li>
             {if $CurrentStep == $Step}
-                {assign var=cssClass value=""}
+            {assign var=cssClass value=""}
             {/if}
-        {/foreach}
-    </ul>
-</div>
+            {/foreach}
+        </ul>
+    </div>
 
-<div class="quiqqer-order-ordering-step">
-    {$CurrentStep->create()}
-</div>
-
-<div class="quiqqer-order-ordering-buttons">
-    <a href="{url id=1}" class="button">Zurück zum Shop</a>
-
-    {if $previous}
-    <a href="{url site=$Site step=$previous}"
-       class="button quiqqer-order-ordering-buttons-previous"
-    >
-        Zurück
-    </a>
+    {if $error}
+    <div class="quiqqer-order-ordering-error">
+        {$error}
+    </div>
     {/if}
 
-    {if $next}
-    <a href="{url site=$Site step=$next}"
-       class="button quiqqer-order-ordering-buttons-next"
-    >
-        Weiter
-    </a>
-    {/if}
-</div>
+    <div class="quiqqer-order-ordering-step">
+        {$CurrentStep->create()}
+    </div>
+
+    <div class="quiqqer-order-ordering-buttons">
+        <a href="{url id=1}" class="button">Zurück zum Shop</a>
+
+        {if $previous}
+        <a href="{url site=$Site step=$previous pre=$CurrentStep->getName()}"
+           class="button quiqqer-order-ordering-buttons-previous"
+        >
+            {locale group="quiqqer/order" var="ordering.btn.previous"}
+        </a>
+        {/if}
+
+        {if $next}
+        <button name="step" value="{$next}" class="button quiqqer-order-ordering-buttons-next">
+            {locale group="quiqqer/order" var="ordering.btn.next"}
+        </button>
+        {/if}
+    </div>
+
+    <input type="hidden" name="pre" value="{$previous}"/>
+    <input type="hidden" name="current" value="{$CurrentStep->getName()}"/>
+</form>

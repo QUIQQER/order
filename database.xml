@@ -37,7 +37,7 @@
             <index>hash</index>
         </table>
 
-        <table name="ordersProcess">
+        <table name="orders_process">
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(10) NOT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
             <field type="INT NOT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->

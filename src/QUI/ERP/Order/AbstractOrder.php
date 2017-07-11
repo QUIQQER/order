@@ -478,6 +478,7 @@ abstract class AbstractOrder
     protected function parseAddressData(array $address)
     {
         $fields = array_flip(array(
+            'id',
             'salutation',
             'firstname',
             'lastname',
@@ -560,6 +561,8 @@ abstract class AbstractOrder
      *
      * @param string|integer $paymentId
      * @throws Exception
+     *
+     * @todo Payment->canBeUsed() noch implementieren
      */
     public function setPayment($paymentId)
     {

@@ -46,9 +46,43 @@ class Ordering extends QUI\Control
             $this->setAttribute('step', $step);
         }
 
+        if (!$step && isset($_REQUEST['current'])) {
+            $step = $_REQUEST['current'];
+            $this->setAttribute('step', $step);
+        }
+
+        if (!$step && isset($_REQUEST['current'])) {
+            $step = $_REQUEST['current'];
+            $this->setAttribute('step', $step);
+        }
+
+
         if (!$step || !isset($steps[$step])) {
             reset($steps);
             $this->setAttribute('step', key($steps));
+        }
+    }
+
+    /**
+     * Checks the submit status
+     * Must the previous step be saved?
+     */
+    protected function checkSubmission()
+    {
+        if (!isset($_REQUEST['current'])) {
+            return;
+        }
+
+        $preStep = $_REQUEST['current'];
+        $PreStep = $this->getNextStepByName($preStep);
+
+        if (!$PreStep) {
+            return;
+        }
+
+        try {
+            $PreStep->save();
+        } catch (QUI\Exception $Exception) {
         }
     }
 
@@ -59,15 +93,41 @@ class Ordering extends QUI\Control
     {
         $Engine  = QUI::getTemplateManager()->getEngine();
         $Current = $this->getCurrentStep();
-        $next    = $this->getNextStepName();
+        $steps   = $this->getSteps();
 
-        // @todo check all previous steps
-        if ($Current->isValid() === false) {
+        $this->checkSubmission();
+
+        // check all previous steps
+        // is one is invalid, go to them
+        foreach ($steps as $name => $Step) {
+            if ($name === $Current->getName()) {
+                break;
+            }
+
+            /* @var $Step AbstractOrderingStep */
+            if ($Step->isValid() === false) {
+                $Current = $Step;
+                break;
+            }
+        }
+
+        $next = $this->getNextStepName($Current);
+
+        if ($Current->showNext() === false) {
             $next = false;
+        }
+
+        $error = false;
+
+        try {
+            $Current->validate();
+        } catch (QUI\ERP\Order\Exception $Exception) {
+            $error = $Exception->getMessage();
         }
 
         $Engine->assign(array(
             'this'        => $this,
+            'error'       => $error,
             'CurrentStep' => $Current,
             'Site'        => $this->getSite(),
             'next'        => $next,
@@ -81,13 +141,31 @@ class Ordering extends QUI\Control
     /**
      * Return the current Step
      *
-     * @return OrderingStepInterface
+     * @return AbstractOrderingStep
      */
     public function getCurrentStep()
     {
+        $steps   = $this->getSteps();
+        $Current = $steps[$this->getCurrentStepName()];
+
+        return $Current;
+    }
+
+    /**
+     * Return the next step
+     *
+     * @param string $name - Name of the step
+     * @return bool|AbstractOrderingStep
+     */
+    protected function getNextStepByName($name)
+    {
         $steps = $this->getSteps();
 
-        return $steps[$this->getCurrentStepName()];
+        if (isset($steps[$name])) {
+            return $steps[$name];
+        }
+
+        return false;
     }
 
     /**
@@ -111,11 +189,17 @@ class Ordering extends QUI\Control
     /**
      * Return the next step
      *
+     * @param null|AbstractOrderingStep $StartStep
      * @return bool|string
      */
-    protected function getNextStepName()
+    protected function getNextStepName($StartStep = null)
     {
-        $step  = $this->getCurrentStepName();
+        if ($StartStep === null) {
+            $step = $this->getCurrentStepName();
+        } else {
+            $step = $StartStep->getName();
+        }
+
         $steps = $this->getSteps();
 
         $keys = array_keys($steps);
@@ -162,7 +246,8 @@ class Ordering extends QUI\Control
         }
 
         $Project = QUI::getRewrite()->getProject();
-        $sites   = $Project->getSitesIds(array(
+
+        $sites = $Project->getSitesIds(array(
             'where' => array(
                 'type'   => 'quiqqer/order:types/orderingProcess',
                 'active' => 1
@@ -225,13 +310,20 @@ class Ordering extends QUI\Control
             'Order'   => $this->getOrder()
         );
 
+        $Basket   = new Basket($params);
+        $Address  = new Address($params);
+        $Delivery = new Delivery($params);
+        $Payment  = new Payment($params);
+        $Checkout = new Checkout($params);
+        $Finish   = new Finish($params);
+
         return array(
-            'basket'   => new Basket($params),
-            'address'  => new Address($params),
-            'delivery' => new Delivery($params),
-            'payment'  => new Payment($params),
-            'checkout' => new Checkout($params),
-            'finish'   => new Finish($params)
+            $Basket->getName()   => $Basket,
+            $Address->getName()  => $Address,
+            $Delivery->getName() => $Delivery,
+            $Payment->getName()  => $Payment,
+            $Checkout->getName() => $Checkout,
+            $Finish->getName()   => $Finish
         );
     }
 }

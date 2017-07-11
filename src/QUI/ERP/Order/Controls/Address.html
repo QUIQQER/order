@@ -14,41 +14,47 @@
         </button>
     </div>
 
-    <form>
-        <div class="quiqqer-order-step-address-list">
-            {if $User->getId()}
-            {* Logged in user *}
+    <div class="quiqqer-order-step-address-list">
+        {if $User->getId()}
+        {* Logged in user *}
 
-            {foreach $addresses as $Address}
-            <div class="quiqqer-order-step-address-list-entry">
-                <header>
-                    <label>
-                        <span class="fa fa-address-card-o"></span>
-                        Rechnungsadresse
-                        <input type="radio" name="address_invoice" value="{$Address->getId()}">
-                    </label>
-                </header>
-                <address>
-                    {$UserAddress->render()}
-                </address>
-                <div class="quiqqer-order-step-address-list-entry-buttons">
-                    <button>
-                        <span class="fa fa-edit"></span>
-                        <span>Ändern</span>
-                    </button>
-                    <button>
-                        <span class="fa fa-trash"></span>
-                        <span>Löschen</span>
-                    </button>
-                </div>
+        {foreach $addresses as $Address}
+        <div class="quiqqer-order-step-address-list-entry">
+            <header>
+                <label>
+                    <span class="fa fa-address-card-o"></span>
+                    {locale group="quiqqer/order" var="ordering.step.title.Address.invoiceAddress.title"}
+                    <input type="radio"
+                           name="address_invoice"
+                           value="{$Address->getId()}"
+                           {if $selectedAddressId == $Address->getId()}checked="checked"{/if}
+                    >
+                </label>
+            </header>
+            <address>
+                {$Address->render()}
+            </address>
+            <div class="quiqqer-order-step-address-list-entry-buttons">
+                <button type="submit" name="edit" value="{$Address->getId()}">
+                    <span class="fa fa-edit"></span>
+                    <span>
+                        {locale group="quiqqer/order" var="ordering.step.title.Address.editButton"}
+                    </span>
+                </button>
+                <button type="submit" name="delete" value="{$Address->getId()}">
+                    <span class="fa fa-trash"></span>
+                    <span>
+                        {locale group="quiqqer/order" var="ordering.step.title.Address.deleteButton"}
+                    </span>
+                </button>
             </div>
-            {/foreach}
-
-            {else}
-            {* Unregistered user*}
-
-            {/if}
-
         </div>
-    </form>
+        {/foreach}
+
+        {else}
+        {* Unregistered user*}
+
+        {/if}
+
+    </div>
 </section>

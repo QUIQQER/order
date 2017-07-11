@@ -32,8 +32,22 @@ class Delivery extends AbstractOrderingStep
         return $Engine->fetch(dirname(__FILE__) . '/Delivery.html');
     }
 
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'delivery';
+    }
+
     public function validate()
     {
         // TODO: Implement validate() method.
+    }
+
+
+    public function save()
+    {
+        // TODO: Implement save() method.
     }
 }

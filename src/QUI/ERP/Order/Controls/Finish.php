@@ -33,6 +33,15 @@ class Finish extends AbstractOrderingStep
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'finish';
+    }
+
+
+    /**
      * @throws QUI\ERP\Order\Exception
      */
     public function validate()
@@ -45,5 +54,10 @@ class Finish extends AbstractOrderingStep
                 'exception.order.is.not.finished'
             ));
         }
+    }
+
+    public function save()
+    {
+        // TODO: Implement save() method.
     }
 }

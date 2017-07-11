@@ -42,6 +42,14 @@ class Basket extends AbstractOrderingStep
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'basket';
+    }
+
+    /**
      * @return QUI\ERP\Order\Basket\Basket
      */
     public function getBasket()
@@ -78,5 +86,11 @@ class Basket extends AbstractOrderingStep
         ));
 
         return $Engine->fetch(dirname(__FILE__) . '/Basket.html');
+    }
+
+
+    public function save()
+    {
+        // TODO: Implement save() method.
     }
 }

@@ -33,8 +33,20 @@ class Checkout extends AbstractOrderingStep
         return $Engine->fetch(dirname(__FILE__) . '/Checkout.html');
     }
 
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'checkout';
+    }
+
     public function validate()
     {
         // TODO: Implement validate() method.
+    }
+
+    public function save()
+    {
     }
 }

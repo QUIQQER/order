@@ -3,6 +3,15 @@
     width: 100%;
 }
 
+.quiqqer-order-ordering-error {
+    background: #F2D4CE;
+    border-color: #AE432E;
+    clear: both;
+    display: block;
+    padding: 10px;
+    width: 100%;
+}
+
 /** processing / time line
  ============================================*/
 

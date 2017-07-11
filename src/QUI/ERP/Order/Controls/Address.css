@@ -68,3 +68,59 @@
     font-size: 12px !important;
     padding: 0 10px !important;
 }
+
+/** Rechnungsadresse
+ ================================================== */
+
+.quiqqer-order-step-address-edit {
+    margin: 0 auto;
+    max-width: 600px;
+    width: 100%;
+}
+
+.quiqqer-order-step-address-edit header {
+    margin-bottom: 40px;
+}
+
+.quiqqer-order-step-address-edit label {
+    clear: both;
+    display: inline-block;
+    width: 100%;
+}
+
+.quiqqer-order-step-address-edit label span {
+    float: left;
+    width: 50%
+}
+
+.quiqqer-order-step-address-edit input,
+.quiqqer-order-step-address-edit select {
+    float: left;
+    width: 50%
+}
+
+.quiqqer-order-step-address-edit-button {
+    margin-left: 50%;
+    width: 50%;
+
+    padding: 10px !important;
+    font-size: 14px !important;
+}
+
+/** Rechnungsadresse
+ ================================================== */
+
+.quiqqer-order-step-address-delete {
+    margin: 0 auto;
+    max-width: 600px;
+    width: 100%;
+}
+
+.quiqqer-order-step-address-delete-container-deleteBtn {
+    padding: 10px !important;
+    font-size: 14px !important;
+}
+
+.quiqqer-order-step-address-delete-container address {
+    margin: 20px auto;
+}

@@ -86,7 +86,7 @@ class Handler extends Singleton
      */
     public function tableOrderProcess()
     {
-        return QUI::getDBTableName('ordersProcess');
+        return QUI::getDBTableName('orders_process');
     }
 
     /**

@@ -51,10 +51,21 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     {
         try {
             $this->validate();
-        } catch (QUI\ERP\Order\Exception $exception) {
+        } catch (QUI\ERP\Order\Exception $Exception) {
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * It can be overwritten and can be implemented its own functionality
+     * eq: Thus it is possible to display settings without the next button
+     *
+     * @return bool
+     */
+    public function showNext()
+    {
         return true;
     }
 }

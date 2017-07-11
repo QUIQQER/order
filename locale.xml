@@ -16,7 +16,7 @@
             <en><![CDATA[Orders]]></en>
         </locale>
 
-        <locale name="cutomerData">
+        <locale name="customerData">
             <de><![CDATA[Kundendaten]]></de>
             <en><![CDATA[Customer data]]></en>
         </locale>
@@ -77,6 +77,10 @@
         <locale name="exception.order.is.not.finished">
             <de><![CDATA[Die Bestellung wurde noch nicht zu ende geführt.]]></de>
             <en><![CDATA[The order has not yet been completed.]]></en>
+        </locale>
+        <locale name="exception.missing.payment">
+            <de><![CDATA[Bitte wählen Sie eine Bezahlmethode aus, um mit der Bestellung fortzuführen.]]></de>
+            <en><![CDATA[Please select a payment method to proceed the order.]]></en>
         </locale>
 
         <locale name="message.select.customer">
@@ -160,6 +164,14 @@
             <de><![CDATA[Fertig!]]></de>
             <en><![CDATA[Done!]]></en>
         </locale>
+        <locale name="ordering.btn.next">
+            <de><![CDATA[Übernehmen und weiter]]></de>
+            <en><![CDATA[Apply and continue]]></en>
+        </locale>
+        <locale name="ordering.btn.previous">
+            <de><![CDATA[Zurück]]></de>
+            <en><![CDATA[Back]]></en>
+        </locale>
 
         <locale name="ordering.step.title.Address.description">
             <de><![CDATA[
@@ -174,6 +186,72 @@
         <locale name="ordering.step.title.Address.addButton">
             <de><![CDATA[Neue Adresse hinzufügen]]></de>
             <en><![CDATA[Add new address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.invoiceAddress.title">
+            <de><![CDATA[Rechnungsadresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.editButton">
+            <de><![CDATA[Ändern]]></de>
+            <en><![CDATA[Edit]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.deleteButton">
+            <de><![CDATA[Löschen]]></de>
+            <en><![CDATA[Delete]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.edit">
+            <de><![CDATA[Adresse bearbeiten]]></de>
+            <en><![CDATA[Edit address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.edit.btn">
+            <de><![CDATA[Adresse speichern]]></de>
+            <en><![CDATA[Save address]]></en>
+        </locale>
+
+        <locale name="ordering.step.title.Address.delete">
+            <de><![CDATA[Adresse löschen]]></de>
+            <en><![CDATA[Delete address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.delete.message">
+            <de><![CDATA[Möchten Sie die Adresse wirklich löschen?]]></de>
+            <en><![CDATA[Are you sure you want to delete the address?]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.delete.btn">
+            <de><![CDATA[Adresse löschen]]></de>
+            <en><![CDATA[Delete address]]></en>
+        </locale>
+
+        <locale name="salutation">
+            <de><![CDATA[Anrede]]></de>
+            <en><![CDATA[Salutation]]></en>
+        </locale>
+        <locale name="firstname">
+            <de><![CDATA[Vorname]]></de>
+            <en><![CDATA[Firstname]]></en>
+        </locale>
+        <locale name="lastname">
+            <de><![CDATA[Nachname]]></de>
+            <en><![CDATA[Lastname]]></en>
+        </locale>
+        <locale name="company">
+            <de><![CDATA[Firma]]></de>
+            <en><![CDATA[Company]]></en>
+        </locale>
+        <locale name="street_no">
+            <de><![CDATA[Strasse und Hausnummer]]></de>
+            <en><![CDATA[Street and house number]]></en>
+        </locale>
+        <locale name="zip">
+            <de><![CDATA[PLZ]]></de>
+            <en><![CDATA[Zip]]></en>
+        </locale>
+        <locale name="city">
+            <de><![CDATA[Stadt]]></de>
+            <en><![CDATA[City]]></en>
+        </locale>
+        <locale name="country">
+            <de><![CDATA[Land]]></de>
+            <en><![CDATA[Country]]></en>
         </locale>
     </groups>
 

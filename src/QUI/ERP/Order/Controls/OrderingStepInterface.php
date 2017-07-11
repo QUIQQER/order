@@ -11,10 +11,18 @@ use QUI\ERP\Order\Exception;
 interface OrderingStepInterface
 {
     /**
+     * Return the step name
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
      * @param null $Locale
      * @return mixed
      */
     public function getTitle($Locale = null);
+
 
     /**
      * @throws Exception
@@ -25,4 +33,11 @@ interface OrderingStepInterface
      * @return bool
      */
     public function isValid();
+
+    /**
+     * Save the values from the step into the processing order
+     *
+     * @return mixed
+     */
+    public function save();
 }
