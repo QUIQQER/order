@@ -87,10 +87,40 @@ class Ordering extends QUI\Control
     }
 
     /**
+     *
+     */
+    protected function toOrder()
+    {
+        $steps = $this->getSteps();
+
+        // check all previous steps
+        // is one is invalid, go to them
+        foreach ($steps as $name => $Step) {
+            if ($Step->getName() === 'checkout'
+                || $Step->getName() === 'finish'
+            ) {
+                continue;
+            }
+
+            $Step->validate();
+        }
+
+        // all is correct, we can do the payment process
+        $Payment = $this->getOrder()->getPayment();
+    }
+
+    /**
      * @return string
      */
     public function getBody()
     {
+        if (isset($_REQUEST['payableToOrder'])) {
+            try {
+                $this->toOrder();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         $Engine  = QUI::getTemplateManager()->getEngine();
         $Current = $this->getCurrentStep();
         $steps   = $this->getSteps();
@@ -117,6 +147,14 @@ class Ordering extends QUI\Control
             $next = false;
         }
 
+
+        $payableToOrder = false;
+
+        if ($Current->getName() === 'checkout') {
+            $next           = false;
+            $payableToOrder = true;
+        }
+
         $error = false;
 
         try {
@@ -126,13 +164,14 @@ class Ordering extends QUI\Control
         }
 
         $Engine->assign(array(
-            'this'        => $this,
-            'error'       => $error,
-            'CurrentStep' => $Current,
-            'Site'        => $this->getSite(),
-            'next'        => $next,
-            'previous'    => $this->getPreviousStepName(),
-            'steps'       => $this->getSteps()
+            'this'           => $this,
+            'error'          => $error,
+            'CurrentStep'    => $Current,
+            'Site'           => $this->getSite(),
+            'next'           => $next,
+            'payableToOrder' => $payableToOrder,
+            'previous'       => $this->getPreviousStepName(),
+            'steps'          => $this->getSteps()
         ));
 
         return $Engine->fetch(dirname(__FILE__) . '/Ordering.html');

@@ -40,7 +40,11 @@
         </a>
         {/if}
 
-        {if $next}
+        {if $payableToOrder}
+        <button name="step" value="payableToOrder" class="button quiqqer-order-ordering-buttons-next">
+            {locale group="quiqqer/order" var="ordering.btn.pay.to.order"}
+        </button>
+        {else if $next}
         <button name="step" value="{$next}" class="button quiqqer-order-ordering-buttons-next">
             {locale group="quiqqer/order" var="ordering.btn.next"}
         </button>

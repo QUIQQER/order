@@ -172,6 +172,10 @@
             <de><![CDATA[Zurück]]></de>
             <en><![CDATA[Back]]></en>
         </locale>
+        <locale name="ordering.btn.pay.to.order">
+            <de><![CDATA[Kostenpflichtig bestellen]]></de>
+            <en><![CDATA[Pay to order]]></en>
+        </locale>
 
         <locale name="ordering.step.title.Address.description">
             <de><![CDATA[
