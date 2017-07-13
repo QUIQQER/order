@@ -47,6 +47,10 @@ class Address extends AbstractOrderingStep
         $User   = QUI::getUserBySession();
         $Engine = QUI::getTemplateManager()->getEngine();
 
+        if (isset($_REQUEST['create'])) {
+            return $this->getBodyForCreate();
+        }
+
         if (isset($_REQUEST['edit'])) {
             try {
                 return $this->getBodyForEdit();
@@ -54,9 +58,16 @@ class Address extends AbstractOrderingStep
             }
         }
 
+        if (isset($_REQUEST['createSave'])) {
+            try {
+                $this->createAddress();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         if (isset($_REQUEST['editSave'])) {
             try {
-                $this->edit();
+                $this->editAddress();
             } catch (QUI\Exception $Exception) {
             }
         }
@@ -171,9 +182,68 @@ class Address extends AbstractOrderingStep
     }
 
     /**
+     * Return the body for a address creation
+     *
+     * @return string
+     */
+    protected function getBodyForCreate()
+    {
+        $User   = QUI::getUserBySession();
+        $Engine = QUI::getTemplateManager()->getEngine();
+
+        $currentCountry = '';
+        $Country        = $User->getCountry();
+
+        if ($Country) {
+            $currentCountry = $Country->getCode();
+        }
+
+        $Engine->assign(array(
+            'this'           => $this,
+            'currentCountry' => $currentCountry,
+            'countries'      => QUI\Countries\Manager::getList()
+        ));
+
+        return $Engine->fetch(dirname(__FILE__) . '/Address.Create.html');
+    }
+
+    /**
+     * Create a new address for the user
+     */
+    protected function createAddress()
+    {
+        if (!isset($_REQUEST['createSave'])) {
+            return;
+        }
+
+        /* @var $User QUI\Users\User */
+        $User    = QUI::getUserBySession();
+        $Address = $User->addAddress();
+
+        $fields = array(
+            'company',
+            'salutation',
+            'firstname',
+            'lastname',
+            'street_no',
+            'zip',
+            'city',
+            'country'
+        );
+
+        foreach ($fields as $field) {
+            if (isset($_REQUEST[$field])) {
+                $Address->setAttribute($field, $_REQUEST[$field]);
+            }
+        }
+
+        $Address->save();
+    }
+
+    /**
      * Edit an address
      */
-    protected function edit()
+    protected function editAddress()
     {
         if (!isset($_REQUEST['addressId']) || !isset($_REQUEST['editSave'])) {
             return;

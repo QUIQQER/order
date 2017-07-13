@@ -6,6 +6,7 @@
 
 namespace QUI\ERP\Order\Controls;
 
+use function DusanKasan\Knapsack\first;
 use QUI;
 
 /**
@@ -141,21 +142,27 @@ class Ordering extends QUI\Control
             }
         }
 
-        $next = $this->getNextStepName($Current);
+        $error    = false;
+        $next     = $this->getNextStepName($Current);
+        $previous = $this->getPreviousStepName();
+
+        $payableToOrder = false;
+
 
         if ($Current->showNext() === false) {
             $next = false;
         }
 
-
-        $payableToOrder = false;
+        if ($previous === ''
+            || $Current->getName() === $this->getFirstStep()->getName()
+        ) {
+            $previous = false;
+        }
 
         if ($Current->getName() === 'checkout') {
             $next           = false;
             $payableToOrder = true;
         }
-
-        $error = false;
 
         try {
             $Current->validate();
@@ -169,8 +176,8 @@ class Ordering extends QUI\Control
             'CurrentStep'    => $Current,
             'Site'           => $this->getSite(),
             'next'           => $next,
+            'previous'       => $previous,
             'payableToOrder' => $payableToOrder,
-            'previous'       => $this->getPreviousStepName(),
             'steps'          => $this->getSteps()
         ));
 
@@ -188,6 +195,16 @@ class Ordering extends QUI\Control
         $Current = $steps[$this->getCurrentStepName()];
 
         return $Current;
+    }
+
+    /**
+     * Return the first step
+     *
+     * @return AbstractOrderingStep
+     */
+    public function getFirstStep()
+    {
+        return array_values($this->getSteps())[0];
     }
 
     /**
@@ -221,8 +238,7 @@ class Ordering extends QUI\Control
             return $step;
         }
 
-        reset($steps);
-        return key($steps);
+        return $this->getFirstStep()->getName();
     }
 
     /**

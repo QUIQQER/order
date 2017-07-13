@@ -71,10 +71,26 @@ class Basket extends AbstractOrderingStep
     }
 
     /**
+     * @return bool
+     */
+    public function showNext()
+    {
+        if (!$this->Basket->count()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @return string
      */
     public function getBody()
     {
+        if (!$this->Basket->count()) {
+            return '';
+        }
+
         $Engine = QUI::getTemplateManager()->getEngine();
 
         $Articles = $this->Basket->getArticles()->toUniqueList();
@@ -88,7 +104,9 @@ class Basket extends AbstractOrderingStep
         return $Engine->fetch(dirname(__FILE__) . '/Basket.html');
     }
 
-
+    /**
+     *
+     */
     public function save()
     {
         // TODO: Implement save() method.

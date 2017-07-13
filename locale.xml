@@ -82,6 +82,10 @@
             <de><![CDATA[Bitte wählen Sie eine Bezahlmethode aus, um mit der Bestellung fortzuführen.]]></de>
             <en><![CDATA[Please select a payment method to proceed the order.]]></en>
         </locale>
+        <locale name="exception.basket.has.no.articles">
+            <de><![CDATA[Ihr Warenkorb enthält leider keine Artikel.]]></de>
+            <en><![CDATA[Your shopping basket contains no items.]]></en>
+        </locale>
 
         <locale name="message.select.customer">
             <de><![CDATA[Bitte wählen Sie einen Kunden aus.]]></de>
@@ -210,6 +214,10 @@
         <locale name="ordering.step.title.Address.edit.btn">
             <de><![CDATA[Adresse speichern]]></de>
             <en><![CDATA[Save address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address.create.btn">
+            <de><![CDATA[Adresse anlegen]]></de>
+            <en><![CDATA[Create address]]></en>
         </locale>
 
         <locale name="ordering.step.title.Address.delete">
