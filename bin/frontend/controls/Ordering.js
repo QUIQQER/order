@@ -83,71 +83,11 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
         next: function () {
             var self = this;
 
-            var Container = this.$StepContainer.getFirst();
-
-            this.$StepContainer.setStyles({
-                height  : this.$StepContainer.getSize().y,
-                overflow: 'hidden',
-                width   : '100%'
-            });
-
-            Container.setStyles({
-                left    : 0,
-                position: 'absolute',
-                top     : 0,
-                width   : '100%'
-            });
-
-            self.$animate(Container, {
-                left   : '-100%',
-                opacity: 0
-            }, {
-                duration: 500
-            }).then(function () {
-                Container.destroy();
-            });
+            this.$beginResultRendering();
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getNext', function (result) {
-                    var Ghost = new Element('div', {
-                        html: result.html
-                    });
-
-                    self.setAttribute('current', result.step);
-                    self.$refreshSteps();
-
-                    var Next = new Element('div', {
-                        html  : Ghost.getElement('.quiqqer-order-ordering-step').get('html'),
-                        styles: {
-                            'float' : 'left',
-                            left    : '100%',
-                            opacity : 0,
-                            position: 'relative',
-                            top     : 0,
-                            width   : '100%'
-                        }
-                    });
-
-                    Next.inject(self.$StepContainer);
-
-                    var Prom1 = self.$animate(Next, {
-                        left   : 0,
-                        opacity: 1
-                    }, {
-                        duration: 500
-                    });
-
-
-                    var Prom2 = self.$animate(self.$StepContainer, {
-                        height: Next.getSize().y
-                    }, {
-                        duration: 500
-                    });
-
-                    Promise.all([
-                        Prom1,
-                        Prom2
-                    ]).then(resolve);
+                    self.$renderResult(result).then(resolve);
                 }, {
                     'package': 'quiqqer/order',
                     orderId  : self.getAttribute('orderId'),
@@ -163,14 +103,105 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
         previous: function () {
             var self = this;
 
-            return new Promise(function () {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getPrevious', function (result) {
+            this.$beginResultRendering(false);
 
+            return new Promise(function (resolve) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getPrevious', function (result) {
+                    self.$renderResult(result, false).then(resolve);
                 }, {
                     'package': 'quiqqer/order',
-                    orderId  : this.getAttribute('orderId'),
-                    current  : this.getAttribute('current')
+                    orderId  : self.getAttribute('orderId'),
+                    current  : self.getAttribute('current')
                 });
+            });
+        },
+
+        /**
+         * Render the result of an next / previous request
+         *
+         * @param {object} result
+         * @param {boolean} [showFromRight]
+         * @return {Promise}
+         */
+        $renderResult: function (result, showFromRight) {
+            var Ghost = new Element('div', {
+                html: result.html
+            });
+
+            if (typeof showFromRight === 'undefined') {
+                showFromRight = true;
+            }
+
+            this.setAttribute('current', result.step);
+            this.$refreshSteps();
+
+            var Next = new Element('div', {
+                html  : Ghost.getElement('.quiqqer-order-ordering-step').get('html'),
+                styles: {
+                    'float' : 'left',
+                    left    : showFromRight ? '100%' : '-100%',
+                    opacity : 0,
+                    position: 'relative',
+                    top     : 0,
+                    width   : '100%'
+                }
+            });
+
+            Next.inject(this.$StepContainer);
+
+            var Prom1 = this.$animate(Next, {
+                left   : 0,
+                opacity: 1
+            }, {
+                duration: 500
+            });
+
+            var Prom2 = this.$animate(this.$StepContainer, {
+                height: Next.getSize().y
+            }, {
+                duration: 500
+            });
+
+            return Promise.all([
+                Prom1,
+                Prom2
+            ]);
+        },
+
+        /**
+         * Helper function for rendering
+         * Execution at the beginning of the result rendering
+         *
+         * @param {Boolean} [hideToLeft] - In which direction should be hidden
+         * @return {Promise}
+         */
+        $beginResultRendering: function (hideToLeft) {
+            var Container = this.$StepContainer.getFirst();
+
+            if (typeof hideToLeft === 'undefined') {
+                hideToLeft = true;
+            }
+
+            this.$StepContainer.setStyles({
+                height  : this.$StepContainer.getSize().y,
+                overflow: 'hidden',
+                width   : '100%'
+            });
+
+            Container.setStyles({
+                left    : 0,
+                position: 'absolute',
+                top     : 0,
+                width   : '100%'
+            });
+
+            return this.$animate(Container, {
+                left   : hideToLeft ? '-100%' : '100%',
+                opacity: 0
+            }, {
+                duration: 500
+            }).then(function () {
+                Container.destroy();
             });
         },
 
@@ -186,7 +217,7 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
 
             for (var i = 0, len = list.length; i < len; i++) {
                 list[i].addClass('active');
-console.warn(list[i].get('data-step'), current);
+
                 if (list[i].get('data-step') === current) {
                     list[i].removeClass('active');
                     list[i].addClass('current');
