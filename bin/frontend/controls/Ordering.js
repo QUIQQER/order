@@ -58,14 +58,9 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
             this.$Buttons       = this.getElm().getElement('.quiqqer-order-ordering-buttons');
             this.$StepContainer = this.getElm().getElement('.quiqqer-order-ordering-step');
             this.$Timeline      = this.getElm().getElement('.quiqqer-order-ordering-timeline');
+            this.$Form          = this.getElm().getElement('[name="order"]');
 
-            this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
-            this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
-
-            this.$Next.addEvent('click', this.$onNextClick);
-            this.$Previous.addEvent('click', this.$onPreviousClick);
-
-            this.$Form = this.getElm().getElement('[name="order"]');
+            this.$refreshButtonEvents();
 
             this.setAttribute('orderId', parseInt(this.$Form.elements.orderId.value));
         },
@@ -133,8 +128,8 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
             }
 
             this.setAttribute('current', result.step);
-            this.$refreshSteps();
 
+            // render container
             var Next = new Element('div', {
                 html  : Ghost.getElement('.quiqqer-order-ordering-step').get('html'),
                 styles: {
@@ -148,6 +143,16 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
             });
 
             Next.inject(this.$StepContainer);
+
+            // render buttons
+            this.$Buttons.set(
+                'html',
+                Ghost.getElement('.quiqqer-order-ordering-buttons').get('html')
+            );
+
+            // events & animation
+            this.$refreshSteps();
+            this.$refreshButtonEvents();
 
             var Prom1 = this.$animate(Next, {
                 left   : 0,
@@ -224,6 +229,20 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
                     return;
                 }
             }
+        },
+
+        /**
+         * Refresh the button events
+         */
+        $refreshButtonEvents: function () {
+            this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
+            this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
+
+            this.$Next.removeEvents('click');
+            this.$Previous.removeEvents('click');
+
+            this.$Next.addEvent('click', this.$onNextClick);
+            this.$Previous.addEvent('click', this.$onPreviousClick);
         },
 
         /**
