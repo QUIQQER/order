@@ -20,7 +20,7 @@
     clear: both;
     display: block;
     float: left;
-    margin: 0 0 20px !important;
+    margin: 0 0 40px !important;
     padding: 0;
     width: 100%;
 }
@@ -80,6 +80,13 @@
     color: #75b947;
 }
 
+.quiqqer-order-ordering-timeline li.current:hover a,
+.quiqqer-order-ordering-timeline li.active:hover a,
+.quiqqer-order-ordering-timeline li.current:hover .fa,
+.quiqqer-order-ordering-timeline li.active:hover .fa {
+    color: #519f1d;
+}
+
 .quiqqer-order-ordering-timeline {
     width: 100%;
 }
@@ -91,7 +98,8 @@
     clear: both;
     display: block;
     margin-bottom: 20px;
-    padding-top: 40px;
+    overflow-x: hidden;
+    position: relative;
     width: 100%;
 }
 
@@ -108,4 +116,13 @@
 
 .quiqqer-order-ordering-buttons-next {
     float: right;
+}
+
+.quiqqer-order-ordering-buttons-next[value="payableToOrder"] {
+    background-color: #75b947;
+    color: #fff;
+}
+
+.quiqqer-order-ordering-buttons-next[value="payableToOrder"]:hover {
+    background-color: #519f1d;
 }

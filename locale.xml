@@ -232,6 +232,18 @@
             <de><![CDATA[Adresse löschen]]></de>
             <en><![CDATA[Delete address]]></en>
         </locale>
+        <locale name="ordering.step.checkout.text">
+            <de><![CDATA[
+            Bitte überprüfen Sie noch einmal alle Angaben ihrer Bestellung.<br />
+            Mit einem klick auf "Kostenoflichtig Bestellung" bestätigen Sie Ihre Angaben und schließen
+            Ihre Bestellung ab. Sie erhalten eine Bestätigung an ihre angegebene E-Mail Adresse.
+            ]]></de>
+            <en><![CDATA[
+            Please check all the details of your order. <br />
+            By clicking on "Pay to order", you confirm your details and close your order.
+            You will receive a confirmation to your e-mail address.
+            ]]></en>
+        </locale>
 
         <locale name="salutation">
             <de><![CDATA[Anrede]]></de>

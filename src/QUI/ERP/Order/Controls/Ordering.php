@@ -6,7 +6,6 @@
 
 namespace QUI\ERP\Order\Controls;
 
-use function DusanKasan\Knapsack\first;
 use QUI;
 
 /**
@@ -75,7 +74,7 @@ class Ordering extends QUI\Control
         }
 
         $preStep = $_REQUEST['current'];
-        $PreStep = $this->getNextStepByName($preStep);
+        $PreStep = $this->getStepByName($preStep);
 
         if (!$PreStep) {
             return;
@@ -173,12 +172,13 @@ class Ordering extends QUI\Control
         $Engine->assign(array(
             'this'           => $this,
             'error'          => $error,
-            'CurrentStep'    => $Current,
-            'Site'           => $this->getSite(),
             'next'           => $next,
             'previous'       => $previous,
             'payableToOrder' => $payableToOrder,
-            'steps'          => $this->getSteps()
+            'steps'          => $this->getSteps(),
+            'CurrentStep'    => $Current,
+            'Site'           => $this->getSite(),
+            'Order'          => $this->getOrder()
         ));
 
         return $Engine->fetch(dirname(__FILE__) . '/Ordering.html');
@@ -210,10 +210,76 @@ class Ordering extends QUI\Control
     /**
      * Return the next step
      *
+     * @param null|AbstractOrderingStep $StartStep
+     * @return bool|AbstractOrderingStep
+     */
+    public function getNextStep($StartStep = null)
+    {
+        if ($StartStep === null) {
+            $step = $this->getCurrentStepName();
+        } else {
+            $step = $StartStep->getName();
+        }
+
+        $steps = $this->getSteps();
+
+        $keys = array_keys($steps);
+        $pos  = array_search($step, $keys);
+        $next = $pos + 1;
+
+        if (!isset($keys[$next])) {
+            return false;
+        }
+
+        $key = $keys[$next];
+
+        if (isset($steps[$key])) {
+            return $steps[$key];
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the previous step
+     *
+     * @param null|AbstractOrderingStep $StartStep
+     * @return bool|AbstractOrderingStep
+     */
+    public function getPreviousStep($StartStep = null)
+    {
+        if ($StartStep === null) {
+            $step = $this->getCurrentStepName();
+        } else {
+            $step = $StartStep->getName();
+        }
+
+        $steps = $this->getSteps();
+
+        $keys = array_keys($steps);
+        $pos  = array_search($step, $keys);
+        $prev = $pos - 1;
+
+        if (!isset($keys[$prev])) {
+            return false;
+        }
+
+        $key = $keys[$prev];
+
+        if (isset($steps[$key])) {
+            return $steps[$key];
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the step via its name
+     *
      * @param string $name - Name of the step
      * @return bool|AbstractOrderingStep
      */
-    protected function getNextStepByName($name)
+    protected function getStepByName($name)
     {
         $steps = $this->getSteps();
 
@@ -249,20 +315,10 @@ class Ordering extends QUI\Control
      */
     protected function getNextStepName($StartStep = null)
     {
-        if ($StartStep === null) {
-            $step = $this->getCurrentStepName();
-        } else {
-            $step = $StartStep->getName();
-        }
+        $Next = $this->getNextStep($StartStep);
 
-        $steps = $this->getSteps();
-
-        $keys = array_keys($steps);
-        $pos  = array_search($step, $keys);
-        $next = $pos + 1;
-
-        if (isset($keys[$next])) {
-            return $keys[$next];
+        if ($Next) {
+            return $Next->getName();
         }
 
         return false;
@@ -271,19 +327,15 @@ class Ordering extends QUI\Control
     /**
      * Return the previous step
      *
+     * @param null|AbstractOrderingStep $StartStep
      * @return bool|string
      */
-    protected function getPreviousStepName()
+    protected function getPreviousStepName($StartStep = null)
     {
-        $step  = $this->getCurrentStepName();
-        $steps = $this->getSteps();
+        $Prev = $this->getPreviousStep($StartStep);
 
-        $keys = array_keys($steps);
-        $pos  = array_search($step, $keys);
-        $prev = $pos - 1;
-
-        if (isset($keys[$prev])) {
-            return $keys[$prev];
+        if ($Prev) {
+            return $Prev->getName();
         }
 
         return false;

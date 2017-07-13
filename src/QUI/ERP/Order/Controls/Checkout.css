@@ -1,0 +1,32 @@
+.quiqqer-order-step-checkout header {
+    margin-bottom: 20px;
+}
+
+.quiqqer-order-step-checkout-invoiceAddress,
+.quiqqer-order-step-checkout-payments,
+.quiqqer-order-step-checkout-article {
+    clear: both;
+    display: inline-block;
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.quiqqer-order-step-checkout-invoiceAddress {
+    margin-top: 20px;
+}
+
+.quiqqer-order-step-checkout-payments {
+
+}
+
+.quiqqer-order-step-checkout-payments-payment img {
+    float: left;
+    max-width: 100%;
+    width: 200px;
+}
+
+.quiqqer-order-step-checkout-payments-payment span {
+    float: left;
+    padding: 10px;
+}

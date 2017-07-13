@@ -18,6 +18,23 @@ use QUI\ERP\Order\Handler;
 class Checkout extends AbstractOrderingStep
 {
     /**
+     * @var QUI\ERP\Order\Basket\Basket
+     */
+    protected $Basket;
+
+    /**
+     * Basket constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct($attributes = array())
+    {
+        parent::__construct($attributes);
+
+        $this->addCSSFile(dirname(__FILE__) . '/Checkout.css');
+    }
+
+    /**
      * @return string
      */
     public function getBody()
@@ -26,8 +43,15 @@ class Checkout extends AbstractOrderingStep
         $Orders = Handler::getInstance();
         $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
 
+        $Articles = $Order->getArticles()->toUniqueList();
+        $Articles->hideHeader();
+
         $Engine->assign(array(
-            'User' => $Order->getCustomer()
+            'User'            => $Order->getCustomer(),
+            'InvoiceAddress'  => $Order->getInvoiceAddress(),
+            'DeliveryAddress' => $Order->getDeliveryAddress(),
+            'Payment'         => $Order->getPayment(),
+            'Articles'        => $Articles
         ));
 
         return $Engine->fetch(dirname(__FILE__) . '/Checkout.html');

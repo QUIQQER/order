@@ -1,7 +1,25 @@
-<section>
+<section class="quiqqer-order-step-checkout">
     <header>
         <h1>{locale group="quiqqer/order" var="ordering.step.title.Checkout"}</h1>
     </header>
 
+    {locale group="quiqqer/order" var="ordering.step.checkout.text"}
+
+    <div class="quiqqer-order-step-checkout-invoiceAddress">
+        <h2>Rechnungsaddresse</h2>
+        {$InvoiceAddress->render()}
+    </div>
+
+    <div class="quiqqer-order-step-checkout-payments">
+        <h2>Zahlung und Versand</h2>
+        <div class="quiqqer-order-step-checkout-payments-payment">
+            <img src="{$Payment->getPaymentType()->getIcon()}"/>
+            <span>{$Payment->getTitle()}</span>
+        </div>
+    </div>
+
+    <div class="quiqqer-order-step-checkout-article">
+        {$Articles->render()}
+    </div>
 
 </section>
