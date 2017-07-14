@@ -50,6 +50,14 @@ class Basket extends AbstractOrderingStep
     }
 
     /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return 'fa fa-shopping-basket';
+    }
+
+    /**
      * @return QUI\ERP\Order\Basket\Basket
      */
     public function getBasket()

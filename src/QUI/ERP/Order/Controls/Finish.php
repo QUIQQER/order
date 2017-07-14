@@ -40,6 +40,13 @@ class Finish extends AbstractOrderingStep
         return 'finish';
     }
 
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return 'fa-check';
+    }
 
     /**
      * @throws QUI\ERP\Order\Exception

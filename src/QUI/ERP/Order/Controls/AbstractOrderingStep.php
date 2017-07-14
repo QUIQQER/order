@@ -33,6 +33,17 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     }
 
     /**
+     * Returns a font awesome icon
+     * Can be overwritten by each step
+     *
+     * @return string
+     */
+    public function getIcon()
+    {
+        return 'fa fa-shopping-bag';
+    }
+
+    /**
      * Return the current order
      *
      * @return QUI\ERP\Order\OrderProcess

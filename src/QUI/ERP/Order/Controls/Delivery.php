@@ -40,6 +40,14 @@ class Delivery extends AbstractOrderingStep
         return 'delivery';
     }
 
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return 'fa-truck';
+    }
+
     public function validate()
     {
         // TODO: Implement validate() method.

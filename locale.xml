@@ -126,6 +126,23 @@
             <de><![CDATA[Zum Warenkorb]]></de>
             <en><![CDATA[To the Basket]]></en>
         </locale>
+
+        <locale name="ordering.btn.next">
+            <de><![CDATA[Übernehmen und weiter]]></de>
+            <en><![CDATA[Apply and continue]]></en>
+        </locale>
+        <locale name="ordering.btn.previous">
+            <de><![CDATA[Zurück]]></de>
+            <en><![CDATA[Back]]></en>
+        </locale>
+        <locale name="ordering.btn.pay.to.order">
+            <de><![CDATA[Kostenpflichtig bestellen]]></de>
+            <en><![CDATA[Pay to order]]></en>
+        </locale>
+        <locale name="ordering.title">
+            <de><![CDATA[Bestellung]]></de>
+            <en><![CDATA[Order]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -167,18 +184,6 @@
         <locale name="ordering.step.title.Finish">
             <de><![CDATA[Fertig!]]></de>
             <en><![CDATA[Done!]]></en>
-        </locale>
-        <locale name="ordering.btn.next">
-            <de><![CDATA[Übernehmen und weiter]]></de>
-            <en><![CDATA[Apply and continue]]></en>
-        </locale>
-        <locale name="ordering.btn.previous">
-            <de><![CDATA[Zurück]]></de>
-            <en><![CDATA[Back]]></en>
-        </locale>
-        <locale name="ordering.btn.pay.to.order">
-            <de><![CDATA[Kostenpflichtig bestellen]]></de>
-            <en><![CDATA[Pay to order]]></en>
         </locale>
 
         <locale name="ordering.step.title.Address.description">

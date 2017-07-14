@@ -7,3 +7,13 @@
     position: relative;
     top: -1px;
 }
+
+.quiqqer-order-btn-submit {
+    color: #e8f0de;
+    border-color: #64991e;
+    background: #75b947;
+}
+
+.quiqqer-order-btn-submit:hover {
+    background: #538018;
+}

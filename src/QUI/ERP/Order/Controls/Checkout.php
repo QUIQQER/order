@@ -65,6 +65,15 @@ class Checkout extends AbstractOrderingStep
         return 'checkout';
     }
 
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return 'fa-shopping-cart';
+    }
+
+
     public function validate()
     {
         // TODO: Implement validate() method.

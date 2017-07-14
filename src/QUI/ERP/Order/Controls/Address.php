@@ -41,6 +41,14 @@ class Address extends AbstractOrderingStep
     /**
      * @return string
      */
+    public function getIcon()
+    {
+        return 'fa-address-card';
+    }
+
+    /**
+     * @return string
+     */
     public function getBody()
     {
         /* @var $User QUI\Users\User */

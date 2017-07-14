@@ -39,6 +39,14 @@ class Payment extends AbstractOrderingStep
     /**
      * @return string
      */
+    public function getIcon()
+    {
+        return 'fa-money';
+    }
+
+    /**
+     * @return string
+     */
     public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
