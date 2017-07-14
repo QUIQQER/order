@@ -3,6 +3,10 @@
     width: 100%;
 }
 
+.quiqqer-order-ordering form {
+    height: 100%;
+}
+
 .quiqqer-order-ordering-error {
     background: #F2D4CE;
     border-color: #AE432E;

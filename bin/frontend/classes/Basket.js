@@ -119,6 +119,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         *
+         * @return {*|boolean|Number}
+         */
+        getCurrentOrderId: function () {
+            return this.$orderid;
+        },
+
+        /**
          * Return the quantity of the articles in the current list
          *
          * @returns {Number}

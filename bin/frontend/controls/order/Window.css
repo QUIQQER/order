@@ -1,0 +1,56 @@
+.quiqqer-order-window {
+
+}
+
+/** header
+ ============================================= */
+
+.quiqqer-order-window-header {
+    border-bottom: 20px solid rgba(0, 0, 0, 0.1);
+    float: left;
+    padding: 20px;
+    width: 100%;
+}
+
+.quiqqer-order-window-header-text {
+    float: left;
+    font-size: 24px;
+    line-height: 60px;
+    width: calc(100% - 60px);
+}
+
+.quiqqer-order-window-header-description {
+    float: left;
+    width: calc(100% - 60px);
+}
+
+.quiqqer-order-window-header-text .fa {
+    margin-right: 10px;
+}
+
+.quiqqer-order-window-header-close {
+    float: left;
+    font-size: 40px;
+    cursor: pointer;
+    text-align: center;
+    width: 60px;
+}
+
+/** content
+ ============================================= */
+
+.quiqqer-order-window-container {
+    display: none;
+    float: left;
+    height: calc(100% - 140px);
+    opacity: 0;
+    overflow: auto;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.quiqqer-order-window-container .quiqqer-order-ordering,
+.quiqqer-order-window-container [data-qui="package/quiqqer/order/bin/frontend/controls/Ordering"] {
+    height: 100%;
+}

@@ -9,7 +9,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
-    'package/quiqqer/order/bin/frontend/controls/basket/Window',
+    'package/quiqqer/order/bin/frontend/controls/order/Window',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
