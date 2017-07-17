@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
         $orders = $Orders->getOrdersInProcessFromUser($User);
 
         return array_map(function ($Order) {
-            /* @var $Order \QUI\ERP\Order\OrderProcess */
+            /* @var $Order \QUI\ERP\Order\OrderInProcess */
             return $Order->toArray();
         }, $orders);
     },

@@ -13,7 +13,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getControl',
     function ($orderId) {
-        $OrderProcess = new QUI\ERP\Order\Controls\Ordering(array(
+        $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
             'orderId' => (int)$orderId
         ));
 

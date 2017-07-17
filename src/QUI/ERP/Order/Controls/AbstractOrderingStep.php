@@ -46,7 +46,7 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     /**
      * Return the current order
      *
-     * @return QUI\ERP\Order\OrderProcess
+     * @return QUI\ERP\Order\OrderInProcess
      */
     public function getOrder()
     {

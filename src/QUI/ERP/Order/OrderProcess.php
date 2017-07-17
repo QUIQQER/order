@@ -7,195 +7,445 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\ERP\Order\Controls;
+use QUI\ERP\Order\Controls\AbstractOrderingStep;
+use QUI\ERP\Order\Utils\OrderProcessSteps;
 
 /**
- * Class OrderProcess
+ * Class OrderingProcess
+ * Coordinates the order process, (basket -> address -> delivery -> payment -> invoice)
  *
- * @package QUI\ERP\Order
+ * @package QUI\ERP\Order\Basket
  */
-class OrderProcess extends AbstractOrder
+class OrderProcess extends QUI\Control
 {
     /**
-     * Order constructor.
-     *
-     * @param string|integer $orderId - Order-ID
+     * @var QUI\ERP\Order\OrderInProcess
      */
-    public function __construct($orderId)
-    {
-        parent::__construct(
-            Handler::getInstance()->getOrderProcessData($orderId)
-        );
-    }
+    protected $Order = null;
 
     /**
-     * Alias for update
+     * Basket constructor.
      *
-     * @param null $PermissionUser
-     * @throws QUI\Permissions\Exception
+     * @param array $attributes
      */
-    public function save($PermissionUser = null)
+    public function __construct($attributes = array())
     {
-        if ($this->hasPermissions($PermissionUser) === false) {
-            throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
-                403
-            );
+        parent::__construct($attributes);
+
+        $this->setAttributes(array(
+            'Site'     => false,
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
+            'orderId'  => false
+        ));
+
+        $this->addCSSFile(dirname(__FILE__) . '/Controls/OrderProcess.css');
+
+        $steps = $this->getSteps();
+        $step  = $this->getAttribute('step');
+
+        if (!$step && isset($_REQUEST['step'])) {
+            $step = $_REQUEST['step'];
+            $this->setAttribute('step', $step);
         }
 
-        $this->update($PermissionUser);
-    }
-
-    /**
-     * @param null $PermissionUser
-     * @throws QUI\Permissions\Exception
-     */
-    public function update($PermissionUser = null)
-    {
-        if ($this->hasPermissions($PermissionUser) === false) {
-            throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
-                403
-            );
+        if (!$step && isset($_REQUEST['current'])) {
+            $step = $_REQUEST['current'];
+            $this->setAttribute('step', $step);
         }
 
-        $data = $this->getDataForSaving();
-
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderProcessUpdateBegin',
-            array($this, $data)
-        );
-
-        QUI::getDataBase()->update(
-            Handler::getInstance()->tableOrderProcess(),
-            $data,
-            array('id' => $this->getId())
-        );
-
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderProcessUpdate',
-            array($this, $data)
-        );
-    }
-
-    /**
-     * Delete the processing order
-     * The user itself or a super can delete it
-     *
-     * @param null|QUI\Interfaces\Users\User $PermissionUser
-     * @throws QUI\Permissions\Exception
-     */
-    public function delete($PermissionUser = null)
-    {
-        if ($this->hasPermissions($PermissionUser) === false) {
-            throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
-                403
-            );
+        if (!$step && isset($_REQUEST['current'])) {
+            $step = $_REQUEST['current'];
+            $this->setAttribute('step', $step);
         }
 
-        QUI::getDataBase()->delete(
-            Handler::getInstance()->tableOrderProcess(),
-            array('id' => $this->getId())
-        );
+
+        if (!$step || !isset($steps[$step])) {
+            reset($steps);
+            $this->setAttribute('step', key($steps));
+        }
     }
 
     /**
-     * An order in process is never finished
-     *
-     * @return bool
+     * Checks the submit status
+     * Must the previous step be saved?
      */
-    public function isPosted()
+    protected function checkSubmission()
     {
+        if (!isset($_REQUEST['current'])) {
+            return;
+        }
+
+        $preStep = $_REQUEST['current'];
+        $PreStep = $this->getStepByName($preStep);
+
+        if (!$PreStep) {
+            return;
+        }
+
+        try {
+            $PreStep->save();
+        } catch (QUI\Exception $Exception) {
+        }
+    }
+
+    /**
+     *
+     */
+    protected function toOrder()
+    {
+        $steps = $this->getSteps();
+
+        // check all previous steps
+        // is one is invalid, go to them
+        foreach ($steps as $name => $Step) {
+            if ($Step->getName() === 'checkout'
+                || $Step->getName() === 'finish'
+            ) {
+                continue;
+            }
+
+            $Step->validate();
+        }
+
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getBody()
+    {
+        if (isset($_REQUEST['payableToOrder'])) {
+            try {
+                $this->toOrder();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        $Engine  = QUI::getTemplateManager()->getEngine();
+        $Current = $this->getCurrentStep();
+        $steps   = $this->getSteps();
+
+        $this->checkSubmission();
+
+        // check all previous steps
+        // is one is invalid, go to them
+        foreach ($steps as $name => $Step) {
+            if ($name === $Current->getName()) {
+                break;
+            }
+
+            /* @var $Step AbstractOrderingStep */
+            if ($Step->isValid() === false) {
+                $Current = $Step;
+                break;
+            }
+        }
+
+        $error    = false;
+        $next     = $this->getNextStepName($Current);
+        $previous = $this->getPreviousStepName();
+
+        $payableToOrder = false;
+
+
+        if ($Current->showNext() === false) {
+            $next = false;
+        }
+
+        if ($previous === ''
+            || $Current->getName() === $this->getFirstStep()->getName()
+        ) {
+            $previous = false;
+        }
+
+        if ($Current->getName() === 'checkout') {
+            $next           = false;
+            $payableToOrder = true;
+        }
+
+        try {
+            $Current->validate();
+        } catch (QUI\ERP\Order\Exception $Exception) {
+            $error = $Exception->getMessage();
+        }
+
+        $Engine->assign(array(
+            'this'           => $this,
+            'error'          => $error,
+            'next'           => $next,
+            'previous'       => $previous,
+            'payableToOrder' => $payableToOrder,
+            'steps'          => $this->getSteps(),
+            'CurrentStep'    => $Current,
+            'Site'           => $this->getSite(),
+            'Order'          => $this->getOrder()
+        ));
+
+        return $Engine->fetch(dirname(__FILE__) . '/Controls/OrderProcess.html');
+    }
+
+    /**
+     * Return the current Step
+     *
+     * @return AbstractOrderingStep
+     */
+    public function getCurrentStep()
+    {
+        $steps   = $this->getSteps();
+        $Current = $steps[$this->getCurrentStepName()];
+
+        return $Current;
+    }
+
+    /**
+     * Return the first step
+     *
+     * @return AbstractOrderingStep
+     */
+    public function getFirstStep()
+    {
+        return array_values($this->getSteps())[0];
+    }
+
+    /**
+     * Return the next step
+     *
+     * @param null|AbstractOrderingStep $StartStep
+     * @return bool|AbstractOrderingStep
+     */
+    public function getNextStep($StartStep = null)
+    {
+        if ($StartStep === null) {
+            $step = $this->getCurrentStepName();
+        } else {
+            $step = $StartStep->getName();
+        }
+
+        $steps = $this->getSteps();
+
+        $keys = array_keys($steps);
+        $pos  = array_search($step, $keys);
+        $next = $pos + 1;
+
+        if (!isset($keys[$next])) {
+            return false;
+        }
+
+        $key = $keys[$next];
+
+        if (isset($steps[$key])) {
+            return $steps[$key];
+        }
+
         return false;
     }
 
     /**
-     * Create the order
+     * Return the previous step
      *
-     * @param null|QUI\Interfaces\Users\User $PermissionUser
-     * @throws QUI\Permissions\Exception
+     * @param null|AbstractOrderingStep $StartStep
+     * @return bool|AbstractOrderingStep
      */
-    public function createOrder($PermissionUser = null)
+    public function getPreviousStep($StartStep = null)
     {
-        if ($this->hasPermissions($PermissionUser) === false) {
-            throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
-                403
-            );
+        if ($StartStep === null) {
+            $step = $this->getCurrentStepName();
+        } else {
+            $step = $StartStep->getName();
         }
 
-    }
+        $steps = $this->getSteps();
 
-    /**
-     * Has the user permissions to do things
-     *
-     * @param null|QUI\Interfaces\Users\User $PermissionUser
-     * @return bool
-     */
-    protected function hasPermissions($PermissionUser = null)
-    {
-        if ($this->cUser === QUI::getUserBySession()->getId()) {
-            return true;
+        $keys = array_keys($steps);
+        $pos  = array_search($step, $keys);
+        $prev = $pos - 1;
+
+        if (!isset($keys[$prev])) {
+            return false;
         }
 
-        if ($PermissionUser && $this->cUser === $PermissionUser->getId()) {
-            return true;
+        $key = $keys[$prev];
+
+        if (isset($steps[$key])) {
+            return $steps[$key];
         }
 
         return false;
     }
 
     /**
-     * Return the order data for saving
+     * Return the step via its name
+     *
+     * @param string $name - Name of the step
+     * @return bool|AbstractOrderingStep
+     */
+    protected function getStepByName($name)
+    {
+        $steps = $this->getSteps();
+
+        if (isset($steps[$name])) {
+            return $steps[$name];
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the current step name / key
+     *
+     * @return string
+     */
+    protected function getCurrentStepName()
+    {
+        $step  = $this->getAttribute('step');
+        $steps = $this->getSteps();
+
+        if (isset($steps[$step])) {
+            return $step;
+        }
+
+        return $this->getFirstStep()->getName();
+    }
+
+    /**
+     * Return the next step
+     *
+     * @param null|AbstractOrderingStep $StartStep
+     * @return bool|string
+     */
+    protected function getNextStepName($StartStep = null)
+    {
+        $Next = $this->getNextStep($StartStep);
+
+        if ($Next) {
+            return $Next->getName();
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the previous step
+     *
+     * @param null|AbstractOrderingStep $StartStep
+     * @return bool|string
+     */
+    protected function getPreviousStepName($StartStep = null)
+    {
+        $Prev = $this->getPreviousStep($StartStep);
+
+        if ($Prev) {
+            return $Prev->getName();
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the order site
+     *
+     * @return QUI\Projects\Site
+     */
+    public function getSite()
+    {
+        if ($this->getAttribute('Site')) {
+            return $this->getAttribute('Site');
+        }
+
+        $Project = QUI::getRewrite()->getProject();
+
+        $sites = $Project->getSitesIds(array(
+            'where' => array(
+                'type'   => 'quiqqer/order:types/orderingProcess',
+                'active' => 1
+            ),
+            'limit' => 1
+        ));
+
+        if (isset($sites[0])) {
+            $Site = $Project->get($sites[0]['id']);
+
+            $this->setAttribute('Site', $Site);
+            return $Site;
+        }
+
+        return $Project->firstChild();
+    }
+
+    /**
+     * @return QUI\ERP\Order\OrderInProcess
+     */
+    public function getOrder()
+    {
+        $orderId = $this->getAttribute('orderId');
+        $Orders  = QUI\ERP\Order\Handler::getInstance();
+        $User    = QUI::getUserBySession();
+
+        try {
+            if ($orderId !== false) {
+                $Order = $Orders->getOrderInProcess($orderId);
+
+                if ($Order->getCustomer()->getId() == $User->getId()) {
+                    $this->Order = $Order;
+                }
+            }
+        } catch (QUI\Erp\Order\Exception $Exception) {
+        }
+
+        if ($this->Order === null) {
+            try {
+                // select the last order in processing
+                $this->Order = $Orders->getLastOrderInProcessFromUser($User);
+            } catch (QUI\Erp\Order\Exception $Exception) {
+                // if no order exists, we create one
+                $this->Order = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+            }
+        }
+
+        return $this->Order;
+    }
+
+    /**
+     * Return all steps
      *
      * @return array
      */
-    protected function getDataForSaving()
+    protected function getSteps()
     {
-        $InvoiceAddress  = $this->getInvoiceAddress();
-        $DeliveryAddress = $this->getDeliveryAddress();
+        $Steps     = new OrderProcessSteps();
+        $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
-        $deliveryAddress = '';
-        $customer        = '';
-
-        if ($DeliveryAddress) {
-            $deliveryAddress = $DeliveryAddress->toJSON();
-        }
-
-        // customer
-        try {
-            $Customer = $this->getCustomer();
-            $customer = $Customer->getAttributes();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-        }
-
-        //payment
-        $paymentId     = '';
-        $paymentMethod = '';
-
-        $Payment = $this->getPayment();
-
-        if ($Payment) {
-            $paymentId     = $Payment->getId();
-            $paymentMethod = $Payment->getPaymentType()->getTitle();
-        }
-
-        return array(
-            'customerId'      => $this->customerId,
-            'customer'        => json_encode($customer),
-            'addressInvoice'  => $InvoiceAddress->toJSON(),
-            'addressDelivery' => $deliveryAddress,
-
-            'articles' => $this->Articles->toJSON(),
-            'comments' => $this->Comments->toJSON(),
-            'data'     => json_encode($this->data),
-
-            'payment_id'      => $paymentId,
-            'payment_method'  => $paymentMethod,
-            'payment_time'    => '',
-            'payment_data'    => '', // verschlüsselt
-            'payment_address' => ''  // verschlüsselt
+        $params = array(
+            'orderId' => $this->getOrder()->getId(),
+            'Order'   => $this->getOrder()
         );
+
+        $Basket = new Controls\Basket($params);
+//        $Delivery = new Controls\Delivery($params);
+//        $Payment  = new Controls\Payment($params);
+        $Checkout = new Controls\Checkout($params);
+        $Finish   = new Controls\Finish($params);
+
+
+        // init steps
+        $Steps->append($Basket);
+
+        /* @var $Provider QUI\ERP\Order\AbstractOrderProcessProvider */
+        foreach ($providers as $Provider) {
+            $Provider->initSteps($Steps, $this);
+        }
+
+        $Steps->append($Checkout);
+        $Steps->append($Finish);
+
+        $result = array();
+
+        foreach ($Steps as $Step) {
+            $result[$Step->getName()] = $Step;
+        }
+
+        return $result;
     }
 }

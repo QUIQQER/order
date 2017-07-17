@@ -1,5 +1,5 @@
 <?php
 
 $Engine->assign(array(
-    'Ordering' => new QUI\ERP\Order\Controls\Ordering()
+    'Ordering' => new QUI\ERP\Order\OrderProcess()
 ));

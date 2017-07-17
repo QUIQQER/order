@@ -15,7 +15,7 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
     'qui/controls/buttons/Button',
     'qui/controls/windows/Confirm',
     'package/quiqqer/watchlist/bin/controls/frontend/Watchlist',
-    'package/quiqqer/order/bin/frontend/controls/Ordering',
+    'package/quiqqer/order/bin/frontend/controls/OrderProcess',
     'Locale',
     'Mustache',
 

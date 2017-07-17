@@ -24,6 +24,59 @@ class Handler extends Singleton
      */
     protected $cache = array();
 
+    /**
+     * Return all order process Provider
+     *
+     * @return array
+     */
+    public function getOrderProcessProvider()
+    {
+        $cacheProvider = 'package/quiqqer/order/providerOrderProcess';
+
+        try {
+            $providers = QUI\Cache\Manager::get($cacheProvider);
+        } catch (QUI\Cache\Exception $Exception) {
+            $packages = array_map(function ($package) {
+                return $package['name'];
+            }, QUI::getPackageManager()->getInstalled());
+
+            $providers = array();
+
+            foreach ($packages as $package) {
+                try {
+                    $Package = QUI::getPackage($package);
+
+                    if ($Package->isQuiqqerPackage()) {
+                        $providers = array_merge($providers, $Package->getProvider('orderProcess'));
+                    }
+                } catch (QUI\Exception $Exception) {
+                }
+            }
+
+            QUI\Cache\Manager::set($cacheProvider, $providers);
+        }
+
+        // filter provider
+        $result = array();
+
+        foreach ($providers as $provider) {
+            if (!class_exists($provider)) {
+                continue;
+            }
+
+            $Provider = new $provider();
+
+            if (!($Provider instanceof AbstractOrderProcessProvider)) {
+                continue;
+            }
+
+            $result[] = $Provider;
+        }
+
+        return $result;
+    }
+
+
     //region Order
 
     /**
@@ -93,12 +146,12 @@ class Handler extends Singleton
      * Return a Order which is in processing
      *
      * @param $orderId
-     * @return OrderProcess
+     * @return OrderInProcess
      */
     public function getOrderInProcess($orderId)
     {
         if (!isset($this->cache[$orderId])) {
-            $this->cache[$orderId] = new OrderProcess($orderId);
+            $this->cache[$orderId] = new OrderInProcess($orderId);
         }
 
         return $this->cache[$orderId];
@@ -135,7 +188,7 @@ class Handler extends Singleton
      * Return the last order in process from a user
      *
      * @param QUI\Interfaces\Users\User $User
-     * @return OrderProcess
+     * @return OrderInProcess
      * @throws QUI\Erp\Order\Exception
      */
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)

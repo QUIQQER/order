@@ -53,7 +53,7 @@ class Factory extends QUI\Utils\Singleton
      * Creates a new order in processing
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
-     * @return OrderProcess
+     * @return OrderInProcess
      */
     public function createOrderProcess($PermissionUser = null)
     {

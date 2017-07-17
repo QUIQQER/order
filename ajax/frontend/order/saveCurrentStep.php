@@ -25,7 +25,7 @@ QUI::$Ajax->registerFunction(
 
         $_REQUEST['current'] = $step;
 
-        $Ordering = new QUI\ERP\Order\Controls\Ordering(array(
+        $Ordering = new QUI\ERP\Order\OrderProcess(array(
             'orderId' => (int)$orderId
         ));
 

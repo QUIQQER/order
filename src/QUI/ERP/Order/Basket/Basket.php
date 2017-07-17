@@ -10,7 +10,7 @@ use QUI;
 
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Factory;
-use QUI\ERP\Order\OrderProcess;
+use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Products\Handler\Products;
 
 /**
@@ -22,7 +22,7 @@ use QUI\ERP\Products\Handler\Products;
 class Basket
 {
     /**
-     * @var OrderProcess
+     * @var OrderInProcess
      */
     protected $Order = null;
 

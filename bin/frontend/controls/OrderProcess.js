@@ -1,12 +1,12 @@
 /**
- * @module package/quiqqer/order/bin/frontend/controls/Ordering
+ * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require package/quiqqer/order/bin/frontend/Basket
  * @require Ajax
  */
-define('package/quiqqer/order/bin/frontend/controls/Ordering', [
+define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -24,7 +24,7 @@ define('package/quiqqer/order/bin/frontend/controls/Ordering', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/quiqqer/order/bin/frontend/controls/Ordering',
+        Type   : 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
 
         Binds: [
             'next',
