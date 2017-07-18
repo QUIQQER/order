@@ -1,7 +1,7 @@
 <?php
 
 /**
- *
+ * This file contains QUI\ERP\Order\Controls\AbstractOrderingStep
  */
 
 namespace QUI\ERP\Order\Controls;

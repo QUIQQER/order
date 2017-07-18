@@ -107,8 +107,6 @@ class OrderProcess extends QUI\Control
 
             $Step->validate();
         }
-
-
     }
 
     /**
@@ -172,6 +170,7 @@ class OrderProcess extends QUI\Control
         }
 
         $Engine->assign(array(
+            'listWidth'      => floor(100 / count($this->getSteps())),
             'this'           => $this,
             'error'          => $error,
             'next'           => $next,
@@ -417,16 +416,25 @@ class OrderProcess extends QUI\Control
         $Steps     = new OrderProcessSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
-        $params = array(
-            'orderId' => $this->getOrder()->getId(),
-            'Order'   => $this->getOrder()
-        );
+        $Basket = new Controls\Basket(array(
+            'orderId'  => $this->getOrder()->getId(),
+            'Order'    => $this->getOrder(),
+            'priority' => 1
+        ));
 
-        $Basket = new Controls\Basket($params);
 //        $Delivery = new Controls\Delivery($params);
-//        $Payment  = new Controls\Payment($params);
-        $Checkout = new Controls\Checkout($params);
-        $Finish   = new Controls\Finish($params);
+
+        $Checkout = new Controls\Checkout(array(
+            'orderId'  => $this->getOrder()->getId(),
+            'Order'    => $this->getOrder(),
+            'priority' => 4
+        ));
+
+        $Finish = new Controls\Finish(array(
+            'orderId'  => $this->getOrder()->getId(),
+            'Order'    => $this->getOrder(),
+            'priority' => 5
+        ));
 
 
         // init steps
@@ -439,6 +447,19 @@ class OrderProcess extends QUI\Control
 
         $Steps->append($Checkout);
         $Steps->append($Finish);
+
+        $Steps->sort(function ($Step1, $Step2) {
+            /* @var $Step1 QUI\ERP\Order\Controls\AbstractOrderingStep */
+            /* @var $Step2 QUI\ERP\Order\Controls\AbstractOrderingStep */
+            $p1 = $Step1->getAttribute('priority');
+            $p2 = $Step2->getAttribute('priority');
+
+            if ($p1 == $p2) {
+                return 0;
+            }
+
+            return ($p1 < $p2) ? -1 : 1;
+        });
 
         $result = array();
 

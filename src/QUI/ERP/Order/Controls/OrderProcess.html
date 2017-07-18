@@ -11,7 +11,10 @@
                     {assign var=cssClass value="current"}
                 {/if}
 
-                <li class="{$cssClass}" data-step="{$Step->getName()}" data-icon="{$Step->getIcon()}">
+                <li style="width: {$listWidth}%;" class="{$cssClass}"
+                    data-step="{$Step->getName()}"
+                    data-icon="{$Step->getIcon()}"
+                >
                 {if $Step->getName() === 'finish'}
                     <span class="title">{$Step->getTitle()}</span>
                     <span class="fa fa-check-circle"></span>
