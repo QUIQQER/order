@@ -90,15 +90,17 @@ class OrderProcess extends QUI\Control
     }
 
     /**
-     *
+     * Send the order
      */
-    protected function toOrder()
+    protected function send()
     {
-        $steps = $this->getSteps();
+        $steps     = $this->getSteps();
+        $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
         // check all previous steps
         // is one is invalid, go to them
         foreach ($steps as $name => $Step) {
+            /* @var $Step AbstractOrderingStep */
             if ($Step->getName() === 'checkout'
                 || $Step->getName() === 'finish'
             ) {
@@ -107,6 +109,32 @@ class OrderProcess extends QUI\Control
 
             $Step->validate();
         }
+
+        QUI::getEvents()->fireEvent('orderStart', [$this]);
+
+        // Gehe die verschiedenen Processing Provider durch
+        $Order   = $this->getOrder();
+        $success = array();
+
+        foreach ($providers as $Provider) {
+            /* @var $Provider AbstractOrderProcessProvider */
+            $status = $Provider->onOrderStart($Order);
+
+            if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_PROCESSING) {
+                // @todo Order is in Processing
+                return;
+            }
+
+            if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_ABORT) {
+                throw new Exception($Provider->onOrderAbort($Order));
+            }
+
+            $success[] = $Provider->onOrderSuccess($Order);
+        }
+
+        // all runs fine
+        $Order->createOrder();
+        $Order->delete();
     }
 
     /**
@@ -116,7 +144,7 @@ class OrderProcess extends QUI\Control
     {
         if (isset($_REQUEST['payableToOrder'])) {
             try {
-                $this->toOrder();
+                $this->send();
             } catch (QUI\Exception $Exception) {
             }
         }

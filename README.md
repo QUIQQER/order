@@ -42,11 +42,18 @@ Lizenz
 Entwickler
 --------
 
-onQuiqqerOrderDeleteBegin [Order]
-onQuiqqerOrderDelete [$orderId, $orderData]
+- onQuiqqerOrderDeleteBegin [Order]
+- onQuiqqerOrderDelete [$orderId, $orderData]
 
-onQuiqqerOrderCopyBegin [Order]
-onQuiqqerOrderCopy [Order]
+- onQuiqqerOrderCopyBegin [Order]
+- onQuiqqerOrderCopy [Order]
 
-onQuiqqerOrderUpdateBegin [Order]
-onQuiqqerOrderUpdate [Order]
+- onQuiqqerOrderUpdateBegin [Order]
+- onQuiqqerOrderUpdate [Order]
+
+
+### Order Events
+
+- onOrderStart [Order]
+- onOrderSuccess [Order]
+- onOrderAbort [Order]
