@@ -25,6 +25,11 @@ class OrderProcess extends QUI\Control
     protected $Order = null;
 
     /**
+     * @var null|AbstractOrderProcessProvider
+     */
+    protected $ProcessingProvider = null;
+
+    /**
      * Basket constructor.
      *
      * @param array $attributes
@@ -121,12 +126,13 @@ class OrderProcess extends QUI\Control
             $status = $Provider->onOrderStart($Order);
 
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_PROCESSING) {
-                // @todo Order is in Processing
+                $this->ProcessingProvider = $Provider;
                 return;
             }
 
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_ABORT) {
-                throw new Exception($Provider->onOrderAbort($Order));
+                $Provider->onOrderAbort($Order);
+                continue;
             }
 
             $success[] = $Provider->onOrderSuccess($Order);
@@ -149,7 +155,31 @@ class OrderProcess extends QUI\Control
             }
         }
 
-        $Engine  = QUI::getTemplateManager()->getEngine();
+        $template = dirname(__FILE__) . '/Controls/OrderProcess.html';
+        $Engine   = QUI::getTemplateManager()->getEngine();
+
+        // processing step
+        if ($this->ProcessingProvider !== null) {
+            $ProcessingStep = new Controls\ProcessingProviderStep();
+            $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
+
+            $Engine->assign(array(
+                'listWidth'      => floor(100 / count($this->getSteps())),
+                'this'           => $this,
+                'error'          => false,
+                'next'           => false,
+                'previous'       => 'checkout',
+                'payableToOrder' => false,
+                'steps'          => $this->getSteps(),
+                'CurrentStep'    => $ProcessingStep,
+                'Site'           => $this->getSite(),
+                'Order'          => $this->getOrder()
+            ));
+
+            return $Engine->fetch($template);
+        }
+
+        // standard procedure
         $Current = $this->getCurrentStep();
         $steps   = $this->getSteps();
 
@@ -210,7 +240,7 @@ class OrderProcess extends QUI\Control
             'Order'          => $this->getOrder()
         ));
 
-        return $Engine->fetch(dirname(__FILE__) . '/Controls/OrderProcess.html');
+        return $Engine->fetch($template);
     }
 
     /**

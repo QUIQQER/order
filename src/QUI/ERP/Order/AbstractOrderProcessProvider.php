@@ -6,7 +6,6 @@
 
 namespace QUI\ERP\Order;
 
-use QUI\ERP\Order\OrderProcess;
 use QUI\ERP\Order\Utils\OrderProcessSteps;
 
 /**
@@ -17,12 +16,14 @@ use QUI\ERP\Order\Utils\OrderProcessSteps;
 abstract class AbstractOrderProcessProvider
 {
     const PROCESSING_STATUS_START = 1;
-
     const PROCESSING_STATUS_PROCESSING = 2;
-
     const PROCESSING_STATUS_FINISH = 3;
-
     const PROCESSING_STATUS_ABORT = 4;
+
+    /**
+     * @var int
+     */
+    protected $currentStatus = self::PROCESSING_STATUS_START;
 
     /**
      * Can be overwritten
@@ -36,6 +37,17 @@ abstract class AbstractOrderProcessProvider
     }
 
     /**
+     * The processing order provider can display a separate step in the order processing
+     *
+     * @param AbstractOrder $Order
+     * @return string
+     */
+    public function getDisplay(AbstractOrder $Order)
+    {
+        return '';
+    }
+
+    /**
      * Can be overwritten
      *
      * @param AbstractOrder $Order
@@ -43,6 +55,8 @@ abstract class AbstractOrderProcessProvider
      */
     public function onOrderStart(AbstractOrder $Order)
     {
+        $this->currentStatus = self::PROCESSING_STATUS_FINISH;
+
         return self::PROCESSING_STATUS_FINISH;
     }
 
@@ -54,17 +68,23 @@ abstract class AbstractOrderProcessProvider
      */
     public function onOrderSuccess(AbstractOrder $Order)
     {
+        $this->currentStatus = self::PROCESSING_STATUS_FINISH;
+
         return self::PROCESSING_STATUS_FINISH;
     }
 
     /**
      * Can be overwritten
+     * Can throw Exception
      *
      * @param AbstractOrder $Order
      * @return integer
+     * @throws Exception
      */
     public function onOrderAbort(AbstractOrder $Order)
     {
+        $this->currentStatus = self::PROCESSING_STATUS_FINISH;
+
         return self::PROCESSING_STATUS_FINISH;
     }
 }

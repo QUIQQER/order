@@ -3,8 +3,11 @@
  *
  * @require qui/QUI
  * @require qui/controls/Control
+ * @require qui/controls/loader/Loader
+ * @require qui/utils/Form
  * @require package/quiqqer/order/bin/frontend/Basket
  * @require Ajax
+ * @require Locale
  */
 define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
@@ -176,6 +179,28 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Send the ordering process
+         */
+        send: function () {
+            var self = this;
+
+            this.$beginResultRendering();
+
+            this.saveCurrentStep().then(function () {
+                return new Promise(function (resolve, reject) {
+                    QUIAjax.get('package_quiqqer_order_ajax_frontend_order_send', function (result) {
+                        self.$renderResult(result).then(resolve);
+                    }, {
+                        'package': 'quiqqer/order',
+                        orderId  : self.getAttribute('orderId'),
+                        current  : self.getAttribute('current'),
+                        onError  : reject
+                    });
+                });
+            });
+        },
+
+        /**
          * Opens the wanted step
          *
          * @param {String} step - Name of the step
@@ -282,7 +307,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (typeof showFromRight === 'undefined') {
                 showFromRight = true;
             }
-
+console.warn(result);
             this.setAttribute('current', result.step);
 
             // render container
@@ -437,6 +462,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $onNextClick: function (event) {
             event.stop();
+
+            if (event.target.get('value') === 'payableToOrder') {
+                this.send();
+                return;
+            }
+
             this.next();
         },
 

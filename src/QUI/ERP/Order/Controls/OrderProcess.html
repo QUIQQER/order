@@ -45,7 +45,9 @@
     </div>
 
     <div class="quiqqer-order-ordering-buttons">
-        <a href="{url id=1}" class="button">Zurück zum Shop</a>
+        <a href="{url id=1}" class="button">
+            {locale group="quiqqer/order" var="ordering.btn.backToShop"}
+        </a>
 
         {if $previous}
         <a href="{url site=$Site step=$previous pre=$CurrentStep->getName()}"

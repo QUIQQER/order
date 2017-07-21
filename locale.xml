@@ -139,6 +139,10 @@
             <de><![CDATA[Kostenpflichtig bestellen]]></de>
             <en><![CDATA[Pay to order]]></en>
         </locale>
+        <locale name="ordering.btn.backToShop">
+            <de><![CDATA[Zurück zum Shop]]></de>
+            <en><![CDATA[Back to the Shop]]></en>
+        </locale>
         <locale name="ordering.title">
             <de><![CDATA[Bestellung]]></de>
             <en><![CDATA[Order]]></en>
