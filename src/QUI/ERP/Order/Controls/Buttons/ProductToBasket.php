@@ -35,7 +35,7 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(dirname(__FILE__) . '/ProductToBasket.css');
+        $this->addCSSFile(dirname(__FILE__).'/ProductToBasket.css');
     }
 
     /**
@@ -64,11 +64,11 @@ class ProductToBasket extends QUI\Control
         $html = '';
 
         if ($this->getAttribute('input')) {
-            $html .= '<input type="number" value="1" title="Anzahl"/>';
+            $html .= '<input type="number" value="1" title="Anzahl" min="1"/>';
         }
 
-        $html .= '<span class="text">' .
-                 QUI::getLocale()->get('quiqqer/order', 'control.watchlist.buttonAdd.text') .
+        $html .= '<span class="text">'.
+                 QUI::getLocale()->get('quiqqer/order', 'control.watchlist.buttonAdd.text').
                  '</span>';
 
         return $html;
