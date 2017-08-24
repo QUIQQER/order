@@ -123,7 +123,6 @@ class OrderInProcess extends AbstractOrder
                 403
             );
         }
-
     }
 
     /**
@@ -193,7 +192,7 @@ class OrderInProcess extends AbstractOrder
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
-            'payment_time'    => '',
+            'payment_time'    => null,
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
         );

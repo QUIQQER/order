@@ -212,7 +212,7 @@ class Order extends AbstractOrder
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
-            'payment_time'    => '',
+            'payment_time'    => null,
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
         );
