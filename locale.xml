@@ -253,6 +253,14 @@
             You will receive a confirmation to your e-mail address.
             ]]></en>
         </locale>
+        <locale name="ordering.step.checkout.billing.address">
+            <de><![CDATA[Rechnungsaddresse]]></de>
+            <en><![CDATA[Billing address]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.payment.shipping">
+            <de><![CDATA[Zahlung und Versand]]></de>
+            <en><![CDATA[Payment and shipping]]></en>
+        </locale>
 
         <locale name="salutation">
             <de><![CDATA[Anrede]]></de>
@@ -285,6 +293,15 @@
         <locale name="country">
             <de><![CDATA[Land]]></de>
             <en><![CDATA[Country]]></en>
+        </locale>
+
+        <locale name="exception.no.orders.found">
+            <de><![CDATA[Es wurden keine Bestellungen gefunden.]]></de>
+            <en><![CDATA[No orders were found.]]></en>
+        </locale>
+        <locale name="exception.order.not.found">
+            <de><![CDATA[Die gewünschte Bestellunge wurde nicht gefunden.]]></de>
+            <en><![CDATA[The requested order was not found.]]></en>
         </locale>
     </groups>
 

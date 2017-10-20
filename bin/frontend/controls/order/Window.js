@@ -1,12 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/order/Window
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/windows/Confirm
- * @require package/quiqqer/watchlist/bin/controls/frontend/Watchlist
- * @require package/quiqqer/order/bin/frontend/controls/Ordering
- * @require Locale
  */
 define('package/quiqqer/order/bin/frontend/controls/order/Window', [
 

@@ -1,10 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/classes/Basket
- *
- * @require qui/QUI
- * @require qui/classes/DOM
- * @require Ajax
- * @require Locale
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -45,7 +40,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             // basket from user
             if (QUIQQER_USER && QUIQQER_USER.id) {
                 return this.loadLastOrder().then(function () {
-                    console.warn(this.$articles);
                     this.$isLoaded = true;
                     this.fireEvent('refresh', [this]);
                 }.bind(this));
@@ -164,6 +158,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         $loadOrderData: function (data) {
+            if (data === null || typeof data.articles === 'undefined') {
+                return Promise.reject();
+            }
+
             var articles = data.articles;
 
             this.$orderid  = data.id;

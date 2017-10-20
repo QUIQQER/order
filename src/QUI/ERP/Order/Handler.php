@@ -17,6 +17,12 @@ use QUI\Utils\Singleton;
  */
 class Handler extends Singleton
 {
+    const ERROR_ORDER_NOT_FOUND = 604; // a specific order wasn't found
+    const ERROR_NO_ORDERS_FOUND = 605; // Search or last orders don't get results
+
+    /**
+     * Default empty value (placeholder for empty values)
+     */
     const EMPTY_VALUE = '---';
 
     /**
@@ -118,10 +124,10 @@ class Handler extends Singleton
             'limit' => 1
         ));
 
-        if (!isset($result[0])) { // #locale
+        if (!isset($result[0])) {
             throw new Exception(
-                'Order not found',
-                404
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                self::ERROR_ORDER_NOT_FOUND
             );
         }
 
@@ -204,8 +210,8 @@ class Handler extends Singleton
 
         if (!isset($result[0])) {
             throw new Exception(
-                'Order not found',
-                404
+                QUI::getLocale()->get('quiqqer/order', 'exception.no.orders.found'),
+                self::ERROR_NO_ORDERS_FOUND
             );
         }
 
@@ -232,8 +238,8 @@ class Handler extends Singleton
 
         if (!isset($result[0])) {
             throw new Exception(
-                'Order not found',
-                404
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                self::ERROR_ORDER_NOT_FOUND
             );
         }
 

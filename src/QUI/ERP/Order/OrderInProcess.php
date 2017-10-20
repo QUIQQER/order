@@ -123,6 +123,29 @@ class OrderInProcess extends AbstractOrder
                 403
             );
         }
+
+        $SystemUser = QUI::getUsers()->getSystemUser();
+
+        $this->save($SystemUser);
+
+        $Order = Factory::getInstance()->create($SystemUser);
+
+        // bind the new order to the process order
+        QUI::getDataBase()->update(
+            Handler::getInstance()->tableOrderProcess(),
+            array('order_id' => $Order->getId()),
+            array('id' => $this->getId())
+        );
+
+        // copy the data to the order
+        $data                     = $this->getDataForSaving();
+        $data['order_process_id'] = $this->getId();
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            $data,
+            array('id' => $Order->getId())
+        );
     }
 
     /**
@@ -170,8 +193,8 @@ class OrderInProcess extends AbstractOrder
         }
 
         //payment
-        $paymentId     = '';
-        $paymentMethod = '';
+        $paymentId     = null;
+        $paymentMethod = null;
 
         $Payment = $this->getPayment();
 

@@ -159,6 +159,15 @@ class Order extends AbstractOrder
         return $this->isPosted();
     }
 
+
+    /**
+     * Post the order and create an invoice
+     */
+    public function post()
+    {
+        return $this->createInvoice();
+    }
+
     /**
      * Return the order data for saving
      *

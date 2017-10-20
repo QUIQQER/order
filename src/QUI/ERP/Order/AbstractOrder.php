@@ -344,6 +344,21 @@ abstract class AbstractOrder
     }
 
     /**
+     * Return a data entry
+     *
+     * @param string $key
+     * @return mixed|null
+     */
+    public function getDataEntry($key)
+    {
+        if (isset($this->data[$key])) {
+            return $this->data[$key];
+        }
+
+        return null;
+    }
+
+    /**
      * Return the hash
      *
      * @return string
@@ -446,6 +461,7 @@ abstract class AbstractOrder
     {
         if ($address instanceof QUI\ERP\Address) {
             $this->addressDelivery = $address->getAttributes();
+
             return;
         }
 
@@ -463,6 +479,7 @@ abstract class AbstractOrder
     {
         if ($address instanceof QUI\ERP\Address) {
             $this->addressInvoice = $address->getAttributes();
+
             return;
         }
 
@@ -547,6 +564,7 @@ abstract class AbstractOrder
         if ($User instanceof QUI\ERP\User) {
             $this->Customer   = $User;
             $this->customerId = $User->getId();
+
             return;
         }
 

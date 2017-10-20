@@ -31,7 +31,7 @@ class Checkout extends AbstractOrderingStep
     {
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__) . '/Checkout.css');
+        $this->addCSSFile(dirname(__FILE__).'/Checkout.css');
     }
 
     /**
@@ -46,6 +46,15 @@ class Checkout extends AbstractOrderingStep
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
 
+        if ($Order->getDataEntry('orderedWithCosts') == 1) {
+            $Payment = $Order->getPayment();
+            $payment = $Order->getDataEntry('orderedWithCostsPayment');
+
+            if ($payment == $Payment->getId() && $Payment->getPaymentType()->isGateway()) {
+                $Engine->assign('Gateway', $Payment);
+            }
+        }
+
         $Engine->assign(array(
             'User'            => $Order->getCustomer(),
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
@@ -54,7 +63,7 @@ class Checkout extends AbstractOrderingStep
             'Articles'        => $Articles
         ));
 
-        return $Engine->fetch(dirname(__FILE__) . '/Checkout.html');
+        return $Engine->fetch(dirname(__FILE__).'/Checkout.html');
     }
 
     /**
@@ -79,7 +88,21 @@ class Checkout extends AbstractOrderingStep
         // TODO: Implement validate() method.
     }
 
+    /**
+     * Order was ordered with costs
+     */
     public function save()
     {
+        $Orders  = Handler::getInstance();
+        $Order   = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+        $Payment = $Order->getPayment();
+
+        $Order->setData('orderedWithCosts', 1);
+        $Order->setData('orderedWithCostsPayment', $Payment->getId());
+        $Order->save();
+
+        if (!$Payment->getPaymentType()->isGateway()) {
+            $Order->createOrder(QUI::getUsers()->getSystemUser());
+        }
     }
 }

@@ -1,13 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/loader/Loader
- * @require qui/utils/Form
- * @require package/quiqqer/order/bin/frontend/Basket
- * @require Ajax
- * @require Locale
  */
 define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 

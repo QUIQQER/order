@@ -44,7 +44,7 @@ class OrderProcess extends QUI\Control
             'orderId'  => false
         ));
 
-        $this->addCSSFile(dirname(__FILE__) . '/Controls/OrderProcess.css');
+        $this->addCSSFile(dirname(__FILE__).'/Controls/OrderProcess.css');
 
         $steps = $this->getSteps();
         $step  = $this->getAttribute('step');
@@ -127,6 +127,7 @@ class OrderProcess extends QUI\Control
 
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_PROCESSING) {
                 $this->ProcessingProvider = $Provider;
+
                 return;
             }
 
@@ -155,7 +156,7 @@ class OrderProcess extends QUI\Control
             }
         }
 
-        $template = dirname(__FILE__) . '/Controls/OrderProcess.html';
+        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
         // processing step
@@ -278,6 +279,18 @@ class OrderProcess extends QUI\Control
             $step = $this->getCurrentStepName();
         } else {
             $step = $StartStep->getName();
+        }
+
+        // @todo prüfen ob bezahlung schon da ist oder gemacht wurde
+        // wenn es order id gibt und bezahlung, dann abschluss anzeigen
+        if ($step === 'finish') {
+            $Payment     = $this->getOrder()->getPayment();
+            $PaymentType = $Payment->getPaymentType();
+
+            // checkout gateway
+            if ($PaymentType->isGateway()) {
+                return $this->getStepByName('checkout');
+            }
         }
 
         $steps = $this->getSteps();
@@ -425,6 +438,7 @@ class OrderProcess extends QUI\Control
             $Site = $Project->get($sites[0]['id']);
 
             $this->setAttribute('Site', $Site);
+
             return $Site;
         }
 

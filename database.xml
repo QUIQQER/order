@@ -4,9 +4,11 @@
     <global>
         <table name="orders">
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="BIGINT(10) NOT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
-            <field type="INT NOT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="INT NOT NULL">temporary_invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
+            <field type="BIGINT(10) NULL DEFAULT NULL">order_process_id</field>
+            <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
+            <field type="INT NULL DEFAULT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
+            <field type="INT NULL DEFAULT NULL">temporary_invoice_id
+            </field> <!-- nur setzen wenn invoice gebucht ist -->
             <field type="INT NOT NULL">status</field>
 
             <field type="INT NOT NULL">customerId</field>
@@ -17,8 +19,8 @@
             <field type="TEXT NULL">articles</field>
             <field type="TEXT NULL">data</field>
 
-            <field type="INT(11) NOT NULL">payment_id</field>
-            <field type="VARCHAR(255) NOT NULL">payment_method</field>
+            <field type="INT(11) NULL DEFAULT NULL">payment_id</field>
+            <field type="VARCHAR(255) NULL DEFAULT NULL">payment_method</field>
             <field type="TEXT NULL">payment_data</field> <!-- muss verschlüsselt sein -->
             <field type="DATETIME NULL DEFAULT NULL">payment_time</field>
             <field type="TEXT NULL">payment_address</field>
@@ -39,8 +41,9 @@
 
         <table name="orders_process">
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="BIGINT(10) NOT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
-            <field type="INT NOT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
+            <field type="BIGINT(10) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
+            <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
+            <field type="INT NULL DEFAULT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
             <field type="INT NOT NULL">status</field>
 
             <field type="INT NOT NULL">customerId</field>
@@ -52,8 +55,8 @@
             <field type="TEXT NULL">data</field>
             <field type="TEXT NULL">comments</field>
 
-            <field type="INT(11) NOT NULL">payment_id</field>
-            <field type="VARCHAR(255) NOT NULL">payment_method</field>
+            <field type="INT(11) NULL DEFAULT NULL">payment_id</field>
+            <field type="VARCHAR(255) NULL DEFAULT NULL">payment_method</field>
             <field type="TEXT NULL">payment_data</field> <!-- muss verschlüsselt sein -->
             <field type="DATETIME NULL DEFAULT NULL">payment_time</field>
             <field type="TEXT NULL">payment_address</field>

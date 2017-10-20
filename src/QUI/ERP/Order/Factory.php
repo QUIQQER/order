@@ -76,7 +76,8 @@ class Factory extends QUI\Utils\Singleton
             'c_user'     => $User->getId(),
             'c_date'     => date('Y-m-d H:i:s'),
             'hash'       => Uuid::uuid1()->toString(),
-            'customerId' => $User->getId()
+            'customerId' => $User->getId(),
+            'status'     => AbstractOrder::STATUS_CREATED
         ));
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();

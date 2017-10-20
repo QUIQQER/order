@@ -14,7 +14,12 @@ QUI::$Ajax->registerFunction(
     function () {
         $User   = QUI::getUserBySession();
         $Orders = QUI\ERP\Order\Handler::getInstance();
-        $Order  = $Orders->getLastOrderInProcessFromUser($User);
+
+        try {
+            $Order = $Orders->getLastOrderInProcessFromUser($User);
+        } catch (QUI\Exception $Exception) {
+            $Order = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+        }
 
         return $Order->toArray();
     },
