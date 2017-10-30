@@ -28,9 +28,12 @@ QUI::$Ajax->registerFunction(
 
         $OrderProcess->setAttribute('step', $Next->getName());
 
+        $html    = $OrderProcess->create();
+        $current = $OrderProcess->getCurrentStep()->getName();
+
         return array(
-            'html' => $OrderProcess->create(),
-            'step' => $Next->getName()
+            'html' => $html,
+            'step' => $current
         );
     },
     array('orderId', 'current')
