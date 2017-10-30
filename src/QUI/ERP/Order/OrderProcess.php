@@ -150,6 +150,71 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * Execute the payable step
+     *
+     * @return bool|string
+     */
+    protected function executePayableStatus()
+    {
+        if (!isset($_REQUEST['payableToOrder'])) {
+            return false;
+        }
+
+        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
+        $Engine   = QUI::getTemplateManager()->getEngine();
+
+        try {
+            $this->send();
+
+            // processing step
+            // eq: payment gateway
+            if ($this->ProcessingProvider !== null) {
+                $this->ProcessingProvider;
+
+                $ProcessingStep = new Controls\ProcessingProviderStep();
+                $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
+                $ProcessingStep->setAttribute('Order', $this->getOrder());
+
+                $Engine->assign(array(
+                    'listWidth'      => floor(100 / count($this->getSteps())),
+                    'this'           => $this,
+                    'error'          => false,
+                    'next'           => false,
+                    'previous'       => 'checkout',
+                    'payableToOrder' => false,
+                    'steps'          => $this->getSteps(),
+                    'CurrentStep'    => $ProcessingStep,
+                    'Site'           => $this->getSite(),
+                    'Order'          => $this->getOrder()
+                ));
+
+                return $Engine->fetch($template);
+            }
+
+            $Engine->assign(array(
+                'listWidth'      => floor(100 / count($this->getSteps())),
+                'this'           => $this,
+                'error'          => false,
+                'next'           => false,
+                'previous'       => false,
+                'payableToOrder' => false,
+                'steps'          => $this->getSteps(),
+                'CurrentStep'    => $this->getCurrentStep(),
+                'Site'           => $this->getSite(),
+                'Order'          => $this->getOrder()
+            ));
+
+            return $Engine->fetch($template);
+        } catch (QUI\Exception $Exception) {
+            if (DEBUG_MODE) {
+                QUI\System\Log::writeException($Exception);
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @return string
      */
     public function getBody()
@@ -157,50 +222,13 @@ class OrderProcess extends QUI\Control
         $template = dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
+        // payable step
         if (isset($_REQUEST['payableToOrder'])) {
-            try {
-                $this->send();
+            $result = $this->executePayableStatus();
 
-                $Engine->assign(array(
-                    'listWidth'      => floor(100 / count($this->getSteps())),
-                    'this'           => $this,
-                    'error'          => false,
-                    'next'           => false,
-                    'previous'       => false,
-                    'payableToOrder' => false,
-                    'steps'          => $this->getSteps(),
-                    'CurrentStep'    => $this->getCurrentStep(),
-                    'Site'           => $this->getSite(),
-                    'Order'          => $this->getOrder()
-                ));
-
-                return $Engine->fetch($template);
-            } catch (QUI\Exception $Exception) {
-                if (DEBUG_MODE) {
-                    QUI\System\Log::writeException($Exception);
-                }
+            if ($result !== false) {
+                return $result;
             }
-        }
-
-        // processing step
-        if ($this->ProcessingProvider !== null) {
-            $ProcessingStep = new Controls\ProcessingProviderStep();
-            $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
-
-            $Engine->assign(array(
-                'listWidth'      => floor(100 / count($this->getSteps())),
-                'this'           => $this,
-                'error'          => false,
-                'next'           => false,
-                'previous'       => 'checkout',
-                'payableToOrder' => false,
-                'steps'          => $this->getSteps(),
-                'CurrentStep'    => $ProcessingStep,
-                'Site'           => $this->getSite(),
-                'Order'          => $this->getOrder()
-            ));
-
-            return $Engine->fetch($template);
         }
 
         // standard procedure
@@ -307,15 +335,6 @@ class OrderProcess extends QUI\Control
 
         // @todo prüfen ob bezahlung schon da ist oder gemacht wurde
         // wenn es order id gibt und bezahlung, dann abschluss anzeigen
-        if ($step === 'finish') {
-            $Payment     = $this->getOrder()->getPayment();
-            $PaymentType = $Payment->getPaymentType();
-
-            // checkout gateway
-            if ($Payment && $PaymentType && $PaymentType->isGateway()) {
-                return $this->getStepByName('checkout');
-            }
-        }
 
         $steps = $this->getSteps();
 

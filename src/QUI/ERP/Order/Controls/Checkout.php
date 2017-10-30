@@ -82,10 +82,21 @@ class Checkout extends AbstractOrderingStep
         return 'fa-shopping-cart';
     }
 
-
+    /**
+     * @throws QUI\ERP\Order\Exception
+     */
     public function validate()
     {
-        // TODO: Implement validate() method.
+        $Orders  = Handler::getInstance();
+        $Order   = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+        $Payment = $Order->getPayment();
+
+        if (!$Payment) {
+            throw new QUI\ERP\Order\Exception(array(
+                'quiqqer/order',
+                'exception.order.payment.missing'
+            ));
+        }
     }
 
     /**
@@ -113,8 +124,9 @@ class Checkout extends AbstractOrderingStep
         $Order->setData('orderedWithCostsPayment', $Payment->getId());
         $Order->save();
 
-        if (!$Payment->getPaymentType()->isGateway()) {
-            $Order->createOrder(QUI::getUsers()->getSystemUser());
-        }
+//        wird über process provider gemacht
+//        if (!$Payment->getPaymentType()->isGateway()) {
+//            $Order->createOrder(QUI::getUsers()->getSystemUser());
+//        }
     }
 }
