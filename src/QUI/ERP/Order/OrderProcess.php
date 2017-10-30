@@ -106,13 +106,15 @@ class OrderProcess extends QUI\Control
         // is one is invalid, go to them
         foreach ($steps as $name => $Step) {
             /* @var $Step AbstractOrderingStep */
-            if ($Step->getName() === 'checkout'
-                || $Step->getName() === 'finish'
-            ) {
+            if ($Step->getName() === 'checkout' || $Step->getName() === 'finish') {
                 continue;
             }
 
-            $Step->validate();
+            try {
+                $Step->validate();
+            } catch (Exception $Exception) {
+                $this->setAttribute('current', $Step->getName());
+            }
         }
 
         QUI::getEvents()->fireEvent('orderStart', [$this]);
@@ -142,6 +144,9 @@ class OrderProcess extends QUI\Control
         // all runs fine
         $Order->createOrder();
         $Order->delete();
+
+        $this->setAttribute('current', 'finish');
+        $this->setAttribute('step', 'finish');
     }
 
     /**
@@ -149,15 +154,33 @@ class OrderProcess extends QUI\Control
      */
     public function getBody()
     {
+        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
+        $Engine   = QUI::getTemplateManager()->getEngine();
+
         if (isset($_REQUEST['payableToOrder'])) {
             try {
                 $this->send();
+
+                $Engine->assign(array(
+                    'listWidth'      => floor(100 / count($this->getSteps())),
+                    'this'           => $this,
+                    'error'          => false,
+                    'next'           => false,
+                    'previous'       => false,
+                    'payableToOrder' => false,
+                    'steps'          => $this->getSteps(),
+                    'CurrentStep'    => $this->getCurrentStep(),
+                    'Site'           => $this->getSite(),
+                    'Order'          => $this->getOrder()
+                ));
+
+                return $Engine->fetch($template);
             } catch (QUI\Exception $Exception) {
+                if (DEBUG_MODE) {
+                    QUI\System\Log::writeException($Exception);
+                }
             }
         }
-
-        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
-        $Engine   = QUI::getTemplateManager()->getEngine();
 
         // processing step
         if ($this->ProcessingProvider !== null) {
@@ -206,7 +229,6 @@ class OrderProcess extends QUI\Control
 
         $payableToOrder = false;
 
-
         if ($Current->showNext() === false) {
             $next = false;
         }
@@ -227,6 +249,8 @@ class OrderProcess extends QUI\Control
         } catch (QUI\ERP\Order\Exception $Exception) {
             $error = $Exception->getMessage();
         }
+
+        $this->setAttribute('step', $Current->getName());
 
         $Engine->assign(array(
             'listWidth'      => floor(100 / count($this->getSteps())),
@@ -288,7 +312,7 @@ class OrderProcess extends QUI\Control
             $PaymentType = $Payment->getPaymentType();
 
             // checkout gateway
-            if ($PaymentType->isGateway()) {
+            if ($Payment && $PaymentType && $PaymentType->isGateway()) {
                 return $this->getStepByName('checkout');
             }
         }
@@ -428,7 +452,7 @@ class OrderProcess extends QUI\Control
 
         $sites = $Project->getSitesIds(array(
             'where' => array(
-                'type'   => 'quiqqer/order:types/orderingProcess',
+                'type'   => 'quiqqer / order:types / orderingProcess',
                 'active' => 1
             ),
             'limit' => 1

@@ -16,15 +16,28 @@ use QUI;
 class OrderInProcess extends AbstractOrder
 {
     /**
+     * @var null|integer
+     */
+    protected $orderId = null;
+
+    /**
      * Order constructor.
      *
      * @param string|integer $orderId - Order-ID
      */
     public function __construct($orderId)
     {
-        parent::__construct(
-            Handler::getInstance()->getOrderProcessData($orderId)
-        );
+        $data = Handler::getInstance()->getOrderProcessData($orderId);
+
+        parent::__construct($data);
+
+        $this->orderId = (int)$data['order_id'];
+
+        try {
+            Handler::getInstance()->get($this->orderId);
+        } catch (QUI\ERP\Order\Exception $Exception) {
+            $this->orderId = null;
+        }
     }
 
     /**
@@ -113,6 +126,7 @@ class OrderInProcess extends AbstractOrder
      * Create the order
      *
      * @param null|QUI\Interfaces\Users\User $PermissionUser
+     * @return Order
      * @throws QUI\Permissions\Exception
      */
     public function createOrder($PermissionUser = null)
@@ -122,6 +136,10 @@ class OrderInProcess extends AbstractOrder
                 QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
                 403
             );
+        }
+
+        if ($this->orderId) {
+            return Handler::getInstance()->get($this->orderId);
         }
 
         $SystemUser = QUI::getUsers()->getSystemUser();
@@ -137,6 +155,8 @@ class OrderInProcess extends AbstractOrder
             array('id' => $this->getId())
         );
 
+        $this->orderId = $Order->getId();
+
         // copy the data to the order
         $data                     = $this->getDataForSaving();
         $data['order_process_id'] = $this->getId();
@@ -146,6 +166,8 @@ class OrderInProcess extends AbstractOrder
             $data,
             array('id' => $Order->getId())
         );
+
+        return $Order;
     }
 
     /**
@@ -192,6 +214,13 @@ class OrderInProcess extends AbstractOrder
             QUI\System\Log::writeException($Exception);
         }
 
+        // status
+        $status = self::STATUS_CREATED;
+
+        if ($this->status) {
+            $status = $this->status;
+        }
+
         //payment
         $paymentId     = null;
         $paymentMethod = null;
@@ -212,6 +241,7 @@ class OrderInProcess extends AbstractOrder
             'articles' => $this->Articles->toJSON(),
             'comments' => $this->Comments->toJSON(),
             'data'     => json_encode($this->data),
+            'status'   => $status,
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,

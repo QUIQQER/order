@@ -97,6 +97,18 @@ class Checkout extends AbstractOrderingStep
         $Order   = $Orders->getOrderInProcess($this->getAttribute('orderId'));
         $Payment = $Order->getPayment();
 
+        if (!$Payment) {
+            return;
+        }
+
+        if (!isset($_REQUEST['current']) || $_REQUEST['current'] !== 'checkout') {
+            return;
+        }
+
+        if (!isset($_REQUEST['payableToOrder'])) {
+            return;
+        }
+
         $Order->setData('orderedWithCosts', 1);
         $Order->setData('orderedWithCostsPayment', $Payment->getId());
         $Order->save();

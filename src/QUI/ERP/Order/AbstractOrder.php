@@ -40,6 +40,11 @@ abstract class AbstractOrder
     protected $id;
 
     /**
+     * @var int
+     */
+    protected $status;
+
+    /**
      * invoice ID
      *
      * @var integer

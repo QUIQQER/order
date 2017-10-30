@@ -299,7 +299,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (typeof showFromRight === 'undefined') {
                 showFromRight = true;
             }
-console.warn(result);
+
             this.setAttribute('current', result.step);
 
             // render container
