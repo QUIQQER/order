@@ -4,7 +4,8 @@
 
 require.config({
     paths: {
-        'Navigo': URL_OPT_DIR + 'bin/navigo/lib/navigo.min'
+        'Navigo'       : URL_OPT_DIR + 'bin/navigo/lib/navigo.min',
+        'HistoryEvents': URL_OPT_DIR + 'bin/history-events/dist/history-events.min'
     }
 });
 
@@ -17,7 +18,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
     'package/quiqqer/order/bin/frontend/Basket',
     'Ajax',
     'Locale',
-    'Navigo'
+    'Navigo',
+    'HistoryEvents'
 
 ], function (QUI, QUIControl, QUILoader, QUIFormUtils, Basket, QUIAjax, QUILocale, Navigo) {
     "use strict";
@@ -26,14 +28,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
     var Router = new Navigo(null, false, '');
     var url    = '/Bestellungen/';
 
+    // workaround - dont know why its needed, but its needed :D
     Router.on(url + '*', function () {
-        console.warn(1111);
-        console.warn(window.location.pathname);
-    });
-
-    Router.on('*', function () {
-        console.warn(2222);
-        console.warn(window.location.pathname);
     });
 
 
@@ -48,7 +44,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             '$onImport',
             '$onInject',
             '$onNextClick',
-            '$onPreviousClick'
+            '$onPreviousClick',
+            '$onChangeState'
         ],
 
         options: {
@@ -82,6 +79,34 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 onImport: this.$onImport,
                 onInject: this.$onInject
             });
+
+            window.addEventListener('changestate', this.$onChangeState, false);
+        },
+
+        /**
+         * @event on change state
+         */
+        $onChangeState: function () {
+            var pathName = window.location.pathname;
+
+            if (pathName.indexOf(url) === -1) {
+                return;
+            }
+
+            var parts = pathName.trim().split('/').filter(function (value) {
+                return value !== '';
+            });
+
+            if (parts.length === 1) {
+                this.openFirstStep();
+                return;
+            }
+
+            var current = this.getCurrentStepData();
+
+            if (current.step !== parts[1]) {
+                this.openStep(parts[1]);
+            }
         },
 
         /**
@@ -242,6 +267,24 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Opens the first step
+         *
+         * @return {Promise}
+         */
+        openFirstStep: function () {
+            var FirstLi   = this.$Timeline.getElement('li:first-child'),
+                firstStep = FirstLi.get('data-step');
+
+            var current = this.getCurrentStepData();
+
+            if (current.step === firstStep) {
+                return Promise.resolve();
+            }
+
+            return this.openStep(firstStep);
+        },
+
+        /**
          * Saves the current step
          *
          * @return {Promise}
@@ -297,13 +340,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (!Step) {
                 return {
                     icon : 'fa-shopping-bag',
-                    title: QUILocale.get(lg, 'ordering.title')
+                    title: QUILocale.get(lg, 'ordering.title'),
+                    step : 'basket'
                 };
             }
 
             return {
                 icon : Step.get('data-icon'),
-                title: Step.getElement('.title').get('text').trim()
+                title: Step.getElement('.title').get('text').trim(),
+                step : Step.get('data-step')
             };
         },
 
