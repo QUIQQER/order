@@ -25,7 +25,8 @@
     "quiqqer/invoice": "*",
     "quiqqer/payments": "*",
     "quiqqer/tax": "*",
-    "ramsey/uuid": "3.*"
+    "ramsey/uuid": "3.*",
+    "npm-asset/navigo": "5.*"
   },
   "autoload": {
     "psr-4": {

@@ -30,6 +30,14 @@ class OrderProcess extends QUI\Control
     protected $ProcessingProvider = null;
 
     /**
+     * @return string
+     */
+    public static function getUrl()
+    {
+        return URL_DIR.'Bestellungen/';
+    }
+
+    /**
      * Basket constructor.
      *
      * @param array $attributes
@@ -39,9 +47,9 @@ class OrderProcess extends QUI\Control
         parent::__construct($attributes);
 
         $this->setAttributes(array(
-            'Site'     => false,
-            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
-            'orderId'  => false
+            'Site'      => false,
+            'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
+            'orderHash' => false
         ));
 
         $this->addCSSFile(dirname(__FILE__).'/Controls/OrderProcess.css');
@@ -493,13 +501,13 @@ class OrderProcess extends QUI\Control
      */
     public function getOrder()
     {
-        $orderId = $this->getAttribute('orderId');
-        $Orders  = QUI\ERP\Order\Handler::getInstance();
-        $User    = QUI::getUserBySession();
+        $orderHash = $this->getAttribute('orderHash');
+        $Orders    = QUI\ERP\Order\Handler::getInstance();
+        $User      = QUI::getUserBySession();
 
         try {
-            if ($orderId !== false) {
-                $Order = $Orders->getOrderInProcess($orderId);
+            if ($orderHash !== false) {
+                $Order = $Orders->getOrderByHash($orderHash);
 
                 if ($Order->getCustomer()->getId() == $User->getId()) {
                     $this->Order = $Order;

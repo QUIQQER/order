@@ -151,7 +151,10 @@ class OrderInProcess extends AbstractOrder
         // bind the new order to the process order
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            array('order_id' => $Order->getId()),
+            array(
+                'order_id' => $Order->getId(),
+                'hash'     => $Order->getHash()
+            ),
             array('id' => $this->getId())
         );
 
@@ -185,6 +188,8 @@ class OrderInProcess extends AbstractOrder
         if ($PermissionUser && $this->cUser === $PermissionUser->getId()) {
             return true;
         }
+
+        //@todo permissoins prüfen
 
         return false;
     }

@@ -19,7 +19,7 @@
                     <span class="title">{$Step->getTitle()}</span>
                     <span class="fa fa-check-circle"></span>
                 {else if}
-                    <a href="{url site=$Site step=$step}">
+                    <a href="{$this->getUrl()}{$step}">
                         <span class="title">{$Step->getTitle()}</span>
                         <span class="fa fa-check-circle"></span>
                     </a>

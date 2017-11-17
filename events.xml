@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <events>
     <event on="onQuiqqerProductsProductViewButtons"
-           fire="\QUI\ERP\Order\EventHandling::onQuiqqerProductsProductViewButtons"/>
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerProductsProductViewButtons"
+    />
+
+    <event on="onRequest"
+           fire="\QUI\ERP\Order\EventHandling::onRequest"
+    />
 </events>

@@ -27,6 +27,11 @@ class Basket
     protected $Order = null;
 
     /**
+     * @var null|QUI\Interfaces\Users\User
+     */
+    protected $User = null;
+
+    /**
      * Basket constructor.
      *
      * @param integer|bool $orderId - optional, if given the selected order

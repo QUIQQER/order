@@ -154,7 +154,7 @@ abstract class AbstractOrder
         $this->invoiceId = $data['invoice_id'];
         $this->hash      = $data['hash'];
         $this->cDate     = $data['c_date'];
-        $this->cUser     = $data['c_user'];
+        $this->cUser     = (int)$data['c_user'];
 
         $this->addressDelivery = json_decode($data['addressDelivery'], true);
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);

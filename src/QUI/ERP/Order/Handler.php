@@ -107,6 +107,49 @@ class Handler extends Singleton
     }
 
     /**
+     * Return the specific order via its hash
+     * If a order exists with the hash, this will be returned
+     * An order has higher priority as an order in process
+     *
+     * @param string $hash - Order Hash
+     * @return Order|OrderInProcess
+     * @throws Exception
+     */
+    public function getOrderByHash($hash)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => 'id',
+            'from'   => $this->table(),
+            'where'  => array(
+                'hash' => $hash
+            ),
+            'limit'  => 1
+        ));
+
+        if (isset($result[0])) {
+            return $this->get($result[0]['id']);
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => 'id',
+            'from'   => $this->tableOrderProcess(),
+            'where'  => array(
+                'hash' => $hash
+            ),
+            'limit'  => 1
+        ));
+
+        if (!isset($result[0])) {
+            throw new Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                self::ERROR_ORDER_NOT_FOUND
+            );
+        }
+
+        return $this->getOrderInProcess($result[0]['id']);
+    }
+
+    /**
      * Return the data of a wanted order
      *
      * @param string|integer $orderId
