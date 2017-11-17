@@ -29,6 +29,10 @@
     width: 100%;
 }
 
+.quiqqer-order-ordering-timeline a {
+    text-decoration: none;
+}
+
 .quiqqer-order-ordering-timeline li {
     float: left;
     height: 100px;

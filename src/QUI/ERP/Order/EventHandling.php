@@ -8,6 +8,7 @@ namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
 use QUI;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tracy\Debugger;
 
 /**
@@ -51,7 +52,8 @@ class EventHandling
         }
 
         // order hash
-        $hash = false;
+        $hash  = false;
+        $title = '/Bestellungen/';
 
         if (strpos($requestedUrl, '#')) {
             $hashParts = explode('#', $requestedUrl);
@@ -68,6 +70,14 @@ class EventHandling
             $Process->setAttribute('orderHash', $hash);
         }
 
+        if (count($parts) > 2) {
+            $Redirect = new RedirectResponse($title);
+            $Redirect->setStatusCode(RedirectResponse::HTTP_BAD_REQUEST);
+
+            echo $Redirect->getContent();
+            $Redirect->send();
+            exit;
+        }
 
         Debugger::barDump($hash, 'Order Hash');
         Debugger::barDump($parts, 'Order Parts');
