@@ -156,6 +156,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 });
             }
 
+
             Prom.then(function () {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function (html) {
                     self.getElm().set('html', html);
@@ -177,9 +178,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         next: function () {
             var self = this;
 
+            if (!parseInt(this.$Form.get('data-products-count'))) {
+                return Promise.resolve();
+            }
+
             this.$beginResultRendering();
 
-            this.saveCurrentStep().then(function () {
+            return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve, reject) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getNext', function (result) {
                         self.$renderResult(result).then(resolve);
@@ -202,9 +207,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         previous: function () {
             var self = this;
 
+            if (!parseInt(this.$Form.get('data-products-count'))) {
+                return Promise.resolve();
+            }
+
             this.$beginResultRendering(false);
 
-            this.saveCurrentStep().then(function () {
+            return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getPrevious', function (result) {
                         self.$renderResult(result, false).then(resolve);
@@ -224,9 +233,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         send: function () {
             var self = this;
 
+            if (!parseInt(this.$Form.get('data-products-count'))) {
+                return Promise.resolve();
+            }
+
             this.$beginResultRendering();
 
-            this.saveCurrentStep().then(function () {
+            return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve, reject) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_send', function (result) {
                         self.$renderResult(result).then(resolve);
@@ -249,6 +262,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         openStep: function (step) {
             var self = this;
+
+            if (!parseInt(this.$Form.get('data-products-count'))) {
+                var FirstLi = this.$Timeline.getElement('li:first-child');
+                step        = FirstLi.get('data-step');
+            }
 
             this.$beginResultRendering();
 

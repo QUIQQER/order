@@ -55,12 +55,8 @@ class EventHandling
         $hash  = false;
         $title = '/Bestellungen/';
 
-        if (strpos($requestedUrl, '#')) {
-            $hashParts = explode('#', $requestedUrl);
-
-            if (isset($hashParts[1])) {
-                $hash = $hashParts[1];
-            }
+        if (isset($_REQUEST['order'])) {
+            $hash = $_REQUEST['order'];
         }
 
         $Process = new OrderProcess();
@@ -81,6 +77,11 @@ class EventHandling
 
         Debugger::barDump($hash, 'Order Hash');
         Debugger::barDump($parts, 'Order Parts');
+        Debugger::barDump($requestedUrl, 'Requested url');
+
+        if ($Process->getOrder()) {
+            Debugger::barDump($Process->getOrder()->getId(), 'ORDER ID');
+        }
 
         $Site = new QUI\Projects\Site\Virtual(array(
             'id'    => 1,

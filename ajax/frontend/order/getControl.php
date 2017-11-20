@@ -19,11 +19,9 @@ QUI::$Ajax->registerFunction(
 
         $Output = new QUI\Output();
         $result = $OrderProcess->create();
+        $css    = QUI\Control\Manager::getCSS();
 
-        $css = QUI\Control\Manager::getCSS();
-
-
-        return $Output->parse($css . $result);
+        return $Output->parse($css.$result);
     },
     array('orderId')
 );

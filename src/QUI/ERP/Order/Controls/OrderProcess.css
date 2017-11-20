@@ -122,6 +122,10 @@
     width: 100%;
 }
 
+.quiqqer-order-ordering-buttons a {
+    text-decoration: none;
+}
+
 .quiqqer-order-ordering-buttons-next {
     float: right;
 }

@@ -30,15 +30,16 @@ class Delivery extends AbstractOrderingStep
             'User' => $Order->getCustomer()
         ));
 
-        return $Engine->fetch(dirname(__FILE__) . '/Delivery.html');
+        return $Engine->fetch(dirname(__FILE__).'/Delivery.html');
     }
 
     /**
+     * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName()
+    public function getName($Locale = null)
     {
-        return 'delivery';
+        return 'Delivery';
     }
 
     /**

@@ -67,11 +67,12 @@ class Checkout extends AbstractOrderingStep
     }
 
     /**
+     * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName()
+    public function getName($Locale = null)
     {
-        return 'checkout';
+        return 'Checkout';
     }
 
     /**

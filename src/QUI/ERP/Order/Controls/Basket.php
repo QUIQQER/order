@@ -38,15 +38,16 @@ class Basket extends AbstractOrderingStep
 
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__) . '/Basket.css');
+        $this->addCSSFile(dirname(__FILE__).'/Basket.css');
     }
 
     /**
+     * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName()
+    public function getName($Locale = null)
     {
-        return 'basket';
+        return 'Basket';
     }
 
     /**
@@ -109,7 +110,7 @@ class Basket extends AbstractOrderingStep
             'count'    => $Articles->count()
         ));
 
-        return $Engine->fetch(dirname(__FILE__) . '/Basket.html');
+        return $Engine->fetch(dirname(__FILE__).'/Basket.html');
     }
 
     /**

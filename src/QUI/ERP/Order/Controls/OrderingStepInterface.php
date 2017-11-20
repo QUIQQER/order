@@ -13,16 +13,16 @@ interface OrderingStepInterface
     /**
      * Return the step name
      *
+     * @param null|\QUI\Locale $Locale
      * @return string
      */
-    public function getName();
+    public function getName($Locale = null);
 
     /**
-     * @param null $Locale
+     * @param null|\QUI\Locale $Locale $Locale
      * @return mixed
      */
     public function getTitle($Locale = null);
-
 
     /**
      * @throws Exception

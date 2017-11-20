@@ -29,15 +29,16 @@ class Finish extends AbstractOrderingStep
             'User' => $Order->getCustomer()
         ));
 
-        return $Engine->fetch(dirname(__FILE__) . '/Finish.html');
+        return $Engine->fetch(dirname(__FILE__).'/Finish.html');
     }
 
     /**
+     * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName()
+    public function getName($Locale = null)
     {
-        return 'finish';
+        return 'Finish';
     }
 
     /**
