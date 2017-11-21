@@ -10,8 +10,8 @@ use QUI;
 use QUI\Utils\Singleton;
 
 /**
- * Class Factory
- * Creates Orders
+ * Class Handler
+ * - Handles orders and order in process
  *
  * @package QUI\ERP\Order
  */

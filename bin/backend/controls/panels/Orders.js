@@ -1,14 +1,6 @@
 /**
  * @module package/quiqqer/order/bin/backend/controls/panels/Orders
- *
- * @requnre qui/QUI
- * @requnre qui/controls/desktop/Panel
- * @require qui/controls/buttons/Button
- * @requnre qui/controls/buttons/Select
- * @requnre controls/grid/Grid
- * @requnre package/quiqqer/order/bin/backend/Orders
- * @requnre Locale
- * @require Mustache
+ * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 

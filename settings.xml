@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiqqer>
+    <settings name="ERP">
+
+        <config>
+            <section name="order">
+                <conf name="failedPaymentProcedure">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue>execute</defaultvalue>
+                </conf>
+            </section>
+
+            <section name="paymentsChangeable"/>
+        </config>
+
+        <window name="ERP">
+            <title>
+                <locale group="quiqqer/order" var="window.erp.title"/>
+            </title>
+            <params>
+                <icon>fa fa-sun-o</icon>
+            </params>
+
+            <categories>
+                <category name="order" index="2">
+                    <text>
+                        <locale group="quiqqer/order" var="window.erp.order.title"/>
+                    </text>
+                    <icon>fa fa-shopping-basket</icon>
+
+                    <settings title="order" name="order">
+                        <title>
+                            <locale group="quiqqer/order" var="order.settings.title"/>
+                        </title>
+
+                        <select conf="order.failedPaymentProcedure">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.failedPaymentProcedure"/>
+                            </text>
+                            <option value="execute">
+                                <locale group="quiqqer/order" var="order.settings.failedPaymentProcedure,execute"/>
+                            </option>
+                            <option value="returning">
+                                <locale group="quiqqer/order" var="order.settings.failedPaymentProcedure.returning"/>
+                            </option>
+                        </select>
+                    </settings>
+
+                    <settings title="order" name="order">
+                        <title>
+                            <locale group="quiqqer/order" var="order.settings.paymentsChangeable.title"/>
+                        </title>
+
+                        <input type="hidden"
+                               data-qui="package/quiqqer/order/bin/backend/controls/settings/Payments"
+                               label="false"
+                        />
+                    </settings>
+                </category>
+            </categories>
+        </window>
+
+    </settings>
+</quiqqer>

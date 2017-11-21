@@ -83,6 +83,10 @@ class EventHandling
             Debugger::barDump($Process->getOrder()->getId(), 'ORDER ID');
         }
 
+        if (isset($parts[1])) {
+            $Process->setAttribute('step', $parts[1]);
+        }
+
         $Site = new QUI\Projects\Site\Virtual(array(
             'id'    => 1,
             'title' => 'Bestellungen',
