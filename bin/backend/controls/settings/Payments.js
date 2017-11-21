@@ -169,7 +169,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                 result[data[i].id] = data[i].status.getStatus();
             }
 
-            this.$executeSave(result);
+            return this.$executeSave(result);
         },
 
         /**
