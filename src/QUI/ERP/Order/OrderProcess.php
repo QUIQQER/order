@@ -31,6 +31,7 @@ class OrderProcess extends QUI\Control
 
     /**
      * @return string
+     * @todo make it variable
      */
     public static function getUrl()
     {
@@ -111,7 +112,7 @@ class OrderProcess extends QUI\Control
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
         // check all previous steps
-        // is one is invalid, go to them
+        // is one invalid, go to them
         foreach ($steps as $name => $Step) {
             /* @var $Step AbstractOrderingStep */
             if ($Step->getName() === 'checkout' || $Step->getName() === 'finish') {
@@ -286,6 +287,17 @@ class OrderProcess extends QUI\Control
             $Current->validate();
         } catch (QUI\ERP\Order\Exception $Exception) {
             $error = $Exception->getMessage();
+
+            if (get_class($Current) === QUI\ERP\Order\Controls\Finish::class) {
+                $Current = $this->getPreviousStep();
+
+                if (method_exists($Current, 'forceSave')) {
+                    $Current->forceSave();
+                }
+
+                $Current->validate();
+                $error = false;
+            }
         }
 
         $this->setAttribute('step', $Current->getName());

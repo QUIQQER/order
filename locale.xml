@@ -185,6 +185,10 @@
             <de><![CDATA[Überprüfen & bestellen]]></de>
             <en><![CDATA[Checkout & order]]></en>
         </locale>
+        <locale name="ordering.step.title.CheckoutPayment">
+            <de><![CDATA[Bezahlung durchführen]]></de>
+            <en><![CDATA[Process payment]]></en>
+        </locale>
         <locale name="ordering.step.title.Finish">
             <de><![CDATA[Fertig!]]></de>
             <en><![CDATA[Done!]]></en>
@@ -251,6 +255,16 @@
             Please check all the details of your order. <br /><br />
             By clicking on "Pay to order", you confirm your details and close your order.
             You will receive a confirmation to your e-mail address.
+            ]]></en>
+        </locale>
+        <locale name="ordering.step.checkoutPayment.text" html="true">
+            <de><![CDATA[
+            Vielen Dank für Ihre Bestellung. Ihre Bestellung wurde erfolgreich übermittelt.<br />
+            Um die Bestellung nun abzuschließen führen Sie bitte die Bezahlung aus.
+            ]]></de>
+            <en><![CDATA[
+            Thank you for your order. Your order has been successfully submitted.<br />
+            To complete the order now, please perform the payment.
             ]]></en>
         </locale>
         <locale name="ordering.step.checkout.billing.address">

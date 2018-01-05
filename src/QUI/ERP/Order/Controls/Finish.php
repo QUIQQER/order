@@ -57,7 +57,7 @@ class Finish extends AbstractOrderingStep
         $Order = $this->getOrder();
 
         if ($Order->isPosted() === false) {
-            throw new QUI\Exception(array(
+            throw new QUI\ERP\Order\Exception(array(
                 'quiqqer/order',
                 'exception.order.is.not.finished'
             ));

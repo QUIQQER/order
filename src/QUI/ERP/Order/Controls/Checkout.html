@@ -1,14 +1,12 @@
 {if isset($Gateway)}
 <section class="quiqqer-order-step-checkout quiqqer-order-step-checkout-gateway">
-
     <header>
         <h1>{locale group="quiqqer/order" var="ordering.step.title.CheckoutPayment"}</h1>
     </header>
 
     {locale group="quiqqer/order" var="ordering.step.checkoutPayment.text"}
 
-    GATEWAY
-
+    {$gatewayDisplay}
 </section>
 {else}
 <section class="quiqqer-order-step-checkout">

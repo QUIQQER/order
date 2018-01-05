@@ -51,7 +51,8 @@ class Checkout extends AbstractOrderingStep
             $payment = $Order->getDataEntry('orderedWithCostsPayment');
 
             if ($payment == $Payment->getId() && $Payment->getPaymentType()->isGateway()) {
-                $Engine->assign('Gateway', $Payment);
+                $Engine->assign('Gateway', $Payment->getPaymentType());
+                $Engine->assign('gatewayDisplay', $Payment->getPaymentType()->getGatewayDisplay($Order));
             }
         }
 
@@ -102,8 +103,26 @@ class Checkout extends AbstractOrderingStep
 
     /**
      * Order was ordered with costs
+     *
+     * @return void
      */
     public function save()
+    {
+        if (!isset($_REQUEST['current']) || $_REQUEST['current'] !== 'checkout') {
+            return;
+        }
+
+        if (!isset($_REQUEST['payableToOrder'])) {
+            return;
+        }
+
+        $this->forceSave();
+    }
+
+    /**
+     * Save order as start order payment
+     */
+    public function forceSave()
     {
         $Orders  = Handler::getInstance();
         $Order   = $Orders->getOrderInProcess($this->getAttribute('orderId'));
@@ -113,21 +132,8 @@ class Checkout extends AbstractOrderingStep
             return;
         }
 
-        if (!isset($_REQUEST['current']) || $_REQUEST['current'] !== 'checkout') {
-            return;
-        }
-
-        if (!isset($_REQUEST['payableToOrder'])) {
-            return;
-        }
-
         $Order->setData('orderedWithCosts', 1);
         $Order->setData('orderedWithCostsPayment', $Payment->getId());
         $Order->save();
-
-//        wird über process provider gemacht
-//        if (!$Payment->getPaymentType()->isGateway()) {
-//            $Order->createOrder(QUI::getUsers()->getSystemUser());
-//        }
     }
 }
