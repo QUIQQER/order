@@ -24,13 +24,16 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 ], function (QUI, QUIControl, QUILoader, QUIFormUtils, Basket, QUIAjax, QUILocale, Navigo) {
     "use strict";
 
-    var lg     = 'quiqqer/order';
-    var Router = new Navigo(null, false, '');
-    var url    = '/Bestellungen/';
+    var lg  = 'quiqqer/order';
+    var url = '/Bestellungen';
 
-    // workaround - dont know why its needed, but its needed :D
-    Router.on(url + '*', function () {
-    });
+    if (window.location.pathname.indexOf(url) === 0) {
+        var Router = new Navigo(null, false, '');
+
+        // workaround - dont know why its needed, but its needed :D
+        Router.on(url + '/*', function () {
+        });
+    }
 
 
     return new Class({
@@ -188,7 +191,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return new Promise(function (resolve, reject) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getNext', function (result) {
                         self.$renderResult(result).then(resolve);
-                        Router.navigate(url + self.getAttribute('current'));
+
+                        if (Router) {
+                            Router.navigate(url + '/' + self.getAttribute('current'));
+                        }
                     }, {
                         'package': 'quiqqer/order',
                         orderId  : self.getAttribute('orderId'),
@@ -217,7 +223,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return new Promise(function (resolve) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getPrevious', function (result) {
                         self.$renderResult(result, false).then(resolve);
-                        Router.navigate(url + self.getAttribute('current'));
+
+                        if (Router) {
+                            Router.navigate(url + '/' + self.getAttribute('current'));
+                        }
                     }, {
                         'package': 'quiqqer/order',
                         orderId  : self.getAttribute('orderId'),
@@ -243,7 +252,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return new Promise(function (resolve, reject) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_send', function (result) {
                         self.$renderResult(result).then(resolve);
-                        Router.navigate(url + self.getAttribute('current'));
+
+                        if (Router) {
+                            Router.navigate(url + '/' + self.getAttribute('current'));
+                        }
                     }, {
                         'package': 'quiqqer/order',
                         orderId  : self.getAttribute('orderId'),
@@ -274,7 +286,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return new Promise(function (resolve) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getStep', function (result) {
                         self.$renderResult(result).then(resolve);
-                        Router.navigate(url + step);
+
+                        if (Router) {
+                            Router.navigate(url + '/' + step);
+                        }
                     }, {
                         'package': 'quiqqer/order',
                         orderId  : self.getAttribute('orderId'),
