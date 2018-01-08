@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order;
 
 use QUI;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Class Factory
@@ -41,7 +40,7 @@ class Factory extends QUI\Utils\Singleton
         QUI::getDataBase()->insert($table, array(
             'c_user'     => $User->getId(),
             'c_date'     => date('Y-m-d H:i:s'),
-            'hash'       => Uuid::uuid1()->toString(),
+            'hash'       => QUI\Utils\Uuid::get(),
             'status'     => AbstractOrder::STATUS_CREATED,
             'customerId' => 0
         ));
@@ -77,7 +76,7 @@ class Factory extends QUI\Utils\Singleton
         QUI::getDataBase()->insert($table, array(
             'c_user'     => $User->getId(),
             'c_date'     => date('Y-m-d H:i:s'),
-            'hash'       => Uuid::uuid1()->toString(),
+            'hash'       => QUI\Utils\Uuid::get(),
             'customerId' => $User->getId(),
             'status'     => AbstractOrder::STATUS_CREATED
         ));
