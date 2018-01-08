@@ -232,9 +232,12 @@ class OrderInProcess extends AbstractOrder
 
         $Payment = $this->getPayment();
 
-        if ($Payment) {
-            $paymentId     = $Payment->getId();
-            $paymentMethod = $Payment->getPaymentType()->getTitle();
+        try {
+            if ($Payment) {
+                $paymentId     = $Payment->getId();
+                $paymentMethod = $Payment->getPaymentType()->getTitle();
+            }
+        } catch (QUI\Exception $Exception) {
         }
 
         return array(
