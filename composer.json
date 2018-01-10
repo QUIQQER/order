@@ -25,6 +25,7 @@
     "quiqqer/invoice": "*",
     "quiqqer/payments": "*",
     "quiqqer/tax": "*",
+    "quiqqer/payment-transactions": "*",
     "ramsey/uuid": "3.*",
     "npm-asset/navigo": "5.*",
     "npm-asset/history-events": "1.*"
