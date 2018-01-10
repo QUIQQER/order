@@ -91,6 +91,61 @@ class OrderInProcess extends AbstractOrder
     }
 
     /**
+     * Calculates the payment for the order
+     */
+    protected function calculatePayments()
+    {
+        $User = QUI::getUserBySession();
+
+        // old status
+        $oldPaidStatus = $this->getAttribute('paid_status');
+
+        QUI\ERP\Accounting\Calc::calculatePayments($this);
+
+        switch ($this->getAttribute('paid_status')) {
+            case self::PAYMENT_STATUS_OPEN:
+            case self::PAYMENT_STATUS_PAID:
+            case self::PAYMENT_STATUS_PART:
+            case self::PAYMENT_STATUS_ERROR:
+            case self::PAYMENT_STATUS_DEBIT:
+            case self::PAYMENT_STATUS_CANCELED:
+                break;
+
+            default:
+                $this->setAttribute('paid_status', self::PAYMENT_STATUS_ERROR);
+        }
+
+        $this->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.message.edit',
+                array(
+                    'username' => $User->getName(),
+                    'uid'      => $User->getId()
+                )
+            )
+        );
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->tableOrderProcess(),
+            array(
+                'paid_data'   => $this->getAttribute('paid_data'),
+                'paid_date'   => $this->getAttribute('paid_date'),
+                'paid_status' => $this->getAttribute('paid_status')
+            ),
+            array('id' => $this->getId())
+        );
+
+        // Payment Status has changed
+        if ($oldPaidStatus != $this->getAttribute('paid_status')) {
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderAddComment',
+                array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
+            );
+        }
+    }
+
+    /**
      * Delete the processing order
      * The user itself or a super can delete it
      *

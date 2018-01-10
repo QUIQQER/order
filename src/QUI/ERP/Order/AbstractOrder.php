@@ -9,6 +9,9 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
+use QUI\ERP\Accounting\Payments\Api\PaymentsInterface;
+use QUI\ERP\Money\Price;
+use QUI\Permissions\Permission;
 
 /**
  * Class AbstractOrder
@@ -19,8 +22,15 @@ use QUI\ERP\Accounting\Payments\Payments;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder
+abstract class AbstractOrder extends QUI\QDOM
 {
+    const PAYMENT_STATUS_OPEN = 0;
+    const PAYMENT_STATUS_PAID = 1;
+    const PAYMENT_STATUS_PART = 2;
+    const PAYMENT_STATUS_ERROR = 4;
+    const PAYMENT_STATUS_CANCELED = 5;
+    const PAYMENT_STATUS_DEBIT = 11;
+
     /**
      * Order is only created
      */
@@ -160,7 +170,6 @@ abstract class AbstractOrder
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);
         $this->data            = json_decode($data['data'], true);
 
-
         // user
         $this->customerId = (int)$data['customerId'];
 
@@ -219,6 +228,12 @@ abstract class AbstractOrder
 
         // payment
         $this->paymentId = $data['payment_id'];
+
+        $this->setAttributes(array(
+            'paid_status' => (int)$data['paid_status'],
+            'paid_data'   => json_decode($data['paid_data'], true),
+            'paid_date'   => $data['paid_date']
+        ));
     }
 
     //region API
@@ -427,23 +442,6 @@ abstract class AbstractOrder
     }
 
     /**
-     * Return the payment
-     *
-     * @return null|QUI\ERP\Accounting\Payments\Types\Payment
-     */
-    public function getPayment()
-    {
-        $Payments = Payments::getInstance();
-
-        try {
-            return $Payments->getPayment($this->paymentId);
-        } catch (QUI\Exception $Exception) {
-        }
-
-        return null;
-    }
-
-    /**
      * Has the order a delivery address?
      *
      * @return bool
@@ -579,6 +577,46 @@ abstract class AbstractOrder
         }
     }
 
+    //endregion
+
+    //region payments
+
+    /**
+     * Return the payment
+     *
+     * @return null|QUI\ERP\Accounting\Payments\Types\Payment
+     */
+    public function getPayment()
+    {
+        $Payments = Payments::getInstance();
+
+        try {
+            return $Payments->getPayment($this->paymentId);
+        } catch (QUI\Exception $Exception) {
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the payment paid status information
+     * - How many has already been paid
+     * - How many must be paid
+     *
+     * @return array
+     */
+    public function getPaidStatusInformation()
+    {
+        QUI\ERP\Accounting\Calc::calculatePayments($this);
+
+        return array(
+            'paidData' => $this->getAttribute('paid_data'),
+            'paidDate' => $this->getAttribute('paid_date'),
+            'paid'     => $this->getAttribute('paid'),
+            'toPay'    => $this->getAttribute('toPay')
+        );
+    }
+
     /**
      * Set the payment method to the order
      *
@@ -607,6 +645,132 @@ abstract class AbstractOrder
         $this->paymentId     = $Payment->getId();
         $this->paymentMethod = $Payment->getType();
     }
+
+    /**
+     * @param $amount
+     * @param PaymentsInterface $PaymentMethod
+     * @param bool $date
+     * @param null $PermissionUser
+     */
+    public function addPayment(
+        $amount,
+        PaymentsInterface $PaymentMethod,
+        $date = false,
+        $PermissionUser = null
+    ) {
+        Permission::checkPermission(
+            'quiqqer.order.addPayment',
+            $PermissionUser
+        );
+
+        if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
+            $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
+        ) {
+            return;
+        }
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderAddPaymentBegin',
+            array($this, $amount, $PaymentMethod, $date)
+        );
+
+        $User     = QUI::getUserBySession();
+        $paidData = $this->getAttribute('paid_data');
+        $amount   = Price::validatePrice($amount);
+
+        if (!$amount) {
+            return;
+        }
+
+        if (!is_array($paidData)) {
+            $paidData = json_decode($paidData, true);
+        }
+
+        if (!is_array($paidData)) {
+            $paidData = array();
+        }
+
+
+        if ($date === false) {
+            $date = time();
+        }
+
+        $isValidTimeStamp = function ($timestamp) {
+            return ((string)(int)$timestamp === $timestamp)
+                   && ($timestamp <= PHP_INT_MAX)
+                   && ($timestamp >= ~PHP_INT_MAX);
+        };
+
+        if ($isValidTimeStamp($date) === false) {
+            $date = strtotime($date);
+
+            if ($isValidTimeStamp($date) === false) {
+                $date = time();
+            }
+        }
+
+        $paidData[] = array(
+            'amount'  => $amount,
+            'payment' => $PaymentMethod->getName(),
+            'date'    => $date
+        );
+
+        $this->setAttribute('paid_data', json_encode($paidData));
+        $this->setAttribute('paid_date', $date);
+
+        // calculations
+        $this->Articles->calc();
+        $listCalculations = $this->Articles->getCalculations();
+
+        $this->setAttributes(array(
+            'currency_data' => json_encode($listCalculations['currencyData']),
+            'nettosum'      => $listCalculations['nettoSum'],
+            'subsum'        => $listCalculations['subSum'],
+            'sum'           => $listCalculations['sum'],
+            'vat_array'     => json_encode($listCalculations['vatArray'])
+        ));
+
+
+        $this->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.message.addPayment',
+                array(
+                    'username' => $User->getName(),
+                    'uid'      => $User->getId(),
+                    'payment'  => $PaymentMethod->getTitle()
+                )
+            )
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderAddPayment',
+            array($this, $amount, $PaymentMethod, $date)
+        );
+
+        $this->calculatePayments();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderAddPaymentEnd',
+            array($this, $amount, $PaymentMethod, $date)
+        );
+
+
+        // if invoice exists, add payment, too
+        if (method_exists($this, 'getInvoice')) {
+            try {
+                /* @var $Invoice QUI\ERP\Accounting\Invoice\Invoice */
+                $Invoice = $this->getInvoice();
+                $Invoice->addPayment($amount, $PaymentMethod);
+            } catch (QUI\ERP\Accounting\Invoice\Exception $Exception) {
+            }
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    abstract protected function calculatePayments();
 
     //endregion
 
