@@ -33,6 +33,7 @@ class OrderInProcess extends AbstractOrder
 
         $this->orderId = (int)$data['order_id'];
 
+        // check if a order for the processing order exists
         try {
             Handler::getInstance()->get($this->orderId);
         } catch (QUI\ERP\Order\Exception $Exception) {
@@ -95,6 +96,8 @@ class OrderInProcess extends AbstractOrder
      */
     protected function calculatePayments()
     {
+        QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Calculate Payments');
+
         $User = QUI::getUserBySession();
 
         // old status
@@ -136,12 +139,29 @@ class OrderInProcess extends AbstractOrder
             array('id' => $this->getId())
         );
 
+        QUI\ERP\Debug::getInstance()->log('old status');
+        QUI\ERP\Debug::getInstance()->log($oldPaidStatus);
+        QUI\ERP\Debug::getInstance()->log('new status');
+        QUI\ERP\Debug::getInstance()->log($this->getAttribute('paid_status'));
+
         // Payment Status has changed
-        if ($oldPaidStatus != $this->getAttribute('paid_status')) {
-            QUI::getEvents()->fireEvent(
-                'onQuiqqerOrderAddComment',
-                array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
-            );
+        if ($oldPaidStatus == $this->getAttribute('paid_status')) {
+            return;
+        }
+
+        QUI::getEvents()->fireEvent(
+            'onQuiqqerOrderPaymentStatusChanged',
+            array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
+        );
+
+        QUI\ERP\Debug::getInstance()->log(
+            'OrderInProcess:: Paid Status changed to '.$this->getAttribute('paid_status')
+        );
+
+        // create order, if the payment status is paid and no order exists
+        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID
+            && !$this->orderId) {
+            $this->createOrder(QUI::getUsers()->getSystemUser());
         }
     }
 
@@ -186,6 +206,8 @@ class OrderInProcess extends AbstractOrder
      */
     public function createOrder($PermissionUser = null)
     {
+        QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Create Order');
+
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
                 QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
@@ -208,7 +230,7 @@ class OrderInProcess extends AbstractOrder
             Handler::getInstance()->tableOrderProcess(),
             array(
                 'order_id' => $Order->getId(),
-                'hash'     => $Order->getHash()
+                'hash'     => $this->getHash()
             ),
             array('id' => $this->getId())
         );
@@ -218,12 +240,17 @@ class OrderInProcess extends AbstractOrder
         // copy the data to the order
         $data                     = $this->getDataForSaving();
         $data['order_process_id'] = $this->getId();
+        $data['hash']             = $this->getHash();
+        $data['c_user']           = $this->cUser;
+        $data['paid_status']      = $this->getAttribute('paid_status');
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
             array('id' => $Order->getId())
         );
+
+        QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order created');
 
         return $Order;
     }
@@ -241,6 +268,10 @@ class OrderInProcess extends AbstractOrder
         }
 
         if ($PermissionUser && $this->cUser === $PermissionUser->getId()) {
+            return true;
+        }
+
+        if (QUI::getUsers()->isSystemUser($PermissionUser)) {
             return true;
         }
 

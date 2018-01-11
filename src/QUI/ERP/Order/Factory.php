@@ -38,11 +38,12 @@ class Factory extends QUI\Utils\Singleton
         $table  = $Orders->table();
 
         QUI::getDataBase()->insert($table, array(
-            'c_user'     => $User->getId(),
-            'c_date'     => date('Y-m-d H:i:s'),
-            'hash'       => QUI\Utils\Uuid::get(),
-            'status'     => AbstractOrder::STATUS_CREATED,
-            'customerId' => 0
+            'c_user'      => $User->getId() ? $User->getId() : 0,
+            'c_date'      => date('Y-m-d H:i:s'),
+            'hash'        => QUI\Utils\Uuid::get(),
+            'status'      => AbstractOrder::STATUS_CREATED,
+            'customerId'  => 0,
+            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN
         ));
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
@@ -74,11 +75,12 @@ class Factory extends QUI\Utils\Singleton
         // @todo set default from customer
 
         QUI::getDataBase()->insert($table, array(
-            'c_user'     => $User->getId(),
-            'c_date'     => date('Y-m-d H:i:s'),
-            'hash'       => QUI\Utils\Uuid::get(),
-            'customerId' => $User->getId(),
-            'status'     => AbstractOrder::STATUS_CREATED
+            'c_user'      => $User->getId(),
+            'c_date'      => date('Y-m-d H:i:s'),
+            'hash'        => QUI\Utils\Uuid::get(),
+            'customerId'  => $User->getId(),
+            'status'      => AbstractOrder::STATUS_CREATED,
+            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN
         ));
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();

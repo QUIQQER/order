@@ -265,6 +265,8 @@ class Order extends AbstractOrder
      */
     protected function calculatePayments()
     {
+        QUI\ERP\Debug::getInstance()->log('Order:: Calculate Payments');
+
         $User = QUI::getUserBySession();
 
         // old status
@@ -306,10 +308,14 @@ class Order extends AbstractOrder
             array('id' => $this->getId())
         );
 
+        QUI\ERP\Debug::getInstance()->log(
+            'Order:: Paid Status changed to '.$this->getAttribute('paid_status')
+        );
+
         // Payment Status has changed
         if ($oldPaidStatus != $this->getAttribute('paid_status')) {
             QUI::getEvents()->fireEvent(
-                'onQuiqqerOrderAddComment',
+                'onQuiqqerOrderPaymentChanged',
                 array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
             );
         }

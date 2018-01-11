@@ -12,6 +12,7 @@ use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Accounting\Payments\Api\PaymentsInterface;
 use QUI\ERP\Money\Price;
 use QUI\Permissions\Permission;
+use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 
 /**
  * Class AbstractOrder
@@ -651,6 +652,8 @@ abstract class AbstractOrder extends QUI\QDOM
      * @param PaymentsInterface $PaymentMethod
      * @param bool $date
      * @param null $PermissionUser
+     *
+     * @deprecated use transaction oder eine tx anlegen
      */
     public function addPayment(
         $amount,
@@ -754,17 +757,131 @@ abstract class AbstractOrder extends QUI\QDOM
             'quiqqerOrderAddPaymentEnd',
             array($this, $amount, $PaymentMethod, $date)
         );
+    }
+
+    /**
+     * @param Transaction $Transaction
+     */
+    public function addTransaction(Transaction $Transaction)
+    {
+        QUI\ERP\Debug::getInstance()->log('Order:: add transaction');
+
+        if ($this->getHash() !== $Transaction->getHash()) {
+            return;
+        }
+
+        if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
+            $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
+        ) {
+            return;
+        }
+
+        QUI\ERP\Debug::getInstance()->log('Order:: add transaction start');
+
+        $User     = QUI::getUserBySession();
+        $paidData = $this->getAttribute('paid_data');
+        $amount   = Price::validatePrice($Transaction->getAmount());
+        $date     = $Transaction->getDate();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderAddTransactionBegin',
+            array($this, $amount, $Transaction, $date)
+        );
 
 
-        // if invoice exists, add payment, too
-        if (method_exists($this, 'getInvoice')) {
-            try {
-                /* @var $Invoice QUI\ERP\Accounting\Invoice\Invoice */
-                $Invoice = $this->getInvoice();
-                $Invoice->addPayment($amount, $PaymentMethod);
-            } catch (QUI\ERP\Accounting\Invoice\Exception $Exception) {
+        if (!$amount) {
+            return;
+        }
+
+        if (!is_array($paidData)) {
+            $paidData = json_decode($paidData, true);
+        }
+
+        if (!is_array($paidData)) {
+            $paidData = array();
+        }
+
+        function isTxAlreadyAdded($txid, $paidData)
+        {
+            foreach ($paidData as $paidEntry) {
+                if (!isset($paidEntry['txid'])) {
+                    continue;
+                }
+
+                if ($paidEntry['txid'] == $txid) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // already added
+        if (isTxAlreadyAdded($Transaction->getTxId(), $paidData)) {
+            return;
+        }
+
+
+        $isValidTimeStamp = function ($timestamp) {
+            return ((string)(int)$timestamp === $timestamp)
+                   && ($timestamp <= PHP_INT_MAX)
+                   && ($timestamp >= ~PHP_INT_MAX);
+        };
+
+        if ($isValidTimeStamp($date) === false) {
+            $date = strtotime($date);
+
+            if ($isValidTimeStamp($date) === false) {
+                $date = time();
             }
         }
+
+        $paidData[] = array(
+            'amount' => $amount,
+            'txid'   => $Transaction->getTxId(),
+            'date'   => $date
+        );
+
+        $this->setAttribute('paid_data', json_encode($paidData));
+        $this->setAttribute('paid_date', $date);
+
+        // calculations
+        $this->Articles->calc();
+        $listCalculations = $this->Articles->getCalculations();
+
+        $this->setAttributes(array(
+            'currency_data' => json_encode($listCalculations['currencyData']),
+            'nettosum'      => $listCalculations['nettoSum'],
+            'subsum'        => $listCalculations['subSum'],
+            'sum'           => $listCalculations['sum'],
+            'vat_array'     => json_encode($listCalculations['vatArray'])
+        ));
+
+
+        $this->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.message.addTransaction',
+                array(
+                    'username' => $User->getName(),
+                    'uid'      => $User->getId(),
+                    'txid'     => $Transaction->getTxId()
+                )
+            )
+        );
+
+        QUI::getEvents()->fireEvent(
+            'addTransaction',
+            array($this, $amount, $Transaction, $date)
+        );
+
+        $this->calculatePayments();
+
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderAddTransactionEnd',
+            array($this, $amount, $Transaction, $date)
+        );
     }
 
     /**

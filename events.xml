@@ -7,4 +7,8 @@
     <event on="onRequest"
            fire="\QUI\ERP\Order\EventHandling::onRequest"
     />
+
+    <event on="onTransactionCreate"
+           fire="\QUI\ERP\Order\EventHandling::onTransactionCreate"
+    />
 </events>

@@ -7,9 +7,11 @@
 namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
-use QUI;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tracy\Debugger;
+
+use QUI;
+use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 
 /**
  * Class EventHandling
@@ -87,6 +89,7 @@ class EventHandling
             $Process->setAttribute('step', $parts[1]);
         }
 
+        // #locale
         $Site = new QUI\Projects\Site\Virtual(array(
             'id'    => 1,
             'title' => 'Bestellungen',
@@ -98,5 +101,23 @@ class EventHandling
         $Site->setAttribute('content', $Process->create());
 
         $Rewrite->setSite($Site);
+    }
+
+    /**
+     * event: on transaction create
+     * assign to the order
+     *
+     * @param Transaction $Transaction
+     */
+    public static function onTransactionCreate(Transaction $Transaction)
+    {
+        $hash = $Transaction->getHash();
+
+        try {
+            $Order = Handler::getInstance()->getOrderByHash($hash);
+            $Order->addTransaction($Transaction);
+        } catch (Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 }
