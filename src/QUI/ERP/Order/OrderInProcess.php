@@ -93,6 +93,8 @@ class OrderInProcess extends AbstractOrder
 
     /**
      * Calculates the payment for the order
+     *
+     * @throws QUI\ERP\Exception||QUI\Permissions\Exception
      */
     protected function calculatePayments()
     {
@@ -102,8 +104,7 @@ class OrderInProcess extends AbstractOrder
 
         // old status
         $oldPaidStatus = $this->getAttribute('paid_status');
-
-        QUI\ERP\Accounting\Calc::calculatePayments($this);
+        $calculations  = QUI\ERP\Accounting\Calc::calculatePayments($this);
 
         switch ($this->getAttribute('paid_status')) {
             case self::PAYMENT_STATUS_OPEN:
@@ -132,30 +133,25 @@ class OrderInProcess extends AbstractOrder
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             array(
-                'paid_data'   => $this->getAttribute('paid_data'),
-                'paid_date'   => $this->getAttribute('paid_date'),
-                'paid_status' => $this->getAttribute('paid_status')
+                'paid_data'   => $calculations['paidData'],
+                'paid_date'   => $calculations['paidDate'],
+                'paid_status' => $calculations['paidStatus']
             ),
             array('id' => $this->getId())
         );
 
-        QUI\ERP\Debug::getInstance()->log('old status');
-        QUI\ERP\Debug::getInstance()->log($oldPaidStatus);
-        QUI\ERP\Debug::getInstance()->log('new status');
-        QUI\ERP\Debug::getInstance()->log($this->getAttribute('paid_status'));
-
         // Payment Status has changed
-        if ($oldPaidStatus == $this->getAttribute('paid_status')) {
+        if ($oldPaidStatus == $calculations['paidStatus']) {
             return;
         }
 
         QUI::getEvents()->fireEvent(
             'onQuiqqerOrderPaymentStatusChanged',
-            array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
+            array($this, $calculations['paidStatus'], $oldPaidStatus)
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'OrderInProcess:: Paid Status changed to '.$this->getAttribute('paid_status')
+            'OrderInProcess:: Paid Status changed to '.$calculations['paidStatus']
         );
 
         // create order, if the payment status is paid and no order exists
@@ -202,6 +198,7 @@ class OrderInProcess extends AbstractOrder
      *
      * @param null|QUI\Interfaces\Users\User $PermissionUser
      * @return Order
+     *
      * @throws QUI\Permissions\Exception
      */
     public function createOrder($PermissionUser = null)
@@ -228,10 +225,7 @@ class OrderInProcess extends AbstractOrder
         // bind the new order to the process order
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            array(
-                'order_id' => $Order->getId(),
-                'hash'     => $this->getHash()
-            ),
+            array('order_id' => $Order->getId()),
             array('id' => $this->getId())
         );
 
@@ -243,6 +237,8 @@ class OrderInProcess extends AbstractOrder
         $data['hash']             = $this->getHash();
         $data['c_user']           = $this->cUser;
         $data['paid_status']      = $this->getAttribute('paid_status');
+        $data['paid_date']        = $this->getAttribute('paid_date');
+        $data['paid_data']        = $this->getAttribute('paid_data');
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
@@ -251,6 +247,15 @@ class OrderInProcess extends AbstractOrder
         );
 
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order created');
+        QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order calculatePayments');
+
+        try {
+            $Order->calculatePayments();
+        } catch (QUI\Exception $Exception) {
+            if (defined('QUIQQER_DEBUG')) {
+                QUI\System\Log::writeException($Exception);
+            }
+        }
 
         return $Order;
     }
@@ -275,7 +280,7 @@ class OrderInProcess extends AbstractOrder
             return true;
         }
 
-        //@todo permissoins prüfen
+        //@todo permissions prüfen
 
         return false;
     }

@@ -166,7 +166,7 @@ class Search extends Singleton
 
         return array(
             'grid'  => $Grid->parseResult($result, $count),
-            'total' => 0 //QUI\ERP\Accounting\Calc::calculateTotal($calc)
+            'total' => $calc
         );
     }
 
@@ -214,15 +214,15 @@ class Search extends Singleton
         $fc    = 0;
 
         foreach ($this->filter as $filter) {
-            $bind = ':filter' . $fc;
+            $bind = ':filter'.$fc;
 
             switch ($filter['filter']) {
                 case 'from':
-                    $where[] = 'date >= ' . $bind;
+                    $where[] = 'date >= '.$bind;
                     break;
 
                 case 'to':
-                    $where[] = 'date <= ' . $bind;
+                    $where[] = 'date <= '.$bind;
                     break;
 
                 default:
@@ -237,7 +237,7 @@ class Search extends Singleton
             $fc++;
         }
 
-        $whereQuery = 'WHERE ' . implode(' AND ', $where);
+        $whereQuery = 'WHERE '.implode(' AND ', $where);
 
 
         if ($count) {
@@ -402,6 +402,7 @@ class Search extends Singleton
                 if (!isset($data['sum'])) {
                     return 0;
                 }
+
                 return $data['sum'];
             }, $calculations['vatArray']);
 

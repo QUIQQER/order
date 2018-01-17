@@ -27,6 +27,7 @@ class Order extends AbstractOrder
      * Order constructor.
      *
      * @param string|integer $orderId - Order-ID
+     * @throws QUI\Erp\Order\Exception
      */
     public function __construct($orderId)
     {
@@ -51,7 +52,7 @@ class Order extends AbstractOrder
      *
      * @return QUI\ERP\Accounting\Invoice\Invoice
      *
-     * @throws Exception|QUI\ERP\Accounting\Invoice\Exception
+     * @throws QUI\Exception
      */
     public function createInvoice()
     {
@@ -69,11 +70,11 @@ class Order extends AbstractOrder
         }
 
         $InvoiceFactory   = QUI\ERP\Accounting\Invoice\Factory::getInstance();
-        $TemporaryInvoice = $InvoiceFactory->createInvoice();
+        $TemporaryInvoice = $InvoiceFactory->createInvoice(null, $this->getHash());
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            array('temporary_invoice_id' => $TemporaryInvoice->getId()),
+            array('temporary_invoice_id' => $TemporaryInvoice->getCleanId()),
             array('id' => $this->getId())
         );
 
@@ -140,6 +141,10 @@ class Order extends AbstractOrder
      */
     public function isPosted()
     {
+        if (!$this->invoiceId) {
+            return false;
+        }
+
         try {
             $this->getInvoice();
         } catch (QUI\ERP\Accounting\Invoice\Exception $Exception) {
@@ -162,6 +167,8 @@ class Order extends AbstractOrder
 
     /**
      * Post the order and create an invoice
+     *
+     * @throws
      */
     public function post()
     {
@@ -172,6 +179,7 @@ class Order extends AbstractOrder
      * Return the order data for saving
      *
      * @return array
+     * @throws
      */
     protected function getDataForSaving()
     {
@@ -263,18 +271,26 @@ class Order extends AbstractOrder
     /**
      * Calculates the payment for the order
      */
-    protected function calculatePayments()
+    public function calculatePayments()
     {
-        QUI\ERP\Debug::getInstance()->log('Order:: Calculate Payments');
-
         $User = QUI::getUserBySession();
 
+        QUI\ERP\Debug::getInstance()->log('Order:: Calculate Payments');
+
         // old status
-        $oldPaidStatus = $this->getAttribute('paid_status');
+        try {
+            $oldPaidStatus = $this->getAttribute('paid_status');
+            $calculation   = QUI\ERP\Accounting\Calc::calculatePayments($this);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
 
-        QUI\ERP\Accounting\Calc::calculatePayments($this);
+            return;
+        }
 
-        switch ($this->getAttribute('paid_status')) {
+        QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> data');
+        QUI\ERP\Debug::getInstance()->log($calculation);
+
+        switch ($calculation['paidStatus']) {
             case self::PAYMENT_STATUS_OPEN:
             case self::PAYMENT_STATUS_PAID:
             case self::PAYMENT_STATUS_PART:
@@ -298,19 +314,27 @@ class Order extends AbstractOrder
             )
         );
 
+        QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             array(
-                'paid_data'   => $this->getAttribute('paid_data'),
-                'paid_date'   => $this->getAttribute('paid_date'),
-                'paid_status' => $this->getAttribute('paid_status')
+                'paid_data'   => $calculation['paidData'],
+                'paid_date'   => $calculation['paidDate'],
+                'paid_status' => $calculation['paidStatus']
             ),
             array('id' => $this->getId())
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'Order:: Paid Status changed to '.$this->getAttribute('paid_status')
+            'Order:: Paid Status changed to '.$calculation['paidStatus']
         );
+
+        // if no invoice exists, and the order is paid, create an invoice
+        if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID &&
+            $this->isPosted() === false) {
+            $this->post();
+        }
 
         // Payment Status has changed
         if ($oldPaidStatus != $this->getAttribute('paid_status')) {
