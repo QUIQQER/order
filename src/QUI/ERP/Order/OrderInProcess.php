@@ -24,6 +24,7 @@ class OrderInProcess extends AbstractOrder
      * Order constructor.
      *
      * @param string|integer $orderId - Order-ID
+     * @throws QUI\Erp\Order\Exception
      */
     public function __construct($orderId)
     {
@@ -39,6 +40,16 @@ class OrderInProcess extends AbstractOrder
         } catch (QUI\ERP\Order\Exception $Exception) {
             $this->orderId = null;
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function refresh()
+    {
+        $this->setDataBaseData(
+            Handler::getInstance()->getOrderProcessData($this->getId())
+        );
     }
 
     /**
@@ -94,7 +105,9 @@ class OrderInProcess extends AbstractOrder
     /**
      * Calculates the payment for the order
      *
-     * @throws QUI\ERP\Exception||QUI\Permissions\Exception
+     * @throws Exception
+     * @throws QUI\ERP\Exception
+     * @throws QUI\Permissions\Exception
      */
     protected function calculatePayments()
     {
@@ -200,6 +213,7 @@ class OrderInProcess extends AbstractOrder
      * @return Order
      *
      * @throws QUI\Permissions\Exception
+     * @throws Exception
      */
     public function createOrder($PermissionUser = null)
     {
@@ -220,7 +234,7 @@ class OrderInProcess extends AbstractOrder
 
         $this->save($SystemUser);
 
-        $Order = Factory::getInstance()->create($SystemUser);
+        $Order = Factory::getInstance()->create($SystemUser, $this->getHash());
 
         // bind the new order to the process order
         QUI::getDataBase()->update(
@@ -234,7 +248,6 @@ class OrderInProcess extends AbstractOrder
         // copy the data to the order
         $data                     = $this->getDataForSaving();
         $data['order_process_id'] = $this->getId();
-        $data['hash']             = $this->getHash();
         $data['c_user']           = $this->cUser;
         $data['paid_status']      = $this->getAttribute('paid_status');
         $data['paid_date']        = $this->getAttribute('paid_date');
@@ -245,6 +258,9 @@ class OrderInProcess extends AbstractOrder
             $data,
             array('id' => $Order->getId())
         );
+
+        // get the order with new data
+        $Order->refresh();
 
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order created');
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order calculatePayments');
@@ -306,6 +322,7 @@ class OrderInProcess extends AbstractOrder
         try {
             $Customer = $this->getCustomer();
             $customer = $Customer->getAttributes();
+            $customer = QUI\ERP\Utils\User::filterCustomerAttributes($Customer->getAttributes());
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }

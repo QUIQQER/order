@@ -20,9 +20,10 @@ class Factory extends QUI\Utils\Singleton
      * Creates a new order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @param string|bool $hash - optional
      * @return Order
      */
-    public function create($PermissionUser = null)
+    public function create($PermissionUser = null, $hash = false)
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -33,6 +34,10 @@ class Factory extends QUI\Utils\Singleton
             $PermissionUser
         );
 
+        if ($hash === false) {
+            $hash = QUI\Utils\Uuid::get();
+        }
+
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->table();
@@ -40,7 +45,7 @@ class Factory extends QUI\Utils\Singleton
         QUI::getDataBase()->insert($table, array(
             'c_user'      => $User->getId() ? $User->getId() : 0,
             'c_date'      => date('Y-m-d H:i:s'),
-            'hash'        => QUI\Utils\Uuid::get(),
+            'hash'        => $hash,
             'status'      => AbstractOrder::STATUS_CREATED,
             'customerId'  => 0,
             'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN

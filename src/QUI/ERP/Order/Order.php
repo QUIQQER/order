@@ -37,6 +37,16 @@ class Order extends AbstractOrder
     }
 
     /**
+     * @throws Exception
+     */
+    public function refresh()
+    {
+        $this->setDataBaseData(
+            Handler::getInstance()->getOrderData($this->getId())
+        );
+    }
+
+    /**
      * It return the invoice, if an invoice exist for the order
      *
      * @return QUI\ERP\Accounting\Invoice\Invoice
@@ -80,29 +90,36 @@ class Order extends AbstractOrder
 
 
         // set the data to the temporary invoice
-        $payment         = '';
-        $invoiceAddress  = '';
-        $deliveryAddress = '';
+        $payment = '';
+
+        $invoiceAddress   = '';
+        $invoiceAddressId = '';
+
+        $deliveryAddress   = '';
+        $deliveryAddressId = '';
 
         if ($this->getPayment()) {
             $payment = $this->getPayment()->getId();
         }
 
         if ($this->getInvoiceAddress()) {
-            $invoiceAddress = $this->getInvoiceAddress()->toJSON();
+            $invoiceAddress   = $this->getInvoiceAddress()->toJSON();
+            $invoiceAddressId = $this->getInvoiceAddress()->getId();
         }
 
         if ($this->getDeliveryAddress()) {
-            $invoiceAddress = $this->getDeliveryAddress()->toJSON();
+            $deliveryAddress   = $this->getDeliveryAddress()->toJSON();
+            $deliveryAddressId = $this->getDeliveryAddress()->getId();
         }
 
         $TemporaryInvoice->setAttributes(array(
-            'order_id'           => $this->getId(),
-            'customer_id'        => $this->getCustomer()->getId(),
-            'payment_method'     => $payment,
-            'invoice_address_id' => '',
-            'invoice_address'    => $invoiceAddress,
-            'delivery_address'   => $deliveryAddress
+            'order_id'            => $this->getId(),
+            'customer_id'         => $this->customerId,
+            'payment_method'      => $payment,
+            'invoice_address_id'  => $invoiceAddressId,
+            'invoice_address'     => $invoiceAddress,
+            'delivery_address'    => $deliveryAddress,
+            'delivery_address_id' => $deliveryAddressId
         ));
 
         $articles = $this->getArticles()->getArticles();
@@ -117,16 +134,20 @@ class Order extends AbstractOrder
 
         $TemporaryInvoice->save();
 
-
         // create the real invoice
-        $TemporaryInvoice->validate();
-        $Invoice = $TemporaryInvoice->post();
+        try {
+            $TemporaryInvoice->validate();
+            $Invoice = $TemporaryInvoice->post();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            throw $Exception;
+        }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             array(
-                'temporary_invoice_id' => '',
-                'invoice_id'           => $Invoice->getId(),
+                'temporary_invoice_id' => null,
+                'invoice_id'           => $Invoice->getCleanId(),
             ),
             array('id' => $this->getId())
         );
@@ -197,6 +218,7 @@ class Order extends AbstractOrder
         try {
             $Customer = $this->getCustomer();
             $customer = $Customer->getAttributes();
+            $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }

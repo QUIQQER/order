@@ -161,11 +161,22 @@ abstract class AbstractOrder extends QUI\QDOM
             }
         }
 
-        $this->id        = (int)$data['id'];
+        $this->id    = (int)$data['id'];
+        $this->hash  = $data['hash'];
+        $this->cDate = $data['c_date'];
+        $this->cUser = (int)$data['c_user'];
+
+        $this->setDataBaseData($data);
+    }
+
+    /**
+     * Set the db data to the order object
+     *
+     * @param array $data
+     */
+    protected function setDataBaseData(array $data)
+    {
         $this->invoiceId = $data['invoice_id'];
-        $this->hash      = $data['hash'];
-        $this->cDate     = $data['c_date'];
-        $this->cUser     = (int)$data['c_user'];
 
         $this->addressDelivery = json_decode($data['addressDelivery'], true);
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);
@@ -199,7 +210,7 @@ abstract class AbstractOrder extends QUI\QDOM
             if ($articles) {
                 try {
                     $this->Articles = new ArticleList($articles);
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\ERP\Exception $Exception) {
                     QUI\System\Log::addError($Exception->getMessage());
                 }
             }
@@ -209,22 +220,14 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->Comments = new QUI\ERP\Comments();
 
         if (isset($data['comments'])) {
-            try {
-                $this->Comments = QUI\ERP\Comments::unserialize($data['comments']);
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::addError($Exception->getMessage());
-            }
+            $this->Comments = QUI\ERP\Comments::unserialize($data['comments']);
         }
 
         // history
         $this->History = new QUI\ERP\Comments();
 
         if (isset($data['history'])) {
-            try {
-                $this->History = QUI\ERP\Comments::unserialize($data['history']);
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::addError($Exception->getMessage());
-            }
+            $this->History = QUI\ERP\Comments::unserialize($data['history']);
         }
 
         // payment
@@ -238,6 +241,12 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     //region API
+
+    /**
+     * Refresh the order data
+     * fetch the data from the database
+     */
+    abstract public function refresh();
 
     /**
      * Updates the order
@@ -536,6 +545,7 @@ abstract class AbstractOrder extends QUI\QDOM
      * Set an customer to the order
      *
      * @param array|QUI\ERP\User|QUI\Interfaces\Users\User $User
+     * @throws QUI\ERP\Exception
      */
     public function setCustomer($User)
     {
@@ -605,6 +615,8 @@ abstract class AbstractOrder extends QUI\QDOM
      * - How many must be paid
      *
      * @return array
+     *
+     * @throws QUI\ERP\Exception
      */
     public function getPaidStatusInformation()
     {
