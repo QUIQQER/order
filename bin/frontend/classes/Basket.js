@@ -114,6 +114,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         * Return the basket id
+         *
+         * @return {Number}
+         */
+        getId: function () {
+            return this.$basketId;
+        },
+
+        /**
          * Return the quantity of the products in the current list
          *
          * @returns {Number}
@@ -263,6 +272,26 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 });
             }).catch(function (err) {
                 console.error(err);
+            });
+        },
+
+        /**
+         * Remove product pos
+         *
+         * @param pos
+         */
+        removeProductPos: function (pos) {
+            var self  = this,
+                index = pos - 1;
+
+            if (typeof this.$products[index] === 'undefined') {
+                return;
+            }
+
+            this.fireEvent('refreshBegin', [this]);
+            this.$products.splice(index, 1);
+            this.save().then(function () {
+                self.fireEvent('refresh', [self]);
             });
         },
 

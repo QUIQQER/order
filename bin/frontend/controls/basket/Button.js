@@ -25,7 +25,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
         Binds: [
             '$onImport',
-            '$onInject'
+            '$onInject',
+            'showSmallBasket'
         ],
 
         options: {
@@ -43,7 +44,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Icon = null;
             this.$Text = null;
 
-            this.$isLoaded = false;
+            this.$BasketSmall     = null;
+            this.$BasketContainer = null;
+            this.$isLoaded        = false;
 
             this.addEvents({
                 onImport: this.$onImport,
@@ -99,6 +102,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 new BasketWindow().open();
             });
 
+            Elm.addEvent('mouseenter', this.showSmallBasket);
+
+
             this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
 
             var isLoaded = function () {
@@ -138,6 +144,52 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
                     self.updateBatch(Basket.getQuantity());
                 }
+            });
+        },
+
+        /**
+         * Show the small basket
+         */
+        showSmallBasket: function () {
+            var self   = this,
+                pos    = this.getElm().getPosition(),
+                height = this.getElm().getSize();
+
+            if (!this.$BasketContainer) {
+                this.$BasketContainer = new Element('div', {
+                    'class' : 'quiqqer-order-basket-small-container',
+                    html    : '<span class="fa fa-spinner fa-spin"></span>',
+                    tabindex: -1,
+                    events  : {
+                        blur: function () {
+                            this.setStyle('display', 'none');
+                        }
+                    }
+                }).inject(document.body);
+            }
+
+            this.$BasketContainer.setStyles({
+                display: null,
+                left   : pos.x,
+                top    : pos.y + height.y
+            });
+
+            if (this.$BasketSmall) {
+                this.$BasketSmall.refresh();
+                this.$BasketContainer.focus();
+                return;
+            }
+
+            require([
+                'package/quiqqer/order/bin/frontend/Basket',
+                'package/quiqqer/order/bin/frontend/controls/basket/Small'
+            ], function (Basket, Small) {
+                self.$BasketContainer.set('html', '');
+                self.$BasketContainer.focus();
+
+                self.$BasketSmall = new Small({
+                    basketId: Basket.getId()
+                }).inject(self.$BasketContainer);
             });
         },
 

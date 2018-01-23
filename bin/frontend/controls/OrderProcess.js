@@ -16,12 +16,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
     'qui/controls/loader/Loader',
     'qui/utils/Form',
     'package/quiqqer/order/bin/frontend/Basket',
+    'package/quiqqer/order/bin/frontend/Orders',
     'Ajax',
     'Locale',
     'Navigo',
     'HistoryEvents'
 
-], function (QUI, QUIControl, QUILoader, QUIFormUtils, Basket, QUIAjax, QUILocale, Navigo) {
+], function (QUI, QUIControl, QUILoader, QUIFormUtils, Basket, Orders, QUIAjax, QUILocale, Navigo) {
     "use strict";
 
     var lg  = 'quiqqer/order';
@@ -144,7 +145,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $onInject: function () {
             if (!this.getAttribute('orderId')) {
-                this.setAttribute('orderId', Basket.getCurrentOrderId());
+                //this.setAttribute('orderId', Basket.getCurrentOrderId());
             }
 
             var self = this;
@@ -153,7 +154,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
 
             if (!this.getAttribute('orderId')) {
-                Prom = Basket.getLastOrder().then(function (order) {
+                Prom = Orders.getLastOrder().then(function (order) {
                     self.setAttribute('orderId', order.id);
                     return order.id;
                 });

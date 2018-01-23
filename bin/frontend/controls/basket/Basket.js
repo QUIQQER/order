@@ -1,4 +1,6 @@
 /**
+ * Tha big main basket control
+ *
  * @module package/quiqqer/order/bin/frontend/controls/basket/Basket
  *
  * @require qui/QUI

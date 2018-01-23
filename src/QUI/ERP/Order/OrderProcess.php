@@ -42,6 +42,8 @@ class OrderProcess extends QUI\Control
      * Basket constructor.
      *
      * @param array $attributes
+     *
+     * @throws Exception
      */
     public function __construct($attributes = array())
     {
@@ -83,6 +85,8 @@ class OrderProcess extends QUI\Control
     /**
      * Checks the submit status
      * Must the previous step be saved?
+     *
+     * @throws Exception
      */
     protected function checkSubmission()
     {
@@ -105,6 +109,8 @@ class OrderProcess extends QUI\Control
 
     /**
      * Send the order
+     *
+     * @throws QUI\Exception
      */
     protected function send()
     {
@@ -129,12 +135,12 @@ class OrderProcess extends QUI\Control
         QUI::getEvents()->fireEvent('orderStart', [$this]);
 
         // Gehe die verschiedenen Processing Provider durch
-        $Order   = $this->getOrder();
-        $success = array();
+        $OrderInProcess = $this->getOrder();
+        $success        = array();
 
         foreach ($providers as $Provider) {
             /* @var $Provider AbstractOrderProcessProvider */
-            $status = $Provider->onOrderStart($Order);
+            $status = $Provider->onOrderStart($OrderInProcess);
 
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_PROCESSING) {
                 $this->ProcessingProvider = $Provider;
@@ -143,18 +149,18 @@ class OrderProcess extends QUI\Control
             }
 
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_ABORT) {
-                $Provider->onOrderAbort($Order);
+                $Provider->onOrderAbort($OrderInProcess);
                 continue;
             }
 
-            $success[] = $Provider->onOrderSuccess($Order);
+            $success[] = $Provider->onOrderSuccess($OrderInProcess);
         }
 
         // all runs fine
 
         // @todo Vorgehen bei gescheiterter Zahlung -> only at failedPaymentProcedure = execute
-        $Order->createOrder();
-        $Order->delete();
+        $OrderInProcess->createOrder();
+        $OrderInProcess->delete();
 
         $this->setAttribute('current', 'finish');
         $this->setAttribute('step', 'finish');
@@ -164,6 +170,8 @@ class OrderProcess extends QUI\Control
      * Execute the payable step
      *
      * @return bool|string
+     *
+     * @throws QUI\Exception
      */
     protected function executePayableStatus()
     {
@@ -227,6 +235,8 @@ class OrderProcess extends QUI\Control
 
     /**
      * @return string
+     *
+     * @throws QUi\Exception
      */
     public function getBody()
     {
@@ -322,6 +332,8 @@ class OrderProcess extends QUI\Control
      * Return the current Step
      *
      * @return AbstractOrderingStep
+     *
+     * @throws Exception
      */
     public function getCurrentStep()
     {
@@ -335,6 +347,8 @@ class OrderProcess extends QUI\Control
      * Return the first step
      *
      * @return AbstractOrderingStep
+     *
+     * @throws Exception
      */
     public function getFirstStep()
     {
@@ -346,6 +360,8 @@ class OrderProcess extends QUI\Control
      *
      * @param null|AbstractOrderingStep $StartStep
      * @return bool|AbstractOrderingStep
+     *
+     * @throws Exception
      */
     public function getNextStep($StartStep = null)
     {
@@ -382,6 +398,8 @@ class OrderProcess extends QUI\Control
      *
      * @param null|AbstractOrderingStep $StartStep
      * @return bool|AbstractOrderingStep
+     *
+     * @throws Exception
      */
     public function getPreviousStep($StartStep = null)
     {
@@ -415,6 +433,8 @@ class OrderProcess extends QUI\Control
      *
      * @param string $name - Name of the step
      * @return bool|AbstractOrderingStep
+     *
+     * @throws Exception
      */
     protected function getStepByName($name)
     {
@@ -431,6 +451,8 @@ class OrderProcess extends QUI\Control
      * Return the current step name / key
      *
      * @return string
+     *
+     * @throws Exception
      */
     protected function getCurrentStepName()
     {
@@ -449,6 +471,8 @@ class OrderProcess extends QUI\Control
      *
      * @param null|AbstractOrderingStep $StartStep
      * @return bool|string
+     *
+     * @throws Exception
      */
     protected function getNextStepName($StartStep = null)
     {
@@ -466,6 +490,8 @@ class OrderProcess extends QUI\Control
      *
      * @param null|AbstractOrderingStep $StartStep
      * @return bool|string
+     *
+     * @throws Exception
      */
     protected function getPreviousStepName($StartStep = null)
     {
@@ -482,6 +508,8 @@ class OrderProcess extends QUI\Control
      * Return the order site
      *
      * @return QUI\Projects\Site
+     *
+     * @throws QUI\Exception
      */
     public function getSite()
     {
@@ -512,6 +540,8 @@ class OrderProcess extends QUI\Control
 
     /**
      * @return QUI\ERP\Order\OrderInProcess
+     *
+     * @throws Exception
      */
     public function getOrder()
     {
@@ -547,6 +577,8 @@ class OrderProcess extends QUI\Control
      * Return all steps
      *
      * @return array
+     *
+     * @throws Exception
      */
     protected function getSteps()
     {

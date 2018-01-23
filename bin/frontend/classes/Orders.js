@@ -63,14 +63,17 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
         },
 
         /**
-         * Return the order in processing list
+         * Return the last order
          *
-         * @param {Object} params - Grid params
          * @returns {Promise}
          */
-        getInProcessingList: function (params) {
+        getLastOrder: function () {
             return new Promise(function (resolve, reject) {
-                resolve([]);
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getLastOrder', resolve, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    showError: false
+                });
             });
         },
 

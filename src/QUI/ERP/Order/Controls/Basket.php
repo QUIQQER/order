@@ -25,16 +25,19 @@ class Basket extends AbstractOrderingStep
      * Basket constructor.
      *
      * @param array $attributes
+     *
+     * @throws QUI\ERP\Order\Basket\Exception
      */
     public function __construct($attributes = array())
     {
-        $orderId = $this->getAttribute('orderId');
-
-        if ($orderId) {
-            $this->Basket = new QUI\ERP\Order\Basket\Basket($orderId);
-        } else {
-            $this->Basket = new QUI\ERP\Order\Basket\Basket();
-        }
+        // @todo
+//        $orderId = $this->getAttribute('orderId');
+//
+//        if ($orderId) {
+//            $this->Basket = new QUI\ERP\Order\Basket\Basket($orderId);
+//        } else {
+//            $this->Basket = new QUI\ERP\Order\Basket\Basket();
+//        }
 
         parent::__construct($attributes);
 

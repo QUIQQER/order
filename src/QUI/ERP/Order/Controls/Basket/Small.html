@@ -1,0 +1,53 @@
+<table class="articles-article">
+    <thead>
+    <tr class="articles-article-header">
+        <th class="articles-article-header-pos">
+            {locale group="quiqqer/erp" var="article.list.articles.header.pos"}
+        </th>
+        <th class="articles-article-header-information">
+            {locale group="quiqqer/erp" var="article.list.articles.header.description"}
+        </th>
+        <th class="articles-article-header-quantity">
+            {locale group="quiqqer/erp" var="article.list.articles.header.quantity"}
+        </th>
+        <th class="articles-article-header-unitprice">
+            {locale group="quiqqer/erp" var="article.list.articles.header.unitprice"}
+        </th>
+        <th class="articles-article-header-price">
+            {locale group="quiqqer/erp" var="article.list.articles.header.price"}
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {assign var=pos value=1}
+    {foreach $products as $product}
+    <tr data-pos="{$pos}">
+        <td>{$pos}</td>
+        <td>
+            <h2>{$product.title}</h2>
+            <div class="articles-article-description">
+                {$product.description}
+            </div>
+        </td>
+        <td>
+            {$product.quantity}
+        </td>
+        <td>
+            {$product.price}
+        </td>
+        <td>
+            {$product.sum}
+        </td>
+        <td>
+            <span class="fa fa-trash"></span>
+        </td>
+    </tr>
+    {assign var=pos value=$pos+1}
+    {/foreach}
+    </tbody>
+</table>
+
+<div class="quiqqer-order-basket-small">
+    <button class="to-the-checkout">Zur Kasse</button>
+</div>
