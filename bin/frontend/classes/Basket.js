@@ -19,15 +19,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         Type   : 'package/quiqqer/order/bin/frontend/classes/Basket',
 
         Binds: [
-            '$onArticleChange'
+            '$onProductChange'
         ],
 
         initialize: function (options) {
             this.parent(options);
 
-            this.$articles = [];
-            this.$orders   = {};
-            this.$orderid  = false;
+            this.$products = [];
+            this.$basketId = null;
 
             this.$isLoaded  = false;
             this.$saveDelay = null;
@@ -39,16 +38,18 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         load: function () {
             // basket from user
             if (QUIQQER_USER && QUIQQER_USER.id) {
-                return this.loadLastOrder().then(function () {
+                return this.loadBasket().then(function () {
                     this.$isLoaded = true;
                     this.fireEvent('refresh', [this]);
-                }.bind(this));
+                }.bind(this)).catch(function (err) {
+                    console.error(err);
+                });
             }
 
-            var articles = [],
-                data     = QUI.Storage.get('quiqqer-basket-articles');
+            var products = [],
+                data     = QUI.Storage.get('quiqqer-basket-products');
 
-            this.$orderid = String.uniqueID();
+            this.$basketId = String.uniqueID();
 
             if (!data) {
                 this.$isLoaded = true;
@@ -65,22 +66,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             }
 
             if (typeof data.currentList !== 'undefined') {
-                this.$orderid = data.currentList;
+                this.$basketId = data.currentList;
             }
 
-            if (typeof data.articles !== 'undefined' &&
-                typeof data.articles[this.$orderid] !== 'undefined') {
-                articles = data.articles[this.$orderid];
+            if (typeof data.products !== 'undefined' &&
+                typeof data.products[this.$basketId] !== 'undefined') {
+                products = data.products[this.$basketId];
             }
 
             var proms = [];
 
-            for (var i = 0, len = articles.length; i < len; i++) {
+            for (var i = 0, len = products.length; i < len; i++) {
                 proms.push(
-                    this.addArticle(
-                        articles[i].id,
-                        articles[i].quantity,
-                        articles[i].fields
+                    this.addProduct(
+                        products[i].id,
+                        products[i].quantity,
+                        products[i].fields
                     )
                 );
             }
@@ -88,12 +89,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             return Promise.all(proms).then(function () {
                 var self = this;
 
-                if (this.getAttribute('articlesNotExists')) {
+                if (this.getAttribute('productsNotExists')) {
                     QUI.getMessageHandler().then(function (MH) {
                         MH.addError(
-                            QUILocale.get(lg, 'message.article.removed')
+                            QUILocale.get(lg, 'message.products.removed')
                         );
-                        self.getAttribute('articlesNotExists', false);
+                        self.getAttribute('productsNotExists', false);
                     });
                 }
 
@@ -113,24 +114,16 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
-         *
-         * @return {*|boolean|Number}
-         */
-        getCurrentOrderId: function () {
-            return this.$orderid;
-        },
-
-        /**
-         * Return the quantity of the articles in the current list
+         * Return the quantity of the products in the current list
          *
          * @returns {Number}
          */
         getQuantity: function () {
             var quantity = 0;
 
-            for (var i in this.$articles) {
-                if (this.$articles.hasOwnProperty(i)) {
-                    quantity = parseInt(quantity) + parseInt(this.$articles[i].getQuantity());
+            for (var i in this.$products) {
+                if (this.$products.hasOwnProperty(i)) {
+                    quantity = parseInt(quantity) + parseInt(this.$products[i].getQuantity());
                 }
             }
 
@@ -138,16 +131,16 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
-         * Load the last order from the user
+         * Load the current basket of the user
          *
          * @return {Promise}
          */
-        loadLastOrder: function () {
+        loadBasket: function () {
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                self.getLastOrder().then(function (order) {
-                    return self.$loadOrderData(order);
+                self.getBasket().then(function (basket) {
+                    return self.$loadData(basket);
                 }).then(resolve, reject);
             });
         },
@@ -157,34 +150,31 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @param data
          * @return {Promise}
          */
-        $loadOrderData: function (data) {
-            if (data === null || typeof data.articles === 'undefined') {
+        $loadData: function (data) {
+            if (data === null || typeof data.products === 'undefined') {
                 return Promise.reject();
             }
 
-            var articles = data.articles;
+            this.$basketId = data.id;
+            this.$products = [];
 
-            this.$orderid  = data.id;
-            this.$articles = [];
-
-            if (typeof data.articles.articles === 'undefined') {
+            if (typeof data.products === 'undefined') {
                 return Promise.resolve();
             }
 
-            if (!data.articles.articles.length) {
+            if (!data.products.length) {
                 return Promise.resolve();
             }
 
+            var products    = data.products;
             var promiseList = [];
 
-            articles = articles.articles;
-
-            for (var i = 0, len = articles.length; i < len; i++) {
+            for (var i = 0, len = products.length; i < len; i++) {
                 promiseList.push(
-                    this.addArticle(
-                        articles[i].id,
-                        articles[i].quantity,
-                        articles[i].fields
+                    this.addProduct(
+                        products[i].id,
+                        products[i].quantity,
+                        products[i].fields
                     )
                 );
             }
@@ -197,63 +187,28 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
-         * Return a specific order
-         *
-         * @param {Number} orderId
-         * @return {Promise}
-         */
-        getOrder: function (orderId) {
-            return new Promise(function (resolve) {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_get', resolve, {
-                    'package': 'quiqqer/order',
-                    orderId  : orderId
-                });
-            }.bind(this));
-        },
-
-        /**
-         * Return the last order of the session user
+         * Return the basket for the session user
          *
          * @return {Promise}
          */
-        getLastOrder: function () {
+        getBasket: function () {
             return new Promise(function (resolve) {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getLastOrder', resolve, {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getBasket', resolve, {
                     'package': 'quiqqer/order'
                 });
-            }.bind(this));
+            });
         },
 
         /**
-         * Return the data of all lists
+         * Add a product to the basket
          *
-         * @returns {Promise}
-         */
-        getLists: function () {
-            if (Object.getLength(this.$orders)) {
-                return Promise.resolve(this.$orders);
-            }
-
-            return new Promise(function (resolve) {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_list', function (result) {
-                    this.$orders = result;
-                    resolve(result);
-                }.bind(this), {
-                    'package': 'quiqqer/order'
-                });
-            }.bind(this));
-        },
-
-        /**
-         * Add an article to the basket
-         *
-         * @param {Number|Object} article
+         * @param {Number|Object} product
          * @param {Number} quantity
          * @param {Object} fields
          */
-        addArticle: function (article, quantity, fields) {
+        addProduct: function (product, quantity, fields) {
             var self      = this;
-            var articleId = article;
+            var productId = product;
 
             quantity = parseInt(quantity) || 1;
             fields   = fields || {};
@@ -262,15 +217,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 quantity = 1;
             }
 
-            if (typeOf(article) === 'package/quiqqer/order/bin/frontend/classes/Article') {
-                articleId = parseInt(article.getId());
-                fields    = article.getFields();
-                quantity  = article.getQuantity();
+            if (typeOf(product) === 'package/quiqqer/order/bin/frontend/classes/Product') {
+                productId = parseInt(product.getId());
+                fields    = product.getFields();
+                quantity  = product.getQuantity();
             }
 
-            return this.existsProduct(articleId).then(function (available) {
+            return this.existsProduct(productId).then(function (available) {
                 if (!available) {
-                    self.setAttribute('articlesNotExists', true);
+                    self.setAttribute('productsNotExists', true);
                     return Promise.resolve();
                 }
 
@@ -278,28 +233,26 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 self.fireEvent('addBegin');
 
                 return new Promise(function (resolve) {
-                    require([
-                        'package/quiqqer/order/bin/frontend/classes/Article'
-                    ], function (ArticleCls) {
-                        var Article = articleId;
+                    require(['package/quiqqer/order/bin/frontend/classes/Product'], function (ProductCls) {
+                        var Product = product;
 
-                        if (typeOf(articleId) === 'string') {
-                            articleId = parseInt(articleId);
+                        if (typeOf(productId) === 'string') {
+                            productId = parseInt(productId);
                         }
 
-                        if (typeOf(articleId) === 'number') {
-                            Article = new ArticleCls({
-                                id    : articleId,
+                        if (typeOf(productId) === 'number') {
+                            Product = new ProductCls({
+                                id    : productId,
                                 events: {
-                                    onChange: self.$onArticleChange
+                                    onChange: self.$onProductChange
                                 }
                             });
                         }
 
-                        Article.setQuantity(quantity).then(function () {
-                            return Article.setFieldValues(fields);
+                        Product.setQuantity(quantity).then(function () {
+                            return Product.setFieldValues(fields);
                         }).then(function () {
-                            self.$articles.push(Article);
+                            self.$products.push(Product);
                             return self.save();
                         }).then(function () {
                             resolve();
@@ -323,7 +276,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             force = force || false;
 
             return new Promise(function (resolve) {
-
                 if (force === false) {
                     // save delay, prevent homemade ddos
                     if (this.$saveDelay) {
@@ -337,30 +289,30 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     return;
                 }
 
-                if (!this.$orderid) {
+                if (!this.$basketId) {
                     resolve();
                     return;
                 }
 
-                var articles = [];
+                var products = [];
 
-                for (var i = 0, len = this.$articles.length; i < len; i++) {
-                    articles.push(this.$articles[i].getAttributes());
+                for (var i = 0, len = this.$products.length; i < len; i++) {
+                    products.push(this.$products[i].getAttributes());
                 }
 
                 // locale storage
                 if (QUIQQER_USER && QUIQQER_USER.id) {
                     QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_save', resolve, {
                         'package': 'quiqqer/order',
-                        orderId  : this.$orderid,
-                        articles : JSON.encode(articles)
+                        basketId : this.$basketId,
+                        products : JSON.encode(products)
                     });
 
                     return;
                 }
 
 
-                var data = QUI.Storage.get('quiqqer-basket-articles');
+                var data = QUI.Storage.get('quiqqer-basket-products');
 
                 if (!data) {
                     data = {};
@@ -372,14 +324,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }
                 }
 
-                if (typeof data.articles === 'undefined') {
-                    data.articles = {};
+                if (typeof data.products === 'undefined') {
+                    data.products = {};
                 }
 
                 data.currentList            = this.$listid;
-                data.articles[this.$listid] = articles;
+                data.products[this.$listid] = products;
 
-                QUI.Storage.set('quiqqer-basket-articles', JSON.encode(data));
+                QUI.Storage.set('quiqqer-basket-products', JSON.encode(data));
 
                 resolve();
 
@@ -387,7 +339,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
-         * Exists the article? Is it available?
+         * Exists the product, is it available?
          *
          * @param {String|Number} productId
          * @return {Promise}
@@ -405,7 +357,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         /**
          * event : on change
          */
-        $onArticleChange: function () {
+        $onProductChange: function () {
             this.fireEvent('refreshBegin', [this]);
 
             this.save().then(function () {

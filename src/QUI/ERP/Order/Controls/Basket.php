@@ -93,6 +93,7 @@ class Basket extends AbstractOrderingStep
 
     /**
      * @return string
+     * @throws QUI\Exception
      */
     public function getBody()
     {
@@ -106,7 +107,7 @@ class Basket extends AbstractOrderingStep
         $Articles->hideHeader();
 
         $Engine->assign(array(
-            'articles' => $Articles->toHTMLWithCSS(),
+            'articles' => $Articles->toArray(),
             'count'    => $Articles->count()
         ));
 

@@ -4,7 +4,36 @@
     </header>
 
     {if $count}
-    {$articles}
+    <table class="articles-article">
+        <thead>
+        <tr class="articles-article-header">
+            <th class="articles-article-header-pos">
+                {locale group="quiqqer/erp" var="article.list.articles.header.pos"}
+            </th>
+            <th class="articles-article-header-information">
+                {locale group="quiqqer/erp" var="article.list.articles.header.description"}
+            </th>
+            <th class="articles-article-header-quantity">
+                {locale group="quiqqer/erp" var="article.list.articles.header.quantity"}
+            </th>
+            <th class="articles-article-header-unitprice">
+                {locale group="quiqqer/erp" var="article.list.articles.header.unitprice"}
+            </th>
+            <th class="articles-article-header-price">
+                {locale group="quiqqer/erp" var="article.list.articles.header.price"}
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {assign var=pos value=1}
+        {foreach $articles as $Article}
+        <tr>
+            <td>{$pos}</td>
+        </tr>
+        {assign var=pos value=$pos+1}
+        {/foreach}
+        </tbody>
+    </table>
     {else}
     <div class="quiqqer-order-basket-isEmpty">
         {locale group="quiqqer/order" var="message.basket.is.empty"}

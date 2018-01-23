@@ -81,6 +81,16 @@
             <index>uid</index>
             <index>hash</index>
         </table>
+
+        <table name="baskets">
+            <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
+            <field type="INT(11) NOT NULL">uid</field>
+            <field type="BIGINT(20) NULL">name</field>
+            <field type="TEXT NULL">products</field>
+
+            <primary>id</primary>
+            <auto_increment>id</auto_increment>
+        </table>
     </global>
 
 </database>

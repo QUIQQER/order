@@ -100,6 +100,8 @@ class Handler extends Singleton
      *
      * @param $orderId
      * @return Order
+     *
+     * @throws QUI\Erp\Order\Exception
      */
     public function get($orderId)
     {
@@ -196,6 +198,8 @@ class Handler extends Singleton
      *
      * @param $orderId
      * @return OrderInProcess
+     *
+     * @throws QUI\Erp\Order\Exception
      */
     public function getOrderInProcess($orderId)
     {
@@ -287,6 +291,108 @@ class Handler extends Singleton
         }
 
         return $result[0];
+    }
+
+    //endregion
+
+    //region basket
+
+    /**
+     * Return the table for baskets
+     *
+     * @return string
+     */
+    public function tableBasket()
+    {
+        return QUI::getDBTableName('baskets');
+    }
+
+    public function getBasketById($basketId)
+    {
+
+    }
+
+    /**
+     * @param QUI\Interfaces\Users\User $User
+     * @return QUI\ERP\Order\Basket\Basket
+     *
+     * @throws Basket\Exception
+     */
+    public function getBasketFromUser(QUI\Interfaces\Users\User $User)
+    {
+        $hasPermissions = function () use ($User) {
+            if ($User->isSU()) {
+                return true;
+            }
+
+            if (QUI::getUsers()->isSystemUser($User)) {
+                return true;
+            }
+
+            if ($User->getId() === QUI::getUserBySession()->getId()) {
+                return true;
+            }
+
+            return false;
+        };
+
+        if ($hasPermissions() === false) {
+            throw new Basket\Exception(array(
+                'quiqqer/basket',
+                'exception.basket.no.permissions'
+            ));
+        }
+
+        $data = QUI::getDataBase()->fetch(array(
+            'select' => 'id',
+            'from'   => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'where'  => array(
+                'uid' => $User->getId()
+            ),
+            'limit'  => 1
+        ));
+
+
+        if (!isset($data[0])) {
+            throw new Basket\Exception(array(
+                'quiqqer/basket',
+                'exception.basket.not.found'
+            ));
+        }
+
+        return new Basket\Basket($data[0]['id'], $User);
+    }
+
+    /**
+     * @param string|integer $basketId
+     * @param null $User
+     * @return mixed
+     *
+     * @throws Basket\Exception
+     */
+    public function getBasketData($basketId, $User = null)
+    {
+        if ($User === null) {
+            $User = QUI::getUserBySession();
+        }
+
+        $data = QUI::getDataBase()->fetch(array(
+            'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'where' => array(
+                'id'  => (int)$basketId,
+                'uid' => $User->getId()
+            ),
+            'limit' => 1
+        ));
+
+        if (!isset($data[0])) {
+            throw new Basket\Exception(array(
+                'quiqqer/basket',
+                'exception.basket.not.found'
+            ));
+        }
+
+        return $data[0];
     }
 
     //endregion

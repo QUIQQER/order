@@ -13,10 +13,10 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_save',
-    function ($orderId, $articles) {
-        $Basket = new QUI\ERP\Order\Basket\Basket($orderId);
-        $Basket->import(json_decode($articles, true));
+    function ($basketId, $products) {
+        $Basket = new \QUI\ERP\Order\Basket\Basket($basketId);
+        $Basket->import(json_decode($products, true));
         $Basket->save();
     },
-    array('orderId', 'articles')
+    array('basketId', 'products')
 );

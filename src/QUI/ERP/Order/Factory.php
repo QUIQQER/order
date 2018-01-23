@@ -22,6 +22,8 @@ class Factory extends QUI\Utils\Singleton
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      * @param string|bool $hash - optional
      * @return Order
+     *
+     * @throws Exception
      */
     public function create($PermissionUser = null, $hash = false)
     {
@@ -61,6 +63,8 @@ class Factory extends QUI\Utils\Singleton
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      * @return OrderInProcess
+     *
+     * @throws Exception
      */
     public function createOrderProcess($PermissionUser = null)
     {
@@ -91,6 +95,30 @@ class Factory extends QUI\Utils\Singleton
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
 
         return $Orders->getOrderInProcess($orderId);
+    }
+
+    /**
+     * Create a new Basket for the user
+     *
+     * @param null $User
+     * @return QUI\ERP\Order\Basket\Basket
+     *
+     * @throws QUI\ERP\Order\Basket\Exception
+     */
+    public function createBasket($User = null)
+    {
+        if ($User === null) {
+            $User = QUI::getUserBySession();
+        }
+
+        QUI::getDataBase()->insert(
+            Handler::getInstance()->tableBasket(),
+            array('uid' => $User->getId())
+        );
+
+        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
+
+        return new Basket\Basket($lastId, $User);
     }
 
     /**

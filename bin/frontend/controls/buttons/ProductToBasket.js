@@ -6,9 +6,9 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
     'qui/QUI',
     'qui/controls/Control',
     'package/quiqqer/order/bin/frontend/Basket',
-    'package/quiqqer/order/bin/frontend/classes/Article'
+    'package/quiqqer/order/bin/frontend/classes/Product'
 
-], function (QUI, QUIControl, Basket, BasketArticle) {
+], function (QUI, QUIControl, Basket, BasketProduct) {
     "use strict";
 
     return new Class({
@@ -114,7 +114,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 }
             }).inject(this.getElm());
 
-            var Article = new BasketArticle({
+            var Product = new BasketProduct({
                 id: this.getAttribute('productId')
             });
 
@@ -129,12 +129,10 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 });
             }
 
-            Article.setFieldValues(fields).then(function () {
-                return Article.setQuantity(count);
-
+            Product.setFieldValues(fields).then(function () {
+                return Product.setQuantity(count);
             }).then(function () {
-                return Basket.addArticle(Article);
-
+                return Basket.addProduct(Product);
             }).then(function () {
                 var Span = Loader.getElement('span');
 
@@ -150,7 +148,6 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                     self.getElm().removeClass('disabled');
 
                     if (self.$Input) {
-
                         self.$Input.setStyle('visibility', null);
 
                         moofx(self.$Input).animate({

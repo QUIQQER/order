@@ -7,11 +7,7 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
-
-use QUI\ERP\Order\Handler;
-use QUI\ERP\Order\Factory;
-use QUI\ERP\Order\OrderInProcess;
-use QUI\ERP\Products\Handler\Products;
+use QUI\ERP\Products\Product\ProductList;
 
 /**
  * Class Basket
@@ -22,83 +18,53 @@ use QUI\ERP\Products\Handler\Products;
 class Basket
 {
     /**
-     * @var OrderInProcess
+     * Basket id
+     *
+     * @var integer
      */
-    protected $Order = null;
+    protected $id;
 
     /**
-     * @var null|QUI\Interfaces\Users\User
+     * List of products
+     *
+     * @var QUI\ERP\Products\Product\ProductList
      */
-    protected $User = null;
+    protected $List = array();
+
+    /**
+     * @var QUI\Interfaces\Users\User
+     */
+    protected $User;
 
     /**
      * Basket constructor.
      *
-     * @param integer|bool $orderId - optional, if given the selected order
-     */
-    public function __construct($orderId = false)
-    {
-        $User   = QUI::getUserBySession();
-        $Orders = Handler::getInstance();
-
-        try {
-            if ($orderId !== false) {
-                $Order = $Orders->getOrderInProcess($orderId);
-
-                if ($Order->getCustomer()->getId() == $User->getId()) {
-                    $this->Order = $Order;
-                }
-            }
-        } catch (QUI\Erp\Order\Exception $Exception) {
-        }
-
-        if ($this->Order === null) {
-            try {
-                // select the last order in processing
-                $this->Order = $Orders->getLastOrderInProcessFromUser($User);
-            } catch (QUI\Erp\Order\Exception $Exception) {
-                // if no order exists, we create one
-                $this->Order = Factory::getInstance()->createOrderProcess();
-            }
-        }
-
-        $this->User = $User;
-    }
-
-    /**
-     * Import a product array
+     * @param integer|bool $basketId - ID of the basket
+     * @param bool|QUI\Users\User $User
      *
-     * @param array $articles
+     * @throws Exception
      */
-    public function import(array $articles)
+    public function __construct($basketId, $User = false)
     {
-        $this->Order->clearArticles();
-
-        foreach ($articles as $article) {
-            try {
-                $Product = Products::getProduct($article['id']);
-                $Unique  = $Product->createUniqueProduct();
-
-                if (isset($productData['quantity'])) {
-                    $Unique->setQuantity($productData['quantity']);
-                }
-
-                $this->addArticle($Unique->toArticle());
-            } catch (QUI\Exception $Exception) {
-                QUI::getMessagesHandler()->addAttention(
-                    $Exception->getMessage()
-                );
-            }
+        if (!$User) {
+            $User = QUI::getUserBySession();
         }
-    }
 
-    /**
-     * Create the order
-     * (Kostenpflichtig bestellen, start the pay process)
-     */
-    public function createOrder()
-    {
-        $this->Order->createOrder();
+        if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
+            throw new Exception(array(
+                'quiqqer/order',
+                'exception.basket.not.found'
+            ), 404);
+        }
+
+        $this->List            = new ProductList();
+        $this->List->duplicate = true;
+
+        $data       = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId);
+        $this->id   = $basketId;
+        $this->User = $User;
+
+        $this->import(json_decode($data['products'], true));
     }
 
     /**
@@ -106,55 +72,158 @@ class Basket
      *
      * @return int
      */
-    public function getOrderId()
+    public function getId()
     {
-        return $this->Order->getId();
+        return $this->id;
     }
 
     /**
-     * Return the article list
+     * Return the product list
      *
-     * @return QUI\ERP\Accounting\ArticleList
+     * @return ProductList
      */
-    public function getArticles()
+    public function getProducts()
     {
-        return $this->Order->getArticles();
+        return $this->List;
     }
 
     /**
-     * Add a article to the basket
+     * Add a product to the basket
      *
-     * @param QUI\ERP\Accounting\Article $Article
+     * @param Product $Product
      */
-    public function addArticle(QUI\ERP\Accounting\Article $Article)
+    public function addProduct(Product $Product)
     {
-        $this->Order->addArticle($Article);
-    }
-
-    /**
-     * Return the number of articles in the basket
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return $this->Order->getArticles()->count();
+        $this->List->addProduct($Product);
     }
 
     /**
      * Clear the basket
-     * All articles in the processing order would be deleted
      */
     public function clear()
     {
-        $this->Order->clearArticles();
+        $this->List->clear();
     }
 
     /**
-     * Save the basket to the order
+     * Import the products to the basket
+     *
+     * @param array $products
+     */
+    public function import($products = array())
+    {
+        $this->clear();
+
+        if (!is_array($products)) {
+            $products = array();
+        }
+
+        foreach ($products as $productData) {
+            if (!isset($productData['id'])) {
+                continue;
+            }
+
+            try {
+                $Product = new Product($productData['id'], $productData);
+
+                // check if active
+                $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
+
+                if (!$Real->isActive()) {
+                    continue;
+                }
+
+                if (isset($productData['quantity'])) {
+                    $Product->setQuantity($productData['quantity']);
+                }
+
+                $this->List->addProduct($Product);
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+    }
+
+    /**
+     * Save the basket
      */
     public function save()
     {
-        $this->Order->update();
+        // save only product ids with custom fields, we need not more
+        $result   = array();
+        $products = $this->List->getProducts();
+
+        foreach ($products as $Product) {
+            /* @var $Product Product */
+            $fields = $Product->getFields();
+
+            $productData = array(
+                'id'          => $Product->getId(),
+                'title'       => $Product->getTitle(),
+                'description' => $Product->getDescription(),
+                'quantity'    => $Product->getQuantity(),
+                'fields'      => array()
+            );
+
+            /* @var $Field QUI\ERP\Products\Field\UniqueField */
+            foreach ($fields as $Field) {
+                if ($Field->isCustomField()) {
+                    $productData['fields'][] = $Field->getAttributes();
+                }
+            }
+
+            $result[] = $productData;
+        }
+
+        QUI::getDataBase()->update(
+            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            array(
+                'products' => json_encode($result)
+            ),
+            array(
+                'id'  => $this->getId(),
+                'uid' => $this->User->getId()
+            )
+        );
+    }
+
+    /**
+     * Return the basket as array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $Products = $this->getProducts();
+        $products = $Products->getProducts();
+        $result   = array();
+
+        /* @var $Product Product */
+        foreach ($products as $Product) {
+            $fields = array();
+
+            /* @var $Field \QUI\ERP\Products\Field\UniqueField */
+            foreach ($Product->getFields() as $Field) {
+                if (!$Field->isPublic()) {
+                    continue;
+                }
+
+                if (!$Field->isCustomField()) {
+                    continue;
+                }
+
+                $fields[$Field->getId()] = $Field->getValue();
+            }
+
+            $result[] = array(
+                'id'       => $Product->getId(),
+                'quantity' => $Product->getQuantity(),
+                'fields'   => $fields
+            );
+        }
+
+        return array(
+            'id'       => $this->getId(),
+            'products' => $result
+        );
     }
 }
