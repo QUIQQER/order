@@ -37,11 +37,14 @@ class Small extends QUI\Controls\Control
     protected function onCreate()
     {
         $Engine   = QUI::getTemplateManager()->getEngine();
-        $products = $this->Basket->getProducts()->getView()->getProducts();
+        $Products = $this->Basket->getProducts()->getView();
+
 
         $Engine->assign(array(
+            'data'     => $Products->toArray(),
             'Basket'   => $this->Basket,
-            'products' => $products
+            'Products' => $Products,
+            'products' => $Products->getProducts()
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Small.html');

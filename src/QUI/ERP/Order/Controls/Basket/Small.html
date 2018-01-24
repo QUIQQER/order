@@ -1,53 +1,85 @@
-<table class="articles-article">
-    <thead>
-    <tr class="articles-article-header">
-        <th class="articles-article-header-pos">
-            {locale group="quiqqer/erp" var="article.list.articles.header.pos"}
-        </th>
-        <th class="articles-article-header-information">
-            {locale group="quiqqer/erp" var="article.list.articles.header.description"}
-        </th>
-        <th class="articles-article-header-quantity">
-            {locale group="quiqqer/erp" var="article.list.articles.header.quantity"}
-        </th>
-        <th class="articles-article-header-unitprice">
-            {locale group="quiqqer/erp" var="article.list.articles.header.unitprice"}
-        </th>
-        <th class="articles-article-header-price">
-            {locale group="quiqqer/erp" var="article.list.articles.header.price"}
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
+<div class="quiqqer-order-basket-small-articles">
     {assign var=pos value=1}
     {foreach $products as $product}
-    <tr data-pos="{$pos}">
-        <td>{$pos}</td>
-        <td>
-            <h2>{$product.title}</h2>
-            <div class="articles-article-description">
-                {$product.description}
-            </div>
-        </td>
-        <td>
-            {$product.quantity}
-        </td>
-        <td>
+    <div class="quiqqer-order-basket-small-articles-article" data-pos="{$pos}">
+        <span>{$product.quantity} x</span>
+        <h2>{$product.title}</h2>
+        <div class="quiqqer-order-basket-small-articles-article-description">
+            {$product.description}
+        </div>
+        <div class="quiqqer-order-basket-small-articles-article-price">
             {$product.price}
-        </td>
-        <td>
+        </div>
+        <div class="quiqqer-order-basket-small-articles-article-price">
             {$product.sum}
-        </td>
-        <td>
-            <span class="fa fa-trash"></span>
-        </td>
-    </tr>
+        </div>
+
+        <span class="fa fa-trash"></span>
+    </div>
     {assign var=pos value=$pos+1}
     {/foreach}
-    </tbody>
+</div>
+
+<div class="quiqqer-order-basket-small-summary">
+    <span>items</span>
+    <span>{$Products->count()}</span>
+</div>
+
+<table class="quiqqer-order-basket-small-total">
+    <tr class="quiqqer-order-basket-small-total-subSum">
+        <td class="quiqqer-order-basket-small-total-firstCell">
+            {locale group="quiqqer/products" var="product.list.products.subtotal"}
+        </td>
+        <td class="quiqqer-order-basket-small-total-secondCell">
+            {$data.subSum}
+        </td>
+    </tr>
+
+    {if count($data.attributes)}
+    <tr>
+        <td colspan="2"><br/></td>
+    </tr>
+    {/if}
+
+    {foreach $data.attributes as $attribute}
+    <tr>
+        <td>
+            {$attribute.title}
+        </td>
+        <td>
+            {$attribute.valueText}<br/>
+            {$attribute.value}
+        </td>
+    </tr>
+    {/foreach}
+
+    {foreach $data.vat as $vat}
+    <tr>
+        <td>
+            {$vat.text}
+        </td>
+        <td>
+            {$vat.value}
+        </td>
+    </tr>
+    {/foreach}
+
+    {if count($data.attributes)}
+    <tr>
+        <td colspan="2"><br/></td>
+    </tr>
+    {/if}
+
+    <tr class="quiqqer-order-basket-small-total-sum">
+        <td>
+            {locale group="quiqqer/products" var="product.list.products.sumtotal"}
+        </td>
+        <td>
+            {$data.sum}
+        </td>
+    </tr>
 </table>
 
-<div class="quiqqer-order-basket-small">
+<div class="quiqqer-order-basket-small-buttons">
     <button class="to-the-checkout">Zur Kasse</button>
 </div>

@@ -59,7 +59,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
          * refresh the display
          */
         refresh: function () {
-            var self = this;
+            var self     = this,
+                basketId = this.getAttribute('basketId');
+
+            if (basketId === false || isNaN(basketId)) {
+                self.getElm().set('html', 'Gast Warenkorb');
+                return Promise.resolve();
+            }
 
             QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_small', function (result) {
                 self.getElm().set('html', result);
@@ -78,7 +84,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
 
                 self.getElm().getElements('.fa-trash').addEvent('click', function () {
                     Basket.removeProductPos(
-                        this.getParent('tr').get('data-pos')
+                        this.getParent('.quiqqer-order-basket-small-articles-article').get('data-pos')
                     );
                 });
             }, {
