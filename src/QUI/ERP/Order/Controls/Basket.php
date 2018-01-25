@@ -30,16 +30,15 @@ class Basket extends AbstractOrderingStep
      */
     public function __construct($attributes = array())
     {
-        // @todo
-//        $orderId = $this->getAttribute('orderId');
-//
-//        if ($orderId) {
-//            $this->Basket = new QUI\ERP\Order\Basket\Basket($orderId);
-//        } else {
-//            $this->Basket = new QUI\ERP\Order\Basket\Basket();
-//        }
-
         parent::__construct($attributes);
+
+        if ($this->getAttribute('Basket')) {
+            $this->Basket = $this->getAttribute('Basket');
+        } else {
+            $this->Basket = new QUI\ERP\Order\Basket\Basket(
+                $this->getAttribute('basketId')
+            );
+        }
 
         $this->addCSSFile(dirname(__FILE__).'/Basket.css');
     }
@@ -96,6 +95,7 @@ class Basket extends AbstractOrderingStep
 
     /**
      * @return string
+     *
      * @throws QUI\Exception
      */
     public function getBody()
@@ -104,14 +104,13 @@ class Basket extends AbstractOrderingStep
             return '';
         }
 
-        $Engine = QUI::getTemplateManager()->getEngine();
-
-        $Articles = $this->Basket->getArticles()->toUniqueList();
-        $Articles->hideHeader();
+        $Engine   = QUI::getTemplateManager()->getEngine();
+        $Products = $this->Basket->getProducts()->getView();
 
         $Engine->assign(array(
-            'articles' => $Articles->toArray(),
-            'count'    => $Articles->count()
+            'Products' => $Products,
+            'products' => $Products->getProducts(),
+            'count'    => $Products->count()
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Basket.html');

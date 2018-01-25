@@ -60,7 +60,7 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
-        $data       = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId);
+        $data       = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
         $this->id   = $basketId;
         $this->User = $User;
 
@@ -103,6 +103,14 @@ class Basket
     public function clear()
     {
         $this->List->clear();
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return $this->List->count();
     }
 
     /**

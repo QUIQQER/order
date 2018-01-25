@@ -26,9 +26,16 @@
         </thead>
         <tbody>
         {assign var=pos value=1}
-        {foreach $articles as $Article}
+        {foreach $products as $product}
         <tr>
             <td>{$pos}</td>
+            <td>
+                <div class="articles-article-title">{$product.title}</div>
+                <div class="articles-article-description">{$product.description}</div>
+            </td>
+            <td>{$product.quantity}</td>
+            <td>{$product.price}</td>
+            <td>{$product.sum}</td>
         </tr>
         {assign var=pos value=$pos+1}
         {/foreach}

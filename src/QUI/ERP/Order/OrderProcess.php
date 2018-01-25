@@ -22,7 +22,12 @@ class OrderProcess extends QUI\Control
     /**
      * @var QUI\ERP\Order\OrderInProcess
      */
-    protected $Order = null;
+    protected $Order;
+
+    /**
+     * @var Basket\Basket
+     */
+    protected $Basket = null;
 
     /**
      * @var null|AbstractOrderProcessProvider
@@ -44,6 +49,7 @@ class OrderProcess extends QUI\Control
      * @param array $attributes
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     public function __construct($attributes = array())
     {
@@ -57,6 +63,40 @@ class OrderProcess extends QUI\Control
 
         $this->addCSSFile(dirname(__FILE__).'/Controls/OrderProcess.css');
 
+
+        // current basket
+        $basketId = $this->getAttribute('basketId');
+
+        if ($basketId) {
+            try {
+                $this->Basket = new Basket\Basket($basketId);
+            } catch (QUI\ERP\Order\Basket\Exception $Exception) {
+            }
+        }
+
+        if ($this->Basket === null) {
+            $this->Basket = Handler::getInstance()->getBasketFromUser(
+                QUI::getUserBySession()
+            );
+        }
+
+        // insert basket products into the articles
+        $Order    = $this->getOrder();
+        $Products = $this->Basket->getProducts();
+        $products = $Products->getProducts();
+
+        $Order->clearArticles();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $Order->addArticle($Product->toArticle());
+            } catch (QUI\Users\Exception $Exception) {
+            }
+        }
+
+
+        // current step
         $steps = $this->getSteps();
         $step  = $this->getAttribute('step');
 
@@ -75,7 +115,6 @@ class OrderProcess extends QUI\Control
             $this->setAttribute('step', $step);
         }
 
-
         if (!$step || !isset($steps[$step])) {
             reset($steps);
             $this->setAttribute('step', key($steps));
@@ -87,6 +126,7 @@ class OrderProcess extends QUI\Control
      * Must the previous step be saved?
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     protected function checkSubmission()
     {
@@ -334,6 +374,7 @@ class OrderProcess extends QUI\Control
      * @return AbstractOrderingStep
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     public function getCurrentStep()
     {
@@ -349,6 +390,7 @@ class OrderProcess extends QUI\Control
      * @return AbstractOrderingStep
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     public function getFirstStep()
     {
@@ -362,6 +404,7 @@ class OrderProcess extends QUI\Control
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     public function getNextStep($StartStep = null)
     {
@@ -400,6 +443,7 @@ class OrderProcess extends QUI\Control
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     public function getPreviousStep($StartStep = null)
     {
@@ -435,6 +479,7 @@ class OrderProcess extends QUI\Control
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     protected function getStepByName($name)
     {
@@ -453,6 +498,7 @@ class OrderProcess extends QUI\Control
      * @return string
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     protected function getCurrentStepName()
     {
@@ -473,6 +519,7 @@ class OrderProcess extends QUI\Control
      * @return bool|string
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     protected function getNextStepName($StartStep = null)
     {
@@ -492,6 +539,7 @@ class OrderProcess extends QUI\Control
      * @return bool|string
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     protected function getPreviousStepName($StartStep = null)
     {
@@ -574,11 +622,20 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * @return Basket\Basket
+     */
+    public function getBasket()
+    {
+        return $this->Basket;
+    }
+
+    /**
      * Return all steps
      *
      * @return array
      *
      * @throws Exception
+     * @throws Basket\Exception
      */
     protected function getSteps()
     {
@@ -586,8 +643,8 @@ class OrderProcess extends QUI\Control
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
         $Basket = new Controls\Basket(array(
-            'orderId'  => $this->getOrder()->getId(),
-            'Order'    => $this->getOrder(),
+            'basketId' => $this->Basket->getId(),
+            'Basket'   => $this->Basket,
             'priority' => 1
         ));
 
