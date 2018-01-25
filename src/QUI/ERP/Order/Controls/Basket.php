@@ -110,7 +110,8 @@ class Basket extends AbstractOrderingStep
         $Engine->assign(array(
             'Products' => $Products,
             'products' => $Products->getProducts(),
-            'count'    => $Products->count()
+            'count'    => $Products->count(),
+            'data'     => $Products->toArray()
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Basket.html');
