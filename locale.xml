@@ -347,6 +347,11 @@
             <de><![CDATA[Zahlungsweise änderbar]]></de>
             <en><![CDATA[Payment is changeable]]></en>
         </locale>
+
+        <locale name="exception.order.process.not.found">
+            <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
+            <en><![CDATA[Checkout not found. Please create an order process.]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

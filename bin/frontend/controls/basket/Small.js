@@ -75,12 +75,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
                 ButtonCheckout.addEvent('mousedown', function (event) {
                     event.stop();
                 });
-
-                ButtonCheckout.addEvent('click', function (event) {
-                    event.stop();
-
-                    console.log(123);
-                });
+                //
+                // ButtonCheckout.addEvent('click', function (event) {
+                //     event.stop();
+                //
+                //     console.log(123);
+                // });
 
                 self.getElm().getElements('.fa-trash').addEvent('click', function () {
                     Basket.removeProductPos(

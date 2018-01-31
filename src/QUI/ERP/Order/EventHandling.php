@@ -40,6 +40,10 @@ class EventHandling
     /**
      * @param QUI\Rewrite $Rewrite
      * @param string $requestedUrl
+     *
+     * @throws Exception
+     * @throws QUI\Exception
+     * @throws Basket\Exception
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
