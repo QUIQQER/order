@@ -17,6 +17,8 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     /**
      * @param null $Locale
      * @return string
+     *
+     * @throws \ReflectionException
      */
     public function getTitle($Locale = null)
     {
@@ -28,7 +30,7 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
 
         return $Locale->get(
             'quiqqer/order',
-            'ordering.step.title.' . $Reflection->getShortName()
+            'ordering.step.title.'.$Reflection->getShortName()
         );
     }
 

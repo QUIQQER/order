@@ -35,15 +35,6 @@ class OrderProcess extends QUI\Control
     protected $ProcessingProvider = null;
 
     /**
-     * @return string
-     * @todo make it variable
-     */
-    public static function getUrl()
-    {
-        return URL_DIR.'Bestellungen/';
-    }
-
-    /**
      * Basket constructor.
      *
      * @param array $attributes
@@ -95,6 +86,8 @@ class OrderProcess extends QUI\Control
             }
         }
 
+        $this->Basket->setHash($Order->getHash());
+        $this->Basket->save();
 
         // current step
         $steps = $this->getSteps();
@@ -350,7 +343,10 @@ class OrderProcess extends QUI\Control
             }
         }
 
+        $Project = $this->getSite()->getProject();
+
         $this->setAttribute('step', $Current->getName());
+        $this->setAttribute('data-url', Utils\Utils::getOrderProcess($Project)->getUrlRewritten());
 
         $Engine->assign(array(
             'listWidth'      => floor(100 / count($this->getSteps())),
@@ -550,6 +546,21 @@ class OrderProcess extends QUI\Control
         }
 
         return false;
+    }
+
+    /**
+     * Return the url to the order process
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        try {
+            return QUI\ERP\Order\Utils\Utils::getOrderProcess($this->getProject())->getUrlRewritten();
+        } catch (QUI\Exception $Exception) {
+        }
+
+        return '';
     }
 
     /**

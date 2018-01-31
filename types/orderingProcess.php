@@ -1,5 +1,15 @@
 <?php
 
-$Engine->assign(array(
-    'Ordering' => new QUI\ERP\Order\OrderProcess()
-));
+try {
+    $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
+        'step' => $Site->getAttribute('order::step')
+    ));
+
+    $Engine->assign(array(
+        'OrderProcess' => $OrderProcess
+    ));
+} catch (Exception $Exception) {
+    $Engine->assign(array(
+        'Exception' => $Exception
+    ));
+}

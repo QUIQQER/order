@@ -25,17 +25,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 ], function (QUI, QUIControl, QUILoader, QUIFormUtils, Basket, Orders, QUIAjax, QUILocale, Navigo) {
     "use strict";
 
-    var lg  = 'quiqqer/order';
-    var url = '/Bestellungen';
-
-    if (window.location.pathname.indexOf(url) === 0) {
-        var Router = new Navigo(null, false, '');
-
-        // workaround - dont know why its needed, but its needed :D
-        Router.on(url + '/*', function () {
-        });
-    }
-
+    var lg = 'quiqqer/order';
+    var Router, url;
 
     return new Class({
 
@@ -119,6 +110,16 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $onImport: function () {
             if (this.getAttribute('showLoader')) {
                 this.Loader.inject(this.getElm());
+            }
+
+            url = this.getElm().get('data-url');
+
+            if (window.location.pathname.indexOf(url) === 0) {
+                Router = new Navigo(null, false, '');
+
+                // workaround - dont know why its needed, but its needed :D
+                Router.on(url + '/*', function () {
+                });
             }
 
             this.$Buttons       = this.getElm().getElement('.quiqqer-order-ordering-buttons');

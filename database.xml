@@ -87,9 +87,11 @@
             <field type="INT(11) NOT NULL">uid</field>
             <field type="BIGINT(20) NULL">name</field>
             <field type="TEXT NULL">products</field>
+            <field type="VARCHAR(250) NULL">hash</field>
 
             <primary>id</primary>
             <auto_increment>id</auto_increment>
+            <index>hash</index>
         </table>
     </global>
 

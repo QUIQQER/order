@@ -37,6 +37,11 @@ class Basket
     protected $User;
 
     /**
+     * @var string
+     */
+    protected $hash = null;
+
+    /**
      * Basket constructor.
      *
      * @param integer|bool $basketId - ID of the basket
@@ -60,9 +65,11 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
-        $data       = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
+        $data = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
+
         $this->id   = $basketId;
         $this->User = $User;
+        $this->hash = $data['hash'];
 
         $this->import(json_decode($data['products'], true));
     }
@@ -76,6 +83,31 @@ class Basket
     {
         return $this->id;
     }
+
+    /**
+     * Clear the basket
+     */
+    public function clear()
+    {
+        $this->List->clear();
+
+        if ($this->hasOrder()) {
+            try {
+                $this->getOrder()->clearArticles();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return $this->List->count();
+    }
+
+    //region product handling
 
     /**
      * Return the product list
@@ -95,23 +127,16 @@ class Basket
     public function addProduct(Product $Product)
     {
         $this->List->addProduct($Product);
+
+        if ($this->hasOrder()) {
+            try {
+                $this->getOrder()->addArticle($Product->toArticle());
+            } catch (QUI\Exception $Exception) {
+            }
+        }
     }
 
-    /**
-     * Clear the basket
-     */
-    public function clear()
-    {
-        $this->List->clear();
-    }
-
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        return $this->List->count();
-    }
+    //endregion
 
     /**
      * Import the products to the basket
@@ -185,7 +210,8 @@ class Basket
         QUI::getDataBase()->update(
             QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             array(
-                'products' => json_encode($result)
+                'products' => json_encode($result),
+                'hash'     => $this->hash
             ),
             array(
                 'id'  => $this->getId(),
@@ -234,4 +260,67 @@ class Basket
             'products' => $result
         );
     }
+
+    //region hash & orders
+
+    /**
+     * Set the process number
+     * - Vorgangsnummer
+     *
+     * @param $hash
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    }
+
+    /**
+     * Return the process number
+     *
+     * @return string
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
+     * Does the basket have an assigned order?
+     *
+     * @return bool
+     */
+    public function hasOrder()
+    {
+        if (empty($this->hash)) {
+            return false;
+        }
+
+        try {
+            $this->getOrder();
+        } catch (QUi\Exception $Exception) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Return the assigned order from the basket
+     *
+     * @throws Exception
+     * @throws QUI\ERP\Order\Exception
+     */
+    public function getOrder()
+    {
+        if ($this->hash === null) {
+            throw new Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND
+            );
+        }
+
+        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
+    }
+
+    //endregion
 }

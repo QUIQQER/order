@@ -47,7 +47,9 @@ class EventHandling
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
-        $path = trim(OrderProcess::getUrl(), '/');
+        $Project      = $Rewrite->getProject();
+        $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+        $path         = trim($CheckoutSite->getUrlRewritten(), '/');
 
         if (strpos($requestedUrl, $path) === false) {
             return;
@@ -57,23 +59,13 @@ class EventHandling
             return;
         }
 
+        // @todo order loading
+
         // order hash
-        $hash  = false;
-        $title = '/Bestellungen/';
-
-        if (isset($_REQUEST['order'])) {
-            $hash = $_REQUEST['order'];
-        }
-
-        $Process = new OrderProcess();
-        $parts   = explode('/', $requestedUrl);
-
-        if ($hash) {
-            $Process->setAttribute('orderHash', $hash);
-        }
+        $parts = explode('/', $requestedUrl);
 
         if (count($parts) > 2) {
-            $Redirect = new RedirectResponse($title);
+            $Redirect = new RedirectResponse($CheckoutSite->getAttribute('title'));
             $Redirect->setStatusCode(RedirectResponse::HTTP_BAD_REQUEST);
 
             echo $Redirect->getContent();
@@ -81,30 +73,12 @@ class EventHandling
             exit;
         }
 
-        Debugger::barDump($hash, 'Order Hash');
-        Debugger::barDump($parts, 'Order Parts');
-        Debugger::barDump($requestedUrl, 'Requested url');
-
-        if ($Process->getOrder()) {
-            Debugger::barDump($Process->getOrder()->getId(), 'ORDER ID');
-        }
 
         if (isset($parts[1])) {
-            $Process->setAttribute('step', $parts[1]);
+            $CheckoutSite->setAttribute('order::step', $parts[1]);
         }
 
-        // #locale
-        $Site = new QUI\Projects\Site\Virtual(array(
-            'id'    => 1,
-            'title' => 'Bestellungen',
-            'name'  => 'Bestellung',
-            'url'   => 'Bestellung'
-        ), $Rewrite->getProject());
-
-        $Site->setAttribute('layout', 'layout/noSidebar');
-        $Site->setAttribute('content', $Process->create());
-
-        $Rewrite->setSite($Site);
+        $Rewrite->setSite($CheckoutSite);
     }
 
     /**

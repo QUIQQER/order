@@ -18,6 +18,14 @@
 </section>
 {/if}
 
+{if isset($Exception)}
+<div class="message-error">
+    {$Exception->getMessage()}
+</div>
+{/if}
+
+{if isset($OrderProcess)}
 <section class="content-template grid-100 mobile-grid-100">
-    {$Ordering->create()}
+    {$OrderProcess->create()}
 </section>
+{/if}

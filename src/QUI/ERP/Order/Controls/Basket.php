@@ -10,7 +10,7 @@ use QUI;
 
 /**
  * Class Basket
- * Basket display
+ * - Basket step
  *
  * @package QUI\ERP\Order\Basket
  */
@@ -118,10 +118,9 @@ class Basket extends AbstractOrderingStep
     }
 
     /**
-     *
+     * @return mixed|void
      */
     public function save()
     {
-        // TODO: Implement save() method.
     }
 }
