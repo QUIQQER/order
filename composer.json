@@ -26,6 +26,7 @@
     "quiqqer/payments": "*",
     "quiqqer/tax": "*",
     "quiqqer/payment-transactions": "*",
+    "quiqqer/fontawesome": ">=4.5|dev-master|dev-dev",
     "ramsey/uuid": "3.*",
     "npm-asset/navigo": "5.*",
     "npm-asset/history-events": "1.*"
