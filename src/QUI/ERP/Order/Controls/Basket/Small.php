@@ -18,7 +18,7 @@ class Small extends QUI\Controls\Control
     /**
      * Used basket
      *
-     * @var QUI\ERP\Order\Basket\Basket
+     * @var QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest
      */
     protected $Basket;
 
@@ -28,11 +28,15 @@ class Small extends QUI\Controls\Control
     protected $Project;
 
     /**
-     * @param QUI\ERP\Order\Basket\Basket $Basket
+     * @param QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest $Basket
      */
-    public function setBasket(QUI\ERP\Order\Basket\Basket $Basket)
+    public function setBasket($Basket)
     {
-        $this->Basket = $Basket;
+        if ($Basket instanceof QUI\ERP\Order\Basket\Basket ||
+            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest
+        ) {
+            $this->Basket = $Basket;
+        }
     }
 
     /**
@@ -44,7 +48,6 @@ class Small extends QUI\Controls\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts()->getView();
         $Project  = $this->getProject();
-
 
         $Engine->assign(array(
             'data'         => $Products->toArray(),

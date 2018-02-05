@@ -62,12 +62,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
             var self     = this,
                 basketId = this.getAttribute('basketId');
 
-            if (basketId === false || isNaN(basketId)) {
-                self.getElm().set('html', 'Gast Warenkorb');
+            if (basketId === false) {
+                self.getElm().set('html', '');
                 return Promise.resolve();
             }
 
-            QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_small', function (result) {
+            // render the result - set events etc
+            var render = function (result) {
                 self.getElm().set('html', result);
 
                 var ButtonCheckout = self.getElm().getElement('.to-the-checkout');
@@ -75,22 +76,45 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
                 ButtonCheckout.addEvent('mousedown', function (event) {
                     event.stop();
                 });
-                //
-                // ButtonCheckout.addEvent('click', function (event) {
-                //     event.stop();
-                //
-                //     console.log(123);
-                // });
 
                 self.getElm().getElements('.fa-trash').addEvent('click', function () {
                     Basket.removeProductPos(
                         this.getParent('.quiqqer-order-basket-small-articles-article').get('data-pos')
                     );
                 });
-            }, {
+            };
+
+            // guest
+            if (this.isGuest()) {
+                var products       = [];
+                var basketProducts = Basket.getProducts();
+
+                for (var i = 0, len = basketProducts.length; i < len; i++) {
+                    products.push(basketProducts[i].getAttributes());
+                }
+
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_smallGuest', render, {
+                    'package': 'quiqqer/order',
+                    products : JSON.encode(products)
+                });
+
+                return;
+            }
+
+            // user
+            QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_small', render, {
                 'package': 'quiqqer/order',
                 basketId : parseInt(this.getAttribute('basketId'))
             });
+        },
+
+        /**
+         * Is the user a guest?
+         *
+         * @return {boolean}
+         */
+        isGuest: function () {
+            return !(QUIQQER_USER && QUIQQER_USER.id);
         },
 
         /**

@@ -56,12 +56,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-
             this.fireEvent('refreshBegin', [this]);
 
-            data = JSON.decode(data);
+            try {
+                data = JSON.decode(data);
 
-            if (!data) {
+                if (!data) {
+                    data = {};
+                }
+            } catch (e) {
                 data = {};
             }
 
@@ -100,6 +103,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 this.$isLoaded = true;
                 this.fireEvent('refresh', [this]);
+                this.save();
             }.bind(this));
         },
 
@@ -296,6 +300,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         * Return the basket products
+         *
+         * @return {Array}
+         */
+        getProducts: function () {
+            return this.$products;
+        },
+
+        /**
          * Saves the basket to the temporary order
          *
          * @param {Boolean} [force] - force the save delay, prevent homemade ddos
@@ -357,8 +370,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     data.products = {};
                 }
 
-                data.currentList            = this.$listid;
-                data.products[this.$listid] = products;
+                data.currentList              = this.$basketId;
+                data.products[this.$basketId] = products;
 
                 QUI.Storage.set('quiqqer-basket-products', JSON.encode(data));
 
