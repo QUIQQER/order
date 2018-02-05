@@ -68,9 +68,6 @@ class UserOrders extends Control implements ControlInterface
 
         $Articles->calc();
 
-        /* @var $Article QUI\ERP\Accounting\Article */
-        //$Article->getSum();
-
         $Engine->assign(array(
             'this'     => $this,
             'Order'    => $Order,
