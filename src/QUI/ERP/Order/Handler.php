@@ -179,6 +179,33 @@ class Handler extends Singleton
         return $result[0];
     }
 
+    /**
+     * @param QUI\Interfaces\Users\User $User
+     * @return array
+     */
+    public function getOrdersByUser(QUI\Interfaces\Users\User $User)
+    {
+        $data = QUI::getDataBase()->fetch([
+            'select' => ['id', 'customerId'],
+            'from'   => $this->table(),
+            'where'  => [
+                'customerId' => $User->getId()
+            ]
+        ]);
+
+        $result = [];
+
+        foreach ($data as $entry) {
+            try {
+                $result[] = new Order($entry['id']);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+            }
+        }
+
+        return $result;
+    }
+
     //endregion
 
     //region Order Process

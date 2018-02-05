@@ -1,0 +1,40 @@
+<section class="quiqqer-order-profile-orders-order">
+    <header>
+        <div class="quiqqer-order-profile-orders-order-header-date">
+            <span>Bestellungsdatum</span>
+            <span>{$Order->getCreateDate()}</span>
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-header-total">
+            <span>Summe</span>
+            <span>{$order.calculations.display_sum}</span>
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-header-addressDelivery">
+            <span>Rechnungsadresse</span>
+            <span>
+
+            </span>
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-header-addressDelivery">
+            <span>Bestell-Nr. </span>
+            <span>{$Order->getHash()}</span>
+        </div>
+    </header>
+
+    <div class="quiqqer-order-profile-orders-order-articles">
+        {foreach $articles as $Article}
+        {$this->renderArticle($Article)}
+        {/foreach}
+    </div>
+
+    <footer>
+        {if $Order->isPosted()}
+        <a href="{$Order->getAttribute('downloadLink')}" target="_blank">
+            <span class="fa fa-file-pdf-o"></span>
+            <span>Rechnung</span>
+        </a>
+        {/if}
+    </footer>
+</section>

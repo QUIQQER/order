@@ -9,7 +9,6 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\Utils\Singleton;
 
-use QUI\ERP\Currency\Handler as Currencies;
 use QUI\ERP\Accounting\Payments\Payments as Payments;
 
 /**
@@ -120,6 +119,8 @@ class Search extends Singleton
      * Execute the search and return the order list
      *
      * @return array
+     *
+     * @throws QUI\Exception
      */
     public function search()
     {
@@ -303,6 +304,8 @@ class Search extends Singleton
     /**
      * @param array $data
      * @return array
+     *
+     * @throws QUI\ERP\Order\Exception
      */
     protected function parseListForGrid($data)
     {

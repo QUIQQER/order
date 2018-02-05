@@ -1,0 +1,41 @@
+<quiqqer>
+    <frontend-users>
+        <profile>
+
+            <categories>
+                <category name="erp">
+                    <title>
+                        <locale group="quiqqer/erp" var="profile.erp.title"/>
+                    </title>
+
+                    <settings control="\QUI\ERP\Order\FrontendUsers\Controls\UserOrders"
+                              name="erp-orders"
+                              icon="fa fa-shopping-basket"
+                              showinprofilbar="1"
+                    >
+                        <title>
+                            <locale group="quiqqer/order" var="profile.orders.title"/>
+                        </title>
+                    </settings>
+                </category>
+
+                <category name="erp">
+                    <title>
+                        <locale group="quiqqer/erp" var="profile.erp.title"/>
+                    </title>
+
+                    <settings control="\QUI\ERP\Order\FrontendUsers\Controls\UserOpenedOrders"
+                              name="erp-opened-orders"
+                              icon="fa fa-shopping-basket"
+                              showinprofilbar="1"
+                    >
+                        <title>
+                            <locale group="quiqqer/order" var="profile.opened.orders.title"/>
+                        </title>
+                    </settings>
+                </category>
+            </categories>
+
+        </profile>
+    </frontend-users>
+</quiqqer>

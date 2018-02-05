@@ -8,7 +8,6 @@ namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Tracy\Debugger;
 
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
@@ -43,7 +42,6 @@ class EventHandling
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
@@ -94,7 +92,7 @@ class EventHandling
         try {
             $Order = Handler::getInstance()->getOrderByHash($hash);
             $Order->addTransaction($Transaction);
-        } catch (Exception $Exception) {
+        } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
     }

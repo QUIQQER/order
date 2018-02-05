@@ -1,0 +1,63 @@
+.quiqqer-order-profile-orders {
+    float: left;
+    width: 100%;
+}
+
+/** One Order
+ =============================================== */
+
+.quiqqer-order-profile-orders-order {
+    border: 1px #ddd solid;
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-order header {
+    background: #f6f6f6;
+    border-bottom: 1px #ddd solid;
+    float: left;
+    padding: 10px;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-order-header-date,
+.quiqqer-order-profile-orders-order-header-total,
+.quiqqer-order-profile-orders-order-header-addressDelivery,
+.quiqqer-order-profile-orders-order-header-addressDelivery {
+    float: left;
+    width: 25%;
+}
+
+.quiqqer-order-profile-orders-order-header-date span,
+.quiqqer-order-profile-orders-order-header-total span,
+.quiqqer-order-profile-orders-order-header-addressDelivery span,
+.quiqqer-order-profile-orders-order-header-addressDelivery span {
+    clear: both;
+    float: left;
+}
+
+.quiqqer-order-profile-orders-order-articles {
+    float: left;
+    padding: 10px;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-order-articles-article {
+    float: left;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-order-articles-image {
+    float: left;
+    margin-right: 10px;
+}
+
+.quiqqer-order-profile-orders-order footer {
+    background: #f6f6f6;
+    border-top: 1px #ddd solid;
+    float: left;
+    padding: 10px;
+    width: 100%;
+
+}

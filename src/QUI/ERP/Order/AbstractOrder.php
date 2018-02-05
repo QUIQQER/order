@@ -43,6 +43,9 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
 
+
+    const STATUS_STORNO = 2; // Bestellung ist storniert
+
     /**
      * order id
      *
@@ -145,7 +148,9 @@ abstract class AbstractOrder extends QUI\QDOM
      * Order constructor.
      *
      * @param array $data
+     *
      * @throws Exception
+     * @throws QUI\ERP\Exception
      */
     public function __construct($data = array())
     {
@@ -173,6 +178,8 @@ abstract class AbstractOrder extends QUI\QDOM
      * Set the db data to the order object
      *
      * @param array $data
+     *
+     * @throws QUI\ERP\Exception
      */
     protected function setDataBaseData(array $data)
     {
@@ -773,6 +780,8 @@ abstract class AbstractOrder extends QUI\QDOM
 
     /**
      * @param Transaction $Transaction
+     *
+     * @throws QUI\Exception
      */
     public function addTransaction(Transaction $Transaction)
     {

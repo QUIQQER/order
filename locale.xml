@@ -352,6 +352,15 @@
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
             <en><![CDATA[Checkout not found. Please create an order process.]]></en>
         </locale>
+
+        <locale name="profile.orders.title">
+            <de><![CDATA[Meine Bestellungen]]></de>
+            <en><![CDATA[My orders]]></en>
+        </locale>
+        <locale name="profile.opened.orders.title">
+            <de><![CDATA[Meine offene Bestellungen]]></de>
+            <en><![CDATA[My open orders]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

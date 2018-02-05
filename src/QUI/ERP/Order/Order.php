@@ -27,7 +27,9 @@ class Order extends AbstractOrder
      * Order constructor.
      *
      * @param string|integer $orderId - Order-ID
+     *
      * @throws QUI\Erp\Order\Exception
+     * @throws QUI\Exception
      */
     public function __construct($orderId)
     {
@@ -38,6 +40,7 @@ class Order extends AbstractOrder
 
     /**
      * @throws Exception
+     * @throws QUI\Exception
      */
     public function refresh()
     {
@@ -185,7 +188,6 @@ class Order extends AbstractOrder
         return $this->isPosted();
     }
 
-
     /**
      * Post the order and create an invoice
      *
@@ -259,6 +261,7 @@ class Order extends AbstractOrder
 
     /**
      * @param null|QUI\Interfaces\Users\User $PermissionUser
+     * @throws QUI\Exception
      */
     public function update($PermissionUser = null)
     {
@@ -292,6 +295,8 @@ class Order extends AbstractOrder
 
     /**
      * Calculates the payment for the order
+     *
+     * @throws QUI\Exception
      */
     public function calculatePayments()
     {
@@ -371,6 +376,7 @@ class Order extends AbstractOrder
      * Delete the order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @throws QUI\Exception
      */
     public function delete($PermissionUser = null)
     {
@@ -399,6 +405,8 @@ class Order extends AbstractOrder
      * Copy the order and create a new one
      *
      * @return Order
+     *
+     * @throws QUI\Exception
      */
     public function copy()
     {
