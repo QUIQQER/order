@@ -1,10 +1,10 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Controls\Delivery
+ * This file contains QUI\ERP\Order\Controls\OrderProcess\Delivery
  */
 
-namespace QUI\ERP\Order\Controls;
+namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
 use QUI\ERP\Order\Handler;
@@ -15,10 +15,12 @@ use QUI\ERP\Order\Handler;
  * @package QUI\ERP\Order\Controls
  * @todo in delivery
  */
-class Delivery extends AbstractOrderingStep
+class Delivery extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
      * @return string
+     *
+     * @throws QUI\Exception
      */
     public function getBody()
     {

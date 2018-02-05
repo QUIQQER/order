@@ -331,7 +331,7 @@ class OrderProcess extends QUI\Control
         } catch (QUI\ERP\Order\Exception $Exception) {
             $error = $Exception->getMessage();
 
-            if (get_class($Current) === QUI\ERP\Order\Controls\Finish::class) {
+            if (get_class($Current) === QUI\ERP\Order\Controls\OrderProcess\Finish::class) {
                 $Current = $this->getPreviousStep();
 
                 if (method_exists($Current, 'forceSave')) {
@@ -653,7 +653,7 @@ class OrderProcess extends QUI\Control
         $Steps     = new OrderProcessSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
-        $Basket = new Controls\Basket(array(
+        $Basket = new Controls\OrderProcess\Basket(array(
             'basketId' => $this->Basket->getId(),
             'Basket'   => $this->Basket,
             'priority' => 1
@@ -661,13 +661,13 @@ class OrderProcess extends QUI\Control
 
 //        $Delivery = new Controls\Delivery($params);
 
-        $Checkout = new Controls\Checkout(array(
+        $Checkout = new Controls\OrderProcess\Checkout(array(
             'orderId'  => $this->getOrder()->getId(),
             'Order'    => $this->getOrder(),
             'priority' => 4
         ));
 
-        $Finish = new Controls\Finish(array(
+        $Finish = new Controls\OrderProcess\Finish(array(
             'orderId'  => $this->getOrder()->getId(),
             'Order'    => $this->getOrder(),
             'priority' => 5

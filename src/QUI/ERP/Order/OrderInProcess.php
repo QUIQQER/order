@@ -24,7 +24,9 @@ class OrderInProcess extends AbstractOrder
      * Order constructor.
      *
      * @param string|integer $orderId - Order-ID
+     *
      * @throws QUI\Erp\Order\Exception
+     * @throws QUI\ERP\Exception
      */
     public function __construct($orderId)
     {
@@ -43,7 +45,10 @@ class OrderInProcess extends AbstractOrder
     }
 
     /**
+     * Refresh the data, makes a database call
+     *
      * @throws Exception
+     * @throws QUI\ERP\Exception
      */
     public function refresh()
     {
@@ -56,7 +61,9 @@ class OrderInProcess extends AbstractOrder
      * Alias for update
      *
      * @param null $PermissionUser
+     *
      * @throws QUI\Permissions\Exception
+     * @throws QUI\Exception
      */
     public function save($PermissionUser = null)
     {
@@ -72,7 +79,9 @@ class OrderInProcess extends AbstractOrder
 
     /**
      * @param null $PermissionUser
+     *
      * @throws QUI\Permissions\Exception
+     * @throws QUI\Exception
      */
     public function update($PermissionUser = null)
     {
@@ -106,6 +115,7 @@ class OrderInProcess extends AbstractOrder
      * Calculates the payment for the order
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\Permissions\Exception
      */
@@ -213,6 +223,7 @@ class OrderInProcess extends AbstractOrder
      * @return Order
      *
      * @throws QUI\Permissions\Exception
+     * @throws QUI\Exception
      * @throws Exception
      */
     public function createOrder($PermissionUser = null)

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Controls\Checkout
+ * This file contains QUI\ERP\Order\Controls\OrderProcess\Checkout
  */
 
-namespace QUI\ERP\Order\Controls;
+namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
 use QUI\ERP\Order\Handler;
@@ -15,7 +15,7 @@ use QUI\ERP\Order\Handler;
  *
  * @package QUI\ERP\Order\Controls
  */
-class Checkout extends AbstractOrderingStep
+class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
      * @var QUI\ERP\Order\Basket\Basket
@@ -36,6 +36,8 @@ class Checkout extends AbstractOrderingStep
 
     /**
      * @return string
+     *
+     * @throws QUI\Exception
      */
     public function getBody()
     {
@@ -105,6 +107,8 @@ class Checkout extends AbstractOrderingStep
      * Order was ordered with costs
      *
      * @return void
+     *
+     * @throws QUI\Exception
      */
     public function save()
     {
@@ -121,6 +125,9 @@ class Checkout extends AbstractOrderingStep
 
     /**
      * Save order as start order payment
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
      */
     public function forceSave()
     {

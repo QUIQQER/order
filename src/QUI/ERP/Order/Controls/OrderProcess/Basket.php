@@ -4,9 +4,10 @@
  * This file contains QUI\ERP\Order\Controls\Basket
  */
 
-namespace QUI\ERP\Order\Controls;
+namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
+use QUI\ERP\Order\Controls\Basket\Basket as BasketControl;
 
 /**
  * Class Basket
@@ -14,7 +15,7 @@ use QUI;
  *
  * @package QUI\ERP\Order\Basket
  */
-class Basket extends AbstractOrderingStep
+class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
      * @var QUI\ERP\Order\Basket\Basket
@@ -104,14 +105,13 @@ class Basket extends AbstractOrderingStep
             return '';
         }
 
-        $Engine   = QUI::getTemplateManager()->getEngine();
-        $Products = $this->Basket->getProducts()->getView();
+        $Engine = QUI::getTemplateManager()->getEngine();
+
+        $BasketControl = new BasketControl();
+        $BasketControl->setBasket($this->Basket);
 
         $Engine->assign(array(
-            'Products' => $Products,
-            'products' => $Products->getProducts(),
-            'count'    => $Products->count(),
-            'data'     => $Products->toArray()
+            'BasketControl' => $BasketControl
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Basket.html');
