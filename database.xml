@@ -30,6 +30,7 @@
             <field type="INT(2) NOT NULL">paid_status</field>
             <field type="INT(11) NULL">paid_date</field>
             <field type="TEXT NULL">paid_data</field>
+            <field type="INT(2) NOT NULL">successful</field>
 
             <field type="TEXT NULL">history</field>
             <field type="TEXT NULL">comments</field>
@@ -70,6 +71,7 @@
             <field type="INT(2) NOT NULL">paid_status</field>
             <field type="INT(11) NULL">paid_date</field>
             <field type="TEXT NULL">paid_data</field>
+            <field type="INT(2) NOT NULL">successful</field>
 
             <field type="VARCHAR(250) NOT NULL">hash</field>
             <field type="timestamp NULL default NULL">c_date</field>

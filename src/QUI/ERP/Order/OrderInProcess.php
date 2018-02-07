@@ -284,6 +284,21 @@ class OrderInProcess extends AbstractOrder
             }
         }
 
+        $Payment = $Order->getPayment();
+
+        if ($Payment->isSuccessful($Order->getHash())) {
+            $Order->setSuccessfulStatus();
+        }
+
+
+        // create invoice?
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+
+        if ($Config->get('order', 'autoInvoice') === 'onOrder') {
+            $Order->post();
+        }
+
+
         return $Order;
     }
 

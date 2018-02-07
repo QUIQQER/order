@@ -7,9 +7,13 @@
     {locale group="quiqqer/order" var="ordering.step.checkoutPayment.text"}
 
     {$gatewayDisplay}
+
+    <input type="hidden" name="paymentGateway" value="1"/>
 </section>
 {else}
-<section class="quiqqer-order-step-checkout">
+<section class="quiqqer-order-step-checkout"
+         data-qui="package/quiqqer/order/bin/frontend/controls/orderProcess/Checkout"
+>
     <header>
         <h1>{locale group="quiqqer/order" var="ordering.step.title.Checkout"}</h1>
     </header>
@@ -31,6 +35,13 @@
 
     <div class="quiqqer-order-step-checkout-article">
         {$Articles->render()}
+    </div>
+
+    <div class="quiqqer-order-step-checkout-notice">
+        <label>
+            <input type="checkbox" name="termsAndConditions"/>
+            {$text}
+        </label>
     </div>
 
 </section>

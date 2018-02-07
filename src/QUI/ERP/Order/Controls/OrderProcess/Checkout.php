@@ -35,6 +35,42 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     }
 
     /**
+     * Overwrite setAttribute then checkout can react to onGetBody
+     *
+     * @param string $name
+     * @param array|bool|object|string $val
+     * @return QUI\QDOM
+     */
+    public function setAttribute($name, $val)
+    {
+        if ($name === 'Process') {
+            /* @var $Process QUI\ERP\Order\OrderProcess */
+            $Process = $val;
+            $self    = $this;
+
+            // reset the session termsAndConditions if the step is not the checkout step
+            $Process->Events->addEvent('onGetBody', function () use ($Process, $self) {
+                if ($Process->getAttribute('step') === $self->getName()) {
+                    return;
+                }
+
+                try {
+                    $Orders = Handler::getInstance();
+                    $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+
+                    QUI::getSession()->set(
+                        'termsAndConditions-'.$Order->getHash(),
+                        0
+                    );
+                } catch (QUI\Exception $Exception) {
+                }
+            });
+        }
+
+        return parent::setAttribute($name, $val);
+    }
+
+    /**
      * @return string
      *
      * @throws QUI\Exception
@@ -48,7 +84,8 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
 
-        if ($Order->getDataEntry('orderedWithCosts') == 1) {
+        if (QUI::getSession()->get('termsAndConditions-'.$Order->getHash())
+            && $Order->getDataEntry('orderedWithCosts') == 1) {
             $Payment = $Order->getPayment();
             $payment = $Order->getDataEntry('orderedWithCostsPayment');
 
@@ -58,12 +95,22 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
+
         $Engine->assign(array(
             'User'            => $Order->getCustomer(),
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment'         => $Order->getPayment(),
-            'Articles'        => $Articles
+            'Articles'        => $Articles,
+
+            'text' => QUI::getLocale()->get(
+                'quiqqer/order',
+                'ordering.step.checkout.checkoutAcceptText',
+                array(
+                    'terms_and_conditions' => $this->getLinkOf('terms_and_conditions'),
+                    'revocation'           => $this->getLinkOf('revocation')
+                )
+            )
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Checkout.html');
@@ -101,6 +148,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 'exception.order.payment.missing'
             ));
         }
+
+        if (!QUI::getSession()->get('termsAndConditions-'.$Order->getHash())) {
+            throw new QUI\ERP\Order\Exception(array(
+                'quiqqer/order',
+                'exception.order.termsAndConditions.missing'
+            ));
+        }
     }
 
     /**
@@ -112,7 +166,17 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function save()
     {
-        if (!isset($_REQUEST['current']) || $_REQUEST['current'] !== 'checkout') {
+        if (isset($_REQUEST['termsAndConditions']) && !empty($_REQUEST['termsAndConditions'])) {
+            $Orders = Handler::getInstance();
+            $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+
+            QUI::getSession()->set(
+                'termsAndConditions-'.$Order->getHash(),
+                (int)$_REQUEST['termsAndConditions']
+            );
+        }
+
+        if (!isset($_REQUEST['current']) || $_REQUEST['current'] !== $this->getName()) {
             return;
         }
 
@@ -142,5 +206,53 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order->setData('orderedWithCosts', 1);
         $Order->setData('orderedWithCostsPayment', $Payment->getId());
         $Order->save();
+    }
+
+    /**
+     * Return a link from a specific site type
+     *
+     * @param string $config
+     * @return string
+     */
+    protected function getLinkOf($config)
+    {
+        try {
+            $Config  = QUI::getPackage('quiqqer/erp')->getConfig();
+            $values  = $Config->get('sites', $config);
+            $Project = $this->getProject();
+        } catch (QUI\Exception $Exception) {
+            return '';
+        }
+
+        if (!$values) {
+            return '';
+        }
+
+        $lang   = $Project->getLang();
+        $values = json_decode($values, true);
+
+        if (!isset($values[$lang]) || empty($values[$lang])) {
+            return '';
+        }
+
+        try {
+            $Site = QUI\Projects\Site\Utils::getSiteByLink($values[$lang]);
+
+            $url   = $Site->getUrlRewritten();
+            $title = $Site->getAttribute('title');
+
+            $project = $Site->getProject()->getName();
+            $lang    = $Site->getProject()->getLang();
+            $id      = $Site->getId();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            return '';
+        }
+
+        return '<a href="'.$url.'" target="_blank" 
+            data-project="'.$project.'" 
+            data-lang="'.$lang.'" 
+            data-id="'.$id.'">'.$title.'</a>';
     }
 }

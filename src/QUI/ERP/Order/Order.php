@@ -70,16 +70,7 @@ class Order extends AbstractOrder
     public function createInvoice()
     {
         if ($this->isPosted()) {
-            throw new Exception(
-                array(
-                    'quiqqer/order',
-                    'exception.message.invoice.for.order.exists'
-                ),
-                406,
-                array(
-                    'orderId' => $this->getId()
-                )
-            );
+            return $this->getInvoice();
         }
 
         $InvoiceFactory   = QUI\ERP\Accounting\Invoice\Factory::getInstance();
@@ -140,6 +131,8 @@ class Order extends AbstractOrder
         // create the real invoice
         try {
             $TemporaryInvoice->validate();
+
+            // @todo setting -> rechnung automatisch buchen
             $Invoice = $TemporaryInvoice->post();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -240,6 +233,7 @@ class Order extends AbstractOrder
             'parent_order' => '',
             'invoice_id'   => '',
             'status'       => '',
+            'successful'   => $this->successful,
 
             'customerId'      => $this->customerId,
             'customer'        => json_encode($customer),
@@ -357,16 +351,20 @@ class Order extends AbstractOrder
             'Order:: Paid Status changed to '.$calculation['paidStatus']
         );
 
-        // if no invoice exists, and the order is paid, create an invoice
-        if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID &&
-            $this->isPosted() === false) {
-            $this->post();
+
+        if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID) {
+            $this->setSuccessfulStatus();
         }
 
         // Payment Status has changed
         if ($oldPaidStatus != $this->getAttribute('paid_status')) {
             QUI::getEvents()->fireEvent(
                 'onQuiqqerOrderPaymentChanged',
+                array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
+            );
+
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaidStatusChanged',
                 array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
             );
         }

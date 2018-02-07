@@ -8,6 +8,10 @@
                     <type><![CDATA[string]]></type>
                     <defaultvalue>execute</defaultvalue>
                 </conf>
+                <conf name="autoInvoice">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue>onOrder</defaultvalue>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -42,6 +46,24 @@
                             </option>
                             <option value="returning">
                                 <locale group="quiqqer/order" var="order.settings.failedPaymentProcedure.returning"/>
+                            </option>
+                        </select>
+
+                        <select conf="order.autoInvoice">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.autoInvoice"/>
+                            </text>
+                            <option value="noAuto">
+                                <locale group="quiqqer/order" var="order.settings.autoInvoice.noAuto"/>
+                            </option>
+                            <option value="onOrder">
+                                <locale group="quiqqer/order" var="order.settings.autoInvoice.onOrder"/>
+                            </option>
+                            <option value="onPaid">
+                                <locale group="quiqqer/order" var="order.settings.autoInvoice.onPaid"/>
+                            </option>
+                            <option value="byPayment">
+                                <locale group="quiqqer/order" var="order.settings.autoInvoice.byPayment"/>
                             </option>
                         </select>
                     </settings>

@@ -400,6 +400,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var Ghost = new Element('div', {
                 html: result.html
             });
+console.warn(result);
 
             if (typeof showFromRight === 'undefined') {
                 showFromRight = true;
@@ -483,6 +484,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 top     : 0,
                 width   : '100%'
             });
+
+            this.getElm().getElements('.quiqqer-order-ordering-error').destroy();
 
             this.Loader.show();
 

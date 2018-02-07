@@ -257,6 +257,20 @@
             You will receive a confirmation to your e-mail address.
             ]]></en>
         </locale>
+
+        <locale name="ordering.step.checkout.checkoutAcceptText">
+            <de><![CDATA[
+                Ich habe die [terms_and_conditions] und die [revocation] gelesen und akzeptiere sie.
+            ]]></de>
+            <en><![CDATA[
+                I have read the [terms_and_conditions] and the [revocation] and accept it.
+            ]]></en>
+        </locale>
+        <locale name="exception.order.termsAndConditions.missing">
+            <de><![CDATA[Bitte bestätigen Sie die Allgemeine Geschäftsbedingungen.]]></de>
+            <en><![CDATA[Please confirm the General Terms and Conditions.]]></en>
+        </locale>
+
         <locale name="ordering.step.checkoutPayment.text" html="true">
             <de><![CDATA[
             Vielen Dank für Ihre Bestellung. Ihre Bestellung wurde erfolgreich übermittelt.<br />
@@ -346,6 +360,26 @@
         <locale name="order.settings.paymentsChangeable.title">
             <de><![CDATA[Zahlungsweise änderbar]]></de>
             <en><![CDATA[Payment is changeable]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice">
+            <de><![CDATA[Rechung automatisch erstellen]]></de>
+            <en><![CDATA[Create invoice automatically]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.noAuto">
+            <de><![CDATA[Nicht automatisch erstellen]]></de>
+            <en><![CDATA[Do not create automatically]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.onOrder">
+            <de><![CDATA[Bei Bestellung]]></de>
+            <en><![CDATA[On ordering]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.onPaid">
+            <de><![CDATA[Bei vollständiger Zahlung]]></de>
+            <en><![CDATA[On full payment]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.byPayment">
+            <de><![CDATA[Bestimmung durch Bezahlungsmethode]]></de>
+            <en><![CDATA[Determination by payment method]]></en>
         </locale>
 
         <locale name="exception.order.process.not.found">

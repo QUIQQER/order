@@ -8,10 +8,12 @@
 }
 
 .quiqqer-order-ordering-error {
-    background: #F2D4CE;
-    border-color: #AE432E;
+    background-color: rgb(255, 249, 242);
+    border: 1px solid #D8D8D8;
+    color: rgb(211, 0, 0);
     clear: both;
     display: block;
+    margin-bottom: 20px;
     padding: 10px;
     width: 100%;
 }

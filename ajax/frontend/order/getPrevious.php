@@ -20,17 +20,17 @@ QUI::$Ajax->registerFunction(
             'orderId' => (int)$orderId
         ));
 
-        $Next = $OrderProcess->getPreviousStep();
+        $Previous = $OrderProcess->getPreviousStep();
 
-        if (!$Next) {
-            $Next = $OrderProcess->getFirstStep();
+        if (!$Previous) {
+            $Previous = $OrderProcess->getFirstStep();
         }
 
-        $OrderProcess->setAttribute('step', $Next->getName());
+        $OrderProcess->setAttribute('step', $Previous->getName());
 
         return array(
             'html' => $OrderProcess->create(),
-            'step' => $Next->getName()
+            'step' => $Previous->getName()
         );
     },
     array('orderId', 'current')

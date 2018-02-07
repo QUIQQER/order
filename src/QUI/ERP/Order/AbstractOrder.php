@@ -59,6 +59,11 @@ abstract class AbstractOrder extends QUI\QDOM
     protected $status;
 
     /**
+     * @var int
+     */
+    protected $successful;
+
+    /**
      * invoice ID
      *
      * @var integer
@@ -238,13 +243,31 @@ abstract class AbstractOrder extends QUI\QDOM
         }
 
         // payment
-        $this->paymentId = $data['payment_id'];
+        $this->paymentId  = $data['payment_id'];
+        $this->successful = (int)$data['successful'];
 
         $this->setAttributes(array(
             'paid_status' => (int)$data['paid_status'],
             'paid_data'   => json_decode($data['paid_data'], true),
             'paid_date'   => $data['paid_date']
         ));
+    }
+
+
+    /**
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    public function setSuccessfulStatus()
+    {
+        if ($this->successful === 1) {
+            return;
+        }
+
+        QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
+
+        $this->successful = 1;
+        $this->update();
     }
 
     //region API

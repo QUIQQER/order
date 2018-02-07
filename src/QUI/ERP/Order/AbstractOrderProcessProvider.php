@@ -79,7 +79,6 @@ abstract class AbstractOrderProcessProvider
      *
      * @param AbstractOrder $Order
      * @return integer
-     * @throws Exception
      */
     public function onOrderAbort(AbstractOrder $Order)
     {

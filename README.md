@@ -42,6 +42,8 @@ Lizenz
 Entwickler
 --------
 
+- onQuiqqerOrderSuccessful [Order]
+
 - onQuiqqerOrderDeleteBegin [Order]
 - onQuiqqerOrderDelete [$orderId, $orderData]
 

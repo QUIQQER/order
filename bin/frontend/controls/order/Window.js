@@ -1,8 +1,6 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/order/Window
  * @author www.pcsg.de (Henning Leutz)
- *
- *
  */
 define('package/quiqqer/order/bin/frontend/controls/order/Window', [
 
@@ -213,7 +211,7 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
                 return;
             }
 
-            this.$Order;
+            // this.$Order;
         },
 
         /**
@@ -231,8 +229,6 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
                 'height',
                 size.y - this.$Header.getSize().y
             );
-
-
         },
 
         /**

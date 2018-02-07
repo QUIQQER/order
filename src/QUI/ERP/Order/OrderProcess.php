@@ -16,6 +16,11 @@ use QUI\ERP\Order\Utils\OrderProcessSteps;
  * Coordinates the order process, (basket -> address -> delivery -> payment -> invoice)
  *
  * @package QUI\ERP\Order\Basket
+ *
+ * @event getBody [this]
+ * @event getBodyBegin [this]
+ * @event onSend [this]
+ * @event onSendBegin [this]
  */
 class OrderProcess extends QUI\Control
 {
@@ -33,6 +38,18 @@ class OrderProcess extends QUI\Control
      * @var null|AbstractOrderProcessProvider
      */
     protected $ProcessingProvider = null;
+
+    /**
+     * List of order process steps
+     *
+     * @var array
+     */
+    protected $steps = [];
+
+    /**
+     * @var QUI\Events\Event
+     */
+    public $Events;
 
     /**
      * Basket constructor.
@@ -53,6 +70,8 @@ class OrderProcess extends QUI\Control
         ));
 
         $this->addCSSFile(dirname(__FILE__).'/Controls/OrderProcess.css');
+
+        $this->Events = new QUI\Events\Event();
 
 
         // current basket
@@ -134,10 +153,10 @@ class OrderProcess extends QUI\Control
             return;
         }
 
-        try {
-            $PreStep->save();
-        } catch (QUI\Exception $Exception) {
-        }
+//        try {
+//            $PreStep->save();
+//        } catch (QUI\Exception $Exception) {
+//        }
     }
 
     /**
@@ -147,6 +166,8 @@ class OrderProcess extends QUI\Control
      */
     protected function send()
     {
+        $this->Events->fireEvent('sendBegin', [$this]);
+
         $steps     = $this->getSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
@@ -197,6 +218,8 @@ class OrderProcess extends QUI\Control
 
         $this->setAttribute('current', 'finish');
         $this->setAttribute('step', 'finish');
+
+        $this->Events->fireEvent('send', [$this]);
     }
 
     /**
@@ -273,6 +296,8 @@ class OrderProcess extends QUI\Control
      */
     public function getBody()
     {
+        $this->Events->fireEvent('getBodyBegin', [$this]);
+
         $template = dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
@@ -289,7 +314,8 @@ class OrderProcess extends QUI\Control
         $Current = $this->getCurrentStep();
         $steps   = $this->getSteps();
 
-        $this->checkSubmission();
+        // @todo prüfung ob benötigt, wäre besser wenn nicht, wegen checkout step und payment gateway
+        //$this->checkSubmission();
 
         // check all previous steps
         // is one is invalid, go to them
@@ -360,6 +386,8 @@ class OrderProcess extends QUI\Control
             'Site'           => $this->getSite(),
             'Order'          => $this->getOrder()
         ));
+
+        $this->Events->fireEvent('getBody', [$this]);
 
         return $Engine->fetch($template);
     }
@@ -650,6 +678,10 @@ class OrderProcess extends QUI\Control
      */
     protected function getSteps()
     {
+        if (!empty($this->steps)) {
+            return $this->steps;
+        }
+
         $Steps     = new OrderProcessSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
@@ -702,7 +734,11 @@ class OrderProcess extends QUI\Control
 
         foreach ($Steps as $Step) {
             $result[$Step->getName()] = $Step;
+
+            $Step->setAttribute('Process', $this);
         }
+
+        $this->steps = $result;
 
         return $result;
     }
