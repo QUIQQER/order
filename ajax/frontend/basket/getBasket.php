@@ -31,6 +31,7 @@ QUI::$Ajax->registerFunction(
 
                 if ($Order instanceof QUI\ERP\Order\Order) {
                     $Basket->clear();
+                    $Basket->save();
                 }
             } catch (QUI\Exception $Exception) {
             }
