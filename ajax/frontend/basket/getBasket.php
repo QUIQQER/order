@@ -21,6 +21,21 @@ QUI::$Ajax->registerFunction(
             $Basket = QUI\ERP\Order\Factory::getInstance()->createBasket($User);
         }
 
+        // check if basket has an order
+        // if an order exists, check if the order has already been placed
+        $hash = $Basket->getHash();
+
+        if (!empty($hash)) {
+            try {
+                $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($hash);
+
+                if ($Order instanceof QUI\ERP\Order\Order) {
+                    $Basket->clear();
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         return $Basket->toArray();
     },
     false

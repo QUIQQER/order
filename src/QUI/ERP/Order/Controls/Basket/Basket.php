@@ -47,14 +47,19 @@ class Basket extends QUI\Controls\Control
     protected function onCreate()
     {
         $Engine   = QUI::getTemplateManager()->getEngine();
-        $Products = $this->Basket->getProducts()->getView();
+        $Products = $this->Basket->getProducts();
+
+        $Products->setUser(QUI::getUserBySession());
+        $Products->calc();
+
+        $View = $Products->getView();
 
         $Engine->assign(array(
-            'data'     => $Products->toArray(),
+            'data'     => $View->toArray(),
             'Basket'   => $this->Basket,
             'Project'  => $this->Project,
-            'Products' => $Products,
-            'products' => $Products->getProducts()
+            'Products' => $View,
+            'products' => $View->getProducts()
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Basket.html');

@@ -180,6 +180,26 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
             });
         },
 
+        /**
+         *
+         * @param {String} orderId
+         * @returns {Promise}
+         */
+        postOrder: function (orderId) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_post', function (invoiceId) {
+                    self.fireEvent('orderPost', [self, orderId]);
+                    resolve(invoiceId);
+                }, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
 
         /**
          * Add a comment to the order

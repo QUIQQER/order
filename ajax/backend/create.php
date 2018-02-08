@@ -12,7 +12,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_create',
     function () {
-        return QUI\ERP\Order\Factory::create()->getId();
+        return QUI\ERP\Order\Factory::getInstance()->create()->getId();
     },
     false,
     'Permission::checkAdminUser'

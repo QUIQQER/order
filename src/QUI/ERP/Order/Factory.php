@@ -50,7 +50,8 @@ class Factory extends QUI\Utils\Singleton
             'hash'        => $hash,
             'status'      => AbstractOrder::STATUS_CREATED,
             'customerId'  => 0,
-            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN
+            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
+            'successful'  => 0
         ));
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();

@@ -362,7 +362,7 @@
             <en><![CDATA[Payment is changeable]]></en>
         </locale>
         <locale name="order.settings.autoInvoice">
-            <de><![CDATA[Rechung automatisch erstellen]]></de>
+            <de><![CDATA[Rechnung automatisch erstellen]]></de>
             <en><![CDATA[Create invoice automatically]]></en>
         </locale>
         <locale name="order.settings.autoInvoice.noAuto">
@@ -599,6 +599,24 @@
         <locale name="dialog.order.delete.information">
             <de><![CDATA[Die Bestellung <b>[id]</b> wird unwiderruflich gelöscht.]]></de>
             <en><![CDATA[The Order <b>[id]</b> will be irrevocably deleted.]]></en>
+        </locale>
+
+        <locale name="dialog.order.post.title">
+            <de><![CDATA[Rechnung erstellen]]></de>
+            <en><![CDATA[Create Invoice]]></en>
+        </locale>
+        <locale name="dialog.order.post.text">
+            <de><![CDATA[Möchten Sie die Rechnung wirklich erstellen?]]></de>
+            <en><![CDATA[Do you really want to create the invoice?]]></en>
+        </locale>
+        <locale name="dialog.order.post.information">
+            <de><![CDATA[
+            Es wird eine neue Rechnung für die Bestellung erzeugt.
+            Die Rechnung wird nach der Erstellung direkt geöffnet.
+            ]]></de>
+            <en><![CDATA[
+            A new invoice will be created for the order. The invoice is opened directly after creation.
+            ]]></en>
         </locale>
 
         <locale name="dialog.order.copy.title">

@@ -48,7 +48,7 @@ class Small extends QUI\Controls\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts()->getView();
         $Project  = $this->getProject();
-
+ 
         $Engine->assign(array(
             'data'         => $Products->toArray(),
             'Basket'       => $this->Basket,

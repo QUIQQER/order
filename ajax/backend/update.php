@@ -118,9 +118,6 @@ QUI::$Ajax->registerFunction(
             }
         }
 
-        \QUI\System\Log::writeRecursive($data);
-
-
         $Order->update();
     },
     array('orderId', 'data'),

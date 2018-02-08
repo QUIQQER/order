@@ -39,7 +39,7 @@ class OrderInProcess extends AbstractOrder
         // check if a order for the processing order exists
         try {
             Handler::getInstance()->get($this->orderId);
-        } catch (QUI\ERP\Order\Exception $Exception) {
+        } catch (QUI\Exception $Exception) {
             $this->orderId = null;
         }
     }
@@ -153,6 +153,10 @@ class OrderInProcess extends AbstractOrder
             )
         );
 
+        if (is_array($calculations['paidData'])) {
+            $calculations['paidData'] = json_encode($calculations['paidData']);
+        }
+
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             array(
@@ -162,6 +166,12 @@ class OrderInProcess extends AbstractOrder
             ),
             array('id' => $this->getId())
         );
+
+        // create order, if the payment status is paid and no order exists
+        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID
+            && !$this->orderId) {
+            $this->createOrder(QUI::getUsers()->getSystemUser());
+        }
 
         // Payment Status has changed
         if ($oldPaidStatus == $calculations['paidStatus']) {
@@ -176,12 +186,6 @@ class OrderInProcess extends AbstractOrder
         QUI\ERP\Debug::getInstance()->log(
             'OrderInProcess:: Paid Status changed to '.$calculations['paidStatus']
         );
-
-        // create order, if the payment status is paid and no order exists
-        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID
-            && !$this->orderId) {
-            $this->createOrder(QUI::getUsers()->getSystemUser());
-        }
     }
 
     /**
@@ -263,6 +267,7 @@ class OrderInProcess extends AbstractOrder
         $data['paid_status']      = $this->getAttribute('paid_status');
         $data['paid_date']        = $this->getAttribute('paid_date');
         $data['paid_data']        = $this->getAttribute('paid_data');
+        $data['successful']       = $this->successful;
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
@@ -290,6 +295,17 @@ class OrderInProcess extends AbstractOrder
             $Order->setSuccessfulStatus();
         }
 
+        // clear basket
+        try {
+            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketByHash(
+                $this->getHash()
+            );
+
+            $Basket->clear();
+            $Basket->save();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
 
         // create invoice?
         $Config = QUI::getPackage('quiqqer/order')->getConfig();

@@ -18,8 +18,6 @@ QUI::$Ajax->registerFunction(
         $Orders = QUI\ERP\Order\Handler::getInstance();
         $orders = $Orders->getOrdersInProcessFromUser($User);
 
-        \QUI\System\Log::writeRecursive($orders);
-
         return array_map(function ($Order) {
             /* @var $Order \QUI\ERP\Order\OrderInProcess */
             return $Order->toArray();

@@ -39,6 +39,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openArticles',
             'openDeleteDialog',
             'openCopyDialog',
+            'openPostDialog',
             'toggleSort',
             '$onCreate',
             '$onDestroy',
@@ -151,8 +152,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 paymentId      : this.getAttribute('paymentId')
             };
 
-            console.warn(orderId);
-            console.warn(data);
+            // console.warn(orderId);
+            // console.warn(data);
 
             return new Promise(function (resolve) {
                 Orders.updateOrder(orderId, data).then(function () {
@@ -256,8 +257,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 text  : QUILocale.get(lg, 'panel.btn.createInvoice'),
                 icon  : 'fa fa-money',
                 events: {
-                    onClick: function () {
-                    }
+                    onClick: this.openPostDialog
                 }
             });
 
@@ -357,11 +357,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textTAXNo               : QUILocale.get('quiqqer/erp', 'user.settings.taxId'),
                         textAddresses           : QUILocale.get(lg, 'address'),
                         textCustomer            : QUILocale.get(lg, 'customer'),
-                        textCompany             : QUILocale.get(lg, 'company'),
-                        textStreet              : QUILocale.get(lg, 'street'),
-                        textZip                 : QUILocale.get(lg, 'zip'),
-                        textCity                : QUILocale.get(lg, 'city'),
-                        textCountry             : QUILocale.get(lg, 'country'),
+                        textCompany             : QUILocale.get('quiqqer/system', 'company'),
+                        textStreet              : QUILocale.get('quiqqer/system', 'street'),
+                        textZip                 : QUILocale.get('quiqqer/system', 'zip'),
+                        textCity                : QUILocale.get('quiqqer/system', 'city'),
+                        textCountry             : QUILocale.get('quiqqer/system', 'country'),
                         textOrderData           : QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate           : QUILocale.get(lg, 'panel.order.data.date'),
                         textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy'),
@@ -600,6 +600,51 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }).then(function () {
                 self.Loader.hide();
             });
+        },
+
+        openPostDialog: function () {
+            var self = this;
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.post.title'),
+                text       : QUILocale.get(lg, 'dialog.order.post.text'),
+                information: QUILocale.get(lg, 'dialog.order.post.information', {
+                    id: this.getAttribute('orderId')
+                }),
+                icon       : 'fa fa-money',
+                texticon   : 'fa fa-money',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get(lg, 'panel.btn.createInvoice'),
+                    textimage: 'fa fa-money'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
+
+                        Orders.postOrder(self.getAttribute('orderId')).then(function (invoiceId) {
+                            require([
+                                'package/quiqqer/invoice/bin/backend/controls/panels/Invoice',
+                                'utils/Panels'
+                            ], function (InvoicePanel, PanelUtils) {
+                                Win.close();
+console.warn(invoiceId);
+                                var Panel = new InvoicePanel({
+                                    invoiceId: invoiceId
+                                });
+
+                                PanelUtils.openPanelInTasks(Panel);
+                            }, function () {
+                                Win.close();
+                            });
+                        }).then(function () {
+                            Win.Loader.show();
+                        });
+                    }
+                }
+            }).open();
         },
 
         /**

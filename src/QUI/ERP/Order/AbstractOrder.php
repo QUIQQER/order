@@ -43,7 +43,6 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
 
-
     const STATUS_STORNO = 2; // Bestellung ist storniert
 
     /**
@@ -56,7 +55,7 @@ abstract class AbstractOrder extends QUI\QDOM
     /**
      * @var int
      */
-    protected $status;
+    protected $status = 0;
 
     /**
      * @var int
@@ -817,6 +816,8 @@ abstract class AbstractOrder extends QUI\QDOM
         if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
             $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
         ) {
+            $this->calculatePayments();
+
             return;
         }
 

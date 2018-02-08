@@ -28,7 +28,7 @@ class Order extends AbstractOrder
      *
      * @param string|integer $orderId - Order-ID
      *
-     * @throws QUI\Erp\Order\Exception
+     * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
     public function __construct($orderId)
@@ -181,10 +181,14 @@ class Order extends AbstractOrder
         return $this->isPosted();
     }
 
+
     /**
-     * Post the order and create an invoice
+     * Post the order -> Create an invoice for the order
+     * alias for createInvoice()
      *
-     * @throws
+     * @return QUI\ERP\Accounting\Invoice\Invoice
+     *
+     * @throws QUI\Exception
      */
     public function post()
     {
@@ -230,9 +234,9 @@ class Order extends AbstractOrder
         }
 
         return array(
-            'parent_order' => '',
-            'invoice_id'   => '',
-            'status'       => '',
+            'parent_order' => null,
+            'invoice_id'   => null,
+            'status'       => $this->status,
             'successful'   => $this->successful,
 
             'customerId'      => $this->customerId,
@@ -336,6 +340,10 @@ class Order extends AbstractOrder
         );
 
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
+
+        if (is_array($calculation['paidData'])) {
+            $calculation['paidData'] = json_decode($calculation['paidData']);
+        }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),

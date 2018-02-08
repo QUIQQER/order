@@ -101,7 +101,8 @@ class Handler extends Singleton
      * @param $orderId
      * @return Order
      *
-     * @throws QUI\Erp\Order\Exception
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
      */
     public function get($orderId)
     {
@@ -115,6 +116,8 @@ class Handler extends Singleton
      *
      * @param string $hash - Order Hash
      * @return Order|OrderInProcess
+     *
+     * @throws QUI\Exception
      * @throws Exception
      */
     public function getOrderByHash($hash)
@@ -157,7 +160,7 @@ class Handler extends Singleton
      * @param string|integer $orderId
      * @return array
      *
-     * @throws QUI\Erp\Order\Exception
+     * @throws QUI\ERP\Order\Exception
      */
     public function getOrderData($orderId)
     {
@@ -226,7 +229,8 @@ class Handler extends Singleton
      * @param $orderId
      * @return OrderInProcess
      *
-     * @throws QUI\Erp\Order\Exception
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\ERP\Exception
      */
     public function getOrderInProcess($orderId)
     {
@@ -258,6 +262,7 @@ class Handler extends Singleton
             try {
                 $result[] = $this->getOrderInProcess($entry['id']);
             } catch (Exception $Exception) {
+            } catch (QUI\ERP\Exception $Exception) {
             }
         }
 
@@ -269,7 +274,9 @@ class Handler extends Singleton
      *
      * @param QUI\Interfaces\Users\User $User
      * @return OrderInProcess
-     * @throws QUI\Erp\Order\Exception
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\ERP\Exception
      */
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
@@ -298,7 +305,7 @@ class Handler extends Singleton
      * @param string|integer $orderId
      * @return array
      *
-     * @throws QUI\Erp\Order\Exception
+     * @throws QUI\ERP\Order\Exception
      */
     public function getOrderProcessData($orderId)
     {
@@ -334,9 +341,42 @@ class Handler extends Singleton
         return QUI::getDBTableName('baskets');
     }
 
+
     public function getBasketById($basketId)
     {
 
+    }
+
+    /**
+     * @param string $hash
+     * @return Basket\Basket
+     *
+     * @throws Basket\Exception
+     * @throws QUI\Users\Exception
+     */
+    public function getBasketByHash($hash)
+    {
+        $data = QUI::getDataBase()->fetch(array(
+            'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'where' => array(
+                'hash' => $hash
+            ),
+            'limit' => 1
+        ));
+
+        if (!isset($data[0])) {
+            throw new Basket\Exception(array(
+                'quiqqer/basket',
+                'exception.basket.not.found'
+            ));
+        }
+
+        $basketData = $data[0];
+        $User       = QUI::getUsers()->get($basketData['uid']);
+
+        $this->checkBasketPermissions($User);
+
+        return new Basket\Basket($data[0]['id'], $User);
     }
 
     /**
@@ -347,28 +387,7 @@ class Handler extends Singleton
      */
     public function getBasketFromUser(QUI\Interfaces\Users\User $User)
     {
-        $hasPermissions = function () use ($User) {
-            if ($User->isSU()) {
-                return true;
-            }
-
-            if (QUI::getUsers()->isSystemUser($User)) {
-                return true;
-            }
-
-            if ($User->getId() === QUI::getUserBySession()->getId()) {
-                return true;
-            }
-
-            return false;
-        };
-
-        if ($hasPermissions() === false) {
-            throw new Basket\Exception(array(
-                'quiqqer/basket',
-                'exception.basket.no.permissions'
-            ));
-        }
+        $this->checkBasketPermissions($User);
 
         $data = QUI::getDataBase()->fetch(array(
             'select' => 'id',
@@ -391,9 +410,11 @@ class Handler extends Singleton
     }
 
     /**
+     * Return the data from a basket
+     *
      * @param string|integer $basketId
-     * @param null $User
-     * @return mixed
+     * @param null|QUI\Interfaces\Users\User $User
+     * @return array
      *
      * @throws Basket\Exception
      */
@@ -402,6 +423,8 @@ class Handler extends Singleton
         if ($User === null) {
             $User = QUI::getUserBySession();
         }
+
+        $this->checkBasketPermissions($User);
 
         $data = QUI::getDataBase()->fetch(array(
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
@@ -420,6 +443,38 @@ class Handler extends Singleton
         }
 
         return $data[0];
+    }
+
+    /**
+     * Basket permission check
+     *
+     * @param QUI\Interfaces\Users\User $User
+     * @throws Basket\Exception
+     */
+    protected function checkBasketPermissions(QUI\Interfaces\Users\User $User)
+    {
+        $hasPermissions = function () use ($User) {
+            if (QUI::getUserBySession()->isSU()) {
+                return true;
+            }
+
+            if (QUI::getUsers()->isSystemUser(QUI::getUserBySession())) {
+                return true;
+            }
+
+            if ($User->getId() === QUI::getUserBySession()->getId()) {
+                return true;
+            }
+
+            return false;
+        };
+
+        if ($hasPermissions() === false) {
+            throw new Basket\Exception(array(
+                'quiqqer/basket',
+                'exception.basket.no.permissions'
+            ));
+        }
     }
 
     //endregion
