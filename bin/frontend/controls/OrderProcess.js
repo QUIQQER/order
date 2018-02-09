@@ -44,7 +44,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         ],
 
         options: {
-            orderId   : false,
+            orderHash : false,
             buttons   : true,
             showLoader: true
         },
@@ -133,7 +133,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.$refreshButtonEvents();
 
-            this.setAttribute('orderId', parseInt(this.$Form.elements.orderId.value));
+            this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
             this.setAttribute('current', this.$Timeline.getFirst('ul li').get('data-step'));
 
             this.fireEvent('load', [this]);
@@ -145,19 +145,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on import
          */
         $onInject: function () {
-            if (!this.getAttribute('orderId')) {
-                //this.setAttribute('orderId', Basket.getCurrentOrderId());
-            }
-
             var self = this;
             var Prom = new Promise(function () {
-                return self.setAttribute('orderId');
+                return self.setAttribute('orderHash');
             });
 
-            if (!this.getAttribute('orderId')) {
+            if (!this.getAttribute('orderHash')) {
                 Prom = Orders.getLastOrder().then(function (order) {
-                    self.setAttribute('orderId', order.id);
-                    return order.id;
+                    self.setAttribute('orderHash', order.hash);
+                    return order.hash;
                 });
             }
 
@@ -170,7 +166,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     self.fireEvent('load', [self]);
                 }, {
                     'package': 'quiqqer/order',
-                    orderId  : self.getAttribute('orderId')
+                    orderHash: self.getAttribute('orderHash')
                 });
             });
         },
@@ -195,11 +191,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         self.$renderResult(result).then(resolve);
 
                         if (Router) {
-                            Router.navigate(url + '/' + self.getAttribute('current'));
+                            Router.navigate(result.url);
                         }
                     }, {
                         'package': 'quiqqer/order',
-                        orderId  : self.getAttribute('orderId'),
+                        orderHash: self.getAttribute('orderHash'),
                         current  : self.getAttribute('current'),
                         onError  : reject
                     });
@@ -227,11 +223,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         self.$renderResult(result, false).then(resolve);
 
                         if (Router) {
-                            Router.navigate(url + '/' + self.getAttribute('current'));
+                            Router.navigate(result.url);
                         }
                     }, {
                         'package': 'quiqqer/order',
-                        orderId  : self.getAttribute('orderId'),
+                        orderHash: self.getAttribute('orderHash'),
                         current  : self.getAttribute('current')
                     });
                 });
@@ -256,11 +252,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         self.$renderResult(result).then(resolve);
 
                         if (Router) {
-                            Router.navigate(url + '/' + self.getAttribute('current'));
+                            Router.navigate(result.url);
                         }
                     }, {
                         'package': 'quiqqer/order',
-                        orderId  : self.getAttribute('orderId'),
+                        orderHash: self.getAttribute('orderHash'),
                         current  : self.getAttribute('current'),
                         onError  : reject
                     });
@@ -290,11 +286,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         self.$renderResult(result).then(resolve);
 
                         if (Router) {
-                            Router.navigate(url + '/' + step);
+                            Router.navigate(result.url);
                         }
                     }, {
                         'package': 'quiqqer/order',
-                        orderId  : self.getAttribute('orderId'),
+                        orderHash: self.getAttribute('orderHash'),
                         step     : step
                     });
                 });
@@ -356,7 +352,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
-                    orderId  : self.getAttribute('orderId'),
+                    orderHash: self.getAttribute('orderHash'),
                     step     : self.getAttribute('current'),
                     data     : JSON.encode(data)
                 });
@@ -400,7 +396,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var Ghost = new Element('div', {
                 html: result.html
             });
-console.warn(result);
+            console.warn(result);
 
             if (typeof showFromRight === 'undefined') {
                 showFromRight = true;

@@ -34,10 +34,7 @@ class UserOpenedOrders extends UserOrders
         // filter not paid orders
         foreach ($allOrders as $Order) {
             /* @var $Order QUI\ERP\Order\Order */
-            $Order->setAttribute(
-                'downloadLink',
-                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$Order->getHash()
-            );
+            $hashes[] = $Order->getHash();
 
             if ($Order->isPosted()) {
                 $Invoice = $Order->getInvoice();
@@ -53,6 +50,11 @@ class UserOpenedOrders extends UserOrders
                 }
             }
 
+            $Order->setAttribute(
+                'downloadLink',
+                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$Order->getHash()
+            );
+
             $orders[] = $Order;
             $hashes[] = $Order->getHash();
         }
@@ -64,7 +66,7 @@ class UserOpenedOrders extends UserOrders
         /* @var $OrderInProcess QUI\ERP\Order\OrderInProcess */
         foreach ($allOrdersInProcess as $OrderInProcess) {
             if (!isset($hashes[$OrderInProcess->getHash()])) {
-                $hashes[] = $OrderInProcess->getHash();
+                $orders[] = $OrderInProcess;
             }
         }
 

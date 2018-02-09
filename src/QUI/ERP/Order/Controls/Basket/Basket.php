@@ -34,7 +34,8 @@ class Basket extends QUI\Controls\Control
     public function setBasket($Basket)
     {
         if ($Basket instanceof QUI\ERP\Order\Basket\Basket ||
-            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest
+            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest ||
+            $Basket instanceof QUI\ERP\Order\Basket\BasketOrder
         ) {
             $this->Basket = $Basket;
         }

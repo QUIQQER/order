@@ -2,7 +2,8 @@
 
 try {
     $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
-        'step' => $Site->getAttribute('order::step')
+        'step'      => $Site->getAttribute('order::step'),
+        'orderHash' => $Site->getAttribute('order::hash')
     ));
 
     $Engine->assign(array(

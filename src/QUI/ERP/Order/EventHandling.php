@@ -57,20 +57,45 @@ class EventHandling
             return;
         }
 
-        // @todo order loading
-
         // order hash
         $parts = explode('/', $requestedUrl);
 
         if (count($parts) > 2) {
-            $Redirect = new RedirectResponse($CheckoutSite->getAttribute('title'));
-            $Redirect->setStatusCode(RedirectResponse::HTTP_BAD_REQUEST);
+            // load order
+            $orderHash    = $parts[2];
+            $OrderProcess = new OrderProcess(array(
+                'orderHash' => $orderHash
+            ));
 
-            echo $Redirect->getContent();
-            $Redirect->send();
-            exit;
+            $steps   = array_keys($OrderProcess->getSteps());
+            $steps[] = 'Order';
+            $steps   = array_flip($steps);
+
+            if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
+                $Redirect = new RedirectResponse($CheckoutSite->getAttribute('title'));
+                $Redirect->setStatusCode(RedirectResponse::HTTP_BAD_REQUEST);
+
+                echo $Redirect->getContent();
+                $Redirect->send();
+                exit;
+            }
+
+            $CheckoutSite->setAttribute('order::step', $parts[1]);
+
+
+            try {
+                $Order = Handler::getInstance()->getOrderByHash($orderHash);
+                $CheckoutSite->setAttribute('order::hash', $Order->getHash());
+            } catch (QUI\Exception $Exception) {
+                QUI::getGlobalResponse()->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
+
+                // @todo weiterleiten zu fehler seite
+            }
+
+            $Rewrite->setSite($CheckoutSite);
+
+            return;
         }
-
 
         if (isset($parts[1])) {
             $CheckoutSite->setAttribute('order::step', $parts[1]);

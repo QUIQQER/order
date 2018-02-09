@@ -16,6 +16,11 @@ use QUI;
 class Utils
 {
     /**
+     * @var null|string
+     */
+    protected static $url = null;
+
+    /**
      * Return the url to the checkout / order process
      *
      * @param QUI\Projects\Project $Project
@@ -51,5 +56,38 @@ class Utils
     public static function getCheckout(QUI\Projects\Project $Project)
     {
         return self::getOrderProcess($Project);
+    }
+
+    /**
+     * Return the url to the checkout / order process
+     *
+     * @param QUI\Projects\Project $Project
+     * @return string
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
+     */
+    public static function getOrderProcessUrl(QUI\Projects\Project $Project)
+    {
+        if (self::$url === null) {
+            self::$url = self::getOrderProcess($Project)->getUrlRewritten();
+        }
+
+        return self::$url;
+    }
+
+    /**
+     * @param QUI\Projects\Project $Project
+     * @param $hash
+     * @return string
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
+     */
+    public static function getOrderProcessUrlForHash(QUI\Projects\Project $Project, $hash)
+    {
+        $url = self::getOrderProcessUrl($Project);
+
+        return $url.'/Order/'.$hash;
     }
 }

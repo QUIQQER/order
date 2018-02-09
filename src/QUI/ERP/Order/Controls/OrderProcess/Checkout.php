@@ -55,8 +55,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 }
 
                 try {
-                    $Orders = Handler::getInstance();
-                    $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+                    $Order = $this->getAttribute('Order');
 
                     QUI::getSession()->set(
                         'termsAndConditions-'.$Order->getHash(),
@@ -78,8 +77,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
-        $Orders = Handler::getInstance();
-        $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+        $Order  = $this->getOrder();
 
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
@@ -94,7 +92,6 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 $Engine->assign('gatewayDisplay', $Payment->getPaymentType()->getGatewayDisplay($Order));
             }
         }
-
 
         $Engine->assign(array(
             'User'            => $Order->getCustomer(),
@@ -138,8 +135,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function validate()
     {
-        $Orders  = Handler::getInstance();
-        $Order   = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+        $Order   = $this->getAttribute('Order');
         $Payment = $Order->getPayment();
 
         if (!$Payment) {
@@ -167,8 +163,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function save()
     {
         if (isset($_REQUEST['termsAndConditions']) && !empty($_REQUEST['termsAndConditions'])) {
-            $Orders = Handler::getInstance();
-            $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+            $Order = $this->getAttribute('Order');
 
             QUI::getSession()->set(
                 'termsAndConditions-'.$Order->getHash(),
@@ -189,14 +184,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
     /**
      * Save order as start order payment
-     *
-     * @throws QUI\ERP\Order\Exception
-     * @throws QUI\Exception
      */
     public function forceSave()
     {
-        $Orders  = Handler::getInstance();
-        $Order   = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+        $Order   = $this->getAttribute('Order');
         $Payment = $Order->getPayment();
 
         if (!$Payment) {

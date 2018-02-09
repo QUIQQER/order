@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
-use QUI\ERP\Order\Handler;
 
 /**
  * Class Delivery
@@ -25,8 +24,7 @@ class Delivery extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
-        $Orders = Handler::getInstance();
-        $Order  = $Orders->getOrderInProcess($this->getAttribute('orderId'));
+        $Order  = $this->getAttribute('Order');
 
         $Engine->assign(array(
             'User' => $Order->getCustomer()

@@ -62,23 +62,33 @@ class OrderProcess extends QUI\Control
      */
     public function __construct($attributes = array())
     {
-        parent::__construct($attributes);
-
         $this->setAttributes(array(
             'Site'      => false,
             'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
             'orderHash' => false
         ));
 
+        parent::__construct($attributes);
+
         $this->addCSSFile(dirname(__FILE__).'/Controls/OrderProcess.css');
 
         $this->Events = new QUI\Events\Event();
 
-
         // current basket
+        if ($this->getAttribute('orderHash')) {
+            try {
+                $this->Basket = new QUI\ERP\Order\Basket\BasketOrder(
+                    $this->getAttribute('orderHash')
+                );
+
+                $this->Order = $this->Basket->getOrder();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         $basketId = $this->getAttribute('basketId');
 
-        if ($basketId) {
+        if ($this->Basket === null && $basketId) {
             try {
                 $this->Basket = new Basket\Basket($basketId);
             } catch (QUI\ERP\Order\Basket\Exception $Exception) {
@@ -602,6 +612,24 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * Return the url for a step
+     *
+     * @param $step
+     * @return string
+     */
+    public function getStepUrl($step)
+    {
+        $url = $this->getUrl();
+        $url = $url.'/'.$step;
+
+        if ($this->getAttribute('orderHash') && $this->Order) {
+            $url = $url.'/'.$this->Order->getHash();
+        }
+
+        return trim($url);
+    }
+
+    /**
      * Return the order site
      *
      * @return QUI\Projects\Site
@@ -643,6 +671,10 @@ class OrderProcess extends QUI\Control
      */
     public function getOrder()
     {
+        if ($this->Order !== null) {
+            return $this->Order;
+        }
+
         $orderHash = $this->getAttribute('orderHash');
         $Orders    = QUI\ERP\Order\Handler::getInstance();
         $User      = QUI::getUserBySession();
@@ -661,11 +693,18 @@ class OrderProcess extends QUI\Control
         if ($this->Order === null) {
             try {
                 // select the last order in processing
-                $this->Order = $Orders->getLastOrderInProcessFromUser($User);
+                $OrderInProcess = $Orders->getLastOrderInProcessFromUser($User);
+
+                if (!$OrderInProcess->getOrderId()) {
+                    $this->Order = $OrderInProcess;
+                }
             } catch (QUI\Erp\Order\Exception $Exception) {
-                // if no order exists, we create one
-                $this->Order = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
             }
+        }
+
+        if ($this->Order === null) {
+            // if no order exists, we create one
+            $this->Order = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
         }
 
         return $this->Order;
@@ -688,7 +727,7 @@ class OrderProcess extends QUI\Control
      * @throws QUI\Exception
      * @throws Basket\Exception
      */
-    protected function getSteps()
+    public function getSteps()
     {
         if (!empty($this->steps)) {
             return $this->steps;
@@ -698,7 +737,6 @@ class OrderProcess extends QUI\Control
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
         $Basket = new Controls\OrderProcess\Basket(array(
-            'basketId' => $this->Basket->getId(),
             'Basket'   => $this->Basket,
             'priority' => 1
         ));
@@ -706,13 +744,11 @@ class OrderProcess extends QUI\Control
 //        $Delivery = new Controls\Delivery($params);
 
         $Checkout = new Controls\OrderProcess\Checkout(array(
-            'orderId'  => $this->getOrder()->getId(),
             'Order'    => $this->getOrder(),
             'priority' => 4
         ));
 
         $Finish = new Controls\OrderProcess\Finish(array(
-            'orderId'  => $this->getOrder()->getId(),
             'Order'    => $this->getOrder(),
             'priority' => 5
         ));
@@ -748,6 +784,7 @@ class OrderProcess extends QUI\Control
             $result[$Step->getName()] = $Step;
 
             $Step->setAttribute('Process', $this);
+            $Step->setAttribute('Order', $this->getOrder());
         }
 
         $this->steps = $result;

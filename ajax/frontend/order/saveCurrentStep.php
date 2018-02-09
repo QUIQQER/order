@@ -14,7 +14,7 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_saveCurrentStep',
-    function ($orderId, $step, $data) {
+    function ($orderId, $step, $data, $orderHash) {
         $data = json_decode($data, true);
 
         unset($_REQUEST['data']);
@@ -26,11 +26,12 @@ QUI::$Ajax->registerFunction(
         $_REQUEST['current'] = $step;
 
         $Ordering = new QUI\ERP\Order\OrderProcess(array(
-            'orderId' => (int)$orderId
+            'orderId'   => (int)$orderId,
+            'orderHash' => $orderHash
         ));
 
         $Step = $Ordering->getCurrentStep();
         $Step->save();
     },
-    array('orderId', 'step', 'data')
+    array('orderId', 'step', 'data', 'orderHash')
 );

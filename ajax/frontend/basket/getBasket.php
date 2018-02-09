@@ -22,7 +22,7 @@ QUI::$Ajax->registerFunction(
         }
 
         // check if basket has an order
-        // if an order exists, check if the order has already been placed
+        // if an order exists, check if the order has already been send
         $hash = $Basket->getHash();
 
         if (!empty($hash)) {
@@ -30,9 +30,9 @@ QUI::$Ajax->registerFunction(
                 $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($hash);
 
                 if ($Order instanceof QUI\ERP\Order\Order) {
-                    // $Basket->clear();
-                    // $Basket->setHash('');
-                    // $Basket->save();
+                    $Basket->clear();
+                    $Basket->setHash('');
+                    $Basket->save();
                 }
             } catch (QUI\Exception $Exception) {
             }

@@ -676,6 +676,16 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     /**
+     * Is the order already paid?
+     *
+     * @return bool
+     */
+    public function isPaid()
+    {
+        return $this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID;
+    }
+
+    /**
      * Set the payment method to the order
      *
      * @param string|integer $paymentId

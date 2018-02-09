@@ -84,7 +84,12 @@ class UserOrders extends Control implements ControlInterface
             'Invoice'  => $Invoice,
             'Articles' => $Articles,
             'articles' => $Articles->getArticles(),
-            'order'    => $Articles->toArray()
+            'order'    => $Articles->toArray(),
+            'Utils'    => new QUI\ERP\Order\Utils\Utils(),
+            'orderUrl' => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+                $this->getProject(),
+                $Order->getHash()
+            )
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.Order.html');

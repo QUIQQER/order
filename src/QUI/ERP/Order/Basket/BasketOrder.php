@@ -10,20 +10,13 @@ use QUI;
 use QUI\ERP\Products\Product\ProductList;
 
 /**
- * Class Basket
+ * Class BasketOrder
  * Coordinates the order process, (order -> payment -> invoice)
  *
  * @package QUI\ERP\Order\Basket
  */
-class Basket
+class BasketOrder
 {
-    /**
-     * Basket id
-     *
-     * @var integer
-     */
-    protected $id;
-
     /**
      * List of products
      *
@@ -37,6 +30,11 @@ class Basket
     protected $User;
 
     /**
+     * @var QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess
+     */
+    protected $Order;
+
+    /**
      * @var string
      */
     protected $hash = null;
@@ -44,12 +42,13 @@ class Basket
     /**
      * Basket constructor.
      *
-     * @param integer|bool $basketId - ID of the basket
+     * @param integer|bool $orderHash - ID of the order
      * @param bool|QUI\Users\User $User
      *
      * @throws Exception
+     * @throws QUI\Exception
      */
-    public function __construct($basketId, $User = false)
+    public function __construct($orderHash, $User = false)
     {
         if (!$User) {
             $User = QUI::getUserBySession();
@@ -65,23 +64,25 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
-        $data = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
+        $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
 
-        $this->id   = $basketId;
         $this->User = $User;
-        $this->hash = $data['hash'];
+        $this->hash = $orderHash;
 
-        $this->import(json_decode($data['products'], true));
+        $data     = $this->Order->getArticles()->toArray();
+        $articles = $data['articles'];
+
+        $this->import($articles);
     }
 
     /**
-     * Return the watchlist ID
+     * Return the order ID
      *
      * @return int
      */
     public function getId()
     {
-        return $this->id;
+        return $this->Order->getId();
     }
 
     /**
@@ -181,43 +182,43 @@ class Basket
      */
     public function save()
     {
-        // save only product ids with custom fields, we need not more
-        $result   = array();
-        $products = $this->List->getProducts();
-
-        foreach ($products as $Product) {
-            /* @var $Product Product */
-            $fields = $Product->getFields();
-
-            $productData = array(
-                'id'          => $Product->getId(),
-                'title'       => $Product->getTitle(),
-                'description' => $Product->getDescription(),
-                'quantity'    => $Product->getQuantity(),
-                'fields'      => array()
-            );
-
-            /* @var $Field QUI\ERP\Products\Field\UniqueField */
-            foreach ($fields as $Field) {
-                if ($Field->isCustomField()) {
-                    $productData['fields'][] = $Field->getAttributes();
-                }
-            }
-
-            $result[] = $productData;
-        }
-
-        QUI::getDataBase()->update(
-            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            array(
-                'products' => json_encode($result),
-                'hash'     => $this->hash
-            ),
-            array(
-                'id'  => $this->getId(),
-                'uid' => $this->User->getId()
-            )
-        );
+//        // save only product ids with custom fields, we need not more
+//        $result   = array();
+//        $products = $this->List->getProducts();
+//
+//        foreach ($products as $Product) {
+//            /* @var $Product Product */
+//            $fields = $Product->getFields();
+//
+//            $productData = array(
+//                'id'          => $Product->getId(),
+//                'title'       => $Product->getTitle(),
+//                'description' => $Product->getDescription(),
+//                'quantity'    => $Product->getQuantity(),
+//                'fields'      => array()
+//            );
+//
+//            /* @var $Field QUI\ERP\Products\Field\UniqueField */
+//            foreach ($fields as $Field) {
+//                if ($Field->isCustomField()) {
+//                    $productData['fields'][] = $Field->getAttributes();
+//                }
+//            }
+//
+//            $result[] = $productData;
+//        }
+//
+//        QUI::getDataBase()->update(
+//            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+//            array(
+//                'products' => json_encode($result),
+//                'hash'     => $this->hash
+//            ),
+//            array(
+//                'id'  => $this->getId(),
+//                'uid' => $this->User->getId()
+//            )
+//        );
     }
 
     /**
@@ -291,36 +292,17 @@ class Basket
      */
     public function hasOrder()
     {
-        if (empty($this->hash)) {
-            return false;
-        }
-
-        try {
-            $this->getOrder();
-        } catch (QUi\Exception $Exception) {
-            return false;
-        }
-
         return true;
     }
 
     /**
      * Return the assigned order from the basket
      *
-     * @throws Exception
-     * @throws QUI\Exception
-     * @throws QUI\ERP\Order\Exception
+     * @return QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess
      */
     public function getOrder()
     {
-        if ($this->hash === null) {
-            throw new Exception(
-                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
-                QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND
-            );
-        }
-
-        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
+        return $this->Order;
     }
 
     //endregion

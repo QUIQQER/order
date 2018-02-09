@@ -2,6 +2,7 @@
       action=""
       method="post"
       data-products-count="{$Order->count()}"
+      data-order-hash="{$this->getAttribute('orderHash')}"
 >
     <div class="quiqqer-order-ordering-timeline">
         <ul>
@@ -20,7 +21,7 @@
                     <span class="title">{$Step->getTitle()}</span>
                     <span class="fa fa-check-circle"></span>
                 {else if}
-                    <a href="{$this->getUrl()}{$step}">
+                    <a href="{$this->getStepUrl($step)}">
                         <span class="title">{$Step->getTitle()}</span>
                         <span class="fa fa-check-circle"></span>
                     </a>

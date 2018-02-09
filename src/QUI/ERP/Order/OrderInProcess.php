@@ -58,6 +58,14 @@ class OrderInProcess extends AbstractOrder
     }
 
     /**
+     * @return int|null
+     */
+    public function getOrderId()
+    {
+        return $this->orderId;
+    }
+
+    /**
      * Alias for update
      *
      * @param null $PermissionUser
