@@ -395,6 +395,11 @@
             <de><![CDATA[Meine offene Bestellungen]]></de>
             <en><![CDATA[My open orders]]></en>
         </locale>
+
+        <locale name="message.no.orders">
+            <de><![CDATA[Sie besitzen keine Bestellungen.]]></de>
+            <en><![CDATA[You do not have any orders.]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

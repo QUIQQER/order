@@ -203,8 +203,14 @@ abstract class AbstractOrder extends QUI\QDOM
                 $this->customer['id'] = $this->customerId;
             }
 
+            $customerData = $this->customer;
+
+            if (!isset($customerData['address'])) {
+                $customerData['address'] = $this->addressInvoice;
+            }
+
             try {
-                $this->setCustomer($this->customer);
+                $this->setCustomer($customerData);
             } catch (QUi\Exception $Exception) {
                 QUI\System\Log::writeRecursive($this->customer);
                 QUI\System\Log::addWarning($Exception->getMessage());
@@ -591,6 +597,16 @@ abstract class AbstractOrder extends QUI\QDOM
                     $Customer = QUI::getUsers()->get($User['id']);
 
                     foreach ($missing as $missingAttribute) {
+                        if ($missingAttribute === 'username') {
+                            $User[$missingAttribute] = $Customer->getUsername();
+                            continue;
+                        }
+
+                        if ($missingAttribute === 'isCompany') {
+                            $User[$missingAttribute] = $Customer->isCompany();
+                            continue;
+                        }
+
                         $User[$missingAttribute] = $Customer->getAttribute($missingAttribute);
                     }
                 } catch (QUI\Exception $Exception) {

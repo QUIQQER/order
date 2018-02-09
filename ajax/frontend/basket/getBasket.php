@@ -30,8 +30,9 @@ QUI::$Ajax->registerFunction(
                 $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($hash);
 
                 if ($Order instanceof QUI\ERP\Order\Order) {
-                    $Basket->clear();
-                    $Basket->save();
+                    // $Basket->clear();
+                    // $Basket->setHash('');
+                    // $Basket->save();
                 }
             } catch (QUI\Exception $Exception) {
             }

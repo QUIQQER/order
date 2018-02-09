@@ -10,14 +10,24 @@
             <span>{$order.calculations.display_sum}</span>
         </div>
 
-        <div class="quiqqer-order-profile-orders-order-header-addressDelivery">
+        <div class="quiqqer-order-profile-orders-order-header-addressInvoice">
             <span>Rechnungsadresse</span>
-            <address>
+            {if $Invoice}
+            {assign var=Customer value=$Invoice->getCustomer()}
+            {else}
+            {assign var=Customer value=$Order->getCustomer()}
+            {/if}
 
-            </address>
+            {assign var=Address value=$Customer->getAddress()}
+            {$Address->render()}
+            <span>
+                <span>{$Address->getName()}</span>
+                <span class="fa fa-angle-down"></span>
+            </span>
+
         </div>
 
-        <div class="quiqqer-order-profile-orders-order-header-addressDelivery">
+        <div class="quiqqer-order-profile-orders-order-header-orderId">
             <span>Bestell-Nr. </span>
             <span>{$Order->getHash()}</span>
         </div>

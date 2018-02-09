@@ -57,6 +57,7 @@ class OrderProcess extends QUI\Control
      * @param array $attributes
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     public function __construct($attributes = array())
@@ -138,6 +139,7 @@ class OrderProcess extends QUI\Control
      * Must the previous step be saved?
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     protected function checkSubmission()
@@ -398,6 +400,7 @@ class OrderProcess extends QUI\Control
      * @return AbstractOrderingStep
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     public function getCurrentStep()
@@ -414,6 +417,7 @@ class OrderProcess extends QUI\Control
      * @return AbstractOrderingStep
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     public function getFirstStep()
@@ -428,6 +432,7 @@ class OrderProcess extends QUI\Control
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     public function getNextStep($StartStep = null)
@@ -467,6 +472,7 @@ class OrderProcess extends QUI\Control
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     public function getPreviousStep($StartStep = null)
@@ -503,6 +509,7 @@ class OrderProcess extends QUI\Control
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     protected function getStepByName($name)
@@ -522,6 +529,7 @@ class OrderProcess extends QUI\Control
      * @return string
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     protected function getCurrentStepName()
@@ -543,6 +551,7 @@ class OrderProcess extends QUI\Control
      * @return bool|string
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     protected function getNextStepName($StartStep = null)
@@ -563,6 +572,7 @@ class OrderProcess extends QUI\Control
      * @return bool|string
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     protected function getPreviousStepName($StartStep = null)
@@ -629,6 +639,7 @@ class OrderProcess extends QUI\Control
      * @return QUI\ERP\Order\OrderInProcess
      *
      * @throws Exception
+     * @throws QUI\Exception
      */
     public function getOrder()
     {
@@ -674,6 +685,7 @@ class OrderProcess extends QUI\Control
      * @return array
      *
      * @throws Exception
+     * @throws QUI\Exception
      * @throws Basket\Exception
      */
     protected function getSteps()

@@ -10,6 +10,7 @@
     border: 1px #ddd solid;
     clear: both;
     float: left;
+    margin-bottom: 10px;
     width: 100%;
 }
 
@@ -23,18 +24,43 @@
 
 .quiqqer-order-profile-orders-order-header-date,
 .quiqqer-order-profile-orders-order-header-total,
-.quiqqer-order-profile-orders-order-header-addressDelivery,
+.quiqqer-order-profile-orders-order-header-addressInvoice,
 .quiqqer-order-profile-orders-order-header-addressDelivery {
     float: left;
+    position: relative;
     width: 25%;
 }
 
 .quiqqer-order-profile-orders-order-header-date span,
 .quiqqer-order-profile-orders-order-header-total span,
-.quiqqer-order-profile-orders-order-header-addressDelivery span,
+.quiqqer-order-profile-orders-order-header-addressInvoice span,
 .quiqqer-order-profile-orders-order-header-addressDelivery span {
     clear: both;
     float: left;
+}
+
+.quiqqer-order-profile-orders-order-header-addressInvoice {
+    cursor: pointer;
+}
+
+.quiqqer-order-profile-orders-order-header-addressInvoice address {
+    cursor: default;
+    display: none;
+    background: #ffffff;
+    border: 1px #ddd solid;
+    left: 0;
+    top: 35px;
+    padding: 10px;
+    position: absolute;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-order-header-addressInvoice:hover address {
+    display: inline-block;
+}
+
+.quiqqer-order-profile-orders-order-header-addressInvoice span {
+    text-align: left;
 }
 
 .quiqqer-order-profile-orders-order-articles {
@@ -59,5 +85,4 @@
     float: left;
     padding: 10px;
     width: 100%;
-
 }

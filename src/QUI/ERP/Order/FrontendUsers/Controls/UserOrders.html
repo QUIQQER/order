@@ -1,5 +1,7 @@
 <div class="quiqqer-order-profile-orders">
     {foreach $orders as $Order}
     {$this->renderOrder($Order)}
+    {foreachelse}
+    <p>{locale group="quiqqer/order" var="message.no.orders"}</p>
     {/foreach}
 </div>

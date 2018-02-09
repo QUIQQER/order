@@ -24,6 +24,8 @@ class Factory extends QUI\Utils\Singleton
      * @return Order
      *
      * @throws Exception
+     * @throws QUI\Exception
+     * @throws QUI\ERP\Order\Exception
      */
     public function create($PermissionUser = null, $hash = false)
     {
@@ -66,6 +68,8 @@ class Factory extends QUI\Utils\Singleton
      * @return OrderInProcess
      *
      * @throws Exception
+     * @throws QUI\Exception
+     * @throws QUI\ERP\Order\Exception
      */
     public function createOrderProcess($PermissionUser = null)
     {
@@ -90,7 +94,8 @@ class Factory extends QUI\Utils\Singleton
             'hash'        => QUI\Utils\Uuid::get(),
             'customerId'  => $User->getId(),
             'status'      => AbstractOrder::STATUS_CREATED,
-            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN
+            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
+            'successful'  => 0
         ));
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();

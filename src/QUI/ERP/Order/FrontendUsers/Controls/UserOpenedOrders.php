@@ -23,10 +23,13 @@ class UserOpenedOrders extends UserOrders
      */
     public function getBody()
     {
-        $Engine    = QUI::getTemplateManager()->getEngine();
-        $User      = QUI::getUserBySession();
-        $allOrders = QUI\ERP\Order\Handler::getInstance()->getOrdersByUser($User);
+        $Engine = QUI::getTemplateManager()->getEngine();
+        $User   = QUI::getUserBySession();
+        $Orders = QUI\ERP\Order\Handler::getInstance();
+
+        $allOrders = $Orders->getOrdersByUser($User);
         $orders    = [];
+        $hashes    = [];
 
         // filter not paid orders
         foreach ($allOrders as $Order) {
@@ -36,15 +39,32 @@ class UserOpenedOrders extends UserOrders
                 URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$Order->getHash()
             );
 
-            if (!$Order->isPosted()) {
-                $orders[] = $Order;
-                continue;
+            if ($Order->isPosted()) {
+                $Invoice = $Order->getInvoice();
+
+                if ($Invoice->getAttribute('paid_status') === AbstractOrder::PAYMENT_STATUS_PAID) {
+                    continue;
+                }
             }
 
-            $Invoice = $Order->getInvoice();
+            if (!$Order->isPosted()) {
+                if ($Order->getAttribute('paid_status') === AbstractOrder::PAYMENT_STATUS_PAID) {
+                    continue;
+                }
+            }
 
-            if ($Invoice->getAttribute('paid') !== AbstractOrder::PAYMENT_STATUS_PAID) {
-                $orders[] = $Order;
+            $orders[] = $Order;
+            $hashes[] = $Order->getHash();
+        }
+
+        // orders in process
+        $allOrdersInProcess = $Orders->getOrdersInProcessFromUser($User);
+        $hashes             = array_flip($hashes);
+
+        /* @var $OrderInProcess QUI\ERP\Order\OrderInProcess */
+        foreach ($allOrdersInProcess as $OrderInProcess) {
+            if (!isset($hashes[$OrderInProcess->getHash()])) {
+                $hashes[] = $OrderInProcess->getHash();
             }
         }
 

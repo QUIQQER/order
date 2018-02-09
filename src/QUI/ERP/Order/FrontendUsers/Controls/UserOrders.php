@@ -57,20 +57,31 @@ class UserOrders extends Control implements ControlInterface
     }
 
     /**
-     * @param QUI\ERP\Order\Order $Order
+     * @param QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess $Order
      * @return string
      * @throws QUI\Exception
      */
-    public function renderOrder(QUI\ERP\Order\Order $Order)
+    public function renderOrder($Order)
     {
+        if (!($Order instanceof QUI\ERP\Order\Order) &&
+            !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
+            return '';
+        }
+
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Articles = $Order->getArticles();
+        $Invoice  = null;
 
         $Articles->calc();
+
+        if ($Order->isPosted()) {
+            $Invoice = $Order->getInvoice();
+        }
 
         $Engine->assign(array(
             'this'     => $this,
             'Order'    => $Order,
+            'Invoice'  => $Invoice,
             'Articles' => $Articles,
             'articles' => $Articles->getArticles(),
             'order'    => $Articles->toArray()
