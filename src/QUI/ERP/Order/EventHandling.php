@@ -62,17 +62,29 @@ class EventHandling
 
         if (count($parts) > 2) {
             // load order
-            $orderHash    = $parts[2];
-            $OrderProcess = new OrderProcess(array(
-                'orderHash' => $orderHash
-            ));
+            $orderHash = $parts[2];
+
+            try {
+                $OrderProcess = new OrderProcess(array(
+                    'orderHash' => $orderHash
+                ));
+            } catch (QUI\Exception $Exception) {
+                $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
+                $Redirect->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
+
+                // @todo weiterleiten zu richtiger fehler seite
+                echo $Redirect->getContent();
+                $Redirect->send();
+                exit;
+            }
+
 
             $steps   = array_keys($OrderProcess->getSteps());
             $steps[] = 'Order';
             $steps   = array_flip($steps);
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
-                $Redirect = new RedirectResponse($CheckoutSite->getAttribute('title'));
+                $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
                 $Redirect->setStatusCode(RedirectResponse::HTTP_BAD_REQUEST);
 
                 echo $Redirect->getContent();
