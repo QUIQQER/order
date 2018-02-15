@@ -60,13 +60,13 @@ class OrderProcess extends QUI\Control
      * @throws QUI\Exception
      * @throws Basket\Exception
      */
-    public function __construct($attributes = array())
+    public function __construct($attributes = [])
     {
-        $this->setAttributes(array(
+        $this->setAttributes([
             'Site'      => false,
             'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
             'orderHash' => false
-        ));
+        ]);
 
         parent::__construct($attributes);
 
@@ -148,6 +148,9 @@ class OrderProcess extends QUI\Control
      * Checks the submit status
      * Must the previous step be saved?
      *
+     * In this case, it is the step the user took when he clicked next.
+     * Or the user clicked a submit button in the step
+     *
      * @throws Exception
      * @throws QUI\Exception
      * @throws Basket\Exception
@@ -165,10 +168,10 @@ class OrderProcess extends QUI\Control
             return;
         }
 
-//        try {
-//            $PreStep->save();
-//        } catch (QUI\Exception $Exception) {
-//        }
+        try {
+            $PreStep->save();
+        } catch (QUI\Exception $Exception) {
+        }
     }
 
     /**
@@ -202,7 +205,7 @@ class OrderProcess extends QUI\Control
 
         // Gehe die verschiedenen Processing Provider durch
         $OrderInProcess = $this->getOrder();
-        $success        = array();
+        $success        = [];
 
         foreach ($providers as $Provider) {
             /* @var $Provider AbstractOrderProcessProvider */
@@ -327,7 +330,7 @@ class OrderProcess extends QUI\Control
         $steps   = $this->getSteps();
 
         // @todo prüfung ob benötigt, wäre besser wenn nicht, wegen checkout step und payment gateway
-        //$this->checkSubmission();
+        $this->checkSubmission();
 
         // check all previous steps
         // is one is invalid, go to them
@@ -379,6 +382,10 @@ class OrderProcess extends QUI\Control
                 $Current->validate();
                 $error = false;
             }
+
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            $Current = $this->getPreviousStep();
         }
 
         $Project = $this->getSite()->getProject();
@@ -736,26 +743,32 @@ class OrderProcess extends QUI\Control
         $Steps     = new OrderProcessSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
-        $Basket = new Controls\OrderProcess\Basket(array(
+        $Basket = new Controls\OrderProcess\Basket([
             'Basket'   => $this->Basket,
             'priority' => 1
-        ));
+        ]);
+
+        $CustomerData = new Controls\OrderProcess\CustomerData([
+            'Basket'   => $this->Basket,
+            'priority' => 2
+        ]);
 
 //        $Delivery = new Controls\Delivery($params);
 
-        $Checkout = new Controls\OrderProcess\Checkout(array(
+        $Checkout = new Controls\OrderProcess\Checkout([
             'Order'    => $this->getOrder(),
             'priority' => 4
-        ));
+        ]);
 
-        $Finish = new Controls\OrderProcess\Finish(array(
+        $Finish = new Controls\OrderProcess\Finish([
             'Order'    => $this->getOrder(),
             'priority' => 5
-        ));
+        ]);
 
 
         // init steps
         $Steps->append($Basket);
+        $Steps->append($CustomerData);
 
         /* @var $Provider QUI\ERP\Order\AbstractOrderProcessProvider */
         foreach ($providers as $Provider) {
@@ -778,7 +791,7 @@ class OrderProcess extends QUI\Control
             return ($p1 < $p2) ? -1 : 1;
         });
 
-        $result = array();
+        $result = [];
 
         foreach ($Steps as $Step) {
             $result[$Step->getName()] = $Step;

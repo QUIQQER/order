@@ -157,8 +157,6 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * Order was ordered with costs
      *
      * @return void
-     *
-     * @throws QUI\Exception
      */
     public function save()
     {

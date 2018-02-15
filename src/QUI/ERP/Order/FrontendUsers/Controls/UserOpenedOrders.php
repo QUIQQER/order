@@ -60,15 +60,15 @@ class UserOpenedOrders extends UserOrders
         }
 
         // orders in process
-        $allOrdersInProcess = $Orders->getOrdersInProcessFromUser($User);
-        $hashes             = array_flip($hashes);
-
-        /* @var $OrderInProcess QUI\ERP\Order\OrderInProcess */
-        foreach ($allOrdersInProcess as $OrderInProcess) {
-            if (!isset($hashes[$OrderInProcess->getHash()])) {
-                $orders[] = $OrderInProcess;
-            }
-        }
+//        $allOrdersInProcess = $Orders->getOrdersInProcessFromUser($User);
+//        $hashes             = array_flip($hashes);
+//
+//        /* @var $OrderInProcess QUI\ERP\Order\OrderInProcess */
+//        foreach ($allOrdersInProcess as $OrderInProcess) {
+//            if (!isset($hashes[$OrderInProcess->getHash()])) {
+//                $orders[] = $OrderInProcess;
+//            }
+//        }
 
         $Engine->assign([
             'orders' => $orders,

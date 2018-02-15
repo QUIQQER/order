@@ -52,9 +52,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$Form          = null;
-            this.$StepContainer = null;
-            this.$Timeline      = null;
+            this.$Form             = null;
+            this.$StepContainer    = null;
+            this.$Timeline         = null;
+            this.$runningAnimation = false;
 
             this.$Buttons  = null;
             this.$Next     = null;
@@ -177,6 +178,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         next: function () {
+            if (this.$runningAnimation) {
+                return Promise.resolve();
+            }
+
             var self = this;
 
             if (!parseInt(this.$Form.get('data-products-count'))) {
@@ -193,6 +198,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         if (Router) {
                             Router.navigate(result.url);
                         }
+
+                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -209,6 +216,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         previous: function () {
+            if (this.$runningAnimation) {
+                return Promise.resolve();
+            }
+
             var self = this;
 
             if (!parseInt(this.$Form.get('data-products-count'))) {
@@ -225,6 +236,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         if (Router) {
                             Router.navigate(result.url);
                         }
+
+                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -238,6 +251,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Send the ordering process
          */
         send: function () {
+            if (this.$runningAnimation) {
+                return Promise.resolve();
+            }
+
             var self = this;
 
             if (!parseInt(this.$Form.get('data-products-count'))) {
@@ -254,6 +271,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         if (Router) {
                             Router.navigate(result.url);
                         }
+
+                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -271,6 +290,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         openStep: function (step) {
+            if (this.$runningAnimation) {
+                return Promise.resolve();
+            }
+
             var self = this;
 
             if (!parseInt(this.$Form.get('data-products-count'))) {
@@ -288,6 +311,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         if (Router) {
                             Router.navigate(result.url);
                         }
+
+                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -303,6 +328,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         openFirstStep: function () {
+            if (this.$runningAnimation) {
+                return Promise.resolve();
+            }
+
             var FirstLi   = this.$Timeline.getElement('li:first-child'),
                 firstStep = FirstLi.get('data-step');
 
@@ -396,7 +425,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var Ghost = new Element('div', {
                 html: result.html
             });
-            console.warn(result);
 
             if (typeof showFromRight === 'undefined') {
                 showFromRight = true;
@@ -404,9 +432,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.setAttribute('current', result.step);
 
+            // content
+            var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
+            var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
+
             // render container
             var Next = new Element('div', {
-                html  : Ghost.getElement('.quiqqer-order-ordering-step').get('html'),
+                html  : StepContent.get('html'),
                 styles: {
                     'float' : 'left',
                     left    : showFromRight ? '100%' : '-100%',
@@ -416,6 +448,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     width   : '100%'
                 }
             });
+
+            if (Error) {
+                Error.inject(this.$StepContainer, 'before');
+            }
 
             Next.inject(this.$StepContainer);
 
@@ -462,7 +498,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $beginResultRendering: function (hideToLeft) {
-            var Container = this.$StepContainer.getFirst();
+            var self      = this,
+                Container = this.$StepContainer.getChildren();
 
             if (typeof hideToLeft === 'undefined') {
                 hideToLeft = true;
@@ -484,6 +521,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.getElm().getElements('.quiqqer-order-ordering-error').destroy();
 
             this.Loader.show();
+            this.$runningAnimation = true;
 
             return this.$animate(Container, {
                 left   : hideToLeft ? '-100%' : '100%',
@@ -493,6 +531,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }).then(function () {
                 Container.destroy();
             });
+        },
+
+        /**
+         * Helper function for the end of the fx rendering
+         */
+        $endResultRendering: function () {
+            this.$runningAnimation = false;
         },
 
         /**

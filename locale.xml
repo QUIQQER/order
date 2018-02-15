@@ -86,6 +86,16 @@
             <de><![CDATA[Ihr Warenkorb enthält leider keine Artikel.]]></de>
             <en><![CDATA[Your shopping basket contains no items.]]></en>
         </locale>
+        <locale name="exception.missing.address.field" html="true">
+            <de><![CDATA[
+            Die Adresse ist nicht korrekt ausgefüllt um mit der Bestellung fortzufahren.<br />
+            Bitte füllen Sie das Feld <strong>[field]</strong> korrekt aus.
+            ]]></de>
+            <en><![CDATA[
+            The address is not filled in correctly to proceed with the order.<br />
+            Please fill in the field <strong>[field]</strong> correctly.
+            ]]></en>
+        </locale>
 
         <locale name="message.select.customer">
             <de><![CDATA[Bitte wählen Sie einen Kunden aus.]]></de>
@@ -169,6 +179,14 @@
             <de><![CDATA[Warenkorb]]></de>
             <en><![CDATA[Basket]]></en>
         </locale>
+        <locale name="ordering.step.title.CustomerData">
+            <de><![CDATA[Kundendaten]]></de>
+            <en><![CDATA[Customer information]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.Comment">
+            <de><![CDATA[Weitere Angaben]]></de>
+            <en><![CDATA[Further information]]></en>
+        </locale>
         <locale name="ordering.step.title.Address">
             <de><![CDATA[Rechnungsadresse]]></de>
             <en><![CDATA[Invoice address]]></en>
@@ -194,57 +212,48 @@
             <en><![CDATA[Done!]]></en>
         </locale>
 
-        <locale name="ordering.step.title.Address.description">
-            <de><![CDATA[
-                Bitte wählen Sie eine Rechnungsadresse aus dem Adressbuch unten aus
-                oder geben Sie eine neue Rechnungsadresse ein.
-            ]]></de>
-            <en><![CDATA[
-                Please select an invoice address from the address book below
-                or enter a new billing address.
-            ]]></en>
+        <locale name="ordering.step.title.CustomerData.customerNo">
+            <de><![CDATA[Kunden-Nr.]]></de>
+            <en><![CDATA[Customer no]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.addButton">
-            <de><![CDATA[Neue Adresse hinzufügen]]></de>
-            <en><![CDATA[Add new address]]></en>
+        <locale name="ordering.step.title.CustomerData.eMail">
+            <de><![CDATA[E-Mail]]></de>
+            <en><![CDATA[Email address]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.invoiceAddress.title">
-            <de><![CDATA[Rechnungsadresse]]></de>
-            <en><![CDATA[Invoice address]]></en>
+        <locale name="ordering.step.title.CustomerData.tel">
+            <de><![CDATA[Telefon]]></de>
+            <en><![CDATA[Phone]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.editButton">
-            <de><![CDATA[Ändern]]></de>
-            <en><![CDATA[Edit]]></en>
+        <locale name="ordering.step.title.CustomerData.address">
+            <de><![CDATA[Adresse]]></de>
+            <en><![CDATA[Address]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.deleteButton">
-            <de><![CDATA[Löschen]]></de>
-            <en><![CDATA[Delete]]></en>
-        </locale>
-        <locale name="ordering.step.title.Address.edit">
+        <locale name="ordering.step.title.CustomerData.addressEdit">
             <de><![CDATA[Adresse bearbeiten]]></de>
             <en><![CDATA[Edit address]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.edit.btn">
+        <locale name="ordering.step.title.CustomerData.addressSave">
             <de><![CDATA[Adresse speichern]]></de>
             <en><![CDATA[Save address]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.create.btn">
-            <de><![CDATA[Adresse anlegen]]></de>
-            <en><![CDATA[Create address]]></en>
+        <locale name="ordering.step.title.CustomerData.Comment.customer">
+            <de><![CDATA[Besteller]]></de>
+            <en><![CDATA[Buyer]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.Comment.comment">
+            <de><![CDATA[Bemerkung]]></de>
+            <en><![CDATA[Comment]]></en>
         </locale>
 
-        <locale name="ordering.step.title.Address.delete">
-            <de><![CDATA[Adresse löschen]]></de>
-            <en><![CDATA[Delete address]]></en>
+        <locale name="ordering.step.title.CustomerData.Comment.description">
+            <de><![CDATA[
+            Hier haben Sie die Möglichkeit eine Bemerkung zu Ihrer Bestellung anzugeben.
+            ]]></de>
+            <en><![CDATA[
+            Here you have the possibility to make a comment about your order.
+            ]]></en>
         </locale>
-        <locale name="ordering.step.title.Address.delete.message">
-            <de><![CDATA[Möchten Sie die Adresse wirklich löschen?]]></de>
-            <en><![CDATA[Are you sure you want to delete the address?]]></en>
-        </locale>
-        <locale name="ordering.step.title.Address.delete.btn">
-            <de><![CDATA[Adresse löschen]]></de>
-            <en><![CDATA[Delete address]]></en>
-        </locale>
+
         <locale name="ordering.step.checkout.text" html="true">
             <de><![CDATA[
             Bitte überprüfen Sie noch einmal alle Angaben ihrer Bestellung.<br /><br />
@@ -323,6 +332,7 @@
             <en><![CDATA[Country]]></en>
         </locale>
 
+
         <locale name="exception.no.orders.found">
             <de><![CDATA[Es wurden keine Bestellungen gefunden.]]></de>
             <en><![CDATA[No orders were found.]]></en>
@@ -397,8 +407,12 @@
         </locale>
 
         <locale name="message.no.orders">
-            <de><![CDATA[Sie besitzen keine Bestellungen.]]></de>
+            <de><![CDATA[Es existieren keine Bestellungen.]]></de>
             <en><![CDATA[You do not have any orders.]]></en>
+        </locale>
+        <locale name="message.no.open.orders">
+            <de><![CDATA[Es existieren keine offene Bestellungen.]]></de>
+            <en><![CDATA[You do not have any open orders.]]></en>
         </locale>
     </groups>
 

@@ -1,0 +1,127 @@
+
+.quiqqer-order-customerData,
+.quiqqer-order-customerData-comment {
+    clear: both;
+    float: left;
+    max-width: 600px;
+    width: 100%;
+}
+
+.quiqqer-order-customerData-comment label {
+    clear: both;
+    float: left;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/** address data
+ ========================================== */
+
+.quiqqer-order-customerData label {
+    clear: both;
+    float: left;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.quiqqer-order-customerData label span {
+    float: left;
+    width: 40%;
+}
+
+.quiqqer-order-customerData label input,
+.quiqqer-order-customerData label select,
+.quiqqer-order-customerData label textarea,
+.quiqqer-order-customerData .qui-select {
+    float: left;
+    width: 60%
+}
+
+.quiqqer-order-customerData .qui-select,
+.quiqqer-order-customerData .qui-select .drop-icon {
+    height: 38px;
+}
+
+.quiqqer-order-customerData .qui-select .text {
+    line-height: 38px;
+}
+
+.quiqqer-order-customerData .qui-select-search {
+    border: none;
+    outline: none;
+}
+
+.quiqqer-order-customerData-edit {
+    display: none;
+    float: left;
+    position: relative;
+    width: 100%;
+}
+
+.quiqqer-order-customerData-edit-close {
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 40px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: -50px;
+    width: 40px;
+}
+
+.quiqqer-order-customerData-edit [name="save-edit"] {
+    float: left;
+    margin-left: 40%;
+    width: 60%;
+}
+
+.quiqqer-order-customerData-display label {
+    float: left;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.quiqqer-order-customerData-display-address {
+    clear: both;
+    float: left;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.quiqqer-order-customerData-display-address-label {
+    display: block;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.quiqqer-order-customerData-display-address address {
+    margin-bottom: 10px;
+}
+
+/** comment
+ ========================================== */
+
+.quiqqer-order-customerData-comment {
+    margin-top: 20px;
+}
+
+.quiqqer-order-customerData-comment label span {
+    display: block;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.quiqqer-order-customerData-comment-description,
+.quiqqer-order-customerData-comment label input,
+.quiqqer-order-customerData-comment label textarea {
+    width: 100%;
+}
+
+.quiqqer-order-customerData-comment label textarea {
+    height: 200px;
+    padding: 10px;
+}
+
+.quiqqer-order-customerData-comment-description {
+    margin-bottom: 20px;
+}

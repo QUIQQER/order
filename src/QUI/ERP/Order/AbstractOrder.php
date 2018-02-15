@@ -351,6 +351,17 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     /**
+     * Is the order successful
+     * -> Ist der Bestellablauf erfolgreich abgeschlossen
+     *
+     * @return int
+     */
+    public function isSuccessful()
+    {
+        return $this->successful;
+    }
+
+    /**
      * Return invoice address
      *
      * @return QUI\ERP\Address
@@ -521,11 +532,12 @@ abstract class AbstractOrder extends QUI\QDOM
     /**
      * Set the invoice address
      *
-     * @param array|QUI\ERP\Address $address
+     * @param array|QUI\ERP\Address|QUI\Users\Address $address
      */
     public function setInvoiceAddress($address)
     {
-        if ($address instanceof QUI\ERP\Address) {
+        if ($address instanceof QUI\ERP\Address ||
+            $address instanceof QUI\Users\Address) {
             $this->addressInvoice = $address->getAttributes();
 
             return;

@@ -1,0 +1,164 @@
+<section class="quiqqer-order-customerData">
+    <header>
+        <h1>{locale group="quiqqer/order" var="ordering.step.title.CustomerData"}</h1>
+    </header>
+
+    {template_event name="quiqqer::order::orderProcessCustomerDataBegin"}
+
+    <div class="quiqqer-order-customerData-display">
+        <label>
+            <span>
+                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.customerNo"}
+            </span>
+            <span>{$User->getId()}</span>
+        </label>
+
+        <label>
+            <span>
+                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.eMail"}
+            </span>
+            <span>{$User->getAttribute('email')}</span>
+        </label>
+
+        <label>
+            <span>
+                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}
+            </span>
+            <span>{if $Address->getPhone()}{$Address->getPhone()}{else}-{/if}</span>
+        </label>
+
+        <div class="quiqqer-order-customerData-display-address">
+            <span class="quiqqer-order-customerData-display-address-label">
+                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.address"}
+            </span>
+            {$Address->render()}
+        </div>
+
+        <button name="open-edit" disabled>
+            <span class="fa fa-edit"></span>
+            <span>
+                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.addressEdit"}
+            </span>
+        </button>
+    </div>
+
+    <div class="quiqqer-order-customerData-edit">
+        <div class="quiqqer-order-customerData-edit-close">
+            <span class="fa fa-close"></span>
+        </div>
+
+        <input type="hidden"
+               name="addressId"
+               value="{$Address->getId()}"
+        />
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="company"}</span>
+            <input type="text"
+                   name="company"
+                   autocomplete="organization"
+                   value="{$Address->getAttribute('company')|escape:'html'}"
+            />
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="salutation"}</span>
+            <input type="text"
+                   name="salutation"
+                   autocomplete
+                   value="{$Address->getAttribute('salutation')|escape:'html'}"
+            />
+        </label>
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="firstname"}</span>
+            <input type="text"
+                   name="firstname"
+                   autocomplete="given-name"
+                   value="{$Address->getAttribute('firstname')|escape:'html'}"
+            />
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="lastname"}</span>
+            <input type="text"
+                   name="lastname"
+                   autocomplete="family-name"
+                   value="{$Address->getAttribute('lastname')|escape:'html'}"
+            />
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="street_no"}</span>
+            <input type="text"
+                   name="street_no"
+                   autocomplete="address-line1"
+                   value="{$Address->getAttribute('street_no')|escape:'html'}"
+            />
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="zip"}</span>
+            <input type="text"
+                   name="zip"
+                   autocomplete="postal-code"
+                   value="{$Address->getAttribute('zip')|escape:'html'}"
+            />
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="city"}</span>
+            <input type="text"
+                   name="city"
+                   autocomplete="city-name"
+                   value="{$Address->getAttribute('city')|escape:'html'}"
+            />
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/frontend-users" var="country"}</span>
+            {control control="QUI\Countries\Controls\Select" selected=$Address->getAttribute('country')}
+        </label>
+
+        <label>
+            <span>{locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}</span>
+            <input type="text"
+                   name="tel"
+                   autocomplete="tel"
+                   value="{if $Address->getPhone()}{$Address->getPhone()}{/if}"
+            />
+        </label>
+
+        <input type="submit" name="save-edit-address"
+               value="{locale group='quiqqer/order' var='ordering.step.title.CustomerData.addressSave'}"
+        >
+    </div>
+
+</section>
+
+{template_event name="quiqqer::order::orderProcessCustomerData"}
+
+<section class="quiqqer-order-customerData-comment">
+    <header>
+        <h1>{locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment"}</h1>
+    </header>
+
+    <div class="quiqqer-order-customerData-comment-description">
+        {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.description"}
+    </div>
+
+    <label name="comment-label">
+        <span>
+            {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.customer"}
+        </span>
+        <input name="comment-customer" value="" type="text"/>
+    </label>
+
+    <label name="comment-label">
+        <span>
+            {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.comment"}
+        </span>
+        <textarea name="comment-message"></textarea>
+    </label>
+</section>
+
+{template_event name="quiqqer::order::orderProcessCustomerEnd"}

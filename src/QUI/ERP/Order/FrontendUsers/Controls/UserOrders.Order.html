@@ -45,7 +45,7 @@
             <span class="fa fa-file-pdf-o"></span>
             <span>Rechnung</span>
         </a>
-        {else if $Order->isPaid() === false}
+        {else if $Order->isSuccessful() === false}
         <a href="{$orderUrl}" target="_blank" class="">
             <span class="fa fa-shopping-basket"></span>
             <span>Bezahlung fortführen</span>
