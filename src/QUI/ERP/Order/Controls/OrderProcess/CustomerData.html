@@ -52,16 +52,54 @@
                value="{$Address->getId()}"
         />
 
-        <label>
-            <span>{locale group="quiqqer/frontend-users" var="company"}</span>
+        <label class="quiqqer-order-customerData-edit-businessType">
+            <span>
+                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType"}
+            </span>
+            <select name="businessType">
+                <option value="b2c">
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType.b2c"}
+                </option>
+                <option value="b2b" {$b2bSelected}>
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType.b2b"}
+                </option>
+            </select>
+        </label>
+
+        <label class="quiqqer-order-customerData-edit-company">
+            <span>{locale group="quiqqer/order" var="company"}</span>
             <input type="text"
                    name="company"
                    autocomplete="organization"
                    value="{$Address->getAttribute('company')|escape:'html'}"
             />
         </label>
+        <label class="quiqqer-order-customerData-edit-vatId">
+            <span>{locale group="quiqqer/order" var="vatId"}</span>
+            <input type="text"
+                   name="vatId"
+                   value="{$User->getAttribute('quiqqer.erp.euVatId')|escape:'html'}"
+            />
+        </label>
 
-        <label>
+        {if $isB2B}
+        <style type="text/css">
+            .quiqqer-order-customerData-edit-businessType {
+                display: none;
+            }
+        </style>
+        {/if}
+
+        {if $isB2B === false}
+        <style type="text/css">
+            .quiqqer-order-customerData-edit-company,
+            .quiqqer-order-customerData-edit-vatId {
+                display: none;
+            }
+        </style>
+        {/if}
+
+        <label class="quiqqer-order-customerData-edit-salutation">
             <span>{locale group="quiqqer/frontend-users" var="salutation"}</span>
             <input type="text"
                    name="salutation"
@@ -69,7 +107,8 @@
                    value="{$Address->getAttribute('salutation')|escape:'html'}"
             />
         </label>
-        <label>
+
+        <label class="quiqqer-order-customerData-edit-firstname">
             <span>{locale group="quiqqer/frontend-users" var="firstname"}</span>
             <input type="text"
                    name="firstname"
@@ -78,7 +117,7 @@
             />
         </label>
 
-        <label>
+        <label class="quiqqer-order-customerData-edit-lastname">
             <span>{locale group="quiqqer/frontend-users" var="lastname"}</span>
             <input type="text"
                    name="lastname"
@@ -87,7 +126,7 @@
             />
         </label>
 
-        <label>
+        <label class="quiqqer-order-customerData-edit-street_no">
             <span>{locale group="quiqqer/frontend-users" var="street_no"}</span>
             <input type="text"
                    name="street_no"
@@ -96,7 +135,7 @@
             />
         </label>
 
-        <label>
+        <label class="quiqqer-order-customerData-edit-zip">
             <span>{locale group="quiqqer/frontend-users" var="zip"}</span>
             <input type="text"
                    name="zip"
@@ -105,7 +144,7 @@
             />
         </label>
 
-        <label>
+        <label class="quiqqer-order-customerData-edit-city">
             <span>{locale group="quiqqer/frontend-users" var="city"}</span>
             <input type="text"
                    name="city"
@@ -114,12 +153,12 @@
             />
         </label>
 
-        <label>
+        <label class="quiqqer-order-customerData-edit-country">
             <span>{locale group="quiqqer/frontend-users" var="country"}</span>
-            {control control="QUI\Countries\Controls\Select" selected=$Address->getAttribute('country')}
+            {control name="country" control="QUI\Countries\Controls\Select" selected=$Address->getAttribute('country')}
         </label>
 
-        <label>
+        <label class="quiqqer-order-customerData-edit-tel">
             <span>{locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}</span>
             <input type="text"
                    name="tel"
@@ -150,14 +189,14 @@
         <span>
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.customer"}
         </span>
-        <input name="comment-customer" value="" type="text"/>
+        <input name="comment-customer" value="{$commentCustomer}" type="text"/>
     </label>
 
     <label name="comment-label">
         <span>
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.comment"}
         </span>
-        <textarea name="comment-message"></textarea>
+        <textarea name="comment-message">{$commentMessage}</textarea>
     </label>
 </section>
 

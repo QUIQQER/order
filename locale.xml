@@ -69,6 +69,10 @@
             <de><![CDATA[Kommentare]]></de>
             <en><![CDATA[Comments]]></en>
         </locale>
+        <locale name="vatId">
+            <de><![CDATA[Umsatzsteuer-ID]]></de>
+            <en><![CDATA[VAT ID]]></en>
+        </locale>
 
         <locale name="exception.order.construct.needle.missing">
             <de><![CDATA[Fehlender Wert für Bestellungs-Konstruktor [needle]]]></de>
@@ -79,7 +83,7 @@
             <en><![CDATA[The order has not yet been completed.]]></en>
         </locale>
         <locale name="exception.missing.payment">
-            <de><![CDATA[Bitte wählen Sie eine Bezahlmethode aus, um mit der Bestellung fortzuführen.]]></de>
+            <de><![CDATA[Bitte wählen Sie eine Bezahlmethode aus, um mit der Bestellung fortzufahren.]]></de>
             <en><![CDATA[Please select a payment method to proceed the order.]]></en>
         </locale>
         <locale name="exception.basket.has.no.articles">
@@ -203,6 +207,10 @@
             <de><![CDATA[Überprüfen & bestellen]]></de>
             <en><![CDATA[Checkout & order]]></en>
         </locale>
+        <locale name="ordering.step.title.Processing">
+            <de><![CDATA[Bezahlung dürchführen]]></de>
+            <en><![CDATA[Perform payment]]></en>
+        </locale>
         <locale name="ordering.step.title.CheckoutPayment">
             <de><![CDATA[Bezahlung durchführen]]></de>
             <en><![CDATA[Process payment]]></en>
@@ -253,6 +261,18 @@
             Here you have the possibility to make a comment about your order.
             ]]></en>
         </locale>
+        <locale name="ordering.step.title.CustomerData.businessType">
+            <de><![CDATA[Geschäftsart]]></de>
+            <en><![CDATA[Type of transaction]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.businessType.b2c">
+            <de><![CDATA[privat]]></de>
+            <en><![CDATA[private]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.businessType.b2b">
+            <de><![CDATA[gewerblich]]></de>
+            <en><![CDATA[business]]></en>
+        </locale>
 
         <locale name="ordering.step.checkout.text" html="true">
             <de><![CDATA[
@@ -269,10 +289,10 @@
 
         <locale name="ordering.step.checkout.checkoutAcceptText">
             <de><![CDATA[
-                Ich habe die [terms_and_conditions] und die [revocation] gelesen und akzeptiere sie.
+                Ich habe die [terms_and_conditions] gelesen und akzeptiere sie.
             ]]></de>
             <en><![CDATA[
-                I have read the [terms_and_conditions] and the [revocation] and accept it.
+                I have read the [terms_and_conditions] and accept it.
             ]]></en>
         </locale>
         <locale name="exception.order.termsAndConditions.missing">

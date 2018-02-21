@@ -125,6 +125,7 @@
 }
 
 .quiqqer-order-ordering-buttons a {
+    float: left;
     text-decoration: none;
 }
 

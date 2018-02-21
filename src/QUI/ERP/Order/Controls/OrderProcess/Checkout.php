@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
-use QUI\ERP\Order\Handler;
 
 /**
  * Class Address
@@ -62,6 +61,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                         0
                     );
                 } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::writeDebugException($Exception);
                 }
             });
         }
@@ -93,21 +93,26 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
+        $text = QUI::getLocale()->get(
+            'quiqqer/order',
+            'ordering.step.checkout.checkoutAcceptText',
+            [
+                'terms_and_conditions' => $this->getLinkOf('terms_and_conditions')
+            ]
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderOrderProcessCheckoutOutput',
+            [$this, &$text]
+        );
+
         $Engine->assign(array(
             'User'            => $Order->getCustomer(),
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment'         => $Order->getPayment(),
             'Articles'        => $Articles,
-
-            'text' => QUI::getLocale()->get(
-                'quiqqer/order',
-                'ordering.step.checkout.checkoutAcceptText',
-                array(
-                    'terms_and_conditions' => $this->getLinkOf('terms_and_conditions'),
-                    'revocation'           => $this->getLinkOf('revocation')
-                )
-            )
+            'text'            => $text
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/Checkout.html');
@@ -157,6 +162,9 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * Order was ordered with costs
      *
      * @return void
+     *
+     * @throws QUI\Permissions\Exception
+     * @throws QUI\Exception
      */
     public function save()
     {
@@ -182,10 +190,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
     /**
      * Save order as start order payment
+     *
+     * @throws QUI\Permissions\Exception
+     * @throws QUI\Exception
      */
     public function forceSave()
     {
-        $Order   = $this->getAttribute('Order');
+        $Order   = $this->getOrder();
         $Payment = $Order->getPayment();
 
         if (!$Payment) {
@@ -194,6 +205,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Order->setData('orderedWithCosts', 1);
         $Order->setData('orderedWithCostsPayment', $Payment->getId());
+
         $Order->save();
     }
 
@@ -203,7 +215,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param string $config
      * @return string
      */
-    protected function getLinkOf($config)
+    public function getLinkOf($config)
     {
         try {
             $Config  = QUI::getPackage('quiqqer/erp')->getConfig();

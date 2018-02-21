@@ -98,6 +98,28 @@
     margin-bottom: 10px;
 }
 
+.quiqqer-order-customerData-edit-vatId {
+    position: relative;
+}
+
+.quiqqer-order-customerData-edit-salutation {
+    margin-top: 20px;
+}
+
+.quiqqer-order-customerData-tax-validation-loader {
+    font-size: 20px;
+    line-height: 40px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: 40px !important;
+}
+
+.quiqqer-order-customerData .fa-check {
+    color: #75b947;
+}
+
 /** comment
  ========================================== */
 

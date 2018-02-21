@@ -135,8 +135,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$refreshButtonEvents();
 
             this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
-            this.setAttribute('current', this.$Timeline.getFirst('ul li').get('data-step'));
 
+            var Current = this.$Timeline.getFirst('ul li.current');
+
+            if (!Current) {
+                Current = this.$Timeline.getFirst('ul li');
+            }
+
+            this.setAttribute('current', Current.get('data-step'));
             this.fireEvent('load', [this]);
 
             this.getElm().addClass('quiqqer-order-ordering');
@@ -435,11 +441,18 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             // content
             var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
             var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
+            var TimeLine    = Ghost.getElement('.quiqqer-order-ordering-timeline');
+
+            if (TimeLine) {
+                // refresh the timeline
+                this.$Timeline.set('html', TimeLine.get('html'));
+            }
 
             // render container
             var Next = new Element('div', {
-                html  : StepContent.get('html'),
-                styles: {
+                html   : StepContent.get('html'),
+                'class': 'quiqqer-order-ordering-step-next',
+                styles : {
                     'float' : 'left',
                     left    : showFromRight ? '100%' : '-100%',
                     opacity : 0,
@@ -474,7 +487,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 });
 
                 var Prom2 = self.$animate(self.$StepContainer, {
-                    height: Next.getSize().y
+                    height: Math.max(
+                        Next.getSize().y,
+                        Next.getComputedSize().totalHeight
+                    )
                 }, {
                     duration: 500
                 });
@@ -498,8 +514,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $beginResultRendering: function (hideToLeft) {
-            var self      = this,
-                Container = this.$StepContainer.getChildren();
+            var Container = this.$StepContainer.getChildren();
 
             if (typeof hideToLeft === 'undefined') {
                 hideToLeft = true;

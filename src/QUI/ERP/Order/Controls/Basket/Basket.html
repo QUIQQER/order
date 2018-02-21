@@ -26,7 +26,18 @@
         <td>{$pos}</td>
         <td>
             <div class="quiqqer-order-basket-articles-article-title">{$product.title}</div>
-            <div class="quiqqer-order-basket-articles-article-description">{$product.description}</div>
+            <div class="quiqqer-order-basket-articles-article-description">
+                {$product.description}
+            </div>
+
+            <ul class="quiqqer-order-basket-articles-article-fields">
+                {foreach $product.attributes as $attribute}
+                <li class="quiqqer-order-basket-articles-article-fields-field">
+                    <span>{$attribute.title}:</span>
+                    <span>{$attribute.valueText} {$attribute.value}</span>
+                </li>
+                {/foreach}
+            </ul>
         </td>
         <td class="quiqqer-order-basket-articles-article-quantity">{$product.quantity}</td>
         <td class="quiqqer-order-basket-articles-article-price">{$product.price}</td>

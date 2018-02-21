@@ -53,6 +53,7 @@ Entwickler
 - onQuiqqerOrderUpdateBegin [Order]
 - onQuiqqerOrderUpdate [Order]
 
+- quiqqerOrderOrderProcessCheckoutOutput [AbstractOrderingStep, &text]
 
 ### Order Events
 

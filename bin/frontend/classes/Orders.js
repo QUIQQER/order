@@ -152,6 +152,23 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
                     showError: false
                 });
             });
+        },
+
+        /**
+         * Validate a VAT ID
+         *
+         * @param {String|Number} vatId
+         * @returns {Promise}
+         */
+        validateVatId: function (vatId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_validateVatId', resolve, {
+                    'package': 'quiqqer/order',
+                    vatId    : vatId,
+                    onError  : reject,
+                    showError: false
+                });
+            });
         }
     });
 });

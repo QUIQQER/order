@@ -19,7 +19,8 @@ QUI::$Ajax->registerFunction(
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
             'orderId'   => (int)$orderId,
-            'orderHash' => $orderHash
+            'orderHash' => $orderHash,
+            'step'      => $current
         ));
 
         $result = $OrderProcess->create();

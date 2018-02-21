@@ -81,4 +81,14 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     {
         return true;
     }
+
+    /**
+     * Can be overwritten
+     * This method is called when the customer submits an order with costs.
+     * So every step can react to the ordering
+     */
+    public function onExecutePayableStatus()
+    {
+
+    }
 }

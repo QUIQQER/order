@@ -38,6 +38,7 @@ interface OrderingStepInterface
      * Save the values from the step into the processing order
      *
      * @return mixed
+     * @throws \QUI\ERP\Order\Exception
      */
     public function save();
 }

@@ -42,14 +42,44 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        $Order    = $this->getOrder();
-        $Customer = $Order->getCustomer();
-        $Address  = $this->getInvoiceAddress();
+        $Address = $this->getInvoiceAddress();
+        $User    = $Address->getUser();
+
+        $isB2B = function () use ($User) {
+            if ($User->getAttribute('quiqqer.erp.isNettoUser') === QUI\ERP\Utils\User::IS_NETTO_USER) {
+                return ' selected="selected"';
+            }
+
+            if ($User->getAttribute('quiqqer.erp.isNettoUser') !== false) {
+                return '';
+            }
+
+            if (QUI\ERP\Utils\Shop::isB2B()) {
+                return ' selected="selected"';
+            }
+
+            return '';
+        };
+
+
+        $commentCustomer = QUI::getSession()->get('comment-customer');
+        $commentMessage  = QUI::getSession()->get('comment-message');
+
+        if (!empty($commentCustomer)) {
+            $commentCustomer = QUI\Utils\Security\Orthos::clear($commentCustomer);
+        }
+
+        if (!empty($commentMessage)) {
+            $commentMessage = QUI\Utils\Security\Orthos::clear($commentMessage);
+        }
 
         $Engine->assign([
-            'User'      => $Customer,
-            'Address'   => $Address,
-            'countries' => QUI\Countries\Manager::getList()
+            'User'            => $User,
+            'Address'         => $Address,
+            'isB2B'           => QUI\ERP\Utils\Shop::isB2B(),
+            'b2bSelected'     => $isB2B(),
+            'commentMessage'  => $commentMessage,
+            'commentCustomer' => $commentCustomer
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');
@@ -102,7 +132,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         if (empty($firstName)) {
             $throwException(
-                QUI::getLocale()->get('quiqqer/order', 'firstame')
+                QUI::getLocale()->get('quiqqer/order', 'firstname')
             );
         }
 
@@ -135,6 +165,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 QUI::getLocale()->get('quiqqer/order', 'country')
             );
         }
+
+        // @todo validate company
     }
 
     /**
@@ -170,7 +202,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'street_no',
             'zip',
             'city',
-            'countries'
+            'country'
         ];
 
         foreach ($fields as $field) {
@@ -183,6 +215,33 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Address->editPhone(0, $_REQUEST['tel']);
         }
 
+        // comment
+        if (!empty($_REQUEST['comment-customer'])) {
+            QUI::getSession()->set('comment-customer', $_REQUEST['comment-customer']);
+        }
+
+        if (!empty($_REQUEST['comment-message'])) {
+            QUI::getSession()->set('comment-message', $_REQUEST['comment-message']);
+        }
+
+        // user data
+        $User = $Address->getUser();
+
+        if (isset($_REQUEST['businessType'])) {
+            if ($_REQUEST['businessType'] === 'b2b') {
+                $User->setAttribute('quiqqer.erp.isNettoUser', QUI\ERP\Utils\User::IS_NETTO_USER);
+            } else {
+                $User->setAttribute('quiqqer.erp.isNettoUser', QUI\ERP\Utils\User::IS_BRUTTO_USER);
+            }
+        }
+
+        $currentVat = $User->getAttribute('quiqqer.erp.euVatId');
+
+        if (isset($_REQUEST['vatId']) && empty($currentVat)) {
+            $User->setAttribute('quiqqer.erp.euVatId', $_REQUEST['vatId']);
+        }
+
+        $User->save();
         $Address->save();
 
         $this->getOrder()->setInvoiceAddress($Address);
@@ -205,14 +264,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 try {
                     $Address = $User->getAddress($User->getAttribute('quiqqer.erp.address'));
                 } catch (QUI\Exception $Exception) {
-                    if (defined('QUIQQER_DEBUG')) {
-                        QUI\System\Log::writeException($Exception);
-                    }
+                    QUI\System\Log::writeDebugException($Exception);
                 }
             } else {
-                if (defined('QUIQQER_DEBUG')) {
-                    QUI\System\Log::writeException($Exception);
-                }
+                QUI\System\Log::writeDebugException($Exception);
             }
         }
 
@@ -220,9 +275,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             try {
                 $Address = $User->getStandardAddress();
             } catch (QUI\Users\Exception $Exception) {
-                if (defined('QUIQQER_DEBUG')) {
-                    QUI\System\Log::writeException($Exception);
-                }
+                QUI\System\Log::writeDebugException($Exception);
             }
         }
 
@@ -270,5 +323,33 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         return null;
+    }
+
+    /**
+     * event on execute payable status
+     */
+    public function onExecutePayableStatus()
+    {
+        $message = '';
+
+        if (QUI::getSession()->get('comment-customer')) {
+            $message .= QUI::getSession()->get('comment-customer')."\n";
+        }
+
+        if (QUI::getSession()->get('comment-message')) {
+            $message .= QUI::getSession()->get('comment-message');
+        }
+
+        $message = trim($message);
+
+        if (!empty($message)) {
+            $this->getOrder()->addComment($message);
+
+            try {
+                $this->getOrder()->save(QUI::getUsers()->getSystemUser());
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
     }
 }
