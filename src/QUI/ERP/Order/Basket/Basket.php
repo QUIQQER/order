@@ -123,6 +123,9 @@ class Basket
      * Add a product to the basket
      *
      * @param Product $Product
+     *
+     * @throws QUI\Exception
+     * @throws QUI\ERP\Products\Product\Exception
      */
     public function addProduct(Product $Product)
     {
@@ -188,6 +191,11 @@ class Basket
         foreach ($products as $Product) {
             /* @var $Product Product */
             $fields = $Product->getFields();
+
+            /* @var $Field QUI\ERP\Products\Field\UniqueField */
+            foreach ($fields as $Field) {
+                $Field->setChangeableStatus(false);
+            }
 
             $productData = array(
                 'id'          => $Product->getId(),

@@ -25,7 +25,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         parent::__construct($attributes);
 
         $this->setAttributes([
-            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData'
+            'data-qui'      => 'package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData',
+            'data-validate' => 0
         ]);
 
         $this->addCSSFile(dirname(__FILE__).'/CustomerData.css');
@@ -103,9 +104,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         try {
             $this->validate();
-            $validate = true;
+            $this->setAttribute('data-validate', 1);
         } catch (QUI\ERP\Order\Exception $Exception) {
-            $validate = false;
+            $this->setAttribute('data-validate', 0);
         }
 
         $Engine->assign([
@@ -114,8 +115,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'isB2B'           => QUI\ERP\Utils\Shop::isB2B(),
             'b2bSelected'     => $isB2B(),
             'commentMessage'  => $commentMessage,
-            'commentCustomer' => $commentCustomer,
-            'validate'        => $validate
+            'commentCustomer' => $commentCustomer
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');

@@ -113,7 +113,7 @@ class OrderProcess extends QUI\Control
         foreach ($products as $Product) {
             try {
                 /* @var QUI\ERP\Order\Basket\Product $Product */
-                $Order->addArticle($Product->toArticle());
+                $Order->addArticle($Product->toArticle(null, false));
             } catch (QUI\Users\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }

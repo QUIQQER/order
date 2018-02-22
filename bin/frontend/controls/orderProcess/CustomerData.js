@@ -53,6 +53,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             VatId.addEvent('change', this.$onVatIdChange);
             VatId.addEvent('keyup', this.$onVatIdChange);
+
+            var val = parseInt(this.getElm().get('data-validate'));
+
+            if (isNaN(val) || !val) {
+                this.openAddressEdit();
+            }
         },
 
         /**
@@ -62,11 +68,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
         },
 
-
         /**
          * Open the address edit
          *
-         * @param {DOMEvent} event
+         * @param {DOMEvent} [event]
          * @return {Promise}
          */
         openAddressEdit: function (event) {
