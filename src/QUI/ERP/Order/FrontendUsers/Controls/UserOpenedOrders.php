@@ -27,9 +27,16 @@ class UserOpenedOrders extends UserOrders
         $User   = QUI::getUserBySession();
         $Orders = QUI\ERP\Order\Handler::getInstance();
 
-        $allOrders = $Orders->getOrdersByUser($User);
-        $orders    = [];
-        $hashes    = [];
+        $allOrders = $Orders->getOrdersByUser($User, [
+            'order' => 'c_date DESC'
+        ]);
+
+        $limit        = 5;
+        $sheetsMax    = 1;
+        $sheetCurrent = 1;
+
+        $orders = [];
+        $hashes = [];
 
         // filter not paid orders
         foreach ($allOrders as $Order) {
@@ -70,9 +77,22 @@ class UserOpenedOrders extends UserOrders
 //            }
 //        }
 
+        $count = count($orders);
+
+        if ($count) {
+            $sheetsMax = ceil($count / $limit);
+        }
+
         $Engine->assign([
-            'orders' => $orders,
-            'this'   => $this
+            'orders'  => $orders,
+            'this'    => $this,
+            'Project' => $this->getProject(),
+            'Site'    => $this->getSite(),
+
+            'sheetsMax'    => $sheetsMax,
+            'sheetCurrent' => $sheetCurrent,
+            'sheetLimit'   => $limit,
+            'sheetCount'   => $count
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.html');

@@ -1,4 +1,5 @@
-.quiqqer-order-profile-orders {
+.quiqqer-order-profile-orders,
+.quiqqer-order-profile-orders-list {
     float: left;
     width: 100%;
 }
@@ -85,4 +86,16 @@
     float: left;
     padding: 10px;
     width: 100%;
+}
+
+/** Pagination
+ =============================================== */
+
+.quiqqer-order-profile-orders-pagination {
+    float: left;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-pagination .quiqqer-pagination {
+    text-align: right;
 }

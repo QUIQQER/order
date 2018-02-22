@@ -184,18 +184,42 @@ class Handler extends Singleton
 
     /**
      * @param QUI\Interfaces\Users\User $User
+     * @param array $params
      * @return array
      */
-    public function getOrdersByUser(QUI\Interfaces\Users\User $User)
+    public function getOrdersByUser(QUI\Interfaces\Users\User $User, $params = [])
     {
-        $data = QUI::getDataBase()->fetch([
+        $query = [
             'select' => ['id', 'customerId'],
             'from'   => $this->table(),
             'where'  => [
                 'customerId' => $User->getId()
             ]
-        ]);
+        ];
 
+        if (isset($params['order'])) {
+            switch ($params['order']) {
+                case 'id':
+                case 'id ASC':
+                case 'id DESC':
+                case 'status':
+                case 'status ASC':
+                case 'status DESC':
+                case 'c_date':
+                case 'c_date ASC':
+                case 'c_date DESC':
+                case 'paid_date':
+                case 'paid_date ASC':
+                case 'paid_date DESC':
+                    $query['order'] = $params['order'];
+            }
+        }
+
+        if (isset($params['limit'])) {
+            $query['limit'] = $params['limit'];
+        }
+
+        $data   = QUI::getDataBase()->fetch($query);
         $result = [];
 
         foreach ($data as $entry) {
@@ -207,6 +231,30 @@ class Handler extends Singleton
         }
 
         return $result;
+    }
+
+    /**
+     * Return the number of orders from the user
+     *
+     * @param QUI\Interfaces\Users\User $User
+     * @return int
+     */
+    public function countOrdersByUser(QUI\Interfaces\Users\User $User)
+    {
+        $data = QUI::getDataBase()->fetch([
+            'count'  => 'id',
+            'select' => 'id',
+            'from'   => $this->table(),
+            'where'  => [
+                'customerId' => $User->getId()
+            ]
+        ]);
+
+        if (isset($data[0]['id'])) {
+            return (int)$data[0]['id'];
+        }
+
+        return 0;
     }
 
     //endregion
@@ -267,6 +315,30 @@ class Handler extends Singleton
         }
 
         return $result;
+    }
+
+    /**
+     * Return order in process number form a user
+     *
+     * @param QUI\Interfaces\Users\User $User
+     * @return int
+     */
+    public function countOrdersInProcessFromUser(QUI\Interfaces\Users\User $User)
+    {
+        $data = QUI::getDataBase()->fetch([
+            'count'  => 'id',
+            'select' => 'id',
+            'from'   => $this->tableOrderProcess(),
+            'where'  => [
+                'customerId' => $User->getId()
+            ]
+        ]);
+
+        if (isset($data[0]['id'])) {
+            return (int)$data[0]['id'];
+        }
+
+        return 0;
     }
 
     /**

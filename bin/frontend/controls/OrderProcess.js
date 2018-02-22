@@ -619,6 +619,31 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $onNextClick: function (event) {
             event.stop();
 
+            // test html5 required
+            var Required = this.getElm().getElements('[required]');
+
+            if (Required.length) {
+                var i, len, Field;
+
+                for (i = 0, len = Required.length; i < len; i++) {
+                    Field = Required[i];
+
+                    if (!("checkValidity" in Field)) {
+                        continue;
+                    }
+
+                    if (Field.checkValidity()) {
+                        continue;
+                    }
+
+                    // chrome validate message
+                    if ("reportValidity" in Field) {
+                        Field.reportValidity();
+                        return;
+                    }
+                }
+            }
+
             if (event.target.get('value') === 'payableToOrder') {
                 this.send();
                 return;

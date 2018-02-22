@@ -3,7 +3,7 @@
     <header>
         <h1>{locale group="quiqqer/order" var="ordering.step.title.CheckoutPayment"}</h1>
     </header>
-CHECKOUT
+    CHECKOUT
     {locale group="quiqqer/order" var="ordering.step.checkoutPayment.text"}
 
     {$gatewayDisplay}
@@ -39,7 +39,7 @@ CHECKOUT
 
     <div class="quiqqer-order-step-checkout-notice">
         <label>
-            <input type="checkbox" name="termsAndConditions"/>
+            <input type="checkbox" name="termsAndConditions" required/>
             {$text}
         </label>
     </div>

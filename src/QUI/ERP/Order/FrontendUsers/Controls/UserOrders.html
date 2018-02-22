@@ -1,7 +1,33 @@
-<div class="quiqqer-order-profile-orders">
+{if $sheetCount}
+<div class="quiqqer-order-profile-orders-pagination">
+    {control
+    control="QUI\Controls\Navigating\Pagination"
+    useAjax=true
+    Project=$Project
+    limit=$sheetLimit
+    sheets=$sheetsMax
+    sheet=$sheetCurrent
+    }
+</div>
+{/if}
+
+<div class="quiqqer-order-profile-orders-list">
     {foreach $orders as $Order}
     {$this->renderOrder($Order)}
     {foreachelse}
     <p>{locale group="quiqqer/order" var="message.no.orders"}</p>
     {/foreach}
 </div>
+
+{if $sheetCount}
+<div class="quiqqer-order-profile-orders-pagination">
+    {control
+    control="QUI\Controls\Navigating\Pagination"
+    useAjax=true
+    Project=$Project
+    limit=$sheetLimit
+    sheets=$sheetsMax
+    sheet=$sheetCurrent
+    }
+</div>
+{/if}

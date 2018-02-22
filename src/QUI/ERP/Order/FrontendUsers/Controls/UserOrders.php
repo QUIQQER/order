@@ -24,9 +24,16 @@ class UserOrders extends Control implements ControlInterface
      */
     public function __construct(array $attributes = array())
     {
-        parent::__construct($attributes);
-
+        $this->addCSSClass('quiqqer-order-profile-orders');
         $this->addCSSFile(dirname(__FILE__).'/UserOrders.css');
+
+        $this->setAttributes([
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/frontendusers/Orders',
+            'page'     => 1,
+            'limit'    => 5
+        ]);
+
+        parent::__construct($attributes);
     }
 
     /**
@@ -37,8 +44,28 @@ class UserOrders extends Control implements ControlInterface
     public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
+        $Orders = QUI\ERP\Order\Handler::getInstance();
         $User   = QUI::getUserBySession();
-        $orders = QUI\ERP\Order\Handler::getInstance()->getOrdersByUser($User);
+
+        if ($this->getAttribute('User')) {
+            $User = $this->getAttribute('User');
+        }
+
+        $limit        = (int)$this->getAttribute('limit');
+        $sheetsMax    = 1;
+        $sheetCurrent = (int)$this->getAttribute('page');
+        $start        = ($sheetCurrent - 1) * $limit;
+
+        $count = $Orders->countOrdersByUser($User);
+
+        if ($count) {
+            $sheetsMax = ceil($count / $limit);
+        }
+
+        $orders = $Orders->getOrdersByUser($User, [
+            'order' => 'c_date DESC',
+            'limit' => $start.','.$limit
+        ]);
 
         foreach ($orders as $Order) {
             /* @var $Order QUI\ERP\Order\Order */
@@ -49,8 +76,15 @@ class UserOrders extends Control implements ControlInterface
         }
 
         $Engine->assign(array(
-            'orders' => $orders,
-            'this'   => $this
+            'orders'  => $orders,
+            'this'    => $this,
+            'Project' => $this->getProject(),
+            'Site'    => $this->getSite(),
+
+            'sheetsMax'    => $sheetsMax,
+            'sheetCurrent' => $sheetCurrent,
+            'sheetLimit'   => $limit,
+            'sheetCount'   => $count
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.html');
@@ -133,6 +167,22 @@ class UserOrders extends Control implements ControlInterface
         ));
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.Article.html');
+    }
+
+    /**
+     * @return mixed|QUI\Projects\Site
+     * @throws QUI\Exception
+     */
+    public function getSite()
+    {
+        if ($this->getAttribute('Site')) {
+            return $this->getAttribute('Site');
+        }
+
+        $Site = QUI::getRewrite()->getSite();
+        $this->setAttribute('Site', $Site);
+
+        return $Site;
     }
 
     /**

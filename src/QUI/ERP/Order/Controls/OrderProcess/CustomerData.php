@@ -42,10 +42,38 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
+        $User    = null;
         $Address = $this->getInvoiceAddress();
-        $User    = $Address->getUser();
+
+        if ($Address) {
+            $User = $Address->getUser();
+        }
+
+        if (!$User) {
+            try {
+                $Customer = $this->getOrder()->getCustomer();
+                $User     = QUI::getUsers()->get($Customer->getId());
+            } catch (QUI\Exception $Exception) {
+                $User = QUI::getUserBySession();
+            }
+        }
+
+        if (!$Address) {
+            try {
+                /* @var $User \QUI\Users\User */
+                $Address = $User->getStandardAddress();
+            } catch (QUI\Users\Exception $Exception) {
+                // user has no address
+                // create a new standard address
+                $Address = $User->addAddress();
+            }
+        }
 
         $isB2B = function () use ($User) {
+            if (!$User) {
+                return '';
+            }
+
             if ($User->getAttribute('quiqqer.erp.isNettoUser') === QUI\ERP\Utils\User::IS_NETTO_USER) {
                 return ' selected="selected"';
             }
@@ -73,13 +101,21 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $commentMessage = QUI\Utils\Security\Orthos::clear($commentMessage);
         }
 
+        try {
+            $this->validate();
+            $validate = true;
+        } catch (QUI\ERP\Order\Exception $Exception) {
+            $validate = false;
+        }
+
         $Engine->assign([
             'User'            => $User,
             'Address'         => $Address,
             'isB2B'           => QUI\ERP\Utils\Shop::isB2B(),
             'b2bSelected'     => $isB2B(),
             'commentMessage'  => $commentMessage,
-            'commentCustomer' => $commentCustomer
+            'commentCustomer' => $commentCustomer,
+            'validate'        => $validate
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');
@@ -342,14 +378,26 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $message = trim($message);
 
-        if (!empty($message)) {
-            $this->getOrder()->addComment($message);
+        if (empty($message)) {
+            return;
+        }
 
-            try {
-                $this->getOrder()->save(QUI::getUsers()->getSystemUser());
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
+        $Comments = $this->getOrder()->getComments();
+        $comments = $Comments->toArray();
+
+        // look if the same comment already exists
+        foreach ($comments as $comment) {
+            if ($comment['message'] === $message) {
+                return;
             }
+        }
+
+        $Comments->addComment($message);
+
+        try {
+            $this->getOrder()->save(QUI::getUsers()->getSystemUser());
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
     }
 }
