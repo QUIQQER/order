@@ -22,9 +22,9 @@
     <tbody>
     {assign var=pos value=1}
     {foreach $products as $product}
-    <tr>
-        <td>{$pos}</td>
-        <td>
+    <tr class="quiqqer-order-basket-articles-article">
+        <td class="quiqqer-order-basket-articles-article-pos">{$pos}</td>
+        <td class="quiqqer-order-basket-articles-article-data">
             <div class="quiqqer-order-basket-articles-article-title">{$product.title}</div>
             <div class="quiqqer-order-basket-articles-article-description">
                 {$product.description}

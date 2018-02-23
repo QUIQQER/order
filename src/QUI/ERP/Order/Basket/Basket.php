@@ -75,7 +75,7 @@ class Basket
     }
 
     /**
-     * Return the watchlist ID
+     * Return the basket ID
      *
      * @return int
      */

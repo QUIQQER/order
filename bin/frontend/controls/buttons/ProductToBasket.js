@@ -74,7 +74,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
         },
 
         /**
-         * add the product to the watchlist
+         * add the product to the basket
          */
         $addProductToBasket: function () {
             this.getElm().addClass('disabled');

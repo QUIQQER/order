@@ -68,7 +68,7 @@ class ProductToBasket extends QUI\Control
         }
 
         $html .= '<span class="text">'.
-                 QUI::getLocale()->get('quiqqer/order', 'control.watchlist.buttonAdd.text').
+                 QUI::getLocale()->get('quiqqer/order', 'control.basket.buttonAdd.text').
                  '</span>';
 
         return $html;

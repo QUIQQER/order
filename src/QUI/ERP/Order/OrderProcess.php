@@ -412,6 +412,12 @@ class OrderProcess extends QUI\Control
                     $Current = $this->getPreviousStep();
                 }
             }
+
+            // if step is the same as the current step, then we need an error message
+            // if step is not the same as the current step, then we need not an error message
+            if ($this->getAttribute('step') === $Current->getName()) {
+                $error = false;
+            }
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
             $Current = $this->getPreviousStep();

@@ -8,7 +8,6 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
     'qui/controls/Control',
     'qui/controls/buttons/Button',
     'qui/controls/windows/Confirm',
-    'package/quiqqer/watchlist/bin/controls/frontend/Watchlist',
     'package/quiqqer/order/bin/frontend/controls/OrderProcess',
     'Locale',
     'Mustache',
@@ -16,8 +15,7 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
     'text!package/quiqqer/order/bin/frontend/controls/order/Window.html',
     'css!package/quiqqer/order/bin/frontend/controls/order/Window.css'
 
-], function (QUI, QUIControl, QUIButton, QUIConfirm,
-             WatchlistControl, Ordering, QUILocale, Mustache, template) {
+], function (QUI, QUIControl, QUIButton, QUIConfirm, Ordering, QUILocale, Mustache, template) {
     "use strict";
 
     var lg = 'quiqqer/order';

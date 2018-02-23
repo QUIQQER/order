@@ -42,6 +42,8 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $this->addCSSFile(dirname(__FILE__).'/Basket.css');
+        $this->addCSSClass('quiqqer-order-step-basket');
+        $this->setAttribute('nodeName', 'section');
     }
 
     /**

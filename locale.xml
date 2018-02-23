@@ -136,7 +136,7 @@
             <en><![CDATA[There are no products in your shopping cart.]]></en>
         </locale>
 
-        <locale name="control.watchlist.buttonAdd.text">
+        <locale name="control.basket.buttonAdd.text">
             <de><![CDATA[Zum Warenkorb]]></de>
             <en><![CDATA[To the Basket]]></en>
         </locale>

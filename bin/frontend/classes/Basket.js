@@ -159,6 +159,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         * Data helper for the products
          *
          * @param data
          * @return {Promise}
@@ -179,24 +180,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            var products    = data.products;
-            var promiseList = [];
+            var self     = this;
+            var products = data.products;
 
-            for (var i = 0, len = products.length; i < len; i++) {
-                promiseList.push(
-                    this.addProduct(
-                        products[i].id,
-                        products[i].quantity,
-                        products[i].fields
-                    )
-                );
-            }
+            return new Promise(function (resolve) {
+                require([
+                    'package/quiqqer/order/bin/frontend/classes/Product'
+                ], function (ProductCls) {
+                    for (var i = 0, len = products.length; i < len; i++) {
+                        self.$products.push(
+                            new ProductCls(products[i])
+                        );
+                    }
 
-            if (!promiseList.length) {
-                return Promise.resolve();
-            }
-
-            return Promise.all(promiseList);
+                    resolve();
+                });
+            });
         },
 
         /**

@@ -29,6 +29,15 @@ define('package/quiqqer/order/bin/frontend/classes/Product', [
             this.parent(options);
 
             this.$uniqueID = String.uniqueID();
+
+            if (!("fields" in options) || !("quantity" in options)) {
+                return;
+            }
+
+            this.$data     = options;
+            this.$loaded   = true;
+            this.$quantity = options.quantity;
+            this.$fields   = options.fields;
         },
 
         /**
@@ -55,7 +64,7 @@ define('package/quiqqer/order/bin/frontend/classes/Product', [
         },
 
         /**
-         * Return the internal watchlist ID
+         * Return the internal product ID
          *
          * @return {String}
          */
