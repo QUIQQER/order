@@ -161,6 +161,10 @@
             <de><![CDATA[Bestellung]]></de>
             <en><![CDATA[Order]]></en>
         </locale>
+        <locale name="order.numberrange.title">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">

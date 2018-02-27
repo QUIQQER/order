@@ -30,4 +30,14 @@ class ErpProvider extends AbstractErpProvider
 
         return $menu;
     }
+
+    /**
+     * @return array
+     */
+    public static function getNumberRanges()
+    {
+        return array(
+            new NumberRanges\Order()
+        );
+    }
 }
