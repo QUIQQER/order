@@ -120,16 +120,36 @@ class UserOrders extends Control implements ControlInterface
             $Invoice = $Order->getInvoice();
         }
 
+        switch ($Order->getAttribute('paid_status')) {
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_OPEN:
+                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
+                break;
+
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PAID:
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PART:
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_ERROR:
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_CANCELED:
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_DEBIT:
+                $status        = $Order->getAttribute('paid_status');
+                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.'.$status);
+                break;
+
+            default:
+                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
+        }
+
         $Engine->assign(array(
-            'this'     => $this,
-            'Project'  => $this->getProject(),
-            'Order'    => $Order,
-            'Invoice'  => $Invoice,
-            'Articles' => $Articles,
-            'articles' => $Articles->getArticles(),
-            'order'    => $Articles->toArray(),
-            'Utils'    => new QUI\ERP\Order\Utils\Utils(),
-            'orderUrl' => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+            'this'          => $this,
+            'Project'       => $this->getProject(),
+            'Order'         => $Order,
+            'Payment'       => $Order->getPayment(),
+            'Invoice'       => $Invoice,
+            'Articles'      => $Articles,
+            'articles'      => $Articles->getArticles(),
+            'order'         => $Articles->toArray(),
+            'paymentStatus' => $paymentStatus,
+            'Utils'         => new QUI\ERP\Order\Utils\Utils(),
+            'orderUrl'      => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
                 $this->getProject(),
                 $Order->getHash()
             )

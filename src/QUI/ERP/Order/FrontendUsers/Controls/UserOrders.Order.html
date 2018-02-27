@@ -1,17 +1,17 @@
 <section class="quiqqer-order-profile-orders-order">
     <header>
         <div class="quiqqer-order-profile-orders-order-header-date">
-            <span>Bestellungsdatum</span>
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.date"}</span>
             <span>{$Order->getCreateDate()}</span>
         </div>
 
         <div class="quiqqer-order-profile-orders-order-header-total">
-            <span>Summe</span>
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.total"}</span>
             <span>{$order.calculations.display_sum}</span>
         </div>
 
         <div class="quiqqer-order-profile-orders-order-header-addressInvoice">
-            <span>Rechnungsadresse</span>
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.invoiceAddress"}</span>
             {if $Invoice}
             {assign var=Customer value=$Invoice->getCustomer()}
             {else}
@@ -27,7 +27,7 @@
         </div>
 
         <div class="quiqqer-order-profile-orders-order-header-orderId">
-            <span>Bestell-Nr.</span>
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.orderNo"}</span>
             <a href="{$Utils->getOrderUrl($Project, $Order)}" target="_blank">{$Order->getId()}</a>
         </div>
     </header>
@@ -42,13 +42,27 @@
         {if $Order->isPosted()}
         <a href="{$Order->getAttribute('downloadLink')}" target="_blank">
             <span class="fa fa-file-pdf-o"></span>
-            <span>Rechnung</span>
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.invoice"}</span>
         </a>
         {else if $Order->isSuccessful() === false}
         <a href="{$orderUrl}" target="_blank" class="">
             <span class="fa fa-shopping-basket"></span>
-            <span>Bezahlung fortführen</span>
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.continuePayment"}</span>
         </a>
+        {/if}
+
+        {if $Payment}
+        <div class="quiqqer-order-profile-orders-order-footer-paymentType">
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.paymentMethod"}:</span>
+            <span>{$Payment->getTitle()}</span>
+        </div>
+        {/if}
+
+        {if isset($paymentStatus)}
+        <div class="quiqqer-order-profile-orders-order-footer-paymentStatus">
+            <span>{locale group="quiqqer/order" var="control.profile.orders.order.paymentStatus"}:</span>
+            <span>{$paymentStatus}</span>
+        </div>
         {/if}
     </footer>
 </section>

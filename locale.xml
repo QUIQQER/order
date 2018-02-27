@@ -165,6 +165,31 @@
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
         </locale>
+
+        <locale name="payment.status.0">
+            <de><![CDATA[Offen]]></de>
+            <en><![CDATA[Open]]></en>
+        </locale>
+        <locale name="payment.status.1">
+            <de><![CDATA[Bezahlt]]></de>
+            <en><![CDATA[Paid]]></en>
+        </locale>
+        <locale name="payment.status.2">
+            <de><![CDATA[Teilzahlung]]></de>
+            <en><![CDATA[Part Payment]]></en>
+        </locale>
+        <locale name="payment.status.4">
+            <de><![CDATA[Fehler]]></de>
+            <en><![CDATA[Error]]></en>
+        </locale>
+        <locale name="payment.status.5">
+            <de><![CDATA[Abgebrochen]]></de>
+            <en><![CDATA[Canceled]]></en>
+        </locale>
+        <locale name="payment.status.11">
+            <de><![CDATA[Lastschrift]]></de>
+            <en><![CDATA[Debit]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -469,6 +494,39 @@
             An error has occurred. Your shopping cart could not be loaded.<br />
             If you think this is an error, please contact the administrator.
             ]]></en>
+        </locale>
+
+        <locale name="control.profile.orders.order.date">
+            <de><![CDATA[Bestellungsdatum]]></de>
+            <en><![CDATA[Order date]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.total">
+            <de><![CDATA[Summe]]></de>
+            <en><![CDATA[Total]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.invoiceAddress">
+            <de><![CDATA[Rechnungsadresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.orderNo">
+            <de><![CDATA[Bestell-Nr.]]></de>
+            <en><![CDATA[Order No.]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.invoice">
+            <de><![CDATA[Rechnung]]></de>
+            <en><![CDATA[Invoice]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.continuePayment">
+            <de><![CDATA[Bezahlung fortführen]]></de>
+            <en><![CDATA[Continue payment]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.paymentMethod">
+            <de><![CDATA[Zahlungsart]]></de>
+            <en><![CDATA[Payment method]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.paymentStatus">
+            <de><![CDATA[Zahlungsstatus]]></de>
+            <en><![CDATA[Payment status]]></en>
         </locale>
     </groups>
 
