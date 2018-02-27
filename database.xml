@@ -4,6 +4,7 @@
     <global>
         <table name="orders">
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
+            <field type="VARCHAR(10) DEFAULT NULL">id_prefix</field>
             <field type="BIGINT(10) NULL DEFAULT NULL">order_process_id</field>
 
             <!-- Für aufgesplittete Bestellungen -->
@@ -42,13 +43,15 @@
             <primary>id</primary>
             <auto_increment>id</auto_increment>
             <index>invoice_id</index>
-            <index>uid</index>
+            <index>customerId</index>
             <index>hash</index>
         </table>
 
         <table name="orders_process">
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
+            <field type="VARCHAR(10) DEFAULT NULL">id_prefix</field>
             <field type="BIGINT(10) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
+
             <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
             <field type="INT NULL DEFAULT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
             <field type="INT NULL DEFAULT NULL">temporary_invoice_id</field>
@@ -80,7 +83,7 @@
             <primary>id</primary>
             <auto_increment>id</auto_increment>
             <index>invoice_id</index>
-            <index>uid</index>
+            <index>customerId</index>
             <index>hash</index>
         </table>
 

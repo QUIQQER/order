@@ -47,6 +47,7 @@ class Factory extends QUI\Utils\Singleton
         $table  = $Orders->table();
 
         QUI::getDataBase()->insert($table, array(
+            'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId() ? $User->getId() : 0,
             'c_date'      => date('Y-m-d H:i:s'),
             'hash'        => $hash,
@@ -89,6 +90,7 @@ class Factory extends QUI\Utils\Singleton
         // @todo set default from customer
 
         QUI::getDataBase()->insert($table, array(
+            'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId(),
             'c_date'      => date('Y-m-d H:i:s'),
             'hash'        => QUI\Utils\Uuid::get(),

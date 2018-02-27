@@ -62,17 +62,24 @@ class UserOrders extends Control implements ControlInterface
             $sheetsMax = ceil($count / $limit);
         }
 
-        $orders = $Orders->getOrdersByUser($User, [
+        $orders = [];
+
+        $result = $Orders->getOrdersByUser($User, [
             'order' => 'c_date DESC',
             'limit' => $start.','.$limit
         ]);
 
-        foreach ($orders as $Order) {
+        foreach ($result as $Order) {
             /* @var $Order QUI\ERP\Order\Order */
-            $Order->setAttribute(
+            /* @var $View QUI\ERP\Order\OrderView */
+            $View = $Order->getView();
+
+            $View->setAttribute(
                 'downloadLink',
-                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$Order->getHash()
+                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$View->getHash()
             );
+
+            $orders[] = $View;
         }
 
         $Engine->assign(array(
@@ -98,6 +105,7 @@ class UserOrders extends Control implements ControlInterface
     public function renderOrder($Order)
     {
         if (!($Order instanceof QUI\ERP\Order\Order) &&
+            !($Order instanceof QUI\ERP\Order\OrderView) &&
             !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
             return '';
         }
@@ -114,6 +122,7 @@ class UserOrders extends Control implements ControlInterface
 
         $Engine->assign(array(
             'this'     => $this,
+            'Project'  => $this->getProject(),
             'Order'    => $Order,
             'Invoice'  => $Invoice,
             'Articles' => $Articles,

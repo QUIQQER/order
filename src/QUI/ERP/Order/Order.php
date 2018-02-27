@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * This file contains QUI\ERP\Order\Order
  */
@@ -16,7 +15,7 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder
+class Order extends AbstractOrder implements OrderInterface
 {
     /**
      * @var bool
@@ -61,6 +60,16 @@ class Order extends AbstractOrder
     }
 
     /**
+     * Return the view object
+     *
+     * @return OrderView
+     */
+    public function getView()
+    {
+        return new OrderView($this);
+    }
+
+    /**
      * Create an invoice for the order
      *
      * @return QUI\ERP\Accounting\Invoice\Invoice
@@ -78,8 +87,8 @@ class Order extends AbstractOrder
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            array('temporary_invoice_id' => $TemporaryInvoice->getCleanId()),
-            array('id' => $this->getId())
+            ['temporary_invoice_id' => $TemporaryInvoice->getCleanId()],
+            ['id' => $this->getId()]
         );
 
 
@@ -106,7 +115,7 @@ class Order extends AbstractOrder
             $deliveryAddressId = $this->getDeliveryAddress()->getId();
         }
 
-        $TemporaryInvoice->setAttributes(array(
+        $TemporaryInvoice->setAttributes([
             'order_id'            => $this->getId(),
             'customer_id'         => $this->customerId,
             'payment_method'      => $payment,
@@ -114,7 +123,7 @@ class Order extends AbstractOrder
             'invoice_address'     => $invoiceAddress,
             'delivery_address'    => $deliveryAddress,
             'delivery_address_id' => $deliveryAddressId
-        ));
+        ]);
 
         $articles = $this->getArticles()->getArticles();
 
@@ -141,11 +150,11 @@ class Order extends AbstractOrder
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            array(
+            [
                 'temporary_invoice_id' => null,
                 'invoice_id'           => $Invoice->getCleanId(),
-            ),
-            array('id' => $this->getId())
+            ],
+            ['id' => $this->getId()]
         );
 
         return $Invoice;
@@ -223,6 +232,7 @@ class Order extends AbstractOrder
         }
 
         //payment
+        $idPrefix      = '';
         $paymentId     = '';
         $paymentMethod = '';
 
@@ -233,7 +243,16 @@ class Order extends AbstractOrder
             $paymentMethod = $Payment->getPaymentType()->getTitle();
         }
 
-        return array(
+        if ($this->idPrefix !== null) {
+            $idPrefix = $this->idPrefix;
+        }
+
+        if (!$this->successful) {
+            $idPrefix = QUI\ERP\Order\Utils\Utils::getOrderPrefix();
+        }
+
+        return [
+            'id_prefix'    => $idPrefix,
             'parent_order' => null,
             'invoice_id'   => null,
             'status'       => $this->status,
@@ -254,7 +273,7 @@ class Order extends AbstractOrder
             'payment_time'    => null,
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
-        );
+        ];
     }
 
     /**
@@ -274,21 +293,15 @@ class Order extends AbstractOrder
 
         $data = $this->getDataForSaving();
 
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderUpdateBegin',
-            array($this, $data)
-        );
+        QUI::getEvents()->fireEvent('quiqqerOrderUpdateBegin', [$this, $data]);
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
-            array('id' => $this->getId())
+            ['id' => $this->getId()]
         );
 
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderUpdate',
-            array($this, $data)
-        );
+        QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [$this, $data]);
     }
 
     /**
@@ -332,27 +345,27 @@ class Order extends AbstractOrder
             QUI::getLocale()->get(
                 'quiqqer/order',
                 'history.message.edit',
-                array(
+                [
                     'username' => $User->getName(),
                     'uid'      => $User->getId()
-                )
+                ]
             )
         );
 
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
 
-        if (is_array($calculation['paidData'])) {
+        if (!is_array($calculation['paidData'])) {
             $calculation['paidData'] = json_decode($calculation['paidData']);
         }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            array(
+            [
                 'paid_data'   => $calculation['paidData'],
                 'paid_date'   => $calculation['paidDate'],
                 'paid_status' => $calculation['paidStatus']
-            ),
-            array('id' => $this->getId())
+            ],
+            ['id' => $this->getId()]
         );
 
         QUI\ERP\Debug::getInstance()->log(
@@ -368,12 +381,12 @@ class Order extends AbstractOrder
         if ($oldPaidStatus != $this->getAttribute('paid_status')) {
             QUI::getEvents()->fireEvent(
                 'onQuiqqerOrderPaymentChanged',
-                array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
+                [$this, $this->getAttribute('paid_status'), $oldPaidStatus]
             );
 
             QUI::getEvents()->fireEvent(
                 'onQuiqqerOrderPaidStatusChanged',
-                array($this, $this->getAttribute('paid_status'), $oldPaidStatus)
+                [$this, $this->getAttribute('paid_status'), $oldPaidStatus]
             );
         }
     }
@@ -391,19 +404,16 @@ class Order extends AbstractOrder
             $PermissionUser
         );
 
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderDeleteBegin',
-            array($this)
-        );
+        QUI::getEvents()->fireEvent('quiqqerOrderDeleteBegin', [$this]);
 
         QUI::getDataBase()->delete(
             Handler::getInstance()->table(),
-            array('id' => $this->getId())
+            ['id' => $this->getId()]
         );
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderDelete',
-            array($this->getId(), $this->getDataForSaving())
+            [$this->getId(), $this->getDataForSaving()]
         );
     }
 
@@ -418,26 +428,20 @@ class Order extends AbstractOrder
     {
         $NewOrder = Factory::getInstance()->create();
 
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderCopyBegin',
-            array($this)
-        );
+        QUI::getEvents()->fireEvent('quiqqerOrderCopyBegin', [$this]);
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $this->getDataForSaving(),
-            array('id' => $NewOrder->getId())
+            ['id' => $NewOrder->getId()]
         );
 
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderCopy',
-            array($this)
-        );
+        QUI::getEvents()->fireEvent('quiqqerOrderCopy', [$this]);
 
         $NewOrder->addHistory(
-            QUI::getLocale()->get('quiqqer/order', 'message.copy.from', array(
+            QUI::getLocale()->get('quiqqer/order', 'message.copy.from', [
                 'orderId' => $this->getId()
-            ))
+            ])
         );
 
         $NewOrder->update(QUI::getUsers()->getSystemUser());

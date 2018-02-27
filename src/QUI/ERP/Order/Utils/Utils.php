@@ -90,4 +90,49 @@ class Utils
 
         return $url.'/Order/'.$hash;
     }
+
+    /**
+     * @param QUI\Projects\Project $Project
+     * @param QUI\ERP\Order\OrderInterface $Order
+     *
+     * @return string
+     */
+    public static function getOrderUrl(QUI\Projects\Project $Project, $Order)
+    {
+        if (!($Order instanceof QUI\ERP\Order\Order) &&
+            !($Order instanceof QUI\ERP\Order\OrderView) &&
+            !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
+            return '';
+        }
+
+        try {
+            return self::getOrderProcessUrlForHash($Project, $Order->getHash());
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getOrderPrefix()
+    {
+        try {
+            $Package = QUI::getPackage('quiqqer/order');
+            $Config  = $Package->getConfig();
+            $setting = $Config->getValue('invoice', 'prefix');
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return date('Y').'-';
+        }
+
+        if ($setting === false) {
+            return date('Y').'-';
+        }
+
+        return $setting;
+    }
 }

@@ -24,12 +24,11 @@
                 <span>{$Address->getName()}</span>
                 <span class="fa fa-angle-down"></span>
             </span>
-
         </div>
 
         <div class="quiqqer-order-profile-orders-order-header-orderId">
-            <span>Bestell-Nr. </span>
-            <span>{$Order->getHash()}</span>
+            <span>Bestell-Nr.</span>
+            <a href="{$Utils->getOrderUrl($Project, $Order)}" target="_blank">{$Order->getId()}</a>
         </div>
     </header>
 

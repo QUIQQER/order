@@ -179,6 +179,27 @@
             ]]></en>
         </locale>
 
+        <locale name="ordering.step.title.Registration">
+            <de><![CDATA[Login / Registrierung]]></de>
+            <en><![CDATA[Login / Registration]]></en>
+        </locale>
+        <locale name="order.step.registration.login.title">
+            <de><![CDATA[Anmelden]]></de>
+            <en><![CDATA[Sign in]]></en>
+        </locale>
+        <locale name="order.step.registration.login.description">
+            <de><![CDATA[Ich habe bereits ein Konto]]></de>
+            <en><![CDATA[I already have an account]]></en>
+        </locale>
+        <locale name="order.step.registration.reg.title">
+            <de><![CDATA[Registrierung]]></de>
+            <en><![CDATA[Sign up]]></en>
+        </locale>
+        <locale name="order.step.registration.reg.description">
+            <de><![CDATA[Ich habe noch kein Konto und und möchte einen Account einrichten.]]></de>
+            <en><![CDATA[I don't have an account yet and would like to create one.]]></en>
+        </locale>
+
         <locale name="ordering.step.title.Basket">
             <de><![CDATA[Warenkorb]]></de>
             <en><![CDATA[Basket]]></en>
@@ -433,6 +454,17 @@
         <locale name="message.no.open.orders">
             <de><![CDATA[Es existieren keine offene Bestellungen.]]></de>
             <en><![CDATA[You do not have any open orders.]]></en>
+        </locale>
+
+        <locale name="exception.basket.not.found" html="true">
+            <de><![CDATA[
+            Es ist ein Fehler aufgetreten. Ihr Warenkorb konnte leider nicht geladen werden.<br />
+            Wenn Sie dies für einen Fehler halten nehmen Sie bitte Kontakt mit dem Administrator auf.
+            ]]></de>
+            <en><![CDATA[
+            An error has occurred. Your shopping cart could not be loaded.<br />
+            If you think this is an error, please contact the administrator.
+            ]]></en>
         </locale>
     </groups>
 

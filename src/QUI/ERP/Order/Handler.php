@@ -416,7 +416,6 @@ class Handler extends Singleton
 
     public function getBasketById($basketId)
     {
-
     }
 
     /**
@@ -438,7 +437,7 @@ class Handler extends Singleton
 
         if (!isset($data[0])) {
             throw new Basket\Exception(array(
-                'quiqqer/basket',
+                'quiqqer/order',
                 'exception.basket.not.found'
             ));
         }
@@ -473,7 +472,7 @@ class Handler extends Singleton
 
         if (!isset($data[0])) {
             throw new Basket\Exception(array(
-                'quiqqer/basket',
+                'quiqqer/order',
                 'exception.basket.not.found'
             ));
         }
@@ -509,7 +508,7 @@ class Handler extends Singleton
 
         if (!isset($data[0])) {
             throw new Basket\Exception(array(
-                'quiqqer/basket',
+                'quiqqer/order',
                 'exception.basket.not.found'
             ));
         }
@@ -543,7 +542,7 @@ class Handler extends Singleton
 
         if ($hasPermissions() === false) {
             throw new Basket\Exception(array(
-                'quiqqer/basket',
+                'quiqqer/order',
                 'exception.basket.no.permissions'
             ));
         }

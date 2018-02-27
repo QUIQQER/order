@@ -57,13 +57,15 @@ class UserOpenedOrders extends UserOrders
                 }
             }
 
-            $Order->setAttribute(
+            $View = $Order->getView();
+
+            $View->setAttribute(
                 'downloadLink',
-                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$Order->getHash()
+                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$View->getHash()
             );
 
-            $orders[] = $Order;
-            $hashes[] = $Order->getHash();
+            $orders[] = $View;
+            $hashes[] = $View->getHash();
         }
 
         // orders in process

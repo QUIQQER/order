@@ -13,7 +13,7 @@ use QUI;
  *
  * @package QUI\ERP\Order
  */
-class OrderInProcess extends AbstractOrder
+class OrderInProcess extends AbstractOrder implements OrderInterface
 {
     /**
      * @var null|integer
@@ -414,6 +414,26 @@ class OrderInProcess extends AbstractOrder
             'payment_time'    => null,
             'payment_data'    => '', // verschlüsselt
             'payment_address' => ''  // verschlüsselt
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasInvoice()
+    {
+        return false;
+    }
+
+    /**
+     * @return QUI\ERP\Accounting\Invoice\Invoice|void
+     * @throws QUI\ERP\Accounting\Invoice\Exception
+     */
+    public function getInvoice()
+    {
+        throw new QUI\ERP\Accounting\Invoice\Exception(
+            array('quiqqer/invoice', 'exception.invoice.not.found'),
+            404
         );
     }
 }

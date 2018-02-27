@@ -53,6 +53,11 @@ abstract class AbstractOrder extends QUI\QDOM
     protected $id;
 
     /**
+     * @var string
+     */
+    protected $idPrefix = null;
+
+    /**
      * @var int
      */
     protected $status = 0;
@@ -348,6 +353,18 @@ abstract class AbstractOrder extends QUI\QDOM
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return array|bool|string
+     */
+    public function getIdPrefix()
+    {
+        if ($this->idPrefix !== null) {
+            return $this->idPrefix;
+        }
+
+        return QUI\ERP\Order\Utils\Utils::getOrderPrefix();
     }
 
     /**

@@ -1,9 +1,18 @@
+{if $CurrentStep->hasOwnForm() === false}
 <form name="order"
       action=""
       method="post"
-      data-products-count="{$Order->count()}"
+      data-products-count="{if $Order}{$Order->count()}{/if}"
       data-order-hash="{$this->getAttribute('orderHash')}"
 >
+{else}
+    <div name="order"
+          data-action=""
+          data-method="post"
+          data-products-count="{if $Order}{$Order->count()}{/if}"
+          data-order-hash="{$this->getAttribute('orderHash')}"
+    >
+{/if}
     <div class="quiqqer-order-ordering-timeline">
         <ul>
             {strip}
@@ -72,5 +81,13 @@
 
     <input type="hidden" name="pre" value="{$previous}"/>
     <input type="hidden" name="current" value="{$CurrentStep->getName()}"/>
+
+    {if $Order}
     <input type="hidden" name="orderId" value="{$Order->getId()}"/>
+    {/if}
+
+{if $CurrentStep->hasOwnForm()}
+</div>
+{else}
 </form>
+{/if}

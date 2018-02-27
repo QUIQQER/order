@@ -53,8 +53,12 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                     return;
                 }
 
+                if (!$this->getOrder()) {
+                    return;
+                }
+
                 try {
-                    $Order = $this->getAttribute('Order');
+                    $Order = $this->getOrder();
 
                     QUI::getSession()->set(
                         'termsAndConditions-'.$Order->getHash(),
@@ -140,7 +144,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function validate()
     {
-        $Order   = $this->getAttribute('Order');
+        $Order   = $this->getOrder();
         $Payment = $Order->getPayment();
 
         if (!$Payment) {
@@ -199,7 +203,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order   = $this->getOrder();
         $Payment = $Order->getPayment();
 
-        if (!$Payment) {
+        if (!$Payment || !$Order) {
             return;
         }
 

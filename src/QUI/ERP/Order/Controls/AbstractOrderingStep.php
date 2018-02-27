@@ -72,6 +72,17 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     }
 
     /**
+     * Has the Step its own form?
+     * Canbe overwritten
+     *
+     * @return bool
+     */
+    public function hasOwnForm()
+    {
+        return false;
+    }
+
+    /**
      * It can be overwritten and can be implemented its own functionality
      * eq: Thus it is possible to display settings without the next button
      *
@@ -89,6 +100,5 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
      */
     public function onExecutePayableStatus()
     {
-
     }
 }
