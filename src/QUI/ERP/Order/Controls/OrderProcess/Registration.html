@@ -1,0 +1,25 @@
+<section class="quiqqer-order-step-registration-login">
+    <header>
+        <h2>
+            {locale group="quiqqer/order" var="order.step.registration.login.title"}
+        </h2>
+        <div class="description">
+            {locale group="quiqqer/order" var="order.step.registration.login.description"}
+        </div>
+    </header>
+
+    {control control="QUI\Users\Controls\Login"}
+</section>
+
+<section class="quiqqer-order-step-registration-reg">
+    <header>
+        <h2>
+            {locale group="quiqqer/order" var="order.step.registration.reg.title"}
+        </h2>
+        <div class="description">
+            {locale group="quiqqer/order" var="order.step.registration.reg.description"}
+        </div>
+    </header>
+
+    {control control="QUI\FrontendUsers\Controls\Registration" address=false}
+</section>

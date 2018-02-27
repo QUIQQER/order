@@ -1,0 +1,18 @@
+.quiqqer-order-step-registration-login,
+.quiqqer-order-step-registration-reg {
+    float: left;
+    width: 100%;
+}
+
+.quiqqer-order-step-registration-login header h2,
+.quiqqer-order-step-registration-reg header h2 {
+    font-weight: normal;
+}
+
+/** Login
+ =============================================== */
+
+.quiqqer-order-step-registration-login .quiqqer-login {
+    max-width: 400px;
+    padding: 0;
+}
