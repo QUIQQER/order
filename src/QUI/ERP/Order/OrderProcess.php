@@ -313,7 +313,7 @@ class OrderProcess extends QUI\Control
                     'payableToOrder'     => false,
                     'steps'              => $this->getSteps(),
                     'CurrentStep'        => $ProcessingStep,
-                    'currentStepContent' => $ProcessingStep->create(),
+                    'currentStepContent' => QUI\ControlUtils::parse($ProcessingStep),
                     'Site'               => $this->getSite(),
                     'Order'              => $this->getOrder()
                 ));
@@ -330,7 +330,7 @@ class OrderProcess extends QUI\Control
                 'payableToOrder'     => false,
                 'steps'              => $this->getSteps(),
                 'CurrentStep'        => $this->getCurrentStep(),
-                'currentStepContent' => $this->getCurrentStep()->create(),
+                'currentStepContent' => QUI\ControlUtils::parse($this->getCurrentStep()),
                 'Site'               => $this->getSite(),
                 'Order'              => $this->getOrder()
             ));
@@ -456,7 +456,7 @@ class OrderProcess extends QUI\Control
             'payableToOrder'     => $payableToOrder,
             'steps'              => $this->getSteps(),
             'CurrentStep'        => $Current,
-            'currentStepContent' => $Current->create(),
+            'currentStepContent' => QUI\ControlUtils::parse($Current),
             'Site'               => $this->getSite(),
             'Order'              => $this->getOrder()
         ));
