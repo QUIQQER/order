@@ -137,8 +137,17 @@ class Order extends AbstractOrder implements OrderInterface
 
         $TemporaryInvoice->save();
 
+        // save payment data
+        QUI::getDataBase()->update(
+            InvoiceHandler::getInstance()->temporaryInvoiceTable(),
+            ['payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData))],
+            ['id' => $this->getId()]
+        );
+
+
         // create the real invoice
         try {
+            $TemporaryInvoice = InvoiceHandler::getInstance()->getTemporaryInvoice($TemporaryInvoice->getId());
             $TemporaryInvoice->validate();
 
             // @todo setting -> rechnung automatisch buchen
@@ -152,12 +161,12 @@ class Order extends AbstractOrder implements OrderInterface
             Handler::getInstance()->table(),
             [
                 'temporary_invoice_id' => null,
-                'invoice_id'           => $Invoice->getCleanId(),
+                'invoice_id'           => $Invoice->getCleanId()
             ],
             ['id' => $this->getId()]
         );
 
-        return $Invoice;
+        return InvoiceHandler::getInstance()->getInvoice($Invoice->getId());
     }
 
     /**
