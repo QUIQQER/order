@@ -40,9 +40,10 @@ abstract class AbstractOrderProcessProvider
      * The processing order provider can display a separate step in the order processing
      *
      * @param AbstractOrder $Order
+     * @param null $Step
      * @return string
      */
-    public function getDisplay(AbstractOrder $Order)
+    public function getDisplay(AbstractOrder $Order, $Step = null)
     {
         return '';
     }

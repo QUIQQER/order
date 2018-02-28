@@ -17,6 +17,16 @@ use QUI;
 class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
+     * @var string|null
+     */
+    protected $content = null;
+
+    /**
+     * @var string|null
+     */
+    protected $title = null;
+
+    /**
      * @var null|QUI\ERP\Order\AbstractOrderProcessProvider
      */
     protected $ProcessingProvider = null;
@@ -51,7 +61,8 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $Engine->assign([
-            'display' => $this->ProcessingProvider->getDisplay($this->getOrder())
+            'display' => $this->ProcessingProvider->getDisplay($this->getOrder(), $this),
+            'this'    => $this
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Processing.html');
@@ -95,4 +106,82 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function save()
     {
     }
+
+    //region title
+
+    /**
+     * @param null $Locale
+     * @return string
+     *
+     * @throws \ReflectionException
+     */
+    public function getTitle($Locale = null)
+    {
+        if (!empty($this->title)) {
+            return $this->title;
+        }
+
+        if ($Locale === null) {
+            $Locale = QUI::getLocale();
+        }
+
+        $Reflection = new \ReflectionClass($this);
+
+        return $Locale->get(
+            'quiqqer/order',
+            'ordering.step.title.'.$Reflection->getShortName()
+        );
+    }
+
+    /**
+     * Set the step title
+     *
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    //endregion
+
+    //region content
+
+    /**
+     * Set the step content
+     *
+     * @param string $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @param null $Locale
+     * @return string
+     */
+    public function getContent($Locale = null)
+    {
+        if ($Locale === null) {
+            $Locale = QUI::getLocale();
+        }
+
+        $header      = $Locale->get('quiqqer/order', 'ordering.step.title.CheckoutPayment');
+        $description = $Locale->get('quiqqer/order', 'ordering.step.checkoutPayment.text');
+
+        $content = '
+        <header>
+            <h1>'.$header.'</h1>
+        </header>
+        <div class="quiqqer-order-step-processing-description">'.$description.'</div>';
+
+        if (!empty($this->content)) {
+            $content = $this->content;
+        }
+
+        return $content;
+    }
+
+    //endregion
 }

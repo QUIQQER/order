@@ -285,43 +285,54 @@ class OrderProcess extends QUI\Control
             if ($this->ProcessingProvider !== null) {
                 $this->ProcessingProvider;
 
-                $ProcessingStep = new Controls\OrderProcess\Processing();
-                $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
-                $ProcessingStep->setAttribute('Order', $this->getOrder());
-
                 /* @var $Checkout AbstractOrderingStep */
                 $Checkout = current(array_filter($this->getSteps(), function ($Step) {
                     /* @var $Step AbstractOrderingStep */
                     return $Step->getType() === Controls\OrderProcess\Checkout::class;
                 }));
 
+                /* @var $Checkout AbstractOrderingStep */
+                $ProcessingStep = current(array_filter($this->getSteps(), function ($Step) {
+                    /* @var $Step AbstractOrderingStep */
+                    return $Step->getType() === Controls\OrderProcess\Processing::class;
+                }));
+
+                if (!$ProcessingStep) {
+                    $ProcessingStep = new Controls\OrderProcess\Processing();
+                }
+
+                $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
+                $ProcessingStep->setAttribute('Order', $this->getOrder());
+
                 $Engine->assign(array(
-                    'listWidth'      => floor(100 / count($this->getSteps())),
-                    'this'           => $this,
-                    'error'          => false,
-                    'next'           => false,
-                    'previous'       => $Checkout->getName(),
-                    'payableToOrder' => false,
-                    'steps'          => $this->getSteps(),
-                    'CurrentStep'    => $ProcessingStep,
-                    'Site'           => $this->getSite(),
-                    'Order'          => $this->getOrder()
+                    'listWidth'          => floor(100 / count($this->getSteps())),
+                    'this'               => $this,
+                    'error'              => false,
+                    'next'               => false,
+                    'previous'           => $Checkout->getName(),
+                    'payableToOrder'     => false,
+                    'steps'              => $this->getSteps(),
+                    'CurrentStep'        => $ProcessingStep,
+                    'currentStepContent' => $ProcessingStep->create(),
+                    'Site'               => $this->getSite(),
+                    'Order'              => $this->getOrder()
                 ));
 
                 return QUI\Output::getInstance()->parse($Engine->fetch($template));
             }
 
             $Engine->assign(array(
-                'listWidth'      => floor(100 / count($this->getSteps())),
-                'this'           => $this,
-                'error'          => false,
-                'next'           => false,
-                'previous'       => false,
-                'payableToOrder' => false,
-                'steps'          => $this->getSteps(),
-                'CurrentStep'    => $this->getCurrentStep(),
-                'Site'           => $this->getSite(),
-                'Order'          => $this->getOrder()
+                'listWidth'          => floor(100 / count($this->getSteps())),
+                'this'               => $this,
+                'error'              => false,
+                'next'               => false,
+                'previous'           => false,
+                'payableToOrder'     => false,
+                'steps'              => $this->getSteps(),
+                'CurrentStep'        => $this->getCurrentStep(),
+                'currentStepContent' => $this->getCurrentStep()->create(),
+                'Site'               => $this->getSite(),
+                'Order'              => $this->getOrder()
             ));
 
             return QUI\Output::getInstance()->parse($Engine->fetch($template));
@@ -437,16 +448,17 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('data-url', Utils\Utils::getOrderProcess($Project)->getUrlRewritten());
 
         $Engine->assign(array(
-            'listWidth'      => floor(100 / count($this->getSteps())),
-            'this'           => $this,
-            'error'          => $error,
-            'next'           => $next,
-            'previous'       => $previous,
-            'payableToOrder' => $payableToOrder,
-            'steps'          => $this->getSteps(),
-            'CurrentStep'    => $Current,
-            'Site'           => $this->getSite(),
-            'Order'          => $this->getOrder()
+            'listWidth'          => floor(100 / count($this->getSteps())),
+            'this'               => $this,
+            'error'              => $error,
+            'next'               => $next,
+            'previous'           => $previous,
+            'payableToOrder'     => $payableToOrder,
+            'steps'              => $this->getSteps(),
+            'CurrentStep'        => $Current,
+            'currentStepContent' => $Current->create(),
+            'Site'               => $this->getSite(),
+            'Order'              => $this->getOrder()
         ));
 
         $this->Events->fireEvent('getBody', [$this]);
