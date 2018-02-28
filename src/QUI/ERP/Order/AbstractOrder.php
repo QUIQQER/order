@@ -103,6 +103,10 @@ abstract class AbstractOrder extends QUI\QDOM
      * @var array
      */
     protected $data;
+    /**
+     * @var array
+     */
+    protected $paymentData = [];
 
     /**
      * @var string
@@ -261,8 +265,14 @@ abstract class AbstractOrder extends QUI\QDOM
             'paid_data'   => json_decode($data['paid_data'], true),
             'paid_date'   => $data['paid_date']
         ));
-    }
 
+        if (isset($data['payment_data'])) {
+            $paymentData = QUI\Security\Encryption::decrypt($data['payment_data']);
+            $paymentData = json_decode($paymentData, true);
+
+            $this->paymentData = $paymentData;
+        }
+    }
 
     /**
      * @throws QUI\Exception
@@ -743,117 +753,43 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->paymentMethod = $Payment->getType();
     }
 
-//    /**
-//     * @param $amount
-//     * @param PaymentsInterface $PaymentMethod
-//     * @param bool $date
-//     * @param null $PermissionUser
-//     *
-//     * @deprecated use transaction oder eine tx anlegen
-//     */
-//    public function addPayment(
-//        $amount,
-//        PaymentsInterface $PaymentMethod,
-//        $date = false,
-//        $PermissionUser = null
-//    ) {
-//        Permission::checkPermission(
-//            'quiqqer.order.addPayment',
-//            $PermissionUser
-//        );
-//
-//        if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
-//            $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
-//        ) {
-//            return;
-//        }
-//
-//        QUI::getEvents()->fireEvent(
-//            'quiqqerOrderAddPaymentBegin',
-//            array($this, $amount, $PaymentMethod, $date)
-//        );
-//
-//        $User     = QUI::getUserBySession();
-//        $paidData = $this->getAttribute('paid_data');
-//        $amount   = Price::validatePrice($amount);
-//
-//        if (!$amount) {
-//            return;
-//        }
-//
-//        if (!is_array($paidData)) {
-//            $paidData = json_decode($paidData, true);
-//        }
-//
-//        if (!is_array($paidData)) {
-//            $paidData = array();
-//        }
-//
-//
-//        if ($date === false) {
-//            $date = time();
-//        }
-//
-//        $isValidTimeStamp = function ($timestamp) {
-//            return ((string)(int)$timestamp === $timestamp)
-//                   && ($timestamp <= PHP_INT_MAX)
-//                   && ($timestamp >= ~PHP_INT_MAX);
-//        };
-//
-//        if ($isValidTimeStamp($date) === false) {
-//            $date = strtotime($date);
-//
-//            if ($isValidTimeStamp($date) === false) {
-//                $date = time();
-//            }
-//        }
-//
-//        $paidData[] = array(
-//            'amount'  => $amount,
-//            'payment' => $PaymentMethod->getName(),
-//            'date'    => $date
-//        );
-//
-//        $this->setAttribute('paid_data', json_encode($paidData));
-//        $this->setAttribute('paid_date', $date);
-//
-//        // calculations
-//        $this->Articles->calc();
-//        $listCalculations = $this->Articles->getCalculations();
-//
-//        $this->setAttributes(array(
-//            'currency_data' => json_encode($listCalculations['currencyData']),
-//            'nettosum'      => $listCalculations['nettoSum'],
-//            'subsum'        => $listCalculations['subSum'],
-//            'sum'           => $listCalculations['sum'],
-//            'vat_array'     => json_encode($listCalculations['vatArray'])
-//        ));
-//
-//
-//        $this->addHistory(
-//            QUI::getLocale()->get(
-//                'quiqqer/order',
-//                'history.message.addPayment',
-//                array(
-//                    'username' => $User->getName(),
-//                    'uid'      => $User->getId(),
-//                    'payment'  => $PaymentMethod->getTitle()
-//                )
-//            )
-//        );
-//
-//        QUI::getEvents()->fireEvent(
-//            'quiqqerOrderAddPayment',
-//            array($this, $amount, $PaymentMethod, $date)
-//        );
-//
-//        $this->calculatePayments();
-//
-//        QUI::getEvents()->fireEvent(
-//            'quiqqerOrderAddPaymentEnd',
-//            array($this, $amount, $PaymentMethod, $date)
-//        );
-//    }
+
+    /**
+     * Set extra payment data to the order
+     * This data is stored encrypted in the database
+     *
+     * @param string $key
+     * @param string|integer|mixed $value
+     */
+    public function setPaymentData($key, $value)
+    {
+        $this->paymentData[$key] = $value;
+    }
+
+    /**
+     * Return the complete payment data array (decrypted)
+     *
+     * @return array
+     */
+    public function getPaymentData()
+    {
+        return $this->paymentData;
+    }
+
+    /**
+     * Return an entry in the payment data (decrypted)
+     *
+     * @param $key
+     * @return mixed|null
+     */
+    public function getPaymentDataEntry($key)
+    {
+        if (isset($this->paymentData[$key])) {
+            return $this->paymentData[$key];
+        }
+
+        return null;
+    }
 
     /**
      * @param Transaction $Transaction

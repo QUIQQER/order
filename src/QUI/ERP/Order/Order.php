@@ -271,7 +271,9 @@ class Order extends AbstractOrder implements OrderInterface
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
-            'payment_data'    => '', // verschlüsselt
+            'payment_data'    => QUI\Security\Encryption::encrypt(
+                json_encode($this->paymentData)
+            ),
             'payment_address' => ''  // verschlüsselt
         ];
     }
@@ -302,6 +304,17 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [$this, $data]);
+    }
+
+    /**
+     * Alias for update()
+     *
+     * @param null $PermissionUser
+     * @throws QUI\Exception
+     */
+    public function save($PermissionUser = null)
+    {
+        $this->update($PermissionUser);
     }
 
     /**

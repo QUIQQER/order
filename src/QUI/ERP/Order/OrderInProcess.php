@@ -75,13 +75,6 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     public function save($PermissionUser = null)
     {
-        if ($this->hasPermissions($PermissionUser) === false) {
-            throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
-                403
-            );
-        }
-
         $this->update($PermissionUser);
     }
 
@@ -412,7 +405,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
-            'payment_data'    => '', // verschlüsselt
+            'payment_data'    => QUI\Security\Encryption::encrypt(
+                json_encode($this->paymentData)
+            ), // verschlüsselt
             'payment_address' => ''  // verschlüsselt
         );
     }
