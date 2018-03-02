@@ -56,6 +56,10 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         $Order = $this->getOrder();
 
+        if ($Order->isSuccessful()) {
+            return;
+        }
+
         if ($Order->isPosted() === false) {
             throw new QUI\ERP\Order\Exception(array(
                 'quiqqer/order',
