@@ -56,6 +56,8 @@ Entwickler
 
 - quiqqerOrderOrderProcessCheckoutOutput [AbstractOrderingStep, &text]
 
+- onQuiqqerOrderPaidStatusChanged [Order, currentPaidStatus, previousPaidStatus]
+
 ### Order Events
 
 - onOrderStart [Order]
