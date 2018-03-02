@@ -185,7 +185,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'OrderInProcess:: Paid Status changed to '.$calculations['paidStatus']
+            'OrderInProcess:: Paid Status changed to ' . $calculations['paidStatus']
         );
     }
 
@@ -397,10 +397,11 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
-            'articles' => $this->Articles->toJSON(),
-            'comments' => $this->Comments->toJSON(),
-            'data'     => json_encode($this->data),
-            'status'   => $status,
+            'articles'   => $this->Articles->toJSON(),
+            'comments'   => $this->Comments->toJSON(),
+            'data'       => json_encode($this->data),
+            'status'     => $status,
+            'successful' => $this->successful,
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,

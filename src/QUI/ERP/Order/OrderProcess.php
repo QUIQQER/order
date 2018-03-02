@@ -636,9 +636,10 @@ class OrderProcess extends QUI\Control
 
         // if order are successful -> then show the finish step
         if ($Order->isSuccessful()) {
-            return $this->steps[count($this->steps) - 1];
+            return new Controls\OrderProcess\Finish([
+                'Order' => $Order
+            ]);
         }
-
 
         $steps = $this->getSteps();
 
