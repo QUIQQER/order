@@ -136,7 +136,7 @@ class OrderProcess extends QUI\Control
 
         // order is successfull, so no other step must be shown
         if ($Order && $Order->isSuccessful()) {
-            $LastStep = $steps[count($steps) - 1];
+            $LastStep = end($steps);
             $this->setAttribute('step', $LastStep->getName());
 
             return;
@@ -304,7 +304,7 @@ class OrderProcess extends QUI\Control
                 $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
                 $ProcessingStep->setAttribute('Order', $this->getOrder());
 
-                $Engine->assign(array(
+                $Engine->assign([
                     'listWidth'          => floor(100 / count($this->getSteps())),
                     'this'               => $this,
                     'error'              => false,
@@ -316,12 +316,12 @@ class OrderProcess extends QUI\Control
                     'currentStepContent' => QUI\ControlUtils::parse($ProcessingStep),
                     'Site'               => $this->getSite(),
                     'Order'              => $this->getOrder()
-                ));
+                ]);
 
                 return QUI\Output::getInstance()->parse($Engine->fetch($template));
             }
 
-            $Engine->assign(array(
+            $Engine->assign([
                 'listWidth'          => floor(100 / count($this->getSteps())),
                 'this'               => $this,
                 'error'              => false,
@@ -333,7 +333,7 @@ class OrderProcess extends QUI\Control
                 'currentStepContent' => QUI\ControlUtils::parse($this->getCurrentStep()),
                 'Site'               => $this->getSite(),
                 'Order'              => $this->getOrder()
-            ));
+            ]);
 
             return QUI\Output::getInstance()->parse($Engine->fetch($template));
         } catch (QUI\Exception $Exception) {
@@ -447,7 +447,7 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('step', $Current->getName());
         $this->setAttribute('data-url', Utils\Utils::getOrderProcess($Project)->getUrlRewritten());
 
-        $Engine->assign(array(
+        $Engine->assign([
             'listWidth'          => floor(100 / count($this->getSteps())),
             'this'               => $this,
             'error'              => $error,
@@ -459,7 +459,7 @@ class OrderProcess extends QUI\Control
             'currentStepContent' => QUI\ControlUtils::parse($Current),
             'Site'               => $this->getSite(),
             'Order'              => $this->getOrder()
-        ));
+        ]);
 
         $this->Events->fireEvent('getBody', [$this]);
 
@@ -863,13 +863,13 @@ class OrderProcess extends QUI\Control
 
         $Project = QUI::getRewrite()->getProject();
 
-        $sites = $Project->getSitesIds(array(
-            'where' => array(
+        $sites = $Project->getSitesIds([
+            'where' => [
                 'type'   => 'quiqqer / order:types / orderingProcess',
                 'active' => 1
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (isset($sites[0])) {
             $Site = $Project->get($sites[0]['id']);
