@@ -97,18 +97,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderProcessUpdateBegin',
-            array($this, $data)
+            [$this, $data]
         );
 
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             $data,
-            array('id' => $this->getId())
+            ['id' => $this->getId()]
         );
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderProcessUpdate',
-            array($this, $data)
+            [$this, $data]
         );
     }
 
@@ -147,10 +147,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             QUI::getLocale()->get(
                 'quiqqer/order',
                 'history.message.edit',
-                array(
+                [
                     'username' => $User->getName(),
                     'uid'      => $User->getId()
-                )
+                ]
             )
         );
 
@@ -160,12 +160,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            array(
+            [
                 'paid_data'   => $calculations['paidData'],
                 'paid_date'   => $calculations['paidDate'],
                 'paid_status' => $calculations['paidStatus']
-            ),
-            array('id' => $this->getId())
+            ],
+            ['id' => $this->getId()]
         );
 
         // create order, if the payment status is paid and no order exists
@@ -181,11 +181,11 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent(
             'onQuiqqerOrderPaymentStatusChanged',
-            array($this, $calculations['paidStatus'], $oldPaidStatus)
+            [$this, $calculations['paidStatus'], $oldPaidStatus]
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'OrderInProcess:: Paid Status changed to ' . $calculations['paidStatus']
+            'OrderInProcess:: Paid Status changed to '.$calculations['paidStatus']
         );
     }
 
@@ -207,7 +207,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getDataBase()->delete(
             Handler::getInstance()->tableOrderProcess(),
-            array('id' => $this->getId())
+            ['id' => $this->getId()]
         );
     }
 
@@ -255,8 +255,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         // bind the new order to the process order
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            array('order_id' => $Order->getId()),
-            array('id' => $this->getId())
+            ['order_id' => $Order->getId()],
+            ['id' => $this->getId()]
         );
 
         $this->orderId = $Order->getId();
@@ -273,7 +273,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
-            array('id' => $Order->getId())
+            ['id' => $Order->getId()]
         );
 
         // get the order with new data
@@ -391,7 +391,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         } catch (QUI\Exception $Exception) {
         }
 
-        return array(
+        return [
             'customerId'      => $this->customerId,
             'customer'        => json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
@@ -399,6 +399,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
             'articles'   => $this->Articles->toJSON(),
             'comments'   => $this->Comments->toJSON(),
+            'history'    => $this->History->toJSON(),
             'data'       => json_encode($this->data),
             'status'     => $status,
             'successful' => $this->successful,
@@ -410,7 +411,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
                 json_encode($this->paymentData)
             ), // verschlüsselt
             'payment_address' => ''  // verschlüsselt
-        );
+        ];
     }
 
     /**
@@ -428,7 +429,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     public function getInvoice()
     {
         throw new QUI\ERP\Accounting\Invoice\Exception(
-            array('quiqqer/invoice', 'exception.invoice.not.found'),
+            ['quiqqer/invoice', 'exception.invoice.not.found'],
             404
         );
     }
