@@ -82,22 +82,22 @@ abstract class AbstractOrder extends QUI\QDOM
     /**
      * @var array
      */
-    protected $customer = array();
+    protected $customer = [];
 
     /**
      * @var array
      */
-    protected $addressInvoice = array();
+    protected $addressInvoice = [];
 
     /**
      * @var array
      */
-    protected $addressDelivery = array();
+    protected $addressDelivery = [];
 
     /**
      * @var array
      */
-    protected $articles = array();
+    protected $articles = [];
 
     /**
      * @var array
@@ -165,17 +165,17 @@ abstract class AbstractOrder extends QUI\QDOM
      * @throws Exception
      * @throws QUI\ERP\Exception
      */
-    public function __construct($data = array())
+    public function __construct($data = [])
     {
         $needles = Factory::getInstance()->getOrderConstructNeedles();
 
         foreach ($needles as $needle) {
             if (!isset($data[$needle]) && $data[$needle] !== null) {
-                throw new Exception(array(
+                throw new Exception([
                     'quiqqer/order',
                     'exception.order.construct.needle.missing',
-                    array('needle' => $needle)
-                ));
+                    ['needle' => $needle]
+                ]);
             }
         }
 
@@ -260,11 +260,11 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->paymentId  = $data['payment_id'];
         $this->successful = (int)$data['successful'];
 
-        $this->setAttributes(array(
+        $this->setAttributes([
             'paid_status' => (int)$data['paid_status'],
             'paid_data'   => json_decode($data['paid_data'], true),
             'paid_date'   => $data['paid_date']
-        ));
+        ]);
 
         if (isset($data['payment_data'])) {
             $paymentData = QUI\Security\Encryption::decrypt($data['payment_data']);
@@ -337,7 +337,7 @@ abstract class AbstractOrder extends QUI\QDOM
             $paymentId = $Payment->getId();
         }
 
-        return array(
+        return [
             'id'        => $this->id,
             'invoiceId' => $this->invoiceId,
             'hash'      => $this->hash,
@@ -352,7 +352,7 @@ abstract class AbstractOrder extends QUI\QDOM
             'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'  => $this->getInvoiceAddress()->getAttributes(),
             'paymentId'       => $paymentId
-        );
+        ];
     }
 
     /**
@@ -375,6 +375,18 @@ abstract class AbstractOrder extends QUI\QDOM
         }
 
         return QUI\ERP\Order\Utils\Utils::getOrderPrefix();
+    }
+
+    /**
+     * @return QUI\ERP\Accounting\Calculations
+     * @throws QUI\ERP\Exception
+     */
+    public function getPriceCalculation()
+    {
+        $this->Articles->calc();
+        $calculations = $this->Articles->getCalculations();
+
+        return new QUI\ERP\Accounting\Calculations($calculations);
     }
 
     /**
@@ -581,7 +593,7 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     protected function parseAddressData(array $address)
     {
-        $fields = array_flip(array(
+        $fields = array_flip([
             'id',
             'salutation',
             'firstname',
@@ -591,9 +603,9 @@ abstract class AbstractOrder extends QUI\QDOM
             'city',
             'country',
             'company'
-        ));
+        ]);
 
-        $result = array();
+        $result = [];
 
         foreach ($address as $entry => $value) {
             if (isset($fields[$entry])) {
@@ -706,12 +718,12 @@ abstract class AbstractOrder extends QUI\QDOM
     {
         QUI\ERP\Accounting\Calc::calculatePayments($this);
 
-        return array(
+        return [
             'paidData' => $this->getAttribute('paid_data'),
             'paidDate' => $this->getAttribute('paid_date'),
             'paid'     => $this->getAttribute('paid'),
             'toPay'    => $this->getAttribute('toPay')
-        );
+        ];
     }
 
     /**
@@ -742,10 +754,10 @@ abstract class AbstractOrder extends QUI\QDOM
             throw new Exception(
                 $Exception->getMessage(),
                 $Exception->getCode(),
-                array(
+                [
                     'order'   => $this->getId(),
                     'payment' => $paymentId
-                )
+                ]
             );
         }
 
@@ -753,6 +765,14 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->paymentMethod = $Payment->getType();
     }
 
+    /**
+     * Clear the payment method of the order
+     */
+    public function clearPayment()
+    {
+        $this->paymentId     = null;
+        $this->paymentMethod = null;
+    }
 
     /**
      * Set extra payment data to the order
@@ -821,7 +841,7 @@ abstract class AbstractOrder extends QUI\QDOM
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderAddTransactionBegin',
-            array($this, $amount, $Transaction, $date)
+            [$this, $amount, $Transaction, $date]
         );
 
 
@@ -834,7 +854,7 @@ abstract class AbstractOrder extends QUI\QDOM
         }
 
         if (!is_array($paidData)) {
-            $paidData = array();
+            $paidData = [];
         }
 
         function isTxAlreadyAdded($txid, $paidData)
@@ -879,37 +899,37 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->Articles->calc();
         $listCalculations = $this->Articles->getCalculations();
 
-        $this->setAttributes(array(
+        $this->setAttributes([
             'currency_data' => json_encode($listCalculations['currencyData']),
             'nettosum'      => $listCalculations['nettoSum'],
             'subsum'        => $listCalculations['subSum'],
             'sum'           => $listCalculations['sum'],
             'vat_array'     => json_encode($listCalculations['vatArray'])
-        ));
+        ]);
 
 
         $this->addHistory(
             QUI::getLocale()->get(
                 'quiqqer/order',
                 'history.message.addTransaction',
-                array(
+                [
                     'username' => $User->getName(),
                     'uid'      => $User->getId(),
                     'txid'     => $Transaction->getTxId()
-                )
+                ]
             )
         );
 
         QUI::getEvents()->fireEvent(
             'addTransaction',
-            array($this, $amount, $Transaction, $date)
+            [$this, $amount, $Transaction, $date]
         );
 
         $this->calculatePayments();
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderAddTransactionEnd',
-            array($this, $amount, $Transaction, $date)
+            [$this, $amount, $Transaction, $date]
         );
     }
 
@@ -947,7 +967,7 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     public function clearAddressInvoice()
     {
-        $this->addressInvoice = array();
+        $this->addressInvoice = [];
     }
 
     /**
@@ -955,7 +975,7 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     public function clearAddressDelivery()
     {
-        $this->addressDelivery = array();
+        $this->addressDelivery = [];
     }
 
     /**
