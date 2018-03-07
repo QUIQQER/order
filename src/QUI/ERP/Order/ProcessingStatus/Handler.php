@@ -34,12 +34,19 @@ class Handler extends QUI\Utils\Singleton
             return $this->list;
         }
 
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
-        $result  = $Config->getSection('processing_status');
+        try {
+            $Package = QUI::getPackage('quiqqer/order');
+            $Config  = $Package->getConfig();
+            $result  = $Config->getSection('processing_status');
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            return [];
+        }
 
         if (!$result || !is_array($result)) {
-            $this->list = array();
+            $this->list = [];
+
             return $this->list;
         }
 
@@ -56,7 +63,7 @@ class Handler extends QUI\Utils\Singleton
     public function getProcessingStatusList()
     {
         $list   = $this->getList();
-        $result = array();
+        $result = [];
 
         foreach ($list as $entry => $color) {
             try {
@@ -73,6 +80,8 @@ class Handler extends QUI\Utils\Singleton
      *
      * @param $id
      * @return Status
+     *
+     * @throws Exception
      */
     public function getProcessingStatus($id)
     {
@@ -84,6 +93,9 @@ class Handler extends QUI\Utils\Singleton
      *
      * @param string|int $id
      *
+     * @throws Exception
+     * @throws QUI\Exception
+     *
      * @todo permissions
      */
     public function deleteProcessingStatus($id)
@@ -93,7 +105,7 @@ class Handler extends QUI\Utils\Singleton
         // remove translation
         QUI\Translator::delete(
             'quiqqer/order',
-            'processing.status.' . $Status->getId()
+            'processing.status.'.$Status->getId()
         );
 
         QUI\Translator::publish('quiqqer/order');
@@ -113,6 +125,8 @@ class Handler extends QUI\Utils\Singleton
      * @param int|string $color
      * @param array $title
      *
+     * @throws QUI\Exception
+     *
      * @todo permissions
      */
     public function updateProcessingStatus($id, $color, array $title)
@@ -122,22 +136,22 @@ class Handler extends QUI\Utils\Singleton
         // update translation
         $languages = QUI::availableLanguages();
 
-        $data = array(
+        $data = [
             'package'  => 'quiqqer/order',
             'datatype' => 'php,js',
             'html'     => 1
-        );
+        ];
 
         foreach ($languages as $language) {
             if (isset($title[$language])) {
-                $data[$language]           = $title[$language];
-                $data[$language . '_edit'] = $title[$language];
+                $data[$language]         = $title[$language];
+                $data[$language.'_edit'] = $title[$language];
             }
         }
 
         QUI\Translator::edit(
             'quiqqer/order',
-            'processing.status.' . $Status->getId(),
+            'processing.status.'.$Status->getId(),
             'quiqqer/order',
             $data
         );
