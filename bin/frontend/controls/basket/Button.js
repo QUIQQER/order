@@ -1,8 +1,10 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/basket/Button
+ * @author www.pcsg.de (Henning Leutz)
  *
- * @require qui/QUI
- * @require qui/controls/Control
+ * @event onCreate [self]
+ * @event onShowBasketBegin [self, pos]
+ * @event onShowBasketEnd [self]
  */
 define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
@@ -77,6 +79,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 this.$Elm.getElement('.quiqqer-order-basketButton-text').setStyle('display', 'none');
             }
 
+            this.fireEvent('create', [this]);
+
             return this.$Elm;
         },
 
@@ -104,17 +108,20 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             Elm.addEvent('mouseenter', this.showSmallBasket);
 
-
-            this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
+            if (this.$Batch) {
+                this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
+            }
 
             var isLoaded = function () {
                 if (this.$isLoaded) {
                     return;
                 }
 
-                this.$Icon.removeClass('fa-spinner');
-                this.$Icon.removeClass('fa-spin');
-                this.$Icon.addClass(' fa-file-text-o');
+                if (this.$Icon) {
+                    this.$Icon.removeClass('fa-spinner');
+                    this.$Icon.removeClass('fa-spin');
+                    this.$Icon.addClass(' fa-file-text-o');
+                }
 
                 this.$isLoaded = true;
             }.bind(this);
@@ -122,7 +129,6 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             require([
                 'package/quiqqer/order/bin/frontend/Basket'
             ], function (Basket) {
-
                 Basket.addEvents({
                     onRefresh: function () {
                         isLoaded();
@@ -130,7 +136,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                     },
 
                     onRefreshBegin: function () {
-                        self.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
+                        if (self.$Batch) {
+                            self.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
+                        }
                     },
 
                     onClear: function () {
@@ -168,6 +176,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 }).inject(document.body);
             }
 
+            this.fireEvent('showBasketBegin', [this, pos]);
+
             this.$BasketContainer.setStyles({
                 display: null,
                 left   : pos.x,
@@ -177,6 +187,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             if (this.$BasketSmall) {
                 this.$BasketSmall.refresh();
                 this.$BasketContainer.focus();
+
+                this.fireEvent('showBasketEnd', [this]);
                 return;
             }
 
@@ -190,6 +202,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 self.$BasketSmall = new Small({
                     basketId: Basket.getId()
                 }).inject(self.$BasketContainer);
+
+                self.fireEvent('showBasketEnd', [this]);
             });
         },
 
