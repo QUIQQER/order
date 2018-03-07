@@ -25,12 +25,12 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM
 {
-    const PAYMENT_STATUS_OPEN = 0;
-    const PAYMENT_STATUS_PAID = 1;
-    const PAYMENT_STATUS_PART = 2;
-    const PAYMENT_STATUS_ERROR = 4;
+    const PAYMENT_STATUS_OPEN     = 0;
+    const PAYMENT_STATUS_PAID     = 1;
+    const PAYMENT_STATUS_PART     = 2;
+    const PAYMENT_STATUS_ERROR    = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT = 11;
+    const PAYMENT_STATUS_DEBIT    = 11;
 //
 //    /**
 //     * Order is only created
@@ -49,6 +49,7 @@ abstract class AbstractOrder extends QUI\QDOM
 //     * @deprecated
 //     */
 //    const STATUS_STORNO = 2; // Bestellung ist storniert
+
 
     /**
      * order id
@@ -705,6 +706,10 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     public function getPayment()
     {
+        if ($this->paymentId === null) {
+            return null;
+        }
+
         $Payments = Payments::getInstance();
 
         try {
