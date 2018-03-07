@@ -462,8 +462,8 @@
             <en><![CDATA[Determination by payment method]]></en>
         </locale>
         <locale name="order.settings.processingStatus.title">
-            <de><![CDATA[Rechnungsstatus]]></de>
-            <en><![CDATA[Invoice status]]></en>
+            <de><![CDATA[Bestellstatus]]></de>
+            <en><![CDATA[Order status]]></en>
         </locale>
 
         <locale name="exception.order.process.not.found">
@@ -531,6 +531,28 @@
         <locale name="control.profile.orders.order.paymentStatus">
             <de><![CDATA[Zahlungsstatus]]></de>
             <en><![CDATA[Payment status]]></en>
+        </locale>
+
+
+        <locale name="processing.status.default.1">
+            <de><![CDATA[offen]]></de>
+            <en><![CDATA[open]]></en>
+        </locale>
+        <locale name="processing.status.default.2">
+            <de><![CDATA[In Bearbeitung]]></de>
+            <en><![CDATA[in processing]]></en>
+        </locale>
+        <locale name="processing.status.default.3">
+            <de><![CDATA[bearbeitet]]></de>
+            <en><![CDATA[done]]></en>
+        </locale>
+        <locale name="processing.status.default.4">
+            <de><![CDATA[erledigt]]></de>
+            <en><![CDATA[finished]]></en>
+        </locale>
+        <locale name="processing.status.default.5">
+            <de><![CDATA[storniert]]></de>
+            <en><![CDATA[cancelled]]></en>
         </locale>
     </groups>
 
@@ -810,6 +832,28 @@
             <en><![CDATA[Add a comment]]></en>
         </locale>
 
+        <locale name="dialog.processingStatus.delete.title">
+            <de><![CDATA[Rechnungsstatus entfernen]]></de>
+            <en><![CDATA[Remove invoice status]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.delete.text">
+            <de><![CDATA[Rechnungsstatus wirklich entfernen?]]></de>
+            <en><![CDATA[Really remove invoice status?]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.delete.information" html="true">
+            <de><![CDATA[
+            Folgender Bestellstatus wird entfernt:<br />
+            <strong>#[id] - [title]</strong>
+            <br /><br />
+            Der Bestellstatus ist nicht wiederherstellbar.
+            ]]></de>
+            <en><![CDATA[
+            The following order status will be removed: <br />
+            <strong>#[id] - [title]</strong>
+            <br /><br />
+            The order status is not recoverable.
+            ]]></en>
+        </locale>
 
         <!-- frontend controls -->
         <locale name="control.basket.button.text">

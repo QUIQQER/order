@@ -8,6 +8,10 @@
            fire="\QUI\ERP\Order\EventHandling::onRequest"
     />
 
+    <event on="onPackageSetup"
+           fire="\QUI\ERP\Order\EventHandling::onPackageSetup"
+    />
+
     <event on="onTransactionCreate"
            fire="\QUI\ERP\Order\EventHandling::onTransactionCreate"
     />

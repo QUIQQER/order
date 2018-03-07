@@ -30,9 +30,9 @@ class EventHandling
         Collection &$Collection
     ) {
         $Collection = $Collection->append(
-            new QUI\ERP\Order\Controls\Buttons\ProductToBasket(array(
+            new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
                 'Product' => $Product
-            ))
+            ])
         );
     }
 
@@ -65,9 +65,9 @@ class EventHandling
             $orderHash = $parts[2];
 
             try {
-                $OrderProcess = new OrderProcess(array(
+                $OrderProcess = new OrderProcess([
                     'orderHash' => $orderHash
-                ));
+                ]);
             } catch (QUI\Exception $Exception) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
                 $Redirect->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
@@ -132,5 +132,53 @@ class EventHandling
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
+    }
+
+    /**
+     * @param QUI\Package\Package $Package
+     * @throws QUI\Exception
+     */
+    public static function onPackageSetup(QUI\Package\Package $Package)
+    {
+        if ($Package->getName() !== 'quiqqer/order') {
+            return;
+        }
+
+        // create invoice payment status
+        $Handler = ProcessingStatus\Handler::getInstance();
+        $Factory = ProcessingStatus\Factory::getInstance();
+        $list    = $Handler->getList();
+
+        if (!empty($list)) {
+            return;
+        }
+
+        $languages = QUI::availableLanguages();
+
+        $getLocaleTranslations = function ($key) use ($languages) {
+            $result = [];
+
+            foreach ($languages as $language) {
+                $result[$language] = QUI::getLocale()->getByLang($language, 'quiqqer/order', $key);
+            }
+
+            return $result;
+        };
+
+
+        // Neu
+        $Factory->createProcessingStatus(1, '#ff8c00', $getLocaleTranslations('processing.status.default.1'));
+
+        // In Bearbeitung
+        $Factory->createProcessingStatus(2, '#9370db', $getLocaleTranslations('processing.status.default.2'));
+
+        // Bearbeitet
+        $Factory->createProcessingStatus(3, '#38b538', $getLocaleTranslations('processing.status.default.3'));
+
+        // Erledigt
+        $Factory->createProcessingStatus(4, '#228b22', $getLocaleTranslations('processing.status.default.4'));
+
+        // storniert
+        $Factory->createProcessingStatus(5, '#adadad', $getLocaleTranslations('processing.status.default.5'));
     }
 }
