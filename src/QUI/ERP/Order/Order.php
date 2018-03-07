@@ -52,6 +52,8 @@ class Order extends AbstractOrder implements OrderInterface
      * It return the invoice, if an invoice exist for the order
      *
      * @return QUI\ERP\Accounting\Invoice\Invoice
+     *
+     * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
     public function getInvoice()
@@ -182,7 +184,9 @@ class Order extends AbstractOrder implements OrderInterface
 
         try {
             $this->getInvoice();
-        } catch (QUI\ERP\Accounting\Invoice\Exception $Exception) {
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
             return false;
         }
 

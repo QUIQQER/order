@@ -34,15 +34,20 @@ abstract class AbstractOrder extends QUI\QDOM
 
     /**
      * Order is only created
+     * @deprecated
      */
     const STATUS_CREATED = 0;
 
     /**
      * Order is posted (Invoice created)
      * Bestellung ist gebucht (Invoice erstellt)
+     * @deprecated
      */
     const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
 
+    /**
+     * @deprecated
+     */
     const STATUS_STORNO = 2; // Bestellung ist storniert
 
     /**
