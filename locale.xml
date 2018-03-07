@@ -461,6 +461,10 @@
             <de><![CDATA[Bestimmung durch Bezahlungsmethode]]></de>
             <en><![CDATA[Determination by payment method]]></en>
         </locale>
+        <locale name="order.settings.processingStatus.title">
+            <de><![CDATA[Rechnungsstatus]]></de>
+            <en><![CDATA[Invoice status]]></en>
+        </locale>
 
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
@@ -700,6 +704,15 @@
         <locale name="grid.hash">
             <de><![CDATA[Eindeutige ID]]></de>
             <en><![CDATA[Unique ID]]></en>
+        </locale>
+
+        <locale name="processingStatus.grid.id">
+            <de><![CDATA[ID]]></de>
+            <en><![CDATA[ID]]></en>
+        </locale>
+        <locale name="processingStatus.grid.color">
+            <de><![CDATA[Farbe]]></de>
+            <en><![CDATA[Color]]></en>
         </locale>
 
         <locale name="order.address.confirm.title">

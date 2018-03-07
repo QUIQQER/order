@@ -5,7 +5,7 @@
  *
  * @require package/quiqqer/order/bin/backend/classes/ProcessingStatus
  */
-define('package/quiqqer/order/bin/ProcessingStatus', [
+define('package/quiqqer/order/bin/backend/ProcessingStatus', [
     'package/quiqqer/order/bin/backend/classes/ProcessingStatus'
 ], function (ProcessingStatus) {
     "use strict";
