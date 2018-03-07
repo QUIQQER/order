@@ -31,25 +31,24 @@ abstract class AbstractOrder extends QUI\QDOM
     const PAYMENT_STATUS_ERROR    = 4;
     const PAYMENT_STATUS_CANCELED = 5;
     const PAYMENT_STATUS_DEBIT    = 11;
-//
-//    /**
-//     * Order is only created
-//     * @deprecated
-//     */
-//    const STATUS_CREATED = 0;
-//
-//    /**
-//     * Order is posted (Invoice created)
-//     * Bestellung ist gebucht (Invoice erstellt)
-//     * @deprecated
-//     */
-//    const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
-//
-//    /**
-//     * @deprecated
-//     */
-//    const STATUS_STORNO = 2; // Bestellung ist storniert
 
+    /**
+     * Order is only created
+     * @deprecated
+     */
+    const STATUS_CREATED = 0;
+
+    /**
+     * Order is posted (Invoice created)
+     * Bestellung ist gebucht (Invoice erstellt)
+     * @deprecated
+     */
+    const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
+
+    /**
+     * @deprecated
+     */
+    const STATUS_STORNO = 2; // Bestellung ist storniert
 
     /**
      * order id
