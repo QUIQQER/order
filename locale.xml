@@ -832,6 +832,15 @@
             <en><![CDATA[Add a comment]]></en>
         </locale>
 
+        <locale name="dialog.processingStatus.create.title">
+            <de><![CDATA[Rechnungsstatus hinzufügen]]></de>
+            <en><![CDATA[Create invoice status]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.edit.title">
+            <de><![CDATA[Rechnungsstatus bearbeiten]]></de>
+            <en><![CDATA[Edit invoice status]]></en>
+        </locale>
+
         <locale name="dialog.processingStatus.delete.title">
             <de><![CDATA[Rechnungsstatus entfernen]]></de>
             <en><![CDATA[Remove invoice status]]></en>
