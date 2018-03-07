@@ -31,24 +31,24 @@ abstract class AbstractOrder extends QUI\QDOM
     const PAYMENT_STATUS_ERROR = 4;
     const PAYMENT_STATUS_CANCELED = 5;
     const PAYMENT_STATUS_DEBIT = 11;
-
-    /**
-     * Order is only created
-     * @deprecated
-     */
-    const STATUS_CREATED = 0;
-
-    /**
-     * Order is posted (Invoice created)
-     * Bestellung ist gebucht (Invoice erstellt)
-     * @deprecated
-     */
-    const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
-
-    /**
-     * @deprecated
-     */
-    const STATUS_STORNO = 2; // Bestellung ist storniert
+//
+//    /**
+//     * Order is only created
+//     * @deprecated
+//     */
+//    const STATUS_CREATED = 0;
+//
+//    /**
+//     * Order is posted (Invoice created)
+//     * Bestellung ist gebucht (Invoice erstellt)
+//     * @deprecated
+//     */
+//    const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
+//
+//    /**
+//     * @deprecated
+//     */
+//    const STATUS_STORNO = 2; // Bestellung ist storniert
 
     /**
      * order id
@@ -161,6 +161,11 @@ abstract class AbstractOrder extends QUI\QDOM
      * @var integer
      */
     protected $paymentMethod;
+
+    /**
+     * @var bool
+     */
+    protected $statusChanged = false;
 
     /**
      * Order constructor.
@@ -1095,6 +1100,50 @@ abstract class AbstractOrder extends QUI\QDOM
     public function getHistory()
     {
         return $this->History;
+    }
+
+    //endregion
+
+    //region process status
+
+    /**
+     * Return the order status (processing status)
+     * This status is the custom status of the order system
+     * Ths status can vary
+     *
+     * @return QUI\ERP\Order\ProcessingStatus\Status
+     *
+     * @throws QUI\ERP\Order\ProcessingStatus\Exception
+     */
+    public function getProcessingStatus()
+    {
+        $Handler = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
+
+        return $Handler->getProcessingStatus($this->status);
+    }
+
+    /**
+     * Set a processing status to the order
+     *
+     * @param int|ProcessingStatus\Status $status
+     */
+    public function setProcessingStatus($status)
+    {
+        if ($status instanceof ProcessingStatus\Status) {
+            $Status = $status;
+        } else {
+            try {
+                $Handler = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
+                $Status  = $Handler->getProcessingStatus($status);
+            } catch (QUI\ERP\Order\ProcessingStatus\Exception $Exception) {
+                QUI\System\Log::addWarning($Exception->getMessage());
+
+                return;
+            }
+        }
+
+        $this->status        = $Status->getId();
+        $this->statusChanged = true;
     }
 
     //endregion

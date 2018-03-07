@@ -316,6 +316,17 @@ class Order extends AbstractOrder implements OrderInterface
             ['id' => $this->getId()]
         );
 
+        if ($this->statusChanged) {
+            try {
+                QUI::getEvents()->fireEvent('quiqqerOrderProcessStatusChange', [
+                    $this,
+                    QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($this->status)
+                ]);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
         QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [$this, $data]);
     }
 
