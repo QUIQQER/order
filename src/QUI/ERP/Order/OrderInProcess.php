@@ -382,7 +382,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         // status
-        $status = self::STATUS_CREATED;
+        $status = 0;
 
         if ($this->status) {
             $status = $this->status;
