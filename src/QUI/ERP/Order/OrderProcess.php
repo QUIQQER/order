@@ -112,7 +112,8 @@ class OrderProcess extends QUI\Control
         $Products = $this->Basket->getProducts();
         $products = $Products->getProducts();
 
-        $Order = $this->getOrder();
+        $PriceFactors = $Products->getPriceFactors();
+        $Order        = $this->getOrder();
 
         if ($Order) {
             $Order->clearArticles();
@@ -125,6 +126,8 @@ class OrderProcess extends QUI\Control
                     QUI\System\Log::writeDebugException($Exception);
                 }
             }
+
+            $Order->getArticles()->importPriceFactors($PriceFactors);
 
             $this->Basket->setHash($Order->getHash());
             $this->Basket->save();

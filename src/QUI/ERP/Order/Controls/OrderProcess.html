@@ -56,24 +56,24 @@
     </div>
 
     <div class="quiqqer-order-ordering-buttons">
-        <a href="{url id=1}" class="button">
+        <a href="{url id=1}" class="btn btn-secondary btn-outline quiqqer-order-ordering-buttons-backToShop">
             {locale group="quiqqer/order" var="ordering.btn.backToShop"}
         </a>
 
         {if $previous}
         <a href="{$this->getStepUrl($previous)}"
-           class="button quiqqer-order-ordering-buttons-previous"
+           class="btn btn-light quiqqer-order-ordering-buttons-previous"
         >
             {locale group="quiqqer/order" var="ordering.btn.previous"}
         </a>
         {/if}
 
         {if $payableToOrder}
-        <button name="step" value="payableToOrder" class="button quiqqer-order-ordering-buttons-next">
+        <button name="step" value="payableToOrder" class="btn-success quiqqer-order-ordering-buttons-next">
             {locale group="quiqqer/order" var="ordering.btn.pay.to.order"}
         </button>
         {else if $next}
-        <button name="step" value="{$next}" class="button quiqqer-order-ordering-buttons-next">
+        <button name="step" value="{$next}" class="btn-success quiqqer-order-ordering-buttons-next">
             {locale group="quiqqer/order" var="ordering.btn.next"}
         </button>
         {/if}

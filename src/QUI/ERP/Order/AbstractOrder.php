@@ -25,12 +25,12 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM
 {
-    const PAYMENT_STATUS_OPEN     = 0;
-    const PAYMENT_STATUS_PAID     = 1;
-    const PAYMENT_STATUS_PART     = 2;
-    const PAYMENT_STATUS_ERROR    = 4;
+    const PAYMENT_STATUS_OPEN = 0;
+    const PAYMENT_STATUS_PAID = 1;
+    const PAYMENT_STATUS_PART = 2;
+    const PAYMENT_STATUS_ERROR = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT    = 11;
+    const PAYMENT_STATUS_DEBIT = 11;
 
     /**
      * Order is only created
@@ -340,11 +340,19 @@ abstract class AbstractOrder extends QUI\QDOM
      */
     public function toArray()
     {
+        $articles  = '';
         $paymentId = '';
-        $Payment   = $this->getPayment();
+
+        $Payment = $this->getPayment();
 
         if ($Payment) {
             $paymentId = $Payment->getId();
+        }
+
+        try {
+            $articles = $this->getArticles()->toArray();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         return [
@@ -358,7 +366,7 @@ abstract class AbstractOrder extends QUI\QDOM
             'customer'   => $this->getCustomer()->getAttributes(),
 
             'comments'        => $this->getComments()->toArray(),
-            'articles'        => $this->getArticles()->toArray(),
+            'articles'        => $articles,
             'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'  => $this->getInvoiceAddress()->getAttributes(),
             'paymentId'       => $paymentId
@@ -389,7 +397,9 @@ abstract class AbstractOrder extends QUI\QDOM
 
     /**
      * @return QUI\ERP\Accounting\Calculations
+     *
      * @throws QUI\ERP\Exception
+     * @throws QUI\Exception
      */
     public function getPriceCalculation()
     {
@@ -438,6 +448,8 @@ abstract class AbstractOrder extends QUI\QDOM
      * Return the order articles list
      *
      * @return ArticleList
+     *
+     * @throws QUI\Exception
      */
     public function getArticles()
     {

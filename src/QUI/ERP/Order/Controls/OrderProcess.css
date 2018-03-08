@@ -132,12 +132,3 @@
 .quiqqer-order-ordering-buttons-next {
     float: right;
 }
-
-.quiqqer-order-ordering-buttons-next[value="payableToOrder"] {
-    background-color: #75b947;
-    color: #fff;
-}
-
-.quiqqer-order-ordering-buttons-next[value="payableToOrder"]:hover {
-    background-color: #519f1d;
-}
