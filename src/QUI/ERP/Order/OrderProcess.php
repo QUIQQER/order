@@ -109,7 +109,7 @@ class OrderProcess extends QUI\Control
         }
 
         // insert basket products into the articles
-        $Products = $this->Basket->getProducts();
+        $Products = $this->Basket->getProducts()->calc();
         $products = $Products->getProducts();
 
         $PriceFactors = $Products->getPriceFactors();
