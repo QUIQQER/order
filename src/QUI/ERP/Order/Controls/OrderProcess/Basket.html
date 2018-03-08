@@ -2,4 +2,8 @@
     <h1>{locale group="quiqqer/order" var="ordering.step.title.Basket"}</h1>
 </header>
 
+{template_event name="quiqqer::order::orderProcessBasketBegin" Basket=$Basket}
+
 {$BasketControl->create()}
+
+{template_event name="quiqqer::order::orderProcessBasketEnd" Basket=$Basket}

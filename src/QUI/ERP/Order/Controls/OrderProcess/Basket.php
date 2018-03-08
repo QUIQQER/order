@@ -29,7 +29,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @throws QUI\ERP\Order\Basket\Exception
      */
-    public function __construct($attributes = array())
+    public function __construct($attributes = [])
     {
         parent::__construct($attributes);
 
@@ -77,10 +77,10 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function validate()
     {
         if (!$this->Basket->count()) {
-            throw new QUI\ERP\Order\Exception(array(
+            throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',
                 'exception.basket.has.no.articles'
-            ));
+            ]);
         }
     }
 
@@ -112,9 +112,10 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $BasketControl = new BasketControl();
         $BasketControl->setBasket($this->Basket);
 
-        $Engine->assign(array(
-            'BasketControl' => $BasketControl
-        ));
+        $Engine->assign([
+            'BasketControl' => $BasketControl,
+            'Basket'        => $this->Basket
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Basket.html');
     }

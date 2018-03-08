@@ -64,3 +64,15 @@ Entwickler
 - onOrderStart [Order]
 - onOrderSuccess [Order]
 - onOrderAbort [Order]
+
+### Template Events
+
+- onQuiqqer::order::orderProcessBasketBegin [Collector, Basket]
+- onQuiqqer::order::orderProcessBasketEnd [Collector, Basket]
+
+- onQuiqqer::order::orderProcessCustomerDataBegin [Collector, User, Address]
+- onQuiqqer::order::orderProcessCustomerData [Collector, User, Address]
+- onQuiqqer::order::orderProcessCustomerEnd [Collector, User, Address]
+
+- onQuiqqer::order::orderProcessCheckoutBegin [Collector, User, Order]
+- onQuiqqer::order::orderProcessCheckoutEnd [Collector, User, Order]

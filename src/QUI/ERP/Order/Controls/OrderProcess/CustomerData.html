@@ -3,7 +3,7 @@
         <h1>{locale group="quiqqer/order" var="ordering.step.title.CustomerData"}</h1>
     </header>
 
-    {template_event name="quiqqer::order::orderProcessCustomerDataBegin"}
+    {template_event name="quiqqer::order::orderProcessCustomerDataBegin" User=$User Address=$Address}
 
     <div class="quiqqer-order-customerData-display">
         <label>
@@ -174,7 +174,7 @@
 
 </section>
 
-{template_event name="quiqqer::order::orderProcessCustomerData"}
+{template_event name="quiqqer::order::orderProcessCustomerData" User=$User Address=$Address}
 
 <section class="quiqqer-order-customerData-comment">
     <header>
@@ -200,4 +200,4 @@
     </label>
 </section>
 
-{template_event name="quiqqer::order::orderProcessCustomerEnd"}
+{template_event name="quiqqer::order::orderProcessCustomerEnd" User=$User Address=$Address}

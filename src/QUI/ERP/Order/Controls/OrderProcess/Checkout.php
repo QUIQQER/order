@@ -26,7 +26,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param array $attributes
      */
-    public function __construct($attributes = array())
+    public function __construct($attributes = [])
     {
         parent::__construct($attributes);
 
@@ -110,14 +110,15 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             [$this, &$text]
         );
 
-        $Engine->assign(array(
+        $Engine->assign([
             'User'            => $Order->getCustomer(),
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment'         => $Order->getPayment(),
             'Articles'        => $Articles,
+            'Order'           => $Order,
             'text'            => $text
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Checkout.html');
     }
@@ -148,17 +149,17 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Payment = $Order->getPayment();
 
         if (!$Payment) {
-            throw new QUI\ERP\Order\Exception(array(
+            throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',
                 'exception.order.payment.missing'
-            ));
+            ]);
         }
 
         if (!QUI::getSession()->get('termsAndConditions-'.$Order->getHash())) {
-            throw new QUI\ERP\Order\Exception(array(
+            throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',
                 'exception.order.termsAndConditions.missing'
-            ));
+            ]);
         }
     }
 

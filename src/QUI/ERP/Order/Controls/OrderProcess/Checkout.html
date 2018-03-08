@@ -1,3 +1,9 @@
+{template_event
+name="quiqqer::order::orderProcessCheckoutBegin"
+User=$User
+Order=$Order
+}
+
 <section class="quiqqer-order-step-checkout"
          data-qui="package/quiqqer/order/bin/frontend/controls/orderProcess/Checkout"
 >
@@ -32,3 +38,9 @@
     </div>
 
 </section>
+
+{template_event
+name="quiqqer::order::orderProcessCheckoutEnd"
+User=$User
+Order=$Order
+}
