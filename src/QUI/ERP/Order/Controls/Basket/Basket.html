@@ -59,22 +59,22 @@
         </td>
     </tr>
 
+    {foreach $data.attributes as $attribute}
+    <tr>
+        <td>
+            {$attribute.title} ({$attribute.valueText})
+        </td>
+        <td>
+            {$attribute.value}
+        </td>
+    </tr>
+    {/foreach}
+
     {if count($data.attributes)}
     <tr>
         <td colspan="2"><br/></td>
     </tr>
     {/if}
-
-    {foreach $data.attributes as $attribute}
-    <tr>
-        <td>
-            {$attribute.title}
-        </td>
-        <td>
-            {$attribute.valueText}
-        </td>
-    </tr>
-    {/foreach}
 
     {foreach $data.vat as $vat}
     <tr>

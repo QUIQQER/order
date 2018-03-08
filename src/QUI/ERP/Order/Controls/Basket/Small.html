@@ -44,10 +44,10 @@
     {foreach $data.attributes as $attribute}
     <tr>
         <td>
-            {$attribute.title}
+            {$attribute.title} ({$attribute.valueText})
         </td>
         <td>
-            {$attribute.valueText} {*$attribute.value*}
+            {$attribute.value}
         </td>
     </tr>
     {/foreach}
