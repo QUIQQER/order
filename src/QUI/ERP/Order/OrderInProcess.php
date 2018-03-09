@@ -100,13 +100,24 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             [$this, $data]
         );
 
+        // set status change
         if ($this->statusChanged) {
+            $status = $this->status;
+
+            try {
+                $Status = QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($status);
+                $status = $Status->getTitle();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+
             $this->History->addComment(
                 QUI::getLocale()->get(
                     'quiqqer/order',
                     'message.change.order.status',
                     [
-                        'status' => $this->status
+                        'status'   => $status,
+                        'statusId' => $this->status
                     ]
                 )
             );

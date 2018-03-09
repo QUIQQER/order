@@ -308,7 +308,33 @@ class Order extends AbstractOrder implements OrderInterface
 
         $data = $this->getDataForSaving();
 
-        QUI::getEvents()->fireEvent('quiqqerOrderUpdateBegin', [$this, $data]);
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderUpdateBegin',
+            [$this, $data]
+        );
+
+        // set status change
+        if ($this->statusChanged) {
+            $status = $this->status;
+
+            try {
+                $Status = QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($status);
+                $status = $Status->getTitle();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+
+            $this->History->addComment(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'message.change.order.status',
+                    [
+                        'status'   => $status,
+                        'statusId' => $this->status
+                    ]
+                )
+            );
+        }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
