@@ -1,3 +1,5 @@
+{template_event name="quiqqer::order::basketSmall::begin" Basket=$Basket}
+
 <div class="quiqqer-order-basket-small-articles">
     {assign var=pos value=1}
     {foreach $products as $product}
@@ -24,6 +26,8 @@
     <span>items</span>
     <span>{$Products->count()}</span>
 </div>
+
+{template_event name="quiqqer::order::basketSmall::middle" Basket=$Basket}
 
 <table class="quiqqer-order-basket-small-total">
     <tr class="quiqqer-order-basket-small-total-subSum">
@@ -79,8 +83,12 @@
     </tr>
 </table>
 
+{template_event name="quiqqer::order::basketSmall::beforeCheckoutButton" Basket=$Basket}
+
 <div class="quiqqer-order-basket-small-buttons">
     <a href="{url site=$OrderProcess rewritten=true}" class="to-the-checkout button">
         Zur Kasse
     </a>
 </div>
+
+{template_event name="quiqqer::order::basketSmall::end" Basket=$Basket}

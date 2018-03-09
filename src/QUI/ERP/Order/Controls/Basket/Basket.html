@@ -1,3 +1,5 @@
+{template_event name="quiqqer::order::basket::begin" Basket=$Basket}
+
 {if $Products->count()}
 <table class="quiqqer-order-basket-articles">
     <thead>
@@ -48,6 +50,7 @@
     </tbody>
 </table>
 
+{template_event name="quiqqer::order::basket::middle" Basket=$Basket}
 
 <table class="quiqqer-order-basket-total">
     <tr class="quiqqer-order-basket-total-subSum">
@@ -108,3 +111,5 @@
     {locale group="quiqqer/order" var="message.basket.is.empty"}
 </div>
 {/if}
+
+{template_event name="quiqqer::order::basket::middle" Basket=$Basket}
