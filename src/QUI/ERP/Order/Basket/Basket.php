@@ -263,9 +263,21 @@ class Basket
             ];
         }
 
+        // calc data
+        $calculations = [];
+
+        try {
+            $data         = $Products->toArray();
+            $calculations = $data['calculations'];
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        
         return [
-            'id'       => $this->getId(),
-            'products' => $result
+            'id'           => $this->getId(),
+            'products'     => $result,
+            'calculations' => $calculations
         ];
     }
 

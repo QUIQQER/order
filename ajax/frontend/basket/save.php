@@ -17,6 +17,8 @@ QUI::$Ajax->registerFunction(
         $Basket = new \QUI\ERP\Order\Basket\Basket($basketId);
         $Basket->import(json_decode($products, true));
         $Basket->save();
+
+        return $Basket->toArray();
     },
-    array('basketId', 'products')
+    ['basketId', 'products']
 );

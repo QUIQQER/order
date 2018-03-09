@@ -30,6 +30,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             this.$isLoaded  = false;
             this.$saveDelay = null;
+
+            this.$calculations = {};
         },
 
         /**
@@ -153,6 +155,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             return new Promise(function (resolve, reject) {
                 self.getBasket().then(function (basket) {
+                    self.$calculations = basket;
+
                     return self.$loadData(basket);
                 }).then(resolve, reject);
             });
@@ -209,6 +213,39 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     'package': 'quiqqer/order'
                 });
             });
+        },
+
+        /**
+         * Return the basket calculations (sum, subSum, prices)
+         *
+         * @return {
+         * currencyData: {},
+         * isEuVat: number,
+         * isNetto: boolean,
+         * nettoSubSum: number,
+         * nettoSum: number,
+         * subSum: number,
+         * sum: number,
+         * vatArray: {},
+         * vatText: {}
+         * }
+         */
+        getCalculations: function () {
+            if ("calculations" in this.$calculations) {
+                return this.$calculations.calculations;
+            }
+
+            return {
+                currencyData: {},
+                isEuVat     : 0,
+                isNetto     : 0,
+                nettoSubSum : 0,
+                nettoSum    : 0,
+                subSum      : 0,
+                sum         : 0,
+                vatArray    : {},
+                vatText     : {}
+            };
         },
 
         /**
@@ -314,6 +351,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         save: function (force) {
+            var self = this;
+
             force = force || false;
 
             return new Promise(function (resolve) {
@@ -341,9 +380,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     products.push(this.$products[i].getAttributes());
                 }
 
-                // locale storage
+                // no locale storage
                 if (QUIQQER_USER && QUIQQER_USER.id) {
-                    QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_save', resolve, {
+                    QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_save', function (result) {
+                        self.$calculations = result;
+                        resolve(result);
+                    }, {
                         'package': 'quiqqer/order',
                         basketId : this.$basketId,
                         products : JSON.encode(products)
@@ -352,7 +394,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     return;
                 }
 
-
+                // locale storage
                 var data = QUI.Storage.get('quiqqer-basket-products');
 
                 if (!data) {
@@ -374,8 +416,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 QUI.Storage.set('quiqqer-basket-products', JSON.encode(data));
 
-                resolve();
+                // @todo guest basket update calculations
+                // self.$calculations = result;
 
+                resolve();
             }.bind(this));
         },
 

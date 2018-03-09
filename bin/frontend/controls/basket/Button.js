@@ -5,6 +5,12 @@
  * @event onCreate [self]
  * @event onShowBasketBegin [self, pos]
  * @event onShowBasketEnd [self]
+ *
+ * CSS classes which can be used as placeholder
+ * - .quiqqer-order-basketButton-sum
+ * - .quiqqer-order-basketButton-subSum
+ * - .quiqqer-order-basketButton-quantity
+ * - .quiqqer-order-basketButton-icon
  */
 define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
@@ -132,7 +138,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 Basket.addEvents({
                     onRefresh: function () {
                         isLoaded();
-                        self.updateBatch(Basket.getQuantity());
+                        self.updateDisplay(Basket);
                     },
 
                     onRefreshBegin: function () {
@@ -143,14 +149,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
                     onClear: function () {
                         isLoaded();
-                        self.updateBatch(Basket.getQuantity());
+                        self.updateDisplay(Basket);
                     }
                 });
 
                 if (Basket.isLoaded()) {
                     isLoaded();
 
-                    self.updateBatch(Basket.getQuantity());
+                    self.updateDisplay(Basket);
                 }
             });
         },
@@ -209,15 +215,45 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
         /**
          * Update the batch
+         *
+         * @param {object} Basket
          */
-        updateBatch: function (count) {
+        updateDisplay: function (Basket) {
+            // sum display
+            var SumElm = this.getElm().getElement(
+                '.quiqqer-order-basketButton-sum'
+            );
+
+            if (SumElm) {
+                SumElm.set('text', Basket.getCalculations().display_sum);
+            }
+
+            // subsum display
+            var SubSumElm = this.getElm().getElement(
+                '.quiqqer-order-basketButton-subSum'
+            );
+
+            if (SubSumElm) {
+                SubSumElm.set('text', Basket.getCalculations().display_subSum);
+            }
+
+            // quantity display
+            var quantity    = Basket.getQuantity();
+            var QuantityElm = this.getElm().getElement(
+                '.quiqqer-order-basketButton-quantity'
+            );
+
+            if (QuantityElm) {
+                QuantityElm.set('text', quantity);
+            }
+
             if (!this.$Batch) {
                 return Promise.resolve();
             }
 
-            this.$Batch.set('html', QUILocale.getNumberFormatter().format(count));
+            this.$Batch.set('text', quantity);
 
-            if (count) {
+            if (quantity) {
                 return this.showBatch();
             }
 
