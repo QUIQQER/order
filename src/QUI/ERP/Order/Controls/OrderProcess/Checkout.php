@@ -148,6 +148,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order   = $this->getOrder();
         $Payment = $Order->getPayment();
 
+        if ($Order->isSuccessful()) {
+            return;
+        }
+
         if (!$Payment) {
             throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',

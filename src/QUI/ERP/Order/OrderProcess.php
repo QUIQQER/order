@@ -353,7 +353,6 @@ class OrderProcess extends QUI\Control
         $steps   = $this->getSteps();
         $Current = $this->getCurrentStep();
 
-        // @todo prüfung ob benötigt, wäre besser wenn nicht, wegen checkout step und payment gateway
         $this->checkSubmission();
 
         // check all previous steps
@@ -475,6 +474,10 @@ class OrderProcess extends QUI\Control
         $checkedTermsAndConditions = QUI::getSession()->get(
             'termsAndConditions-'.$Order->getHash()
         );
+
+        if ($Order->isSuccessful()) {
+            $checkedTermsAndConditions = true;
+        }
 
         if (!$checkedTermsAndConditions) {
             return false;
