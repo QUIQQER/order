@@ -404,9 +404,13 @@ abstract class AbstractOrder extends QUI\QDOM
     public function getPriceCalculation()
     {
         $this->Articles->calc();
-        $calculations = $this->Articles->getCalculations();
 
-        return new QUI\ERP\Accounting\Calculations($calculations);
+        $Calculations = new QUI\ERP\Accounting\Calculations(
+            $this->Articles->getCalculations(),
+            $this->Articles->getArticles()
+        );
+
+        return $Calculations;
     }
 
     /**
