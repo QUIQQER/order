@@ -29,7 +29,7 @@ class Basket
      *
      * @var QUI\ERP\Products\Product\ProductList
      */
-    protected $List = array();
+    protected $List = [];
 
     /**
      * @var QUI\Interfaces\Users\User
@@ -56,10 +56,10 @@ class Basket
         }
 
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-            throw new Exception(array(
+            throw new Exception([
                 'quiqqer/order',
                 'exception.basket.not.found'
-            ), 404);
+            ], 404);
         }
 
         $this->List            = new ProductList();
@@ -146,12 +146,12 @@ class Basket
      *
      * @param array $products
      */
-    public function import($products = array())
+    public function import($products = [])
     {
         $this->clear();
 
         if (!is_array($products)) {
-            $products = array();
+            $products = [];
         }
 
         foreach ($products as $productData) {
@@ -185,7 +185,7 @@ class Basket
     public function save()
     {
         // save only product ids with custom fields, we need not more
-        $result   = array();
+        $result   = [];
         $products = $this->List->getProducts();
 
         foreach ($products as $Product) {
@@ -197,13 +197,13 @@ class Basket
                 $Field->setChangeableStatus(false);
             }
 
-            $productData = array(
+            $productData = [
                 'id'          => $Product->getId(),
                 'title'       => $Product->getTitle(),
                 'description' => $Product->getDescription(),
                 'quantity'    => $Product->getQuantity(),
-                'fields'      => array()
-            );
+                'fields'      => []
+            ];
 
             /* @var $Field QUI\ERP\Products\Field\UniqueField */
             foreach ($fields as $Field) {
@@ -217,14 +217,14 @@ class Basket
 
         QUI::getDataBase()->update(
             QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            array(
+            [
                 'products' => json_encode($result),
                 'hash'     => $this->hash
-            ),
-            array(
+            ],
+            [
                 'id'  => $this->getId(),
                 'uid' => $this->User->getId()
-            )
+            ]
         );
     }
 
@@ -237,11 +237,11 @@ class Basket
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = array();
+        $result   = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
-            $fields = array();
+            $fields = [];
 
             /* @var $Field \QUI\ERP\Products\Field\UniqueField */
             foreach ($Product->getFields() as $Field) {
@@ -256,17 +256,17 @@ class Basket
                 $fields[$Field->getId()] = $Field->getValue();
             }
 
-            $result[] = array(
+            $result[] = [
                 'id'       => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
                 'fields'   => $fields
-            );
+            ];
         }
 
-        return array(
+        return [
             'id'       => $this->getId(),
             'products' => $result
-        );
+        ];
     }
 
     //region hash & orders
@@ -329,6 +329,81 @@ class Basket
         }
 
         return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
+    }
+
+    /**
+     * If the basket has an order, it set the basket data to the order
+     * There is a comparison between goods basket and order
+     *
+     * @throws QUI\Exception
+     */
+    public function updateOrder()
+    {
+        try {
+            // insert basket products into the articles
+            $Products = $this->getProducts()->calc();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return;
+        }
+
+        try {
+            $Order = $this->getOrder();
+        } catch (QUI\Exception $Exception) {
+            if ($Exception->getCode() !== QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND) {
+                QUI\System\Log::writeDebugException($Exception);
+
+                return;
+            }
+
+            $Order = $this->createNewOrder();
+        }
+
+        // update the data
+        $products = $Products->getProducts();
+
+        $Order->clearArticles();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $Order->addArticle($Product->toArticle(null, false));
+            } catch (QUI\Users\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+        $Order->getArticles()->importPriceFactors(
+            $Products->getPriceFactors()
+        );
+
+        $Order->save();
+    }
+
+    /**
+     * @return QUI\ERP\Order\OrderInProcess
+     *
+     * @throws QUI\Exception
+     * @throws QUI\ERP\Order\Exception
+     */
+    protected function createNewOrder()
+    {
+        $Orders = QUI\ERP\Order\Handler::getInstance();
+        $User   = QUI::getUserBySession();
+
+        // create a new order
+        try {
+            // select the last order in processing
+            $OrderInProcess = $Orders->getLastOrderInProcessFromUser($User);
+
+            if (!$OrderInProcess->getOrderId()) {
+                return $OrderInProcess;
+            }
+        } catch (QUI\Erp\Exception $Exception) {
+        }
+
+        return QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
     }
 
     //endregion

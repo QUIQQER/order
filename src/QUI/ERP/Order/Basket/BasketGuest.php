@@ -22,7 +22,7 @@ class BasketGuest
      *
      * @var QUI\ERP\Products\Product\ProductList
      */
-    protected $List = array();
+    protected $List = [];
 
     /**
      * Basket constructor.
@@ -68,7 +68,11 @@ class BasketGuest
      */
     public function addProduct(Product $Product)
     {
-        $this->List->addProduct($Product);
+        try {
+            $this->List->addProduct($Product);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     //endregion
@@ -78,12 +82,12 @@ class BasketGuest
      *
      * @param array $products
      */
-    public function import($products = array())
+    public function import($products = [])
     {
         $this->clear();
 
         if (!is_array($products)) {
-            $products = array();
+            $products = [];
         }
 
         foreach ($products as $productData) {
@@ -128,11 +132,11 @@ class BasketGuest
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = array();
+        $result   = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
-            $fields = array();
+            $fields = [];
 
             /* @var $Field \QUI\ERP\Products\Field\UniqueField */
             foreach ($Product->getFields() as $Field) {
@@ -147,16 +151,16 @@ class BasketGuest
                 $fields[$Field->getId()] = $Field->getValue();
             }
 
-            $result[] = array(
+            $result[] = [
                 'id'       => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
                 'fields'   => $fields
-            );
+            ];
         }
 
-        return array(
+        return [
             'products' => $result
-        );
+        ];
     }
 
     //region hash & orders
@@ -182,6 +186,13 @@ class BasketGuest
             QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
             QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND
         );
+    }
+
+    /**
+     * Placeholder for compatibility to the main basket class
+     */
+    public function updateOrder()
+    {
     }
 
     //endregion

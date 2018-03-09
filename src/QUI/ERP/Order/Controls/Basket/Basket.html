@@ -62,7 +62,7 @@
     {foreach $data.attributes as $attribute}
     <tr>
         <td>
-            {$attribute.title} ({$attribute.valueText})
+            {$attribute.title} {if !empty($attribute.valueText)}({$attribute.valueText}){/if}
         </td>
         <td>
             {$attribute.value}

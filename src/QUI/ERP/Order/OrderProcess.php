@@ -109,27 +109,11 @@ class OrderProcess extends QUI\Control
         }
 
         // insert basket products into the articles
-        $Products = $this->Basket->getProducts()->calc();
-        $products = $Products->getProducts();
-
-        $PriceFactors = $Products->getPriceFactors();
-        $Order        = $this->getOrder();
+        $Order = $this->getOrder();
 
         if ($Order) {
-            $Order->clearArticles();
-
-            foreach ($products as $Product) {
-                try {
-                    /* @var QUI\ERP\Order\Basket\Product $Product */
-                    $Order->addArticle($Product->toArticle(null, false));
-                } catch (QUI\Users\Exception $Exception) {
-                    QUI\System\Log::writeDebugException($Exception);
-                }
-            }
-
-            $Order->getArticles()->importPriceFactors($PriceFactors);
-
             $this->Basket->setHash($Order->getHash());
+            $this->Basket->updateOrder();
             $this->Basket->save();
         }
 

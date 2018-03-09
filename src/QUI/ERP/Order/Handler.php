@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Factory
+ * This file contains QUI\ERP\Order\Handler
  */
 
 namespace QUI\ERP\Order;
