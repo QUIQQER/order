@@ -554,6 +554,10 @@
             <de><![CDATA[storniert]]></de>
             <en><![CDATA[cancelled]]></en>
         </locale>
+        <locale name="message.change.order.status">
+            <de><![CDATA[Der Status der Bestellung wurde geändert in: [status]]]></de>
+            <en><![CDATA[The status of the purchase order has been changed to: [status]]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
