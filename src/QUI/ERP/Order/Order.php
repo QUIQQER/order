@@ -137,6 +137,10 @@ class Order extends AbstractOrder implements OrderInterface
             }
         }
 
+        $TemporaryInvoice->getArticles()->importPriceFactors(
+            $this->getArticles()->getPriceFactors()
+        );
+
         $TemporaryInvoice->save();
 
         // save payment data
