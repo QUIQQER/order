@@ -77,7 +77,7 @@ class Utils
         try {
             if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
                 $url = self::$url;
-                $url = $url.'/'.$Step->getTitle();
+                $url = $url.'/'.$Step->getName();
 
                 return $url;
             }
