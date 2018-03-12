@@ -391,6 +391,8 @@ class Basket
         );
 
         $Order->save();
+
+        $this->setHash($Order->getHash());
     }
 
     /**
@@ -409,10 +411,10 @@ class Basket
             // select the last order in processing
             $OrderInProcess = $Orders->getLastOrderInProcessFromUser($User);
 
-            if (!$OrderInProcess->getOrderId()) {
+            if ($OrderInProcess->getOrderId()) {
                 return $OrderInProcess;
             }
-        } catch (QUI\Erp\Exception $Exception) {
+        } catch (QUI\Erp\Order\Exception $Exception) {
         }
 
         return QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
