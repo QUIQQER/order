@@ -7,10 +7,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/loader/Loader',
+
     'Ajax',
     'package/quiqqer/order/bin/frontend/Basket'
 
-], function (QUI, QUIControl, QUIAjax, Basket) {
+], function (QUI, QUIControl, QUILoader, QUIAjax, Basket) {
     "use strict";
 
     return new Class({
@@ -36,6 +38,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
                 this.getAttribute('basketId', Basket.getId());
             }
 
+            this.Loader = new QUILoader();
+
             this.addEvents({
                 onInject : this.$onInject,
                 onDestroy: function () {
@@ -52,6 +56,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
          * event: on import
          */
         $onInject: function () {
+            this.Loader.inject(this.getElm());
             this.refresh();
         },
 
@@ -87,6 +92,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
 
                 QUI.parse(self.getElm());
             };
+
+            this.Loader.show();
 
             // guest
             if (this.isGuest()) {
