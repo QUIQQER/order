@@ -418,13 +418,17 @@ class Order extends AbstractOrder implements OrderInterface
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
 
         if (!is_array($calculation['paidData'])) {
-            $calculation['paidData'] = json_decode($calculation['paidData']);
+            $calculation['paidData'] = json_decode($calculation['paidData'], true);
+        }
+
+        if (!is_array($calculation['paidData'])) {
+            $calculation['paidData'] = [];
         }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             [
-                'paid_data'   => $calculation['paidData'],
+                'paid_data'   => json_encode($calculation['paidData']),
                 'paid_date'   => $calculation['paidDate'],
                 'paid_status' => $calculation['paidStatus']
             ],
