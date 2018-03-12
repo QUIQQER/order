@@ -176,7 +176,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                     tabindex: -1,
                     events  : {
                         blur: function () {
-                            this.setStyle('display', 'none');
+                            // @todo überdenken -> vllt api (wegen paypal express gebraucht)
+                            (function() {
+                                this.setStyle('display', 'none');
+                            }).delay(200, this);
                         }
                     }
                 }).inject(document.body);
