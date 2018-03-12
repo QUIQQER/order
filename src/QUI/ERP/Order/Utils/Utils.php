@@ -30,21 +30,21 @@ class Utils
      */
     public static function getOrderProcess(QUI\Projects\Project $Project)
     {
-        $sites = $Project->getSites(array(
-            'where' => array(
+        $sites = $Project->getSites([
+            'where' => [
                 'type' => 'quiqqer/order:types/orderingProcess'
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (isset($sites[0])) {
             return $sites[0];
         }
 
-        throw new QUI\ERP\Order\Exception(array(
+        throw new QUI\ERP\Order\Exception([
             'quiqqer/order',
             'exception.order.process.not.found'
-        ));
+        ]);
     }
 
     /**
@@ -62,15 +62,27 @@ class Utils
      * Return the url to the checkout / order process
      *
      * @param QUI\Projects\Project $Project
+     * @param null|QUI\ERP\Order\Controls\AbstractOrderingStep $Step
      * @return string
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
-    public static function getOrderProcessUrl(QUI\Projects\Project $Project)
+    public static function getOrderProcessUrl(QUI\Projects\Project $Project, $Step = null)
     {
         if (self::$url === null) {
             self::$url = self::getOrderProcess($Project)->getUrlRewritten();
+        }
+
+        try {
+            if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
+                $url = self::$url;
+                $url = $url.'/'.$Step->getTitle();
+
+                return $url;
+            }
+        } catch (\ReflectionException $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         return self::$url;
