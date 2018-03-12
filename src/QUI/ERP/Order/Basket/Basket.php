@@ -273,7 +273,7 @@ class Basket
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        
+
         return [
             'id'           => $this->getId(),
             'products'     => $result,
@@ -387,7 +387,7 @@ class Basket
         }
 
         $Order->getArticles()->importPriceFactors(
-            $Products->getPriceFactors()
+            $Products->getPriceFactors()->toErpPriceFactorList()
         );
 
         $Order->save();
