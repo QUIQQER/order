@@ -458,9 +458,36 @@ class Handler extends Singleton
         return QUI::getDBTableName('baskets');
     }
 
-
+    /**
+     * @param int $basketId
+     * @return Basket\Basket
+     *
+     * @throws Basket\Exception
+     * @throws QUI\Users\Exception
+     */
     public function getBasketById($basketId)
     {
+        $data = QUI::getDataBase()->fetch(array(
+            'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'where' => array(
+                'id' => $basketId
+            ),
+            'limit' => 1
+        ));
+
+        if (!isset($data[0])) {
+            throw new Basket\Exception(array(
+                'quiqqer/order',
+                'exception.basket.not.found'
+            ));
+        }
+
+        $basketData = $data[0];
+        $User       = QUI::getUsers()->get($basketData['uid']);
+
+        $this->checkBasketPermissions($User);
+
+        return new Basket\Basket($data[0]['id'], $User);
     }
 
     /**
