@@ -1,8 +1,11 @@
-ERP Order
+QUIQQER Order (ERP module)
 ========
 
-This module is not functional at the moment.
-This module is in heavy development 
+![QUIQQER ORDER](bin/images/Readme.png)
+
+The QUIQQER Order Module integrates complete order management in QUIQQER.
+
+*This module is not functional at the moment. This module is in heavy development* 
 
 Paketname:
 
@@ -12,17 +15,26 @@ Paketname:
 Features (Funktionen)
 --------
 
-- Ordersystem
-- Basket
+- Order system
+    - Manager Orders
+    - Provides an order process for the frontend
+    - Integrates the Payment API to the Order Process
+    - Integrates the Invoice Module
+    - Automatic creation of invoices by orders
+    - It is possible to create orders by hand in the administration.
+
+- Basket (Shopping cart)
+    - The shopping cart allows the user to place orders
+    - There exists a basket and order overview in the administration
 
 
 Installation
 ------------
 
-Der Paketname ist: quiqqer/order
+The Package name is: quiqqer/order
 
 
-Mitwirken
+Contribution
 ----------
 
 - Issue Tracker: https://dev.quiqqer.com/quiqqer/order/issues
@@ -32,15 +44,17 @@ Mitwirken
 Support
 -------
 
-Falls Sie einen Fehler gefunden haben oder Verbesserungen wünschen,
-senden Sie bitte eine E-Mail an support@pcsg.de.
+If you have found an error or want improvements, please send an e-mail to support@pcsg.de.
 
 
-Lizenz
+Licence
 -------
 
+- GPL-3.0+
+- PCSG QEL-1.0
 
-Entwickler
+
+Developers
 --------
 
 - onQuiqqerOrderSuccessful [Order]
