@@ -390,6 +390,7 @@ class Basket
             $Products->getPriceFactors()->toErpPriceFactorList()
         );
 
+        $Order->getArticles()->calc();
         $Order->save();
 
         $this->setHash($Order->getHash());
