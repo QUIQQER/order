@@ -1,8 +1,10 @@
 /**
- * @module package/quiqqer/order/bin/frontend/controls/order/Window
+ * @module package/quiqqer/order/bin/frontend/controls/orderProcess/Window
  * @author www.pcsg.de (Henning Leutz)
+ *
+ * Opens the order process in a qui window
  */
-define('package/quiqqer/order/bin/frontend/controls/order/Window', [
+define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -12,8 +14,8 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
     'Locale',
     'Mustache',
 
-    'text!package/quiqqer/order/bin/frontend/controls/order/Window.html',
-    'css!package/quiqqer/order/bin/frontend/controls/order/Window.css'
+    'text!package/quiqqer/order/bin/frontend/controls/orderProcess/Window.html',
+    'css!package/quiqqer/order/bin/frontend/controls/orderProcess/Window.css'
 
 ], function (QUI, QUIControl, QUIButton, QUIConfirm, Ordering, QUILocale, Mustache, template) {
     "use strict";
@@ -23,7 +25,7 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
     return new Class({
 
         Extends: QUIConfirm,
-        Type   : 'package/quiqqer/order/bin/frontend/controls/order/Window',
+        Type   : 'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
 
         Binds: [
             '$onOpen',

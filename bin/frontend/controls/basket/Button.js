@@ -17,7 +17,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
-    'package/quiqqer/order/bin/frontend/controls/order/Window',
+    'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
@@ -177,7 +177,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                     events  : {
                         blur: function () {
                             // @todo überdenken -> vllt api (wegen paypal express gebraucht)
-                            (function() {
+                            (function () {
                                 this.setStyle('display', 'none');
                             }).delay(200, this);
                         }
