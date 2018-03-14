@@ -58,7 +58,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             this.$List = Elm.getElement('.quiqqer-order-profile-orders-list');
 
             this.$OrderContainer = new Element('div', {
-                'class': 'quiqqer-order-profile-orders-order'
+                'class': 'quiqqer-order-profile-orders-order-container'
             }).inject(this.getElm());
 
             this.Loader.inject(Elm);
