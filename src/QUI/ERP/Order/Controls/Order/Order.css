@@ -57,6 +57,16 @@
     clear: both;
 }
 
+.quiqqer-order-control-order-information-payment-icon {
+    float: left;
+    max-width: 30%;
+}
+
+.quiqqer-order-control-order-information-payment-title {
+    float: left;
+    padding: 0 0 0 10px;
+}
+
 /** Article
  ==========================================  */
 

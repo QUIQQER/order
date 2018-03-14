@@ -92,7 +92,12 @@
                 {locale group="quiqqer/order" var="control.order.payment.title"}
             </h2>
         </header>
-        {$Payment->getTitle()}
+
+        <img src="{$Payment->getIcon()}" class="quiqqer-order-control-order-information-payment-icon"/>
+        <div class="quiqqer-order-control-order-information-payment-title">
+            {$Payment->getTitle()}
+        </div>
+
     </section>
     {/if}
 </div>

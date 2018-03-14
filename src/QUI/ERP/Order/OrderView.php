@@ -116,11 +116,19 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getCreateDate()
     {
-        return $this->Order->getCreateDate();
+        $createDate = $this->Order->getCreateDate();
+        $createDate = strtotime($createDate);
+
+        $DateFormatter = QUI::getLocale()->getDateFormatter(
+            \IntlDateFormatter::SHORT,
+            \IntlDateFormatter::SHORT
+        );
+
+        return $DateFormatter->format($createDate);
     }
 
     /**
