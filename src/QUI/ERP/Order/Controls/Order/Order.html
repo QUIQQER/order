@@ -1,0 +1,55 @@
+<header>
+    <h1>Bestelldetails</h1>
+
+    <div class="quiqqer-order-control-order-header-date">
+        <span>{locale group="quiqqer/order" var="control.profile.orders.order.date"}</span>
+        <span>{$Order->getCreateDate()}</span>
+    </div>
+
+    <span>|</span>
+
+    <div class="quiqqer-order-control-order-header-id">
+        <span>{locale group="quiqqer/order" var="control.profile.orders.order.orderNo"}</span>
+        <span>{$Order->getId()}</span>
+    </div>
+</header>
+
+<div class="quiqqer-order-control-order-information">
+    <section class="quiqqer-order-control-order-information-invoiceAddress">
+        <header>
+            <h2>Rechnungsaddresse</h2>
+        </header>
+        <span>{locale group="quiqqer/order" var="control.profile.orders.order.invoiceAddress"}</span>
+        {if $Invoice}
+        {assign var=Customer value=$Invoice->getCustomer()}
+        {else}
+        {assign var=Customer value=$Order->getCustomer()}
+        {/if}
+
+        {assign var=Address value=$Customer->getAddress()}
+        {$Address->render()}
+    </section>
+
+    <section class="quiqqer-order-control-order-information-orderData">
+        <header>
+            <h2>Bestellübersicht</h2>
+
+            <table>
+                <tr>
+                    <td>Zwischensumme</td>
+                    <td>{$Calculation->getSubSum()->formatted()}</td>
+                </tr>
+                {foreach $PriceFactors as $Factor}
+                <tr>
+                    <td>{$Factor->getTitle()}</td>
+                    <td>{$Factor->getSum()}</td>
+                </tr>
+                {/foreach}
+                <tr>
+                    <td>Gesammtsumme</td>
+                    <td>{$Calculation->getSum()->formatted()}</td>
+                </tr>
+            </table>
+        </header>
+    </section>
+</div>

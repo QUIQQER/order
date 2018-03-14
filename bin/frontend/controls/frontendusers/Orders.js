@@ -45,6 +45,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             this.$List = Elm.getElement('.quiqqer-order-profile-orders-list');
 
             this.Loader.inject(Elm);
+            this.$setEvents();
 
             // pagination events
             var paginates = Elm.getElements(
@@ -86,12 +87,47 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                 );
 
                 QUI.parse(self.$List).then(function () {
+                    self.$setEvents();
                     self.Loader.hide();
                 });
             }, {
                 'package': 'quiqqer/order',
                 page     : page,
                 limit    : limit
+            });
+        },
+
+        /**
+         * Set click / mouse / touch events
+         */
+        $setEvents: function () {
+            var orderLinks = this.getElm().getElements(
+                '.quiqqer-order-profile-orders-order-header-orderId a'
+            );
+
+            orderLinks.addEvent('click', function (event) {
+                var Target = event.target,
+                    hash   = false;
+
+                if (Target.nodeName !== 'A') {
+                    Target = Target.getParent('a');
+                }
+
+                hash = Target.get('data-hash');
+
+                if (!hash) {
+                    return;
+                }
+
+                event.stop();
+
+                require([
+                    'package/quiqqer/order/bin/frontend/controls/order/Window'
+                ], function (Window) {
+                    new Window({
+                        hash: hash
+                    }).open();
+                });
             });
         }
     });

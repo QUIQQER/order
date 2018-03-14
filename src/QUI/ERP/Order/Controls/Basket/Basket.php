@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Controls\Basket\Small
+ * This file contains QUI\ERP\Order\Controls\Basket\Basket
  */
 
 namespace QUI\ERP\Order\Controls\Basket;
@@ -55,13 +55,13 @@ class Basket extends QUI\Controls\Control
 
         $View = $Products->getView();
 
-        $Engine->assign(array(
+        $Engine->assign([
             'data'     => $View->toArray(),
             'Basket'   => $this->Basket,
             'Project'  => $this->Project,
             'Products' => $View,
             'products' => $View->getProducts()
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Basket.html');
     }

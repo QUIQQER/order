@@ -28,7 +28,12 @@
 
         <div class="quiqqer-order-profile-orders-order-header-orderId">
             <span>{locale group="quiqqer/order" var="control.profile.orders.order.orderNo"}</span>
-            <a href="{$Utils->getOrderUrl($Project, $Order)}" target="_blank">{$Order->getId()}</a>
+            <a href="{$Utils->getOrderUrl($Project, $Order)}"
+               target="_blank"
+               data-hash="{$Order->getHash()}"
+            >
+                {$Order->getId()}
+            </a>
         </div>
     </header>
 
