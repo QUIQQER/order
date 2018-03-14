@@ -1,4 +1,4 @@
-<header>
+<header class="quiqqer-order-control-order-header">
     <h1>Bestelldetails</h1>
 
     <div class="quiqqer-order-control-order-header-date">
@@ -53,3 +53,23 @@
         </header>
     </section>
 </div>
+
+<section class="quiqqer-order-control-order-information">
+    {foreach $Articles as $Article}
+    <article>
+        {if $Article->getImage()}
+        <div class="quiqqer-order-profile-orders-order-articles-image">
+            {image image=$Article->getImage()}
+        </div>
+        {/if}
+
+        <div class="quiqqer-order-profile-orders-order-articles-title">
+            {$Article->getTitle()}
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-articles-price">
+            {$Article->getPrice()->getDisplayPrice()}
+        </div>
+    </article>
+    {/foreach}
+</section>
