@@ -61,9 +61,15 @@ class Order extends QUI\Controls\Control
             return '';
         }
 
-        // invoice
         $Invoice = null;
+        $View    = $Order->getView();
 
+        $View->setAttribute(
+            'downloadLink',
+            URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$View->getHash()
+        );
+
+        // invoice
         try {
             $Invoice = $Order->getInvoice();
         } catch (QUI\Exception $Exception) {
@@ -72,11 +78,12 @@ class Order extends QUI\Controls\Control
 
         // template
         $Engine->assign([
-            'Order'        => $Order,
-            'Articles'     => $Order->getArticles(),
+            'Order'        => $View,
+            'Articles'     => $View->getArticles(),
             'Invoice'      => $Invoice,
-            'Calculation'  => $Order->getPriceCalculation(),
-            'PriceFactors' => $Order->getArticles()->getPriceFactors(),
+            'Calculation'  => $View->getPriceCalculation(),
+            'PriceFactors' => $View->getArticles()->getPriceFactors(),
+            'Payment'      => $View->getPayment()
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Order.html');

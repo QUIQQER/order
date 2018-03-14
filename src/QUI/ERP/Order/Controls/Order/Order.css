@@ -28,9 +28,11 @@
     width: 100%;
 }
 
+.quiqqer-order-control-order-information-payment,
 .quiqqer-order-control-order-information-invoiceAddress,
 .quiqqer-order-control-order-information-orderData {
     float: left;
+    margin-bottom: 20px;
     width: 50%;
 }
 
@@ -51,13 +53,16 @@
     text-align: right;
 }
 
+.quiqqer-order-control-order-information-payment {
+    clear: both;
+}
+
 /** Article
  ==========================================  */
 
 .quiqqer-order-control-order-articles {
     float: left;
     border-top: 1px solid #DEDEDE;
-    margin-top: 20px;
     padding-top: 20px;
     width: 100%;
 }

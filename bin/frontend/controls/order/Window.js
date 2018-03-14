@@ -21,10 +21,11 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
         Type   : 'package/quiqqer/order/bin/frontend/controls/order/Window',
 
         options: {
-            hash     : false,
-            maxHeight: 600,
-            maxWidth : 800,
-            icon     : 'fa fa-shopping-basket'
+            hash           : false,
+            maxHeight      : 800,
+            maxWidth       : 800,
+            icon           : 'fa fa-shopping-basket',
+            closeButtonText: QUILocale.get('quiqqer/system', 'close')
         },
 
         initialize: function (options) {
