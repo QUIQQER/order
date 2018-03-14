@@ -25,6 +25,8 @@ define('package/quiqqer/order/bin/frontend/controls/order/Order', [
         initialize: function (options) {
             this.parent(options);
 
+            this.$order = null;
+
             this.addEvents({
                 onInject: this.$onInject
             });
@@ -43,13 +45,24 @@ define('package/quiqqer/order/bin/frontend/controls/order/Order', [
         },
 
         /**
+         * Return the order data
+         *
+         * @return {null|object}
+         */
+        getOrder: function () {
+            return this.$order;
+        },
+
+        /**
          * event: on inject
          */
         $onInject: function () {
             var self = this;
 
             QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getOrderControl', function (result) {
-                self.getElm().set('html', result);
+                self.$order = result.data;
+
+                self.getElm().set('html', result.html);
                 self.fireEvent('load', [self]);
             }, {
                 'package': 'quiqqer/order',

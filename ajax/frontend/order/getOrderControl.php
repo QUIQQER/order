@@ -21,7 +21,10 @@ QUI::$Ajax->registerFunction(
         $result = $OrderProcess->create();
         $css    = QUI\Control\Manager::getCSS();
 
-        return $Output->parse($css.$result);
+        return [
+            'html' => $Output->parse($css.$result),
+            'data' => $OrderProcess->getOrder()->getView()->toArray()
+        ];
     },
     ['orderHash']
 );

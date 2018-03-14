@@ -1,0 +1,126 @@
+/** Order Header
+ ==========================================  */
+
+.quiqqer-order-control-order-header {
+    float: left;
+    padding: 0;
+    width: 100%;
+}
+
+.quiqqer-order-control-order-header-date,
+.quiqqer-order-control-order-header-placer,
+.quiqqer-order-control-order-header-id {
+    float: left;
+}
+
+.quiqqer-order-control-order-header-placer {
+    padding: 0 10px;
+}
+
+/** Order information
+ ==========================================  */
+
+.quiqqer-order-control-order-information {
+    border-top: 1px solid #DEDEDE;
+    float: left;
+    margin-top: 20px;
+    padding-top: 20px;
+    width: 100%;
+}
+
+.quiqqer-order-control-order-information-invoiceAddress,
+.quiqqer-order-control-order-information-orderData {
+    float: left;
+    width: 50%;
+}
+
+.quiqqer-order-control-order-information h2 {
+    font-size: 20px;
+    margin: 0 0 10px;
+}
+
+.quiqqer-order-control-order-information-orderData-sum {
+    color: darkred;
+}
+
+.quiqqer-order-control-order-information-orderData-table {
+    width: 100%;
+}
+
+.quiqqer-order-control-order-information-orderData-table td + td {
+    text-align: right;
+}
+
+/** Article
+ ==========================================  */
+
+.quiqqer-order-control-order-articles {
+    float: left;
+    border-top: 1px solid #DEDEDE;
+    margin-top: 20px;
+    padding-top: 20px;
+    width: 100%;
+}
+
+.quiqqer-order-control-order-articles header h2 {
+    font-size: 20px;
+    margin: 0 0 10px;
+}
+
+.quiqqer-order-control-order-articles article {
+    float: left;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.quiqqer-order-profile-orders-order-articles-article-pos {
+    float: left;
+    font-size: 20px;
+    width: 50px;
+}
+
+.quiqqer-order-profile-orders-order-articles-article-image {
+    float: left;
+    height: 120px;
+    position: relative;
+    width: 100px;
+}
+
+.quiqqer-order-profile-orders-order-articles-article-image img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.quiqqer-order-profile-orders-order-articles-article-information {
+    float: left;
+    padding-left: 20px;
+    width: calc(100% - 150px);
+}
+
+.quiqqer-order-profile-orders-order-articles-article-price {
+    color: darkred;
+    margin-top: 10px;
+}
+
+.quiqqer-order-profile-orders-order-articles-article-quantity {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0 6px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    text-align: center;
+}
+
+/** Article Description
+ ==========================================  */
+
+.quiqqer-order-profile-orders-order-articles-article-description {
+    margin-top: 10px;
+}
+
+.quiqqer-order-profile-orders-order-articles-article-description ul,
+.quiqqer-order-profile-orders-order-articles-article-description ol {
+    margin-left: 20px;
+}

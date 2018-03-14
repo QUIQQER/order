@@ -17,6 +17,11 @@ use QUI;
 class Order extends QUI\Controls\Control
 {
     /**
+     * @var null
+     */
+    protected $Order = null;
+
+    /**
      * Order constructor.
      *
      * @param array $attributes
@@ -44,11 +49,10 @@ class Order extends QUI\Controls\Control
      */
     protected function onCreate()
     {
-        $Engine  = QUI::getTemplateManager()->getEngine();
-        $Handler = QUI\ERP\Order\Handler::getInstance();
+        $Engine = QUI::getTemplateManager()->getEngine();
 
         try {
-            $Order = $Handler->getOrderByHash($this->getAttribute('orderHash'));
+            $Order = $this->getOrder();
         } catch (QUI\ERP\Order\Exception $Exception) {
             // @todo error template
 
@@ -76,5 +80,25 @@ class Order extends QUI\Controls\Control
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Order.html');
+    }
+
+    /**
+     * Returns the assigned order
+     *
+     * @return QUI\ERP\Order\OrderInProcess|Order|QUI\ERP\Order\Order
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
+     */
+    public function getOrder()
+    {
+        if ($this->Order !== null) {
+            return $this->Order;
+        }
+
+        $Handler     = QUI\ERP\Order\Handler::getInstance();
+        $this->Order = $Handler->getOrderByHash($this->getAttribute('orderHash'));
+
+        return $this->Order;
     }
 }

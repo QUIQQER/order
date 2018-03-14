@@ -7,10 +7,13 @@
 define('package/quiqqer/order/bin/frontend/controls/order/Window', [
 
     'qui/QUI',
-    'qui/controls/windows/Popup'
+    'qui/controls/windows/Popup',
+    'Locale'
 
-], function (QUI, QUIPopup) {
+], function (QUI, QUIPopup, QUILocale) {
     "use strict";
+
+    var lg = 'quiqqer/order';
 
     return new Class({
 
@@ -20,7 +23,8 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
         options: {
             hash     : false,
             maxHeight: 600,
-            maxWidth : 800
+            maxWidth : 800,
+            icon     : 'fa fa-shopping-basket'
         },
 
         initialize: function (options) {
@@ -48,8 +52,23 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
                 new Order({
                     hash  : self.getAttribute('hash'),
                     events: {
-                        onLoad: function () {
+                        onLoad: function (OrderControl) {
                             self.Loader.hide();
+
+                            var orderData = OrderControl.getOrder();
+
+                            if (!orderData) {
+                                return;
+                            }
+
+                            self.setAttribute(
+                                'title',
+                                QUILocale.get(lg, 'control.order.window.title', {
+                                    orderId: orderData.id
+                                })
+                            );
+
+                            self.refresh();
                         }
                     }
                 }).inject(Content);

@@ -873,6 +873,11 @@
             <de><![CDATA[Warenkorb]]></de>
             <en><![CDATA[Basket]]></en>
         </locale>
+
+        <locale name="control.order.window.title">
+            <de><![CDATA[Bestelldetails von Bestellnr. [orderId]]]></de>
+            <en><![CDATA[Order details of order no. [orderId]]]></en>
+        </locale>
     </groups>
 
 </locales>
