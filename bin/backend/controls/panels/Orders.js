@@ -570,8 +570,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ParentNode.set('html', '<div class="fa fa-spinner fa-spin"></div>');
 
             Orders.get(this.$Grid.getDataByRow(row).id).then(function (result) {
-                console.warn(result);
-
                 var articles = [];
 
                 if ("articles" in result) {

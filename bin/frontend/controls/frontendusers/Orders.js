@@ -2,15 +2,27 @@
  * @module package/quiqqer/order/bin/frontend/controls/frontendusers/Orders
  * @author www.pcsg.de (Henning Leutz)
  */
+
+require.config({
+    paths: {
+        'Navigo'       : URL_OPT_DIR + 'bin/navigo/lib/navigo.min',
+        'HistoryEvents': URL_OPT_DIR + 'bin/history-events/dist/history-events.min'
+    }
+});
+
 define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
 
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/loader/Loader',
-    'Ajax'
+    'Ajax',
+    'Locale',
+    'HistoryEvents'
 
-], function (QUI, QUIControl, QUILoader, QUIAjax) {
+], function (QUI, QUIControl, QUILoader, QUIAjax, QUILocale) {
     "use strict";
+
+    var lg = 'quiqqer/order';
 
     return new Class({
 
@@ -18,20 +30,25 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
         Type   : 'package/quiqqer/order/bin/frontend/controls/frontendusers/Orders',
 
         Binds: [
-            '$addArticleToBasket'
+            '$addArticleToBasket',
+            '$onChangeState'
         ],
 
         initialize: function (options) {
             this.parent(options);
 
-            this.$Orders = null;
-            this.$List   = null;
+            this.$List = null;
+
+            this.$OrderContainer = null;
+            this.$orderOpened    = false;
 
             this.Loader = new QUILoader();
 
             this.addEvents({
                 onImport: this.$onImport
             });
+
+            window.addEventListener('changestate', this.$onChangeState, false);
         },
 
         /**
@@ -41,10 +58,19 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             var self = this,
                 Elm  = this.getElm();
 
-
             this.$List = Elm.getElement('.quiqqer-order-profile-orders-list');
 
+            this.$OrderContainer = new Element('div', {
+                'class': 'quiqqer-order-profile-orders-order-container',
+                styles : {
+                    left    : -20,
+                    opacity : 0,
+                    position: 'relative'
+                }
+            }).inject(this.getElm());
+
             this.Loader.inject(Elm);
+            this.$setEvents();
 
             // pagination events
             var paginates = Elm.getElements(
@@ -61,6 +87,68 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                         self.$refreshOrder(Query.sheet, Query.limit);
                     }
                 });
+            });
+        },
+
+        /**
+         * event: change url state
+         */
+        $onChangeState: function () {
+            var self = this,
+                hash = window.location.hash;
+
+            if (hash === '') {
+                if (this.$orderOpened) {
+                    this.$hideOrderContainer().then(function () {
+                        return self.$showList();
+                    });
+                }
+
+                this.$orderOpened = '';
+                return;
+            }
+
+            hash = hash.replace('#', '');
+
+            if (this.$orderOpened === hash) {
+                return;
+            }
+
+
+            this.Loader.show();
+
+            self.$orderOpened = hash;
+
+            require([
+                'package/quiqqer/order/bin/frontend/controls/order/Order'
+            ], function (Order) {
+                new Order({
+                    hash  : self.$orderOpened,
+                    events: {
+                        onLoad: function () {
+                            self.Loader.hide();
+                            self.$hideList().then(function () {
+                                return self.$showOrderContainer();
+                            });
+                        }
+                    }
+                }).inject(self.$OrderContainer);
+
+                new Element('button', {
+                    html   : QUILocale.get(lg, 'control.orders.backButton'),
+                    'class': 'quiqqer-order-control-order-backButton',
+                    events : {
+                        click: function (event) {
+                            event.stop();
+
+                            self.$hideOrderContainer().then(function () {
+                                return self.$showList();
+                            });
+
+                            self.$orderOpened = '';
+                        }
+                    }
+                }).inject(self.$OrderContainer);
             });
         },
 
@@ -86,6 +174,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                 );
 
                 QUI.parse(self.$List).then(function () {
+                    self.$setEvents();
                     self.Loader.hide();
                 });
             }, {
@@ -93,6 +182,150 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                 page     : page,
                 limit    : limit
             });
+        },
+
+        /**
+         * Set click / mouse / touch events
+         */
+        $setEvents: function () {
+            var self       = this;
+            var orderLinks = this.getElm().getElements(
+                '.quiqqer-order-profile-orders-order-header-orderId a'
+            );
+
+            orderLinks.addEvent('click', function (event) {
+                var Target = event.target;
+
+                if (Target.nodeName !== 'A') {
+                    Target = Target.getParent('a');
+                }
+
+                var hash = Target.get('data-hash');
+
+                if (!hash) {
+                    return;
+                }
+
+                self.Loader.show();
+
+                event.stop();
+
+                window.location.hash = hash;
+                self.$onChangeState();
+            });
+        },
+
+        //region utils
+
+        /**
+         * hide the order list
+         *
+         * @return {Promise}
+         */
+        $hideList: function () {
+            var self = this;
+
+            var elements = this.getElm().getElements(
+                '[data-qui="package/quiqqer/controls/bin/navigating/Pagination"]'
+            );
+
+            elements.push(self.$List);
+
+            return new Promise(function (resolve) {
+                elements.setStyle('position', 'relative');
+
+                moofx(elements).animate({
+                    left   : -20,
+                    opacity: 0
+                }, {
+                    callback: function () {
+                        elements.setStyle('display', 'none');
+                        resolve();
+                    }
+                });
+            });
+        },
+
+        /**
+         * show the order list
+         *
+         * @return {Promise}
+         */
+        $showList: function () {
+            var self = this;
+
+            var elements = this.getElm().getElements(
+                '[data-qui="package/quiqqer/controls/bin/navigating/Pagination"]'
+            );
+
+            elements.push(self.$List);
+
+            elements.setStyle('display', null);
+
+            return new Promise(function (resolve) {
+                moofx(elements).animate({
+                    left   : 0,
+                    opacity: 1
+                }, {
+                    callback: function () {
+                        self.$List.setStyles({
+                            left    : null,
+                            opacity : null,
+                            position: null
+                        });
+
+                        resolve();
+                    }
+                });
+            });
+        },
+
+        /**
+         * shows the order container
+         *
+         * @return {Promise}
+         */
+        $showOrderContainer: function () {
+            var self = this;
+
+            return new Promise(function (resolve) {
+                self.$OrderContainer.setStyles({
+                    left    : -20,
+                    opacity : 0,
+                    position: 'relative'
+                });
+
+                moofx(self.$OrderContainer).animate({
+                    left   : 0,
+                    opacity: 1
+                }, {
+                    callback: resolve
+                });
+            });
+        },
+
+        /**
+         * hide the order container
+         *
+         * @return {Promise}
+         */
+        $hideOrderContainer: function () {
+            var self = this;
+
+            return new Promise(function (resolve) {
+                moofx(self.$OrderContainer).animate({
+                    left   : -20,
+                    opacity: 0
+                }, {
+                    callback: function () {
+                        self.$OrderContainer.setStyle('display', '');
+                        self.$OrderContainer.set('html', '');
+                        resolve();
+                    }
+                });
+            });
         }
+
+        //endregion
     });
 });

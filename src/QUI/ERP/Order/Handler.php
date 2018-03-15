@@ -28,7 +28,7 @@ class Handler extends Singleton
     /**
      * @var array
      */
-    protected $cache = array();
+    protected $cache = [];
 
     /**
      * Return all order process Provider
@@ -46,7 +46,7 @@ class Handler extends Singleton
                 return $package['name'];
             }, QUI::getPackageManager()->getInstalled());
 
-            $providers = array();
+            $providers = [];
 
             foreach ($packages as $package) {
                 try {
@@ -63,7 +63,7 @@ class Handler extends Singleton
         }
 
         // filter provider
-        $result = array();
+        $result = [];
 
         foreach ($providers as $provider) {
             if (!class_exists($provider)) {
@@ -115,34 +115,34 @@ class Handler extends Singleton
      * An order has higher priority as an order in process
      *
      * @param string $hash - Order Hash
-     * @return Order|OrderInProcess
+     * @return Order|OrderInProcess|Order|Order
      *
      * @throws QUI\Exception
      * @throws Exception
      */
     public function getOrderByHash($hash)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'select' => 'id',
             'from'   => $this->table(),
-            'where'  => array(
+            'where'  => [
                 'hash' => $hash
-            ),
+            ],
             'limit'  => 1
-        ));
+        ]);
 
         if (isset($result[0])) {
             return $this->get($result[0]['id']);
         }
 
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'select' => 'id',
             'from'   => $this->tableOrderProcess(),
-            'where'  => array(
+            'where'  => [
                 'hash' => $hash
-            ),
+            ],
             'limit'  => 1
-        ));
+        ]);
 
         if (!isset($result[0])) {
             throw new Exception(
@@ -167,27 +167,27 @@ class Handler extends Singleton
      */
     public function getOrderById($id)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'select' => 'id',
             'from'   => $this->table(),
-            'where'  => array(
+            'where'  => [
                 'id' => $id
-            ),
+            ],
             'limit'  => 1
-        ));
+        ]);
 
         if (isset($result[0])) {
             return $this->get($result[0]['id']);
         }
 
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'select' => 'id',
             'from'   => $this->tableOrderProcess(),
-            'where'  => array(
+            'where'  => [
                 'id' => $id
-            ),
+            ],
             'limit'  => 1
-        ));
+        ]);
 
         if (!isset($result[0])) {
             throw new Exception(
@@ -209,13 +209,13 @@ class Handler extends Singleton
      */
     public function getOrderData($orderId)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'from'  => $this->table(),
-            'where' => array(
+            'where' => [
                 'id' => $orderId
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (!isset($result[0])) {
             throw new Exception(
@@ -342,14 +342,14 @@ class Handler extends Singleton
      */
     public function getOrdersInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
-        $result = array();
+        $result = [];
 
-        $list = QUI::getDataBase()->fetch(array(
+        $list = QUI::getDataBase()->fetch([
             'from'  => $this->tableOrderProcess(),
-            'where' => array(
+            'where' => [
                 'customerId' => $User->getId()
-            )
-        ));
+            ]
+        ]);
 
         foreach ($list as $entry) {
             try {
@@ -397,14 +397,14 @@ class Handler extends Singleton
      */
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'from'  => $this->tableOrderProcess(),
-            'where' => array(
+            'where' => [
                 'customerId' => $User->getId()
-            ),
+            ],
             'limit' => 1,
             'order' => 'c_date DESC'
-        ));
+        ]);
 
         if (!isset($result[0])) {
             throw new Exception(
@@ -426,13 +426,13 @@ class Handler extends Singleton
      */
     public function getOrderProcessData($orderId)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'from'  => $this->tableOrderProcess(),
-            'where' => array(
+            'where' => [
                 'id' => $orderId
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (!isset($result[0])) {
             throw new Exception(
@@ -467,19 +467,19 @@ class Handler extends Singleton
      */
     public function getBasketById($basketId)
     {
-        $data = QUI::getDataBase()->fetch(array(
+        $data = QUI::getDataBase()->fetch([
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => array(
+            'where' => [
                 'id' => $basketId
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (!isset($data[0])) {
-            throw new Basket\Exception(array(
+            throw new Basket\Exception([
                 'quiqqer/order',
                 'exception.basket.not.found'
-            ));
+            ]);
         }
 
         $basketData = $data[0];
@@ -499,19 +499,19 @@ class Handler extends Singleton
      */
     public function getBasketByHash($hash)
     {
-        $data = QUI::getDataBase()->fetch(array(
+        $data = QUI::getDataBase()->fetch([
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => array(
+            'where' => [
                 'hash' => $hash
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (!isset($data[0])) {
-            throw new Basket\Exception(array(
+            throw new Basket\Exception([
                 'quiqqer/order',
                 'exception.basket.not.found'
-            ));
+            ]);
         }
 
         $basketData = $data[0];
@@ -532,21 +532,21 @@ class Handler extends Singleton
     {
         $this->checkBasketPermissions($User);
 
-        $data = QUI::getDataBase()->fetch(array(
+        $data = QUI::getDataBase()->fetch([
             'select' => 'id',
             'from'   => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where'  => array(
+            'where'  => [
                 'uid' => $User->getId()
-            ),
+            ],
             'limit'  => 1
-        ));
+        ]);
 
 
         if (!isset($data[0])) {
-            throw new Basket\Exception(array(
+            throw new Basket\Exception([
                 'quiqqer/order',
                 'exception.basket.not.found'
-            ));
+            ]);
         }
 
         return new Basket\Basket($data[0]['id'], $User);
@@ -569,20 +569,20 @@ class Handler extends Singleton
 
         $this->checkBasketPermissions($User);
 
-        $data = QUI::getDataBase()->fetch(array(
+        $data = QUI::getDataBase()->fetch([
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => array(
+            'where' => [
                 'id'  => (int)$basketId,
                 'uid' => $User->getId()
-            ),
+            ],
             'limit' => 1
-        ));
+        ]);
 
         if (!isset($data[0])) {
-            throw new Basket\Exception(array(
+            throw new Basket\Exception([
                 'quiqqer/order',
                 'exception.basket.not.found'
-            ));
+            ]);
         }
 
         return $data[0];
@@ -613,10 +613,10 @@ class Handler extends Singleton
         };
 
         if ($hasPermissions() === false) {
-            throw new Basket\Exception(array(
+            throw new Basket\Exception([
                 'quiqqer/order',
                 'exception.basket.no.permissions'
-            ));
+            ]);
         }
     }
 

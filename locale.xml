@@ -558,6 +558,47 @@
             <de><![CDATA[Der Status der Bestellung wurde geändert in: [status]]]></de>
             <en><![CDATA[The status of the purchase order has been changed to: [status]]]></en>
         </locale>
+
+        <locale name="control.order.details.title">
+            <de><![CDATA[Bestelldetails]]></de>
+            <en><![CDATA[Order details]]></en>
+        </locale>
+        <locale name="control.order.details.date">
+            <de><![CDATA[Bestellungsdatum]]></de>
+            <en><![CDATA[Order date]]></en>
+        </locale>
+        <locale name="control.order.details.orderNo">
+            <de><![CDATA[Bestell-Nr.]]></de>
+            <en><![CDATA[Order no.]]></en>
+        </locale>
+        <locale name="control.order.details.invoice">
+            <de><![CDATA[Rechnung]]></de>
+            <en><![CDATA[Invoice]]></en>
+        </locale>
+        <locale name="control.order.invoiceAddress.title">
+            <de><![CDATA[Rechnungsaddresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="control.order.overview.title">
+            <de><![CDATA[Bestellübersicht]]></de>
+            <en><![CDATA[Order overview]]></en>
+        </locale>
+        <locale name="control.order.overview.subSum">
+            <de><![CDATA[Zwischensumme]]></de>
+            <en><![CDATA[Subtotal]]></en>
+        </locale>
+        <locale name="control.order.overview.sum">
+            <de><![CDATA[Gesammtsumme]]></de>
+            <en><![CDATA[Total]]></en>
+        </locale>
+        <locale name="control.order.article.title">
+            <de><![CDATA[Artikel]]></de>
+            <en><![CDATA[Article]]></en>
+        </locale>
+        <locale name="control.order.payment.title">
+            <de><![CDATA[Zahlungsart]]></de>
+            <en><![CDATA[Payment method]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
@@ -872,6 +913,16 @@
         <locale name="control.basket.button.text">
             <de><![CDATA[Warenkorb]]></de>
             <en><![CDATA[Basket]]></en>
+        </locale>
+
+        <locale name="control.order.window.title">
+            <de><![CDATA[Bestelldetails von Bestellnr. [orderId]]]></de>
+            <en><![CDATA[Order details of order no. [orderId]]]></en>
+        </locale>
+
+        <locale name="control.orders.backButton">
+            <de><![CDATA[Zurück zu den Bestellungen]]></de>
+            <en><![CDATA[Back to the orders]]></en>
         </locale>
     </groups>
 

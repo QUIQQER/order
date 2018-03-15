@@ -34,6 +34,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * OrderView constructor.
      *
      * @param Order $Order
+     *
+     * @throws QUI\Exception
      */
     public function __construct(Order $Order)
     {
@@ -114,11 +116,19 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getCreateDate()
     {
-        return $this->Order->getCreateDate();
+        $createDate = $this->Order->getCreateDate();
+        $createDate = strtotime($createDate);
+
+        $DateFormatter = QUI::getLocale()->getDateFormatter(
+            \IntlDateFormatter::SHORT,
+            \IntlDateFormatter::SHORT
+        );
+
+        return $DateFormatter->format($createDate);
     }
 
     /**
@@ -137,9 +147,22 @@ class OrderView extends QUI\QDOM implements OrderInterface
         return $this->Order->isPosted();
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return $this->Order->getData();
+    }
+
+    /**
+     * @return QUI\ERP\Accounting\Calculations
+     * @throws QUI\ERP\Exception
+     * @throws QUI\Exception
+     */
+    public function getPriceCalculation()
+    {
+        return $this->Order->getPriceCalculation();
     }
 
     /**
@@ -212,7 +235,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * @return \QUI\ERP\Accounting\Invoice\Invoice
-     * @throws \QUI\ERP\Accounting\Invoice\Exception
+     *
+     * @throws QUI\Exception
+     * @throws QUI\ERP\Accounting\Invoice\Exception
      */
     public function getInvoice()
     {

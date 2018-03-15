@@ -22,7 +22,7 @@ class UserOrders extends Control implements ControlInterface
      *
      * @param array $attributes
      */
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         $this->addCSSClass('quiqqer-order-profile-orders');
         $this->addCSSFile(dirname(__FILE__).'/UserOrders.css');
@@ -82,7 +82,7 @@ class UserOrders extends Control implements ControlInterface
             $orders[] = $View;
         }
 
-        $Engine->assign(array(
+        $Engine->assign([
             'orders'  => $orders,
             'this'    => $this,
             'Project' => $this->getProject(),
@@ -92,7 +92,7 @@ class UserOrders extends Control implements ControlInterface
             'sheetCurrent' => $sheetCurrent,
             'sheetLimit'   => $limit,
             'sheetCount'   => $count
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.html');
     }
@@ -138,7 +138,7 @@ class UserOrders extends Control implements ControlInterface
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
         }
 
-        $Engine->assign(array(
+        $Engine->assign([
             'this'          => $this,
             'Project'       => $this->getProject(),
             'Order'         => $Order,
@@ -153,7 +153,7 @@ class UserOrders extends Control implements ControlInterface
                 $this->getProject(),
                 $Order->getHash()
             )
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.Order.html');
     }
@@ -187,13 +187,13 @@ class UserOrders extends Control implements ControlInterface
 
         $Article->calc();
 
-        $Engine->assign(array(
+        $Engine->assign([
             'this'    => $this,
             'Article' => $Article,
             'Product' => $Product,
             'Image'   => $Image,
             'Project' => QUI::getProjectManager()->get()
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/UserOrders.Article.html');
     }

@@ -22,7 +22,7 @@ class BasketOrder
      *
      * @var QUI\ERP\Products\Product\ProductList
      */
-    protected $List = array();
+    protected $List = [];
 
     /**
      * @var QUI\Interfaces\Users\User
@@ -55,10 +55,10 @@ class BasketOrder
         }
 
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-            throw new Exception(array(
+            throw new Exception([
                 'quiqqer/order',
                 'exception.basket.not.found'
-            ), 404);
+            ], 404);
         }
 
         $this->List            = new ProductList();
@@ -124,6 +124,7 @@ class BasketOrder
      * Add a product to the basket
      *
      * @param Product $Product
+     * @throws QUI\Exception
      */
     public function addProduct(Product $Product)
     {
@@ -144,12 +145,12 @@ class BasketOrder
      *
      * @param array $products
      */
-    public function import($products = array())
+    public function import($products = [])
     {
         $this->clear();
 
         if (!is_array($products)) {
-            $products = array();
+            $products = [];
         }
 
         foreach ($products as $productData) {
@@ -182,43 +183,6 @@ class BasketOrder
      */
     public function save()
     {
-//        // save only product ids with custom fields, we need not more
-//        $result   = array();
-//        $products = $this->List->getProducts();
-//
-//        foreach ($products as $Product) {
-//            /* @var $Product Product */
-//            $fields = $Product->getFields();
-//
-//            $productData = array(
-//                'id'          => $Product->getId(),
-//                'title'       => $Product->getTitle(),
-//                'description' => $Product->getDescription(),
-//                'quantity'    => $Product->getQuantity(),
-//                'fields'      => array()
-//            );
-//
-//            /* @var $Field QUI\ERP\Products\Field\UniqueField */
-//            foreach ($fields as $Field) {
-//                if ($Field->isCustomField()) {
-//                    $productData['fields'][] = $Field->getAttributes();
-//                }
-//            }
-//
-//            $result[] = $productData;
-//        }
-//
-//        QUI::getDataBase()->update(
-//            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-//            array(
-//                'products' => json_encode($result),
-//                'hash'     => $this->hash
-//            ),
-//            array(
-//                'id'  => $this->getId(),
-//                'uid' => $this->User->getId()
-//            )
-//        );
     }
 
     /**
@@ -230,11 +194,11 @@ class BasketOrder
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = array();
+        $result   = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
-            $fields = array();
+            $fields = [];
 
             /* @var $Field \QUI\ERP\Products\Field\UniqueField */
             foreach ($Product->getFields() as $Field) {
@@ -249,17 +213,17 @@ class BasketOrder
                 $fields[$Field->getId()] = $Field->getValue();
             }
 
-            $result[] = array(
+            $result[] = [
                 'id'       => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
                 'fields'   => $fields
-            );
+            ];
         }
 
-        return array(
+        return [
             'id'       => $this->getId(),
             'products' => $result
-        );
+        ];
     }
 
     //region hash & orders
@@ -303,6 +267,13 @@ class BasketOrder
     public function getOrder()
     {
         return $this->Order;
+    }
+
+    /**
+     * placeholder for api
+     */
+    public function updateOrder()
+    {
     }
 
     //endregion

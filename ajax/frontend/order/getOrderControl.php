@@ -11,17 +11,20 @@
  * @return string
  */
 QUI::$Ajax->registerFunction(
-    'package_quiqqer_order_ajax_frontend_order_getControl',
-    function ($orderId) {
-        $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId' => (int)$orderId
+    'package_quiqqer_order_ajax_frontend_order_getOrderControl',
+    function ($orderHash) {
+        $OrderProcess = new QUI\ERP\Order\Controls\Order\Order([
+            'orderHash' => $orderHash
         ]);
 
         $Output = new QUI\Output();
         $result = $OrderProcess->create();
         $css    = QUI\Control\Manager::getCSS();
 
-        return $Output->parse($css.$result);
+        return [
+            'html' => $Output->parse($css.$result),
+            'data' => $OrderProcess->getOrder()->getView()->toArray()
+        ];
     },
-    ['orderId']
+    ['orderHash']
 );
