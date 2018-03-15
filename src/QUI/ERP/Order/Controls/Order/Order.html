@@ -58,24 +58,41 @@
         </header>
 
         <table class="quiqqer-order-control-order-information-orderData-table">
-            <tr>
-                <td>
+            <tr class="quiqqer-order-control-order-information-orderData-subSum">
+                <td class="quiqqer-order-control-order-information-orderData-subSum-title">
                     {locale group="quiqqer/order" var="control.order.overview.subSum"}
                 </td>
-                <td class="quiqqer-order-control-order-information-orderData-factor-subSum">
+                <td class="quiqqer-order-control-order-information-orderData-subSum-sum">
                     {$Calculation->getSubSum()->formatted()}
                 </td>
             </tr>
             {foreach $PriceFactors as $Factor}
-            <tr>
-                <td>{$Factor->getTitle()}</td>
+            <tr class="quiqqer-order-control-order-information-orderData-factor">
+                <td class="quiqqer-order-control-order-information-orderData-factor-title">
+                    {$Factor->getTitle()}
+                </td>
                 <td class="quiqqer-order-control-order-information-orderData-factor-sum">
                     {$Factor->getSumFormatted()}
                 </td>
             </tr>
             {/foreach}
+            {if count($PriceFactors)}
+            <tr class="quiqqer-order-control-order-information-orderData-placeholder">
+                <td>&nbsp;</td>
+            </tr>
+            {/if}
+            {foreach $Vats as $Vat}
+            <tr class="quiqqer-order-control-order-information-orderData-vat">
+                <td class="quiqqer-order-control-order-information-orderData-vat-title">
+                    {$Vat->getTitle()}
+                </td>
+                <td class="quiqqer-order-control-order-information-orderData-vat-sum">
+                    {$Vat->formatted()}
+                </td>
+            </tr>
+            {/foreach}
             <tr>
-                <td>
+                <td class="quiqqer-order-control-order-information-orderData-sum-title">
                     {locale group="quiqqer/order" var="control.order.overview.sum"}
                 </td>
                 <td class="quiqqer-order-control-order-information-orderData-sum">

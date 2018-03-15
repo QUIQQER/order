@@ -82,6 +82,7 @@ class Order extends QUI\Controls\Control
             'Articles'     => $View->getArticles(),
             'Invoice'      => $Invoice,
             'Calculation'  => $View->getPriceCalculation(),
+            'Vats'         => $View->getPriceCalculation()->getVat(),
             'PriceFactors' => $View->getArticles()->getPriceFactors(),
             'Payment'      => $View->getPayment()
         ]);
