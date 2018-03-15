@@ -16,10 +16,13 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
     'qui/controls/Control',
     'qui/controls/loader/Loader',
     'Ajax',
+    'Locale',
     'HistoryEvents'
 
-], function (QUI, QUIControl, QUILoader, QUIAjax) {
+], function (QUI, QUIControl, QUILoader, QUIAjax, QUILocale) {
     "use strict";
+
+    var lg = 'quiqqer/order';
 
     return new Class({
 
@@ -127,6 +130,22 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                             self.$hideList().then(function () {
                                 return self.$showOrderContainer();
                             });
+                        }
+                    }
+                }).inject(self.$OrderContainer);
+
+                new Element('button', {
+                    html   : QUILocale.get(lg, 'control.orders.backButton'),
+                    'class': 'quiqqer-order-control-order-backButton',
+                    events : {
+                        click: function (event) {
+                            event.stop();
+
+                            self.$hideOrderContainer().then(function () {
+                                return self.$showList();
+                            });
+
+                            self.$orderOpened = '';
                         }
                     }
                 }).inject(self.$OrderContainer);

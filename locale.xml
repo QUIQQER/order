@@ -919,6 +919,11 @@
             <de><![CDATA[Bestelldetails von Bestellnr. [orderId]]]></de>
             <en><![CDATA[Order details of order no. [orderId]]]></en>
         </locale>
+
+        <locale name="control.orders.backButton">
+            <de><![CDATA[Zurück zu den Bestellungen]]></de>
+            <en><![CDATA[Back to the orders]]></en>
+        </locale>
     </groups>
 
 </locales>

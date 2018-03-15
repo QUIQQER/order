@@ -17,6 +17,11 @@
     padding: 0 10px;
 }
 
+.quiqqer-order-control-order-backButton {
+    clear: both;
+    float: right;
+}
+
 /** Order information
  ==========================================  */
 
