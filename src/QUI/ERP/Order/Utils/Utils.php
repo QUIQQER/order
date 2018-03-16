@@ -127,6 +127,8 @@ class Utils
     }
 
     /**
+     * Return the order prefix for every order / order in process
+     *
      * @return string
      */
     public static function getOrderPrefix()
