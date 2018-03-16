@@ -6,9 +6,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
     'qui/QUI',
     'qui/controls/Control',
-    'package/quiqqer/order/bin/frontend/Orders'
+    'package/quiqqer/order/bin/frontend/Orders',
+    'Ajax'
 
-], function (QUI, QUIControl, Orders) {
+], function (QUI, QUIControl, Orders, QUIAjax) {
     "use strict";
 
     return new Class({
@@ -63,9 +64,69 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
         /**
          * Save the address via ajax
+         *
+         * @return {Promise}
          */
         save: function () {
+            // address data
+            var Parent   = this.getElm().getElement('.quiqqer-order-customerData-edit');
+            var formElms = Parent.getElements('input,select');
+            var address  = {};
 
+            var i, len, forElement;
+
+            for (i = 0, len = formElms.length; i < len; i++) {
+                forElement = formElms[i];
+
+                if (forElement.name === '') {
+                    continue;
+                }
+
+                address[forElement.name] = forElement.value;
+            }
+
+            // get order process for loader
+            var self         = this,
+                Loader       = null,
+                OrderProcess = null;
+
+            var OrderProcessNode = this.getElm().getParent(
+                '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+            );
+
+            if (OrderProcessNode) {
+                OrderProcess = QUI.Controls.getById(OrderProcessNode.get('data-quiid'));
+                Loader       = OrderProcess.Loader;
+            }
+
+            if (Loader) {
+                Loader.show();
+            }
+
+            // save the data
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_save', function (valid) {
+                    if (Loader) {
+                        Loader.hide();
+                    }
+
+                    // validate
+                    if (valid) {
+                        if (OrderProcess) {
+                            OrderProcess.refreshCurrentStep();
+                        } else {
+                            self.closeAddressEdit();
+                        }
+                    }
+
+                    resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    addressId: address.addressId,
+                    data     : JSON.encode(address)
+                });
+            });
         },
 
         /**
@@ -113,6 +174,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 EditContainer.setStyle('opacity', 0);
                 EditContainer.setStyle('display', 'inline');
 
+                // save event
+                EditContainer.getElement('[type="submit"]').addEvent('click', function (event) {
+                    event.stop();
+                    self.save();
+                });
+
                 return self.$fx(EditContainer, {
                     opacity: 1
                 });
@@ -129,7 +196,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
         /**
          * Close the address edit
          *
-         * @param {DOMEvent} event
+         * @param {DOMEvent} [event]
          * @return {Promise}
          */
         closeAddressEdit: function (event) {
