@@ -25,9 +25,9 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $this->getAttribute('Order');
 
-        $Engine->assign(array(
+        $Engine->assign([
             'User' => $Order->getCustomer()
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Finish.html');
     }
@@ -61,10 +61,10 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         if ($Order->isPosted() === false) {
-            throw new QUI\ERP\Order\Exception(array(
+            throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',
                 'exception.order.is.not.finished'
-            ));
+            ]);
         }
     }
 

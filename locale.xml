@@ -599,6 +599,11 @@
             <de><![CDATA[Zahlungsart]]></de>
             <en><![CDATA[Payment method]]></en>
         </locale>
+
+        <locale name="message.address.saved.successfully">
+            <de><![CDATA[Die Adresse wurde erfolgreich gespeichert.]]></de>
+            <en><![CDATA[The address has been saved successfully.]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

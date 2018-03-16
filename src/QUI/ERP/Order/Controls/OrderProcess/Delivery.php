@@ -26,9 +26,9 @@ class Delivery extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $this->getAttribute('Order');
 
-        $Engine->assign(array(
+        $Engine->assign([
             'User' => $Order->getCustomer()
-        ));
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Delivery.html');
     }

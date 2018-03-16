@@ -20,7 +20,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param array $attributes
      */
-    public function __construct($attributes = array())
+    public function __construct($attributes = [])
     {
         parent::__construct($attributes);
 
@@ -121,7 +121,6 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');
     }
 
-
     /**
      * @param null|QUI\Locale $Locale
      * @return string
@@ -144,9 +143,19 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function validate()
     {
-        $Order   = $this->getOrder();
-        $Address = $Order->getInvoiceAddress();
+        $this->validateAddress(
+            $this->getOrder()->getInvoiceAddress()
+        );
+    }
 
+    /**
+     * Checks if the address is valid for the order customer data
+     *
+     * @param QUI\Users\Address $Address
+     * @throws QUI\ERP\Order\Exception
+     */
+    public static function validateAddress(QUI\Users\Address $Address)
+    {
         $firstName = $Address->getAttribute('firstname');
         $lastName  = $Address->getAttribute('lastname');
         $street_no = $Address->getAttribute('street_no');
@@ -271,6 +280,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
+        // @todo validate vat id??
         $currentVat = $User->getAttribute('quiqqer.erp.euVatId');
 
         if (isset($_REQUEST['vatId']) && empty($currentVat)) {

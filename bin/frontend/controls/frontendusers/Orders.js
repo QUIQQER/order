@@ -88,6 +88,10 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                     }
                 });
             });
+
+            if (window.location.hash !== '') {
+                this.$onChangeState();
+            }
         },
 
         /**
@@ -145,7 +149,8 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                                 return self.$showList();
                             });
 
-                            self.$orderOpened = '';
+                            window.location.hash = '';
+                            self.$orderOpened    = '';
                         }
                     }
                 }).inject(self.$OrderContainer);
@@ -238,6 +243,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                     left   : -20,
                     opacity: 0
                 }, {
+                    duration: 250,
                     callback: function () {
                         elements.setStyle('display', 'none');
                         resolve();
@@ -267,6 +273,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                     left   : 0,
                     opacity: 1
                 }, {
+                    duration: 250,
                     callback: function () {
                         self.$List.setStyles({
                             left    : null,
@@ -299,6 +306,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                     left   : 0,
                     opacity: 1
                 }, {
+                    duration: 250,
                     callback: resolve
                 });
             });
@@ -317,6 +325,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                     left   : -20,
                     opacity: 0
                 }, {
+                    duration: 250,
                     callback: function () {
                         self.$OrderContainer.setStyle('display', '');
                         self.$OrderContainer.set('html', '');
