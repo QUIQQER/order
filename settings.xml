@@ -12,6 +12,10 @@
                     <type><![CDATA[string]]></type>
                     <defaultvalue>onOrder</defaultvalue>
                 </conf>
+                <conf name="prefix">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue><![CDATA[%Y-]]></defaultvalue>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -66,6 +70,16 @@
                                 <locale group="quiqqer/order" var="order.settings.autoInvoice.byPayment"/>
                             </option>
                         </select>
+
+                        <input type="text" conf="order.prefix">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.prefix"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.prefix.description"/>
+                            </description>
+                        </input>
                     </settings>
 
                     <settings title="order" name="order">

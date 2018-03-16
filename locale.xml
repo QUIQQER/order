@@ -465,6 +465,26 @@
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
         </locale>
+        <locale name="order.settings.order.prefix">
+            <de><![CDATA[Präfix für Bestellnummern]]></de>
+            <en><![CDATA[Prefix for order numbers]]></en>
+        </locale>
+        <locale name="order.settings.order.prefix.description">
+            <de><![CDATA[
+            Präfixe für die Bestellnummern können auch mit Datumsformatierungen umgehen.
+            Mögliche Datumsformate finden Sie unter:
+            <a href="http://php.net/manual/de/function.strftime.php#refsect1-function.strftime-parameters" target="_blank">
+                http://php.net/manual/de/function.strftime.php#refsect1-function.strftime-parameters
+            </a>
+            ]]></de>
+            <en><![CDATA[
+            Prefixes for order numbers can also handle date formatting.
+            For possible date formats, see:
+            <a href="http://php.net/manual/de/function.strftime.php#refsect1-function.strftime-parameters" target="_blank">
+                http://php.net/manual/de/function.strftime.php#refsect1-function.strftime-parameters
+            </a>
+            ]]></en>
+        </locale>
 
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>

@@ -134,7 +134,7 @@ class Utils
         try {
             $Package = QUI::getPackage('quiqqer/order');
             $Config  = $Package->getConfig();
-            $setting = $Config->getValue('invoice', 'prefix');
+            $setting = $Config->getValue('order', 'prefix');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
@@ -145,6 +145,12 @@ class Utils
             return date('Y').'-';
         }
 
-        return $setting;
+        $prefix = strftime($setting);
+
+        if (mb_strlen($prefix) < 100) {
+            return $prefix;
+        }
+
+        return mb_substr($prefix, 0, 100);
     }
 }
