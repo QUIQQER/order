@@ -17,6 +17,11 @@ use QUI;
 class Settings extends QUI\Utils\Singleton
 {
     /**
+     * @var null
+     */
+    protected $isInvoiceInstalled = null;
+
+    /**
      * @var array
      */
     protected $settings = [];
@@ -66,7 +71,98 @@ class Settings extends QUI\Utils\Singleton
         $this->settings[$section][$key] = $value;
     }
 
-    //region special settings
+    /**
+     * Is the invoice module installed?
+     *
+     * @return bool|null
+     */
+    protected function isInvoiceInstalled()
+    {
+        if ($this->isInvoiceInstalled === null) {
+            try {
+                QUI::getPackage('quiqqer/invoice');
+                $this->isInvoiceInstalled = true;
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+                $this->isInvoiceInstalled = false;
+            }
+        }
+
+        return $this->isInvoiceInstalled;
+    }
+
+    //region invoice settings
+
+    /**
+     * Create invoice directly on order creation
+     *
+     * @return bool
+     */
+    public function createInvoiceOnOrder()
+    {
+        if ($this->isInvoiceInstalled() === false) {
+            return false;
+        }
+
+        try {
+            $Package = QUI::getPackage('quiqqer/order');
+            $Config  = $Package->getConfig();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return false;
+        }
+
+        return $Config->get('order', 'autoInvoice') === 'onOrder';
+    }
+
+    /**
+     * Create invoice if the order is paid
+     *
+     * @return bool
+     */
+    public function createInvoiceOnPaid()
+    {
+        if ($this->isInvoiceInstalled() === false) {
+            return false;
+        }
+
+
+        try {
+            $Package = QUI::getPackage('quiqqer/order');
+            $Config  = $Package->getConfig();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return false;
+        }
+
+        return $Config->get('order', 'autoInvoice') === 'onPaid';
+    }
+
+    /**
+     * Create invoice if the payment said it
+     *
+     * @return bool
+     */
+    public function createInvoiceByPayment()
+    {
+        if ($this->isInvoiceInstalled() === false) {
+            return false;
+        }
+
+
+        try {
+            $Package = QUI::getPackage('quiqqer/order');
+            $Config  = $Package->getConfig();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return false;
+        }
+
+        return $Config->get('order', 'autoInvoice') === 'byPayment';
+    }
 
     //endregion
 }

@@ -65,6 +65,8 @@ class Order extends AbstractOrder implements OrderInterface
      * Return the view object
      *
      * @return OrderView
+     *
+     * @throws QUI\Exception
      */
     public function getView()
     {
