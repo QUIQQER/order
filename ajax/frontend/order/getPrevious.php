@@ -14,11 +14,11 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getPrevious',
     function ($orderId, $current, $orderHash) {
-        $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
+        $OrderProcess = new QUI\ERP\Order\OrderProcess([
             'orderId'   => (int)$orderId,
             'orderHash' => $orderHash,
             'step'      => $current
-        ));
+        ]);
 
         $Previous = $OrderProcess->getPreviousStep();
 
@@ -28,11 +28,12 @@ QUI::$Ajax->registerFunction(
 
         $OrderProcess->setAttribute('step', $Previous->getName());
 
-        return array(
+        return [
             'html' => $OrderProcess->create(),
             'step' => $Previous->getName(),
-            'url'  => $OrderProcess->getStepUrl($Previous->getName())
-        );
+            'url'  => $OrderProcess->getStepUrl($Previous->getName()),
+            'hash' => $OrderProcess->getStepHash()
+        ];
     },
-    array('orderId', 'current', 'orderHash')
+    ['orderId', 'current', 'orderHash']
 );

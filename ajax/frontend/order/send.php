@@ -17,11 +17,11 @@ QUI::$Ajax->registerFunction(
         $_REQUEST['current']        = $current;
         $_REQUEST['payableToOrder'] = true;
 
-        $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
+        $OrderProcess = new QUI\ERP\Order\OrderProcess([
             'orderId'   => (int)$orderId,
             'orderHash' => $orderHash,
             'step'      => $current
-        ));
+        ]);
 
         $result = $OrderProcess->create();
         $next   = false;
@@ -30,11 +30,12 @@ QUI::$Ajax->registerFunction(
             $next = $OrderProcess->getNextStep()->getName();
         }
 
-        return array(
+        return [
             'html' => $result,
             'step' => $next,
-            'url'  => $OrderProcess->getStepUrl($next)
-        );
+            'url'  => $OrderProcess->getStepUrl($next),
+            'hash' => $OrderProcess->getStepHash()
+        ];
     },
-    array('orderId', 'current', 'orderHash')
+    ['orderId', 'current', 'orderHash']
 );

@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
         $data    = json_decode($data, true);
 
         if ($Address === null) {
-            return;
+            return false;
         }
 
         $fields = [
