@@ -26,7 +26,7 @@
 
 .quiqqer-order-customerData label span {
     float: left;
-    width: 40%;
+    width: 50%;
 }
 
 .quiqqer-order-customerData label input,
@@ -75,10 +75,23 @@
     width: 60%;
 }
 
+.quiqqer-order-customerData-display {
+    clear: both;
+    float: left;
+    max-width: 400px;
+    padding-right: 50px;
+    position: relative;
+    width: 100%;
+}
+
 .quiqqer-order-customerData-display label {
     float: left;
     margin-bottom: 0;
     width: 100%;
+}
+
+.quiqqer-order-customerData-edit label span {
+    width: 40%;
 }
 
 .quiqqer-order-customerData-display-address {
@@ -118,6 +131,16 @@
 
 .quiqqer-order-customerData .fa-check {
     color: #75b947;
+}
+
+.quiqqer-order-customerData [name="open-edit"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.quiqqer-order-customerData [name="open-edit"] .quiqqer-order-customerData-edit-text {
+    display: none;
 }
 
 /** comment
