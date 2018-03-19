@@ -16,10 +16,10 @@ QUI::$Ajax->registerFunction(
     function ($orderId, $step, $orderHash) {
         $_REQUEST['current'] = $step;
 
-        $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
+        $OrderProcess = new QUI\ERP\Order\OrderProcess([
             'orderId'   => (int)$orderId,
             'orderHash' => $orderHash
-        ));
+        ]);
 
         $Current = $OrderProcess->getCurrentStep();
 
@@ -31,11 +31,12 @@ QUI::$Ajax->registerFunction(
         $html    = $OrderProcess->create();
         $current = $OrderProcess->getCurrentStep()->getName();
 
-        return array(
+        return [
             'html' => $html,
             'step' => $current,
-            'url'  => $OrderProcess->getStepUrl($Current->getName())
-        );
+            'url'  => $OrderProcess->getStepUrl($Current->getName()),
+            'hash' => $OrderProcess->getStepHash()
+        ];
     },
-    array('orderId', 'step', 'orderHash')
+    ['orderId', 'step', 'orderHash']
 );

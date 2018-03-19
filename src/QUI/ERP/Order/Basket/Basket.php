@@ -100,6 +100,15 @@ class Basket
     }
 
     /**
+     * Set the basket as ordered successful
+     */
+    public function successful()
+    {
+        $this->List->clear();
+        $this->hash = null;
+    }
+
+    /**
      * @return int
      */
     public function count()

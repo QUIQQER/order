@@ -115,6 +115,12 @@ class OrderProcess extends QUI\Control
             $this->Basket->setHash($Order->getHash());
             $this->Basket->updateOrder();
             $this->Basket->save();
+
+            if ($Order->isSuccessful()) {
+                $this->setAttribute('orderHash', $Order->getHash());
+            }
+
+            $this->cleanup();
         }
 
         // current step
@@ -124,7 +130,9 @@ class OrderProcess extends QUI\Control
         // order is successfull, so no other step must be shown
         if ($Order && $Order->isSuccessful()) {
             $LastStep = end($steps);
+
             $this->setAttribute('step', $LastStep->getName());
+            $this->setAttribute('orderHash', $Order->getHash());
 
             return;
         }
@@ -149,6 +157,8 @@ class OrderProcess extends QUI\Control
         $Processing = new Controls\OrderProcess\Processing();
 
         if ($Processing->getName() === $step) {
+            $this->setAttribute('orderHash', $Order->getHash());
+
             return;
         }
 
@@ -249,7 +259,42 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('current', 'finish');
         $this->setAttribute('step', 'finish');
 
+        // set all to successful
+        $this->cleanup();
+
         $this->Events->fireEvent('send', [$this]);
+    }
+
+    /**
+     * Cleanup stuff, look if smth is not needed anymore
+     */
+    protected function cleanup()
+    {
+        // set all to successful
+        if (!$this->Order->isSuccessful()) {
+            return;
+        }
+
+        // if temp order exist, kill it
+        try {
+            $Order = Handler::getInstance()->getOrderInProcessByHash($this->Order->getHash());
+            $Order->delete();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        if (method_exists($this->Basket, 'successful')) {
+            $this->Basket->successful();
+            $this->Basket->save();
+        } else {
+            try {
+                $Basket = Handler::getInstance()->getBasketByHash($this->Order->getHash());
+                $Basket->successful();
+                $Basket->save();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
     }
 
     /**
@@ -621,11 +666,15 @@ class OrderProcess extends QUI\Control
         $Processing = new Controls\OrderProcess\Processing();
 
         if ($step === $Processing->getName() && !$Order->isSuccessful()) {
+            $this->setAttribute('orderHash', $Order->getHash());
+
             return $Processing;
         }
 
         // if order are successful -> then show the finish step
         if ($Order->isSuccessful()) {
+            $this->setAttribute('orderHash', $Order->getHash());
+
             return new Controls\OrderProcess\Finish([
                 'Order' => $Order
             ]);
@@ -836,6 +885,20 @@ class OrderProcess extends QUI\Control
         }
 
         return trim($url);
+    }
+
+    /**
+     * Return the hash of the order, if the order process needed it
+     *
+     * @return string
+     */
+    public function getStepHash()
+    {
+        if ($this->getAttribute('orderHash') && $this->Order) {
+            return $this->Order->getHash();
+        }
+
+        return '';
     }
 
     /**

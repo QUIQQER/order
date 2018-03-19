@@ -330,25 +330,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             $Order->setSuccessfulStatus();
         }
 
-        // clear basket
-        try {
-            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketByHash(
-                $this->getHash()
-            );
-
-            $Basket->clear();
-            $Basket->save();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-        }
-
         // create invoice?
         $Config = QUI::getPackage('quiqqer/order')->getConfig();
 
         if ($Config->get('order', 'autoInvoice') === 'onOrder') {
             $Order->post();
         }
-
 
         return $Order;
     }

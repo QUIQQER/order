@@ -335,6 +335,36 @@ class Handler extends Singleton
     }
 
     /**
+     * Return a Order which is in processing
+     *
+     * @param string $hash - hash of the order
+     * @return OrderInProcess
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\ERP\Exception
+     */
+    public function getOrderInProcessByHash($hash)
+    {
+        $result = QUI::getDataBase()->fetch([
+            'select' => 'id',
+            'from'   => $this->tableOrderProcess(),
+            'where'  => [
+                'hash' => $hash
+            ],
+            'limit'  => 1
+        ]);
+
+        if (!isset($result[0])) {
+            throw new Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                self::ERROR_ORDER_NOT_FOUND
+            );
+        }
+
+        return $this->getOrderInProcess($result[0]['id']);
+    }
+
+    /**
      * Return all orders in process from a user
      *
      * @param QUI\Interfaces\Users\User $User
