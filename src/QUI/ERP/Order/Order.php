@@ -207,7 +207,6 @@ class Order extends AbstractOrder implements OrderInterface
         return $this->isPosted();
     }
 
-
     /**
      * Post the order -> Create an invoice for the order
      * alias for createInvoice()
@@ -215,6 +214,8 @@ class Order extends AbstractOrder implements OrderInterface
      * @return QUI\ERP\Accounting\Invoice\Invoice
      *
      * @throws QUI\Exception
+     *
+     * @deprecated use createInvoice
      */
     public function post()
     {
