@@ -605,7 +605,8 @@ abstract class AbstractOrder extends QUI\QDOM
     {
         if ($address instanceof QUI\ERP\Address ||
             $address instanceof QUI\Users\Address) {
-            $this->addressInvoice = $address->getAttributes();
+            $this->addressInvoice       = $address->getAttributes();
+            $this->addressInvoice['id'] = $address->getId();
 
             return;
         }
