@@ -76,7 +76,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return bool|null
      */
-    protected function isInvoiceInstalled()
+    public function isInvoiceInstalled()
     {
         if ($this->isInvoiceInstalled === null) {
             try {

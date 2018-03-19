@@ -86,6 +86,13 @@ class Order extends AbstractOrder implements OrderInterface
             return $this->getInvoice();
         }
 
+        if (!Settings::getInstance()->isInvoiceInstalled()) {
+            throw new QUI\Exception([
+                'quiqqer/order',
+                'exception.invoice.is.not.installed'
+            ]);
+        }
+
         $InvoiceFactory   = QUI\ERP\Accounting\Invoice\Factory::getInstance();
         $TemporaryInvoice = $InvoiceFactory->createInvoice(null, $this->getHash());
 
@@ -449,6 +456,11 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID) {
             $this->setSuccessfulStatus();
+
+            // create invoice?
+            if (Settings::getInstance()->createInvoiceOnPaid()) {
+                $this->createInvoice();
+            }
         }
 
         // Payment Status has changed
