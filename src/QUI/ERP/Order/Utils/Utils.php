@@ -10,6 +10,7 @@ use QUI;
 
 /**
  * Class Utils
+ * Helper to get some stuff (urls and information's) easier for the the order
  *
  * @package QUI\ERP\Order\Utils
  */
@@ -74,15 +75,11 @@ class Utils
             self::$url = self::getOrderProcess($Project)->getUrlRewritten();
         }
 
-        try {
-            if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
-                $url = self::$url;
-                $url = $url.'/'.$Step->getName();
+        if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
+            $url = self::$url;
+            $url = $url.'/'.$Step->getName();
 
-                return $url;
-            }
-        } catch (\ReflectionException $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
+            return $url;
         }
 
         return self::$url;
@@ -127,6 +124,59 @@ class Utils
     }
 
     /**
+     * @param QUI\Projects\Project $Project
+     * @param QUI\ERP\Order\OrderInterface $Order
+     *
+     * @return string
+     */
+    public static function getOrderProfileUrl(QUI\Projects\Project $Project, $Order)
+    {
+        if (!($Order instanceof QUI\ERP\Order\Order) &&
+            !($Order instanceof QUI\ERP\Order\OrderView) &&
+            !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
+            return '';
+        }
+
+        $sites = $Project->getSites([
+            'where' => [
+                'type' => 'quiqqer/frontend-users:types/profile'
+            ],
+            'limit' => 1
+        ]);
+
+        if (!isset($sites[0])) {
+            return '';
+        }
+
+        /* @var $Site QUI\Projects\Site */
+        $Site = $sites[0];
+
+        try {
+            $url = $Site->getUrlRewritten();
+        } catch (QUI\Exception $Exception) {
+            return '';
+        }
+
+        $ending = false;
+
+        if (strpos($url, '.html')) {
+            $url    = str_replace('.html', '', $url);
+            $ending = true;
+        }
+
+        // parse the frontend users category
+        $url .= '/erp/erp-order#'.$Order->getHash();
+
+        if ($ending) {
+            $url .= '.html';
+        }
+
+        return $url;
+    }
+
+    /**
+     * Return the order prefix for every order / order in process
+     *
      * @return string
      */
     public static function getOrderPrefix()

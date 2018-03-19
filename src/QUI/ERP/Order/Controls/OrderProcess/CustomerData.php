@@ -295,7 +295,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     }
 
     /**
-     * @param $addressId
+     * Return the address by its id
+     *
+     * @param integer $addressId
      * @return false|null|QUI\Users\Address
      */
     protected function getAddressById($addressId)
@@ -344,6 +346,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 return $User->getAddress($Address->getId());
             }
         } catch (QUi\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         try {
@@ -353,12 +356,14 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 return $User->getAddress($Address->getId());
             }
         } catch (QUi\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         if ($User->getAttribute('quiqqer.erp.address')) {
             try {
                 return $User->getAddress($User->getAttribute('quiqqer.erp.address'));
             } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
             }
         }
 
@@ -366,6 +371,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             /* @var $User QUI\Users\User */
             return $User->getStandardAddress();
         } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         return null;
