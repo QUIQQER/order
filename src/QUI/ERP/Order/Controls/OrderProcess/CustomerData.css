@@ -143,6 +143,11 @@
     display: none;
 }
 
+.quiqqer-order-customerData-edit [type="submit"] {
+    margin-left: 40%;
+    width: 60%;
+}
+
 /** comment
  ========================================== */
 
