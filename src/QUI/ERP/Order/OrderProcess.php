@@ -478,6 +478,11 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('step', $Current->getName());
         $this->setAttribute('data-url', Utils\Utils::getOrderProcess($Project)->getUrlRewritten());
 
+        if ($Current instanceof Controls\OrderProcess\Finish) {
+            $next     = false;
+            $previous = false;
+        }
+
         $Engine->assign([
             'listWidth'          => floor(100 / count($this->getSteps())),
             'this'               => $this,

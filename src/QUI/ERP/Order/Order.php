@@ -65,6 +65,8 @@ class Order extends AbstractOrder implements OrderInterface
      * Return the view object
      *
      * @return OrderView
+     *
+     * @throws QUI\Exception
      */
     public function getView()
     {
@@ -82,6 +84,13 @@ class Order extends AbstractOrder implements OrderInterface
     {
         if ($this->isPosted()) {
             return $this->getInvoice();
+        }
+
+        if (!Settings::getInstance()->isInvoiceInstalled()) {
+            throw new QUI\Exception([
+                'quiqqer/order',
+                'exception.invoice.is.not.installed'
+            ]);
         }
 
         $InvoiceFactory   = QUI\ERP\Accounting\Invoice\Factory::getInstance();
@@ -207,7 +216,6 @@ class Order extends AbstractOrder implements OrderInterface
         return $this->isPosted();
     }
 
-
     /**
      * Post the order -> Create an invoice for the order
      * alias for createInvoice()
@@ -215,6 +223,8 @@ class Order extends AbstractOrder implements OrderInterface
      * @return QUI\ERP\Accounting\Invoice\Invoice
      *
      * @throws QUI\Exception
+     *
+     * @deprecated use createInvoice
      */
     public function post()
     {
@@ -446,6 +456,11 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID) {
             $this->setSuccessfulStatus();
+
+            // create invoice?
+            if (Settings::getInstance()->createInvoiceOnPaid()) {
+                $this->createInvoice();
+            }
         }
 
         // Payment Status has changed

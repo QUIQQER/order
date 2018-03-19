@@ -100,6 +100,16 @@
             Please fill in the field <strong>[field]</strong> correctly.
             ]]></en>
         </locale>
+        <locale name="exception.invoice.is.not.installed">
+            <de><![CDATA[
+            Das Invoice-Modul ist nicht installiert. Diese Funktion kann nicht genutzt werden.<br />
+            Bitte installieren Sie quiqqer/invoice um Rechnungen erstellen zu können.
+            ]]></de>
+            <en><![CDATA[
+            The Invoice module is not installed. This function cannot be used.<br />
+            Please install quiqqer/invoice to create invoices.
+            ]]></en>
+        </locale>
 
         <locale name="message.select.customer">
             <de><![CDATA[Bitte wählen Sie einen Kunden aus.]]></de>

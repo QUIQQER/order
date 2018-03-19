@@ -331,10 +331,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         // create invoice?
-        $Config = QUI::getPackage('quiqqer/order')->getConfig();
-
-        if ($Config->get('order', 'autoInvoice') === 'onOrder') {
-            $Order->post();
+        if (Settings::getInstance()->createInvoiceOnOrder()) {
+            $Order->createInvoice();
         }
 
         return $Order;
