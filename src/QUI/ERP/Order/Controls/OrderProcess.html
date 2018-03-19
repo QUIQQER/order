@@ -14,35 +14,37 @@
     >
 {/if}
     <div class="quiqqer-order-ordering-timeline">
-        <ul>
-            {strip}
-            {assign var=cssClass value="active"}
-            {foreach $steps as $step => $Step}
-                {if $CurrentStep == $Step}
-                    {assign var=cssClass value="current"}
-                {/if}
+        <div class="quiqqer-order-ordering-timeline-container">
+            <ul>
+                {strip}
+                {assign var=cssClass value="active"}
+                {foreach $steps as $step => $Step}
+                    {if $CurrentStep == $Step}
+                        {assign var=cssClass value="current"}
+                    {/if}
 
-                <li style="width: {$listWidth}%;" class="{$cssClass}"
-                    data-step="{$Step->getName()}"
-                    data-icon="{$Step->getIcon()}"
-                >
-                {if $Step->getName() === 'finish'}
-                    <span class="title">{$Step->getTitle()}</span>
-                    <span class="fa fa-check-circle"></span>
-                {else if}
-                    <a href="{$this->getStepUrl($step)}">
+                    <li style="width: {$listWidth}%;" class="{$cssClass}"
+                        data-step="{$Step->getName()}"
+                        data-icon="{$Step->getIcon()}"
+                    >
+                    {if $Step->getName() === 'finish'}
                         <span class="title">{$Step->getTitle()}</span>
                         <span class="fa fa-check-circle"></span>
-                    </a>
-                {/if}
-                </li>
+                    {else if}
+                        <a href="{$this->getStepUrl($step)}">
+                            <span class="title">{$Step->getTitle()}</span>
+                            <span class="fa fa-check-circle"></span>
+                        </a>
+                    {/if}
+                    </li>
 
-                {if $CurrentStep == $Step}
-                    {assign var=cssClass value=""}
-                {/if}
-            {/foreach}
-            {strip}
-        </ul>
+                    {if $CurrentStep == $Step}
+                        {assign var=cssClass value=""}
+                    {/if}
+                {/foreach}
+                {strip}
+            </ul>
+        </div>
     </div>
 
     {if $error}

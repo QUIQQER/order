@@ -132,3 +132,23 @@
 .quiqqer-order-ordering-buttons-next {
     float: right;
 }
+
+@media (max-width: 768px) {
+    .quiqqer-order-ordering-timeline {
+        white-space: nowrap;
+        overflow: auto;
+    }
+
+    .quiqqer-order-ordering-timeline-container {
+        float: left;
+        height: 100px;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .quiqqer-order-ordering-timeline li {
+        display: inline-block;
+        float: none;
+        width: 175px !important;
+    }
+}
