@@ -43,6 +43,10 @@
     background: #eaeff4;
 }
 
+.monospace {
+    font-family: monospace, monospace;
+}
+
 /** Invoice details
  ================================================= */
 

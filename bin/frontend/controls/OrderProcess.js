@@ -123,10 +123,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 });
             }
 
-            this.$Buttons       = this.getElm().getElement('.quiqqer-order-ordering-buttons');
-            this.$StepContainer = this.getElm().getElement('.quiqqer-order-ordering-step');
-            this.$Timeline      = this.getElm().getElement('.quiqqer-order-ordering-timeline');
-            this.$Form          = this.getElm().getElement('[name="order"]');
+            this.$Buttons           = this.getElm().getElement('.quiqqer-order-ordering-buttons');
+            this.$StepContainer     = this.getElm().getElement('.quiqqer-order-ordering-step');
+            this.$Timeline          = this.getElm().getElement('.quiqqer-order-ordering-timeline');
+            this.$TimelineContainer = this.getElm().getElement('.quiqqer-order-ordering-timeline-container');
+            this.$Form              = this.getElm().getElement('[name="order"]');
 
             if (this.getAttribute('buttons') === false) {
                 this.$Buttons.setStyle('display', 'none');
@@ -136,10 +137,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
 
-            var Current = this.$Timeline.getFirst('ul li.current');
+            var Current = this.$TimelineContainer.getFirst('ul li.current');
 
             if (!Current) {
-                Current = this.$Timeline.getFirst('ul li');
+                Current = this.$TimelineContainer.getFirst('ul li');
             }
 
             this.setAttribute('current', Current.get('data-step'));
@@ -303,7 +304,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var self = this;
 
             if (!parseInt(this.$Form.get('data-products-count'))) {
-                var FirstLi = this.$Timeline.getElement('li:first-child');
+                var FirstLi = this.$TimelineContainer.getElement('li:first-child');
                 step        = FirstLi.get('data-step');
             }
 
@@ -357,7 +358,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var FirstLi   = this.$Timeline.getElement('li:first-child'),
+            var FirstLi   = this.$TimelineContainer.getElement('li:first-child'),
                 firstStep = FirstLi.get('data-step');
 
             var current = this.getCurrentStepData();
@@ -420,7 +421,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         getCurrentStepData: function () {
             var current = this.getAttribute('current');
-            var Step    = this.$Timeline.getElement('li[data-step="' + current + '"]');
+            var Step    = this.$TimelineContainer.getElement('li[data-step="' + current + '"]');
 
             if (!Step) {
                 return {
@@ -472,7 +473,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             if (TimeLine) {
                 // refresh the timeline
-                this.$Timeline.set('html', TimeLine.get('html'));
+                this.$TimelineContainer.set('html', TimeLine.get('html'));
             }
 
             // render container
@@ -590,7 +591,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $refreshSteps: function () {
             var current = this.getAttribute('current');
-            var list    = this.$Timeline.getElements('li');
+            var list    = this.$TimelineContainer.getElements('li');
 
             list.removeClass('current');
             list.removeClass('active');
@@ -620,7 +621,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Previous.addEvent('click', this.$onPreviousClick);
 
             var self = this,
-                list = this.$Timeline.getElements('li');
+                list = this.$TimelineContainer.getElements('li');
 
             list.removeEvents('click');
 
