@@ -584,6 +584,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $endResultRendering: function () {
             this.$runningAnimation = false;
+            this.fireEvent('stepLoaded', [this]);
         },
 
         /**

@@ -252,8 +252,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * Add a product to the basket
          *
          * @param {Number|Object} product
-         * @param {Number} quantity
-         * @param {Object} fields
+         * @param {Number} [quantity]
+         * @param {Object} [fields]
          */
         addProduct: function (product, quantity, fields) {
             var self      = this;
@@ -319,19 +319,44 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * Remove product pos
          *
          * @param pos
+         * @return {Promise}
          */
         removeProductPos: function (pos) {
             var self  = this,
                 index = pos - 1;
 
             if (typeof this.$products[index] === 'undefined') {
-                return;
+                return Promise.resolve();
             }
 
             this.fireEvent('refreshBegin', [this]);
             this.$products.splice(index, 1);
-            this.save().then(function () {
+
+            return this.save().then(function () {
                 self.fireEvent('refresh', [self]);
+            });
+        },
+
+        /**
+         * Clears the basket
+         *
+         * @return {Promise}
+         */
+        clear: function () {
+            var self = this;
+
+            return new Promise(function (resolve) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_clear', function (result) {
+                    self.$calculations = result;
+                    self.$products     = [];
+
+                    self.fireEvent('refresh', [self]);
+
+                    resolve(result);
+                }, {
+                    'package': 'quiqqer/order',
+                    basketId : self.$basketId
+                });
             });
         },
 
