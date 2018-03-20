@@ -256,6 +256,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'integer',
                     width    : 80
                 }, {
+                    header   : QUILocale.get(lg, 'grid.hash'),
+                    dataIndex: 'hash',
+                    dataType : 'string',
+                    width    : 280,
+                    className: 'monospace'
+                }, {
                     header   : QUILocale.get(lg, 'grid.customerNo'),
                     dataIndex: 'customer_id',
                     dataType : 'integer',
@@ -326,7 +332,19 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$Grid.addEvents({
                 onRefresh : this.refresh,
                 onClick   : this.$refreshButtonStatus,
-                onDblClick: function () {
+                onDblClick: function (data) {
+                    if (data.cell.get('data-index') === 'customer_id' ||
+                        data.cell.get('data-index') === 'customer_name') {
+
+                        require(['utils/Panels'], function (PanelUtils) {
+                            PanelUtils.openUserPanel(
+                                self.$Grid.getDataByRow(data.row).customer_id
+                            );
+                        });
+
+                        return;
+                    }
+
                     self.openOrder(self.$Grid.getSelectedData()[0].id);
                 }
             });
