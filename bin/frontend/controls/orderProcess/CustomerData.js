@@ -150,6 +150,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             var VatId        = Elm.getElement('[name="vatId"]');
             var Company      = Elm.getElement('[name="company"]');
             var BusinessType = Elm.getElement('[name="businessType"]');
+            var OrderProcess = self.$getOrderProcess();
 
             if (VatId.value !== '') {
                 VatId.disabled = true;
@@ -190,6 +191,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
                 EditContainer.setStyle('display', 'inline');
                 Container.setStyle('height', null);
+
+                if (OrderProcess) {
+                    OrderProcess.resize();
+                }
             });
         },
 
@@ -211,6 +216,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 EditContainer    = Elm.getElement('.quiqqer-order-customerData-edit'),
                 Header           = Elm.getElement('.quiqqer-order-customerData header');
 
+            var OrderProcess = self.$getOrderProcess();
+
             return this.$fx(EditContainer, {
                 opacity: 0
             }).then(function () {
@@ -228,6 +235,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
                 return self.$fx(DisplayContainer, {
                     opacity: 1
+                }).then(function () {
+                    if (OrderProcess) {
+                        OrderProcess.resize();
+                    }
                 });
             });
         },
@@ -348,6 +359,29 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     callback: resolve
                 });
             });
+        },
+
+        /**
+         * Return the parent order process
+         *
+         * @return {null}
+         */
+        $getOrderProcess: function () {
+            var OrderProcessNode = this.getElm().getParent(
+                '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+            );
+
+            if (!OrderProcessNode) {
+                return null;
+            }
+
+            var OrderProcess = QUI.Controls.getById(OrderProcessNode.get('data-quiid'));
+
+            if (!OrderProcess) {
+                return null;
+            }
+
+            return OrderProcess;
         }
     });
 });

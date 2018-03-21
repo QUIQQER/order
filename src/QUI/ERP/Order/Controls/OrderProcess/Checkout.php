@@ -90,11 +90,18 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             && $Order->getDataEntry('orderedWithCosts') == 1) {
             $Payment = $Order->getPayment();
             $payment = $Order->getDataEntry('orderedWithCostsPayment');
-
-            if ($payment == $Payment->getId() && $Payment->getPaymentType()->isGateway()) {
-                $Engine->assign('Gateway', $Payment->getPaymentType());
-                $Engine->assign('gatewayDisplay', $Payment->getPaymentType()->getGatewayDisplay($Order));
-            }
+//
+//            if ($payment == $Payment->getId() && $Payment->getPaymentType()->isGateway()) {
+//
+//                QUI\System\Log::writeRecursive($Payment);
+//                QUI\System\Log::writeRecursive($Payment->getPaymentType());
+//
+//                $Engine->assign('Gateway', $Payment->getPaymentType());
+//                $Engine->assign(
+//                    'gatewayDisplay',
+//                    $Payment->getPaymentType()->getGatewayDisplay($Order, new Processing())
+//                );
+//            }
         }
 
         $text = QUI::getLocale()->get(
@@ -178,7 +185,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function save()
     {
         if (isset($_REQUEST['termsAndConditions']) && !empty($_REQUEST['termsAndConditions'])) {
-            $Order = $this->getAttribute('Order');
+            $Order = $this->getOrder();
 
             QUI::getSession()->set(
                 'termsAndConditions-'.$Order->getHash(),

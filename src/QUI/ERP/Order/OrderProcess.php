@@ -315,8 +315,6 @@ class OrderProcess extends QUI\Control
             // processing step
             // eq: payment gateway
             if ($this->ProcessingProvider !== null) {
-                $this->ProcessingProvider;
-
                 /* @var $Checkout AbstractOrderingStep */
                 $Checkout = current(array_filter($this->getSteps(), function ($Step) {
                     /* @var $Step AbstractOrderingStep */
@@ -399,6 +397,12 @@ class OrderProcess extends QUI\Control
         $Current = $this->getCurrentStep();
 
         $this->checkSubmission();
+
+        // check if order is finished
+        if ($this->getOrder()->isSuccessful()) {
+            return $this->renderFinish();
+        }
+
 
         // check all previous steps
         // is one invalid, go to them
@@ -599,6 +603,38 @@ class OrderProcess extends QUI\Control
         }
 
         return false;
+    }
+
+    /**
+     * @return mixed
+     * @throws Basket\Exception
+     * @throws Exception
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    protected function renderFinish()
+    {
+        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
+        $Engine   = QUI::getTemplateManager()->getEngine();
+
+        $Engine->assign([
+            'listWidth'          => floor(100 / count($this->getSteps())),
+            'this'               => $this,
+            'error'              => false,
+            'next'               => false,
+            'previous'           => false,
+            'payableToOrder'     => false,
+            'steps'              => $this->getSteps(),
+            'CurrentStep'        => $this->getCurrentStep(),
+            'currentStepContent' => QUI\ControlUtils::parse($this->getCurrentStep()),
+            'Site'               => $this->getSite(),
+            'Order'              => $this->getOrder()
+        ]);
+
+        $this->Events->fireEvent('getBody', [$this]);
+        $this->Events->fireEvent('renderFinish', [$this]);
+
+        return QUI\Output::getInstance()->parse($Engine->fetch($template));
     }
 
     /**
