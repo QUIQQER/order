@@ -294,7 +294,7 @@ class Search extends Singleton
 
             return $Statement->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $Exception) {
-            QUI\System\Log::writeRecursive($Exception);
+            QUI\System\Log::writeException($Exception);
             QUI\System\Log::writeRecursive($query);
             QUI\System\Log::writeRecursive($binds);
             throw new QUI\Exception('Something went wrong');

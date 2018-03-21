@@ -17,6 +17,11 @@
 /** address data
  ========================================== */
 
+.quiqqer-order-customerData header {
+    float: left;
+    width: 100%;
+}
+
 .quiqqer-order-customerData label {
     clear: both;
     float: left;
