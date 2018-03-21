@@ -40,7 +40,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             '$onInject',
             '$onNextClick',
             '$onPreviousClick',
-            '$onChangeState'
+            '$onChangeState',
+            '$refreshButtonEvents'
         ],
 
         options: {
@@ -154,6 +155,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $onInject: function () {
             var self = this;
+
+            this.getElm().set('data-quiid', this.getId());
+
             var Prom = new Promise(function () {
                 return self.setAttribute('orderHash');
             });
@@ -165,10 +169,20 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 });
             }
 
-
             Prom.then(function () {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function (html) {
-                    self.getElm().set('html', html);
+                    var Process = new Element('div', {
+                        html: html
+                    }).getElement(
+                        '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+                    );
+
+                    self.getElm().set({
+                        'data-qui': Process.get('data-qui'),
+                        'data-url': Process.get('data-url'),
+                        'html'    : Process.get('html')
+                    });
+
                     self.$onImport();
 
                     self.fireEvent('load', [self]);
@@ -189,11 +203,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var self = this;
-
-            if (!parseInt(this.$Form.get('data-products-count'))) {
+            if (!this.$getCount()) {
                 return Promise.resolve();
             }
+
+            var self = this;
 
             this.$beginResultRendering(-1);
 
@@ -229,7 +243,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             var self = this;
 
-            if (!parseInt(this.$Form.get('data-products-count'))) {
+            if (!this.$getCount()) {
                 return Promise.resolve();
             }
 
@@ -264,7 +278,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             var self = this;
 
-            if (!parseInt(this.$Form.get('data-products-count'))) {
+            if (!this.$getCount()) {
                 return Promise.resolve();
             }
 
@@ -303,9 +317,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             var self = this;
 
-            if (!parseInt(this.$Form.get('data-products-count'))) {
+            if (!this.$getCount()) {
                 var FirstLi = this.$TimelineContainer.getElement('li:first-child');
-                step        = FirstLi.get('data-step');
+
+                step = FirstLi.get('data-step');
             }
 
             if (this.getCurrentStepData().step === step) {
@@ -580,10 +595,27 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Return the product count
+         *
+         * @return {Number}
+         */
+        $getCount: function () {
+            var productCount = parseInt(this.$Form.get('data-products-count'));
+
+            // if no order hash set, we can ask the basket
+            if (!this.getAttribute('orderHash')) {
+                productCount = Basket.count();
+            }
+
+            return productCount;
+        },
+
+        /**
          * Helper function for the end of the fx rendering
          */
         $endResultRendering: function () {
             this.$runningAnimation = false;
+            this.fireEvent('stepLoaded', [this]);
         },
 
         /**
@@ -637,7 +669,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 if (Target.get('data-step') === 'finish') {
                     return;
                 }
-
+                
                 self.openStep(Target.get('data-step'));
             });
         },
