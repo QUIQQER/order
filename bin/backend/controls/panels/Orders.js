@@ -314,7 +314,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     header   : QUILocale.get(lg, 'grid.invoiceNo'),
                     dataIndex: 'invoice_id',
                     dataType : 'integer',
-                    width    : 100
+                    width    : 100,
+                    className: 'clickable'
                 }, {
                     header   : QUILocale.get(lg, 'grid.brutto'),
                     dataIndex: 'isbrutto',
@@ -342,6 +343,27 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                             );
                         });
 
+                        return;
+                    }
+
+                    if (data.cell.get('data-index') === 'invoice_id') {
+                        var invoiceId = self.$Grid.getDataByRow(data.row).invoice_id;
+
+                        if (invoiceId === '' || invoiceId === '---') {
+                            return;
+                        }
+
+                        require([
+                            'package/quiqqer/invoice/bin/backend/controls/panels/Invoice',
+                            'utils/Panels'
+                        ], function (InvoicePanel, PanelUtils) {
+                            var Panel = new InvoicePanel({
+                                invoiceId: invoiceId
+                            });
+
+                            PanelUtils.openPanelInTasks(Panel);
+                        });
+                        
                         return;
                     }
 
