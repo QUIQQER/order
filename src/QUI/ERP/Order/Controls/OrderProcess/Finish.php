@@ -16,6 +16,18 @@ use QUI;
 class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
+     * Finish constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->addCSSClass('quiqqer-order-step-finish');
+    }
+
+    /**
      * @return string
      *
      * @throws QUI\Exception

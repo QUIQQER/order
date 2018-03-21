@@ -179,10 +179,11 @@ class BasketOrder
     }
 
     /**
-     * Save the basket
+     * Save the basket -> order
      */
     public function save()
     {
+        $this->updateOrder();
     }
 
     /**
@@ -274,6 +275,7 @@ class BasketOrder
      */
     public function updateOrder()
     {
+        $this->Order->save();
     }
 
     //endregion

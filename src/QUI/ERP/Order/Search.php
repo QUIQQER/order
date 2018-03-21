@@ -20,12 +20,12 @@ class Search extends Singleton
     /**
      * @var array
      */
-    protected $filter = array();
+    protected $filter = [];
 
     /**
      * @var array
      */
-    protected $limit = array(0, 20);
+    protected $limit = [0, 20];
 
     /**
      * @var string
@@ -35,15 +35,15 @@ class Search extends Singleton
     /**
      * @var array
      */
-    protected $allowedFilters = array(
+    protected $allowedFilters = [
         'from',
         'to'
-    );
+    ];
 
     /**
      * @var array
      */
-    protected $cache = array();
+    protected $cache = [];
 
     /**
      * Set a filter
@@ -60,7 +60,7 @@ class Search extends Singleton
         }
 
         if (!is_array($value)) {
-            $value = array($value);
+            $value = [$value];
         }
 
 //        foreach ($value as $val) {
@@ -85,7 +85,7 @@ class Search extends Singleton
      */
     public function clearFilter()
     {
-        $this->filter = array();
+        $this->filter = [];
     }
 
     /**
@@ -96,7 +96,7 @@ class Search extends Singleton
      */
     public function limit($from, $to)
     {
-        $this->limit = array((int)$from, (int)$to);
+        $this->limit = [(int)$from, (int)$to];
     }
 
     /**
@@ -135,7 +135,7 @@ class Search extends Singleton
      */
     public function searchForGrid()
     {
-        $this->cache = array();
+        $this->cache = [];
 
         // select display orders
         $orders = $this->executeQueryParams($this->getQuery());
@@ -165,10 +165,10 @@ class Search extends Singleton
         $Grid   = new QUI\Utils\Grid();
 
 
-        return array(
+        return [
             'grid'  => $Grid->parseResult($result, $count),
             'total' => $calc
-        );
+        ];
     }
 
     /**
@@ -193,25 +193,25 @@ class Search extends Singleton
 
         if (empty($this->filter)) {
             if ($count) {
-                return array(
+                return [
                     'query' => " SELECT COUNT(*)  AS count FROM {$table}",
-                    'binds' => array()
-                );
+                    'binds' => []
+                ];
             }
 
-            return array(
+            return [
                 'query' => "
                     SELECT id
                     FROM {$table}
                     ORDER BY {$order}
                     {$limit}
                 ",
-                'binds' => array()
-            );
+                'binds' => []
+            ];
         }
 
-        $where = array();
-        $binds = array();
+        $where = [];
+        $binds = [];
         $fc    = 0;
 
         foreach ($this->filter as $filter) {
@@ -230,10 +230,10 @@ class Search extends Singleton
                     continue;
             }
 
-            $binds[$bind] = array(
+            $binds[$bind] = [
                 'value' => $filter['value'],
                 'type'  => \PDO::PARAM_STR
-            );
+            ];
 
             $fc++;
         }
@@ -242,17 +242,17 @@ class Search extends Singleton
 
 
         if ($count) {
-            return array(
+            return [
                 "query" => "
                     SELECT COUNT(*) AS count
                     FROM {$table}
                     {$whereQuery}
                 ",
                 'binds' => $binds
-            );
+            ];
         }
 
-        return array(
+        return [
             "query" => "
                 SELECT id
                 FROM {$table}
@@ -261,7 +261,7 @@ class Search extends Singleton
                 {$limit}
             ",
             'binds' => $binds
-        );
+        ];
     }
 
     /**
@@ -277,7 +277,7 @@ class Search extends Singleton
      * @return array
      * @throws QUI\Exception
      */
-    protected function executeQueryParams($queryData = array())
+    protected function executeQueryParams($queryData = [])
     {
         $PDO   = QUI::getDataBase()->getPDO();
         $binds = $queryData['binds'];
@@ -294,7 +294,7 @@ class Search extends Singleton
 
             return $Statement->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $Exception) {
-            QUI\System\Log::writeRecursive($Exception);
+            QUI\System\Log::writeException($Exception);
             QUI\System\Log::writeRecursive($query);
             QUI\System\Log::writeRecursive($binds);
             throw new QUI\Exception('Something went wrong');
@@ -325,7 +325,7 @@ class Search extends Singleton
         );
 
         // helper
-        $needleFields = array(
+        $needleFields = [
             'invoice_id',
             'customer_id',
             'customer_name',
@@ -350,7 +350,7 @@ class Search extends Singleton
             'processing_status',
             'taxId',
             'euVatId'
-        );
+        ];
 
         $fillFields = function (&$data) use ($needleFields) {
             foreach ($needleFields as $field) {
@@ -360,7 +360,7 @@ class Search extends Singleton
             }
         };
 
-        $result = array();
+        $result = [];
 
         foreach ($data as $entry) {
             if (isset($this->cache[$entry['id']])) {

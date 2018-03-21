@@ -14,8 +14,6 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_clear',
     function ($basketId) {
-        \QUI\System\Log::writeRecursive($basketId);
-
         $Basket = new \QUI\ERP\Order\Basket\Basket($basketId);
         $Basket->clear();
         $Basket->save();
@@ -23,5 +21,4 @@ QUI::$Ajax->registerFunction(
         return $Basket->toArray();
     },
     ['basketId']
-
 );

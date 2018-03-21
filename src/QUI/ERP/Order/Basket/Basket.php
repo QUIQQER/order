@@ -65,8 +65,7 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
-        $data = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
-
+        $data       = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
         $this->id   = $basketId;
         $this->User = $User;
         $this->hash = $data['hash'];
