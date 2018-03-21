@@ -194,6 +194,29 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Resize the order process
+         */
+        resize: function () {
+            var self = this;
+
+            return new Promise(function (resolve) {
+                var innerHeight = self.$StepContainer.getChildren().getSize().map(function (size) {
+                    return size.y;
+                }).sum();
+
+                moofx(self.$StepContainer).animate({
+                    height: innerHeight
+                }, {
+                    duration: 250,
+                    callback: function () {
+                        resolve();
+                        self.fireEvent('change', [self]);
+                    }
+                });
+            });
+        },
+
+        /**
          * Next step
          *
          * @return {Promise}
@@ -669,7 +692,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 if (Target.get('data-step') === 'finish') {
                     return;
                 }
-                
+
                 self.openStep(Target.get('data-step'));
             });
         },
