@@ -370,6 +370,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         * Returns the number of products
+         *
+         * @return {Number}
+         */
+        count: function () {
+            return this.getProducts().length;
+        },
+
+        /**
          * Saves the basket to the temporary order
          *
          * @param {Boolean} [force] - force the save delay, prevent homemade ddos
