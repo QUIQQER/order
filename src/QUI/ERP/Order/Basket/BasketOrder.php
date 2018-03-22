@@ -13,6 +13,8 @@ use QUI\ERP\Products\Product\ProductList;
  * Class BasketOrder
  * Coordinates the order process, (order -> payment -> invoice)
  *
+ * This is a helper to represent an already send order for the order process
+ *
  * @package QUI\ERP\Order\Basket
  */
 class BasketOrder
@@ -87,17 +89,12 @@ class BasketOrder
 
     /**
      * Clear the basket
+     * This method don't clear the order articles
+     * if you want to clear the order articles, you must use Order->clear()
      */
     public function clear()
     {
         $this->List->clear();
-
-        if ($this->hasOrder()) {
-            try {
-                $this->getOrder()->clearArticles();
-            } catch (QUI\Exception $Exception) {
-            }
-        }
     }
 
     /**
