@@ -193,7 +193,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 Container.setStyle('height', null);
 
                 if (OrderProcess) {
-                    OrderProcess.fireEvent('change', [OrderProcess]);
+                    OrderProcess.resize();
                 }
             });
         },
@@ -237,7 +237,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     opacity: 1
                 }).then(function () {
                     if (OrderProcess) {
-                        OrderProcess.fireEvent('change', [OrderProcess]);
+                        OrderProcess.resize();
                     }
                 });
             });

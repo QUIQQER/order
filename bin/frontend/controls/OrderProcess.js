@@ -41,7 +41,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             '$onNextClick',
             '$onPreviousClick',
             '$onChangeState',
-            '$refreshButtonEvents'
+            '$refreshButtonEvents',
+            '$beginResultRendering',
+            '$endResultRendering'
         ],
 
         options: {
@@ -136,7 +138,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.$refreshButtonEvents();
 
-            this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
+            if (this.$Form.get('data-order-hash') && this.$Form.get('data-order-hash') !== '') {
+                this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
+            }
+
 
             var Current = this.$TimelineContainer.getFirst('ul li.current');
 
@@ -159,7 +164,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.getElm().set('data-quiid', this.getId());
 
             var Prom = new Promise(function () {
-                return self.setAttribute('orderHash');
+                return self.getAttribute('orderHash');
             });
 
             if (!this.getAttribute('orderHash')) {
@@ -194,6 +199,29 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Resize the order process
+         */
+        resize: function () {
+            var self = this;
+
+            return new Promise(function (resolve) {
+                var innerHeight = self.$StepContainer.getChildren().getSize().map(function (size) {
+                    return size.y;
+                }).sum();
+
+                moofx(self.$StepContainer).animate({
+                    height: innerHeight
+                }, {
+                    duration: 250,
+                    callback: function () {
+                        resolve();
+                        self.fireEvent('change', [self]);
+                    }
+                });
+            });
+        },
+
+        /**
          * Next step
          *
          * @return {Promise}
@@ -204,7 +232,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             if (!this.$getCount()) {
-                return Promise.resolve();
+                return this.refreshCurrentStep();
             }
 
             var self = this;
@@ -214,13 +242,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve, reject) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getNext', function (result) {
-                        self.$renderResult(result, 1).then(resolve);
+                        self.$renderResult(result, 1).then(function () {
+                            self.$endResultRendering();
+                            resolve();
+                        });
 
                         if (Router) {
                             Router.navigate(result.url);
                         }
-
-                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -252,13 +281,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getPrevious', function (result) {
-                        self.$renderResult(result, -1).then(resolve);
+                        self.$renderResult(result, -1).then(function () {
+                            self.$endResultRendering();
+                            resolve();
+                        });
 
                         if (Router) {
                             Router.navigate(result.url);
                         }
-
-                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -287,13 +317,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve, reject) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_send', function (result) {
-                        self.$renderResult(result).then(resolve);
+                        self.$renderResult(result).then(function () {
+                            self.$endResultRendering();
+                            resolve();
+                        });
 
                         if (Router) {
                             Router.navigate(result.url);
                         }
-
-                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -333,16 +364,20 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return new Promise(function (resolve) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getStep', function (result) {
                         if (self.getCurrentStepData().step === step) {
-                            self.$renderResult(result, 0).then(resolve);
+                            self.$renderResult(result, 0).then(function () {
+                                self.$endResultRendering();
+                                resolve();
+                            });
                         } else {
-                            self.$renderResult(result, 1).then(resolve);
+                            self.$renderResult(result, 1).then(function () {
+                                self.$endResultRendering();
+                                resolve();
+                            });
                         }
 
                         if (Router) {
                             Router.navigate(result.url);
                         }
-
-                        self.$endResultRendering();
                     }, {
                         'package': 'quiqqer/order',
                         orderHash: self.getAttribute('orderHash'),
@@ -669,7 +704,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 if (Target.get('data-step') === 'finish') {
                     return;
                 }
-                
+
                 self.openStep(Target.get('data-step'));
             });
         },
