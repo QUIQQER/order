@@ -23,13 +23,13 @@ class Product extends UniqueProduct
      * @param int $pid - Product ID
      * @param array $attributes
      *
-     * @throws QUI\Users\Exception
+     * @throws QUI\Exception
      * @throws QUI\ERP\Products\Product\Exception
      */
-    public function __construct($pid, array $attributes = array())
+    public function __construct($pid, array $attributes = [])
     {
-        $fields    = array();
-        $fieldList = array();
+        $fields    = [];
+        $fieldList = [];
         $Product   = QUI\ERP\Products\Handler\Products::getProduct($pid);
 
         if (isset($attributes['fields'])) {
