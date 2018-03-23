@@ -453,9 +453,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             return new Promise(function (resolve) {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_saveCurrentStep', function () {
-                    resolve();
-                }, {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_saveCurrentStep', resolve, {
                     'package': 'quiqqer/order',
                     orderHash: self.getAttribute('orderHash'),
                     step     : self.getAttribute('current'),
@@ -515,7 +513,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if ("hash" in result && result.hash !== '') {
                 this.setAttribute('orderHash', result.hash);
             }
-
+            console.log('order $renderResult');
+            console.log(result);
             // content
             var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
             var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
@@ -701,6 +700,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     Target = Target.getParent('li');
                 }
 
+                if (Target.hasClass('disabled')) {
+                    return;
+                }
+
                 if (Target.get('data-step') === 'finish') {
                     return;
                 }
@@ -762,7 +765,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         /**
          * Animating
          *
-         * @param {HTMLElement} Elm
+         * @param {Element|HTMLElement} Elm
          * @param {object} styles
          * @param {object} options
          * @return {Promise}

@@ -22,8 +22,13 @@
                     {if $CurrentStep == $Step}
                         {assign var=cssClass value="current"}
                     {/if}
+                    {assign var=cssProcessingClass value=""}
+                    {if $CurrentStep->getName() === 'Processing'}
+                        {assign var=cssProcessingClass value=" disabled"}
+                    {/if}
 
-                    <li style="width: {$listWidth}%;" class="{$cssClass}"
+                    <li style="width: {$listWidth}%;"
+                        class="{$cssClass}{$cssProcessingClass}"
                         data-step="{$Step->getName()}"
                         data-icon="{$Step->getIcon()}"
                     >

@@ -634,6 +634,17 @@
             <de><![CDATA[Die Adresse wurde erfolgreich gespeichert.]]></de>
             <en><![CDATA[The address has been saved successfully.]]></en>
         </locale>
+
+        <locale name="message.order.success" html="true">
+            <de><![CDATA[
+            <h1>Vielen Dank für Ihre Bestellung.</h1>
+            <p>Danke, wir haben Ihre Bestellung erhalten</p>
+            ]]></de>
+            <en><![CDATA[
+            <h1>Thank you for your order.</h1>
+            <p>Thank you, we have received your order</p>
+            ]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
