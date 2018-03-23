@@ -70,6 +70,16 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
+        try {
+            if ($Address->getId() !== $this->getOrder()->getInvoiceAddress()->getId()) {
+                $this->getOrder()->setInvoiceAddress($Address);
+                $this->getOrder()->save();
+            }
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+
         $isB2B = function () use ($User) {
             if (!$User) {
                 return '';
@@ -143,6 +153,18 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function validate()
     {
+        $Address = $this->getInvoiceAddress();
+
+        try {
+            if ($Address &&
+                $Address->getId() !== $this->getOrder()->getInvoiceAddress()->getId()) {
+                $this->getOrder()->setInvoiceAddress($Address);
+                $this->getOrder()->save();
+            }
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
         $this->validateAddress(
             $this->getOrder()->getInvoiceAddress()
         );
