@@ -6,6 +6,9 @@
 
 {$BasketControl->create()}
 
+{template_event name="quiqqer::order::orderProcessBasketEnd" Basket=$Basket assign=content}
+{if !empty($content)}
 <div class="quiqqer-order-basket-end">
-    {template_event name="quiqqer::order::orderProcessBasketEnd" Basket=$Basket}
+    {$content}
 </div>
+{/if}
