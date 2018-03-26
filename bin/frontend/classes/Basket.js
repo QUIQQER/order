@@ -416,9 +416,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 // no locale storage
                 if (QUIQQER_USER && QUIQQER_USER.id) {
-                    console.log(products);
-                    console.log(this.$products);
-
                     QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_save', function (result) {
                         self.$calculations = result;
                         resolve(result);
