@@ -513,8 +513,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if ("hash" in result && result.hash !== '') {
                 this.setAttribute('orderHash', result.hash);
             }
-            console.log('order $renderResult');
-            console.log(result);
+            
             // content
             var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
             var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
