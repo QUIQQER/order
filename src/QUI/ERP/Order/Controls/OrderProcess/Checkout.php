@@ -86,24 +86,6 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
 
-        if (QUI::getSession()->get('termsAndConditions-'.$Order->getHash())
-            && $Order->getDataEntry('orderedWithCosts') == 1) {
-            $Payment = $Order->getPayment();
-            $payment = $Order->getDataEntry('orderedWithCostsPayment');
-//
-//            if ($payment == $Payment->getId() && $Payment->getPaymentType()->isGateway()) {
-//
-//                QUI\System\Log::writeRecursive($Payment);
-//                QUI\System\Log::writeRecursive($Payment->getPaymentType());
-//
-//                $Engine->assign('Gateway', $Payment->getPaymentType());
-//                $Engine->assign(
-//                    'gatewayDisplay',
-//                    $Payment->getPaymentType()->getGatewayDisplay($Order, new Processing())
-//                );
-//            }
-        }
-
         $text = QUI::getLocale()->get(
             'quiqqer/order',
             'ordering.step.checkout.checkoutAcceptText',

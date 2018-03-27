@@ -3,14 +3,14 @@
       action=""
       method="post"
       data-products-count="{if $Order}{$Order->count()}{/if}"
-      data-order-hash="{$this->getAttribute('orderHash')}"
+      data-order-hash="{$hash}"
 >
 {else}
     <div name="order"
           data-action=""
           data-method="post"
           data-products-count="{if $Order}{$Order->count()}{/if}"
-          data-order-hash="{$this->getAttribute('orderHash')}"
+          data-order-hash="{$hash}"
     >
 {/if}
     <div class="quiqqer-order-ordering-timeline">
@@ -23,7 +23,7 @@
                         {assign var=cssClass value="current"}
                     {/if}
                     {assign var=cssProcessingClass value=""}
-                    {if $CurrentStep->getName() === 'Processing'}
+                    {if $CurrentStep->getName() === 'Processing' || $CurrentStep->getName() === 'Finish'}
                         {assign var=cssProcessingClass value=" disabled"}
                     {/if}
 

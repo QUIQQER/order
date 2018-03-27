@@ -510,15 +510,21 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.setAttribute('current', result.step);
 
-            if ("hash" in result && result.hash !== '') {
-                this.setAttribute('orderHash', result.hash);
-            }
-            console.log('order $renderResult');
-            console.log(result);
             // content
             var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
             var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
             var TimeLine    = Ghost.getElement('.quiqqer-order-ordering-timeline');
+            var Form        = Ghost.getElement('[name="order"]');
+
+            if (Form) {
+                this.$Form.set('data-order-hash', Form.get('data-order-hash'));
+                this.$Form.set('data-products-count', Form.get('data-products-count'));
+                this.setAttribute('orderHash', Form.get('data-order-hash'));
+            }
+
+            if ("hash" in result && result.hash !== '') {
+                this.setAttribute('orderHash', result.hash);
+            }
 
             if (TimeLine) {
                 // refresh the timeline

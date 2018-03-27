@@ -13,12 +13,11 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_send',
-    function ($orderId, $current, $orderHash) {
+    function ($current, $orderHash) {
         $_REQUEST['current']        = $current;
         $_REQUEST['payableToOrder'] = true;
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId'   => (int)$orderId,
             'orderHash' => $orderHash,
             'step'      => $current
         ]);
@@ -37,5 +36,5 @@ QUI::$Ajax->registerFunction(
             'hash' => $OrderProcess->getStepHash()
         ];
     },
-    ['orderId', 'current', 'orderHash']
+    ['current', 'orderHash']
 );
