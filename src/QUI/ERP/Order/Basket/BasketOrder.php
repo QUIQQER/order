@@ -11,7 +11,6 @@ use QUI\ERP\Products\Product\ProductList;
 
 /**
  * Class BasketOrder
- * Coordinates the order process, (order -> payment -> invoice)
  *
  * This is a helper to represent an already send order for the order process
  *
