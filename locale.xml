@@ -645,6 +645,15 @@
             <p>Thank you, we have received your order</p>
             ]]></en>
         </locale>
+
+        <locale name="history.message.addTransaction">
+            <de><![CDATA[Transaktion hinzugefügt]]></de>
+            <en><![CDATA[Transaction added]]></en>
+        </locale>
+        <locale name="history.message.edit">
+            <de><![CDATA[Bestellung bearbeitet von [username] ([uid])]]></de>
+            <en><![CDATA[Order edit from [username] ([uid])]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
