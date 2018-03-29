@@ -205,7 +205,20 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var self = this;
 
             return new Promise(function (resolve) {
-                var innerHeight = self.$StepContainer.getChildren().getSize().map(function (size) {
+                var Next   = self.$StepContainer.getElement('.quiqqer-order-ordering-step-next');
+                var Basket = self.$StepContainer.getElement('.quiqqer-order-step-basket');
+
+                var innerHeight = self.$StepContainer.getChildren().filter(function (Node) {
+                    if (Node.nodeName === 'STYLE') {
+                        return false;
+                    }
+
+                    if (Next && Basket) {
+                        return Node.hasClass('quiqqer-order-ordering-step-next');
+                    }
+
+                    return true;
+                }).getSize().map(function (size) {
                     return size.y;
                 }).sum();
 
