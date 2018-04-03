@@ -62,6 +62,8 @@ class UserOrders extends Control implements ControlInterface
             $sheetsMax = ceil($count / $limit);
         }
 
+        QUI\System\Log::writeRecursive($sheetsMax);
+
         $orders = [];
 
         $result = $Orders->getOrdersByUser($User, [
