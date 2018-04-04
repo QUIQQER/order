@@ -155,7 +155,10 @@ class Order extends AbstractOrder implements OrderInterface
         // save payment data
         QUI::getDataBase()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
-            ['payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData))],
+            [
+                'paid_status'  => $this->getAttribute('paid_status'),
+                'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData))
+            ],
             ['id' => $this->getId()]
         );
 
@@ -167,19 +170,18 @@ class Order extends AbstractOrder implements OrderInterface
 
             // @todo setting -> rechnung automatisch buchen
             $Invoice = $TemporaryInvoice->post();
+
+            QUI::getDataBase()->update(
+                Handler::getInstance()->table(),
+                ['invoice_id' => $Invoice->getCleanId()],
+                ['id' => $this->getId()]
+            );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
             throw $Exception;
         }
 
-        QUI::getDataBase()->update(
-            Handler::getInstance()->table(),
-            [
-                'temporary_invoice_id' => null,
-                'invoice_id'           => $Invoice->getCleanId()
-            ],
-            ['id' => $this->getId()]
-        );
+        $this->invoiceId = $Invoice->getId();
 
         return InvoiceHandler::getInstance()->getInvoice($Invoice->getId());
     }
@@ -278,10 +280,17 @@ class Order extends AbstractOrder implements OrderInterface
             $idPrefix = QUI\ERP\Order\Utils\Utils::getOrderPrefix();
         }
 
+        // invoice
+        $invoiceId = null;
+
+        if ($this->hasInvoice()) {
+            $invoiceId = $this->getInvoice()->getCleanId();
+        }
+
         return [
             'id_prefix'    => $idPrefix,
             'parent_order' => null,
-            'invoice_id'   => null,
+            'invoice_id'   => $invoiceId,
             'status'       => $this->status,
             'successful'   => $this->successful,
 

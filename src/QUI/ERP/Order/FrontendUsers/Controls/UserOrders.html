@@ -1,4 +1,4 @@
-{if $sheetsMax}
+{if $sheetsMax && $sheetsMax != 1}
 <div class="quiqqer-order-profile-orders-pagination">
     {control
     control="QUI\Controls\Navigating\Pagination"
@@ -19,7 +19,7 @@
     {/foreach}
 </div>
 
-{if $sheetsMax}
+{if $sheetsMax && $sheetsMax != 1}
 <div class="quiqqer-order-profile-orders-pagination">
     {control
     control="QUI\Controls\Navigating\Pagination"
