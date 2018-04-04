@@ -499,6 +499,14 @@
             </a>
             ]]></en>
         </locale>
+        <locale name="order.settings.order.sendOrderConfirmation">
+            <de><![CDATA[Bestellbestätigung]]></de>
+            <en><![CDATA[Confirmation of order]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmation.description">
+            <de><![CDATA[Bestellbestätigung automatisch versenden]]></de>
+            <en><![CDATA[Send order confirmation automatically]]></en>
+        </locale>
 
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>

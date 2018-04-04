@@ -135,6 +135,16 @@ class EventHandling
     }
 
     /**
+     * @param Order $Order
+     */
+    public static function onQuiqqerOrderCreated(Order $Order)
+    {
+        if (Settings::getInstance()->get('order', 'sendOrderConfirmation')) {
+            Mail::sendOrderCreateMail($Order);
+        }
+    }
+
+    /**
      * @param QUI\Package\Package $Package
      * @throws QUI\Exception
      */

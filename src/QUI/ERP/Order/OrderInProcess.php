@@ -335,6 +335,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             $this->setSuccessfulStatus();
         }
 
+        QUI::getEvents()->fireEvent('quiqqerOrderCreated', [$this]);
+
         // create invoice?
         if (Settings::getInstance()->createInvoiceOnOrder()) {
             $Order->createInvoice();
