@@ -75,9 +75,21 @@
     width: 100%;
 }
 
+.quiqqer-order-profile-orders-order-articles-information {
+    padding-top: 10px;
+}
+
 .quiqqer-order-profile-orders-order-articles-image {
     float: left;
     margin-right: 10px;
+}
+
+.quiqqer-order-profile-orders-order-articles-description {
+    margin: 5px 0;
+}
+
+.quiqqer-order-profile-orders-order-footer-paymentType {
+    margin-top: 10px;
 }
 
 .quiqqer-order-profile-orders-order footer {

@@ -48,7 +48,7 @@
 
 .quiqqer-order-control-order-information-orderData-sum-title,
 .quiqqer-order-control-order-information-orderData-sum {
-    color: darkred;
+    font-weight: bold;
 }
 
 .quiqqer-order-control-order-information-orderData-table {
@@ -119,7 +119,6 @@
 }
 
 .quiqqer-order-profile-orders-order-articles-article-price {
-    color: darkred;
     margin-top: 10px;
 }
 

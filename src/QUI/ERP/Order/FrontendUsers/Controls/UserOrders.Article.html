@@ -1,5 +1,5 @@
 <article class="quiqqer-order-profile-orders-order-articles-article"
-     data-qui="package/quiqqer/order/bin/frontend/controls/frontendusers/Article"
+         data-qui="package/quiqqer/order/bin/frontend/controls/frontendusers/Article"
 >
     <div class="quiqqer-order-profile-orders-order-articles-image">
         {if !empty($Image)}
@@ -9,18 +9,24 @@
         {/if}
     </div>
 
-    {if !empty($Product)}
-    <a href="{$Product->getUrl()}"
-       class="quiqqer-order-profile-orders-order-articles-title"
-       target="_blank"
-    >
-        {$Article->getTitle()}
-    </a>
-    {else}
-    <div class="quiqqer-order-profile-orders-order-articles-title">
-        {$Article->getTitle()}
+    <div class="quiqqer-order-profile-orders-order-articles-information">
+        {if !empty($Product)}
+        <a href="{$Product->getUrl()}"
+           class="quiqqer-order-profile-orders-order-articles-title"
+           target="_blank"
+        >
+            {$Article->getTitle()}
+        </a>
+        {else}
+        <div class="quiqqer-order-profile-orders-order-articles-title">
+            {$Article->getTitle()}
+        </div>
+        {/if}
+
+        <div class="quiqqer-order-profile-orders-order-articles-description">
+            {$Article->getDescription()}
+        </div>
     </div>
-    {/if}
 
     <div class="quiqqer-order-profile-orders-order-articles-price">
         {$Article->getPrice()->getDisplayPrice()}
