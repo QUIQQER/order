@@ -45,9 +45,15 @@ class EventHandling
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
-        $Project      = $Rewrite->getProject();
-        $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-        $path         = trim($CheckoutSite->getUrlRewritten(), '/');
+        try {
+            $Project      = $Rewrite->getProject();
+            $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+            $path         = trim($CheckoutSite->getUrlRewritten(), '/');
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return;
+        }
 
         if (strpos($requestedUrl, $path) === false) {
             return;
@@ -135,7 +141,10 @@ class EventHandling
     }
 
     /**
+     * event: order creation
+     *
      * @param Order $Order
+     * @throws QUI\Exception
      */
     public static function onQuiqqerOrderCreated(Order $Order)
     {
