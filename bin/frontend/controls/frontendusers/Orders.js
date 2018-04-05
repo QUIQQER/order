@@ -34,6 +34,10 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             '$onChangeState'
         ],
 
+        options: {
+            limit: 10
+        },
+
         initialize: function (options) {
             this.parent(options);
 
@@ -174,6 +178,10 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             var self = this;
 
             this.Loader.show();
+
+            if (typeof limit === 'undefined') {
+                limit = this.getAttribute('limit');
+            }
 
             QUIAjax.get('package_quiqqer_order_ajax_frontend_orders_userOrders', function (result) {
                 var Ghost = new Element('div', {
