@@ -46,6 +46,18 @@
     padding: 0;
 }
 
-.quiqqer-order-step-checkout-gateway {
+@media (max-width: 768px) {
+    .articles-article-header-pos {
+        width: 40px;
+    }
 
+    .quiqqer-order-step-checkout-invoiceAddress,
+    .quiqqer-order-step-checkout-payments {
+        clear: both;
+        width: 100% !important;
+    }
+
+    .quiqqer-order-step-checkout-notice label {
+        font-size: 12px;
+    }
 }
