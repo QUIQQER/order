@@ -325,8 +325,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            console.log('send');
-
             this.Loader.setAttribute('opacity', 1);
             this.Loader.setStyles({
                 background: 'rgba(255, 255, 255, 1)'
