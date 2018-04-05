@@ -51,6 +51,10 @@ class UserOrders extends Control implements ControlInterface
             $User = $this->getAttribute('User');
         }
 
+        if (!$this->getAttribute('limit')) {
+            $this->setAttribute('limit', 5);
+        }
+
         $limit        = (int)$this->getAttribute('limit');
         $sheetsMax    = 1;
         $sheetCurrent = (int)$this->getAttribute('page');
@@ -81,6 +85,8 @@ class UserOrders extends Control implements ControlInterface
 
             $orders[] = $View;
         }
+
+        $this->setAttribute('data-qui-options-limit', $this->getAttribute('limit'));
 
         $Engine->assign([
             'orders'  => $orders,

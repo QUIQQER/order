@@ -325,6 +325,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
+            console.log('send');
+
+            this.Loader.setAttribute('opacity', 1);
+            this.Loader.setStyles({
+                background: 'rgba(255, 255, 255, 1)'
+            });
+
             this.$beginResultRendering();
 
             return this.saveCurrentStep().then(function () {
@@ -675,11 +682,27 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Refresh the step display
          */
         $refreshSteps: function () {
-            var current = this.getAttribute('current');
-            var list    = this.$TimelineContainer.getElements('li');
+            var current  = this.getAttribute('current');
+            var list     = this.$TimelineContainer.getElements('li');
+            var Timeline = this.$Timeline;
 
             list.removeClass('current');
             list.removeClass('active');
+
+            if (current === 'Finish' || current === 'finish') {
+                moofx(Timeline).animate({
+                    height : 0,
+                    margin : 0,
+                    opacity: 0,
+                    padding: 0
+                }, {
+                    duration: 200,
+                    callback: function () {
+                        Timeline.setStyle('display', 'none');
+                    }
+                });
+                return;
+            }
 
             for (var i = 0, len = list.length; i < len; i++) {
                 list[i].addClass('active');

@@ -499,6 +499,14 @@
             </a>
             ]]></en>
         </locale>
+        <locale name="order.settings.order.sendOrderConfirmation">
+            <de><![CDATA[Bestellbestätigung]]></de>
+            <en><![CDATA[Confirmation of order]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmation.description">
+            <de><![CDATA[Bestellbestätigung automatisch versenden]]></de>
+            <en><![CDATA[Send order confirmation automatically]]></en>
+        </locale>
 
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
@@ -657,6 +665,28 @@
         <locale name="history.message.edit">
             <de><![CDATA[Bestellung bearbeitet von [username] ([uid])]]></de>
             <en><![CDATA[Order edit from [username] ([uid])]]></en>
+        </locale>
+
+        <locale name="order.confirmation.subject">
+            <de><![CDATA[Vielen Dank für Ihre Bestellung - [orderId]]]></de>
+            <en><![CDATA[Thank you for your order - [orderId]]]></en>
+        </locale>
+        <locale name="order.confirmation.body" html="true">
+            <de><![CDATA[
+            <h1>Hallo [user],</h1>
+            vielen Dank für Ihre Bestellung.
+            Hier sind die Details zu Ihrer Bestellung:<br />
+            Bestellnummer: [orderId]<br />
+            <br />
+            [order]
+            ]]></de>
+            <en><![CDATA[
+            Dear [user],<br />
+            Thank you for your order. Here are the details:<br />
+            Order ID: [orderId]<br />
+            <br />
+            [order]
+            ]]></en>
         </locale>
     </groups>
 
