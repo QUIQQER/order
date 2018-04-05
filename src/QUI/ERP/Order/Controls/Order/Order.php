@@ -14,7 +14,7 @@ use QUI;
  *
  * @package QUI\ERP\Order\Controls\Order
  */
-class Order extends QUI\Controls\Control
+class Order extends QUI\Control
 {
     /**
      * @var null
@@ -47,7 +47,7 @@ class Order extends QUI\Controls\Control
      *
      * @throws QUI\Exception
      */
-    protected function onCreate()
+    public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
 
@@ -62,7 +62,13 @@ class Order extends QUI\Controls\Control
         }
 
         $Invoice = null;
-        $View    = $Order->getView();
+
+        if ($Order instanceof QUI\ERP\Order\Order) {
+            $View = $Order->getView();
+        } else {
+            // Order in process
+            $View = $Order;
+        }
 
         $View->setAttribute(
             'downloadLink',
@@ -71,7 +77,9 @@ class Order extends QUI\Controls\Control
 
         // invoice
         try {
-            $Invoice = $Order->getInvoice();
+            if ($Order->hasInvoice()) {
+                $Invoice = $Order->getInvoice();
+            }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

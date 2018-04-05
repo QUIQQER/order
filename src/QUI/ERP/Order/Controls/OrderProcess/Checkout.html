@@ -22,7 +22,12 @@ Order=$Order
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.payment.shipping"}</h2>
         <div class="quiqqer-order-step-checkout-payments-payment">
             <img src="{$Payment->getPaymentType()->getIcon()}"/>
-            <span>{$Payment->getTitle()}</span>
+            <span class="quiqqer-order-step-checkout-payments-payment-title">
+                {$Payment->getTitle()}
+            </span>
+            <span class="quiqqer-order-step-checkout-payments-payment-description">
+                {$Payment->getDescription()}
+            </span>
         </div>
     </div>
 

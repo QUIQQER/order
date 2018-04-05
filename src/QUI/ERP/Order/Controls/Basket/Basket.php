@@ -14,7 +14,7 @@ use QUI;
  *
  * @package QUI\ERP\Order\Controls\Basket
  */
-class Basket extends QUI\Controls\Control
+class Basket extends QUI\Control
 {
     /**
      * Used basket
@@ -45,7 +45,7 @@ class Basket extends QUI\Controls\Control
      * @return string
      * @throws QUI\Exception
      */
-    protected function onCreate()
+    public function getBody()
     {
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts();

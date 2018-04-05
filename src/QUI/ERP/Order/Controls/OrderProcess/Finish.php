@@ -35,10 +35,15 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
-        $Order  = $this->getAttribute('Order');
+        $Order  = $this->getOrder();
+
+        $OrderControl = new QUI\ERP\Order\Controls\Order\Order([
+            'orderHash' => $Order->getHash()
+        ]);
 
         $Engine->assign([
-            'User' => $Order->getCustomer()
+            'User'         => $Order->getCustomer(),
+            'OrderControl' => $OrderControl
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Finish.html');
@@ -80,8 +85,12 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
     }
 
+    /**
+     * Placeholder
+     *
+     * @return mixed|void
+     */
     public function save()
     {
-        // TODO: Implement save() method.
     }
 }
