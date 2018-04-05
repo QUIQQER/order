@@ -1,0 +1,161 @@
+<header class="quiqqer-order-control-order-header">
+    <h1>
+        {locale group="quiqqer/order" var="control.order.details.title"}
+    </h1>
+
+    <div class="quiqqer-order-control-order-header-date">
+        <span>{locale group="quiqqer/order" var="control.order.details.date"}</span>
+        <span>{$Order->getCreateDate()}</span>
+    </div>
+
+    <span class="quiqqer-order-control-order-header-placer">|</span>
+
+    <div class="quiqqer-order-control-order-header-id">
+        <span>{locale group="quiqqer/order" var="control.order.details.orderNo"}</span>
+        <span>{$Order->getId()}</span>
+    </div>
+
+    <span class="quiqqer-order-control-order-header-placer">|</span>
+
+    <div class="quiqqer-order-control-order-header-id">
+        {if $Order->isPosted()}
+        <a href="{$Order->getAttribute('downloadLink')}" target="_blank">
+            <span class="fa fa-file-pdf-o"></span>
+            <span>{locale group="quiqqer/order" var="control.order.details.invoice"}</span>
+        </a>
+        {else if $Order->isSuccessful() === false}
+        <a href="{$orderUrl}" target="_blank" class="">
+            <span class="fa fa-shopping-basket"></span>
+            <span>{locale group="quiqqer/order" var="control.order.details.continuePayment"}</span>
+        </a>
+        {/if}
+    </div>
+</header>
+
+<div class="quiqqer-order-control-order-information">
+    <section class="quiqqer-order-control-order-information-invoiceAddress">
+        <header>
+            <h2>
+                {locale group="quiqqer/order" var="control.order.invoiceAddress.title"}
+            </h2>
+        </header>
+        <span>{locale group="quiqqer/order" var="control.profile.orders.order.invoiceAddress"}</span>
+        {if $Invoice}
+        {assign var=Customer value=$Invoice->getCustomer()}
+        {else}
+        {assign var=Customer value=$Order->getCustomer()}
+        {/if}
+
+        {assign var=Address value=$Customer->getAddress()}
+        {$Address->render()}
+    </section>
+
+    {if $Payment}
+    <section class="quiqqer-order-control-order-information-payment">
+        <header>
+            <h2>
+                {locale group="quiqqer/order" var="control.order.payment.title"}
+            </h2>
+        </header>
+
+        <img src="{$Payment->getIcon()}" class="quiqqer-order-control-order-information-payment-icon"/>
+        <div class="quiqqer-order-control-order-information-payment-title">
+            {$Payment->getTitle()}
+        </div>
+        <div class="quiqqer-order-control-order-information-payment-description">
+            {$Payment->getDescription()}
+        </div>
+
+    </section>
+    {/if}
+</div>
+
+<section class="quiqqer-order-control-order-articles">
+    <header>
+        <h2>
+            {locale group="quiqqer/order" var="control.order.article.title"}
+        </h2>
+    </header>
+
+    {assign var=pos value=1}
+    {foreach $Articles as $Article}
+    <article>
+        <div class="quiqqer-order-profile-orders-order-articles-article-pos">
+            {$pos}.
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-articles-article-image">
+            {if $Article->getImage()}
+            {image image=$Article->getImage() height=200}
+            {/if}
+
+            {if $Article->getQuantity() > 1}
+            <div class="quiqqer-order-profile-orders-order-articles-article-quantity">
+                {$Article->getQuantity()}
+            </div>
+            {/if}
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-articles-article-information">
+            <div class="quiqqer-order-profile-orders-order-articles-article-title">
+                {$Article->getTitle()}
+            </div>
+
+            <div class="quiqqer-order-profile-orders-order-articles-article-description">
+                {$Article->getDescription()}
+            </div>
+
+            <div class="quiqqer-order-profile-orders-order-articles-article-price">
+                {$Article->getPrice()->getDisplayPrice()}
+            </div>
+        </div>
+    </article>
+    {assign var=pos value=$pos+1}
+    {/foreach}
+</section>
+
+<section class="quiqqer-order-control-order-total">
+    <table class="quiqqer-order-control-order-information-orderData-table">
+        <tr class="quiqqer-order-control-order-information-orderData-subSum">
+            <td class="quiqqer-order-control-order-information-orderData-subSum-title">
+                {locale group="quiqqer/order" var="control.order.overview.subSum"}
+            </td>
+            <td class="quiqqer-order-control-order-information-orderData-subSum-sum">
+                {$Calculation->getSubSum()->formatted()}
+            </td>
+        </tr>
+        {foreach $PriceFactors as $Factor}
+        <tr class="quiqqer-order-control-order-information-orderData-factor">
+            <td class="quiqqer-order-control-order-information-orderData-factor-title">
+                {$Factor->getTitle()}
+            </td>
+            <td class="quiqqer-order-control-order-information-orderData-factor-sum">
+                {$Factor->getSumFormatted()}
+            </td>
+        </tr>
+        {/foreach}
+        {if count($PriceFactors)}
+        <tr class="quiqqer-order-control-order-information-orderData-placeholder">
+            <td>&nbsp;</td>
+        </tr>
+        {/if}
+        {foreach $Vats as $Vat}
+        <tr class="quiqqer-order-control-order-information-orderData-vat">
+            <td class="quiqqer-order-control-order-information-orderData-vat-title">
+                {$Vat->getTitle()}
+            </td>
+            <td class="quiqqer-order-control-order-information-orderData-vat-sum">
+                {$Vat->formatted()}
+            </td>
+        </tr>
+        {/foreach}
+        <tr>
+            <td class="quiqqer-order-control-order-information-orderData-sum-title">
+                {locale group="quiqqer/order" var="control.order.overview.sum"}
+            </td>
+            <td class="quiqqer-order-control-order-information-orderData-sum">
+                {$Calculation->getSum()->formatted()}
+            </td>
+        </tr>
+    </table>
+</section>

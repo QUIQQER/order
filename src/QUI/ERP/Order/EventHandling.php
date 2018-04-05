@@ -149,7 +149,7 @@ class EventHandling
     public static function onQuiqqerOrderCreated(Order $Order)
     {
         if (Settings::getInstance()->get('order', 'sendOrderConfirmation')) {
-            Mail::sendOrderCreateMail($Order);
+            Mail::sendOrderConfirmationMail($Order);
         }
     }
 

@@ -38,7 +38,8 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order  = $this->getOrder();
 
         $OrderControl = new QUI\ERP\Order\Controls\Order\Order([
-            'orderHash' => $Order->getHash()
+            'orderHash' => $Order->getHash(),
+            'template'  => 'OrderLikeBasket'
         ]);
 
         $Engine->assign([

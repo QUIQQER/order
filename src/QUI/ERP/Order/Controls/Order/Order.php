@@ -31,7 +31,8 @@ class Order extends QUI\Control
         $this->setAttributes([
             'Site'      => false,
             'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/order/Order',
-            'orderHash' => false
+            'orderHash' => false,
+            'template'  => 'Order' // Order, OrderLikeBasket
         ]);
 
         parent::__construct($attributes);
@@ -84,6 +85,22 @@ class Order extends QUI\Control
             QUI\System\Log::writeDebugException($Exception);
         }
 
+        switch ($this->getAttribute('template')) {
+            case 'Order':
+                $template = dirname(__FILE__).'/Order.html';
+                break;
+
+            case 'OrderLikeBasket':
+                $template = dirname(__FILE__).'/OrderLikeBasket.html';
+
+                $this->addCSSFile(dirname(__FILE__).'/OrderLikeBasket.css');
+                $this->addCSSClass('quiqqer-order-control-orderLikeBasket');
+                break;
+
+            default:
+                $template = $this->getAttribute('template');
+        }
+
         // template
         $Engine->assign([
             'Order'        => $View,
@@ -95,7 +112,7 @@ class Order extends QUI\Control
             'Payment'      => $View->getPayment()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Order.html');
+        return $Engine->fetch($template);
     }
 
     /**

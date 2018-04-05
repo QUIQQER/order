@@ -21,7 +21,7 @@ class Mail
      * @param Order $Order
      * @throws QUI\Exception
      */
-    public static function sendOrderCreateMail(Order $Order)
+    public static function sendOrderConfirmationMail(Order $Order)
     {
         $Customer = $Order->getCustomer();
         $email    = $Customer->getAttribute('email');
@@ -39,7 +39,8 @@ class Mail
 
         // create order data
         $OrderControl = new QUI\ERP\Order\Controls\Order\Order([
-            'orderHash' => $Order->getHash()
+            'orderHash' => $Order->getHash(),
+            'template'  => 'OrderLikeBasket'
         ]);
 
         $Customer = $Order->getCustomer();
