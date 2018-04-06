@@ -151,6 +151,10 @@
 .quiqqer-order-customerData-edit [type="submit"] {
     margin-left: 40%;
     width: 60%;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 /** comment

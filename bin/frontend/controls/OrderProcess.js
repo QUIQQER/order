@@ -549,6 +549,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.$TimelineContainer.set('html', TimeLine.get('html'));
             }
 
+            // scroll the the timeline step
+            // Fx.Scroll();
+            var Step = this.$TimelineContainer.getElement('.current');
+
+            if (Step) {
+                new window.Fx.Scroll(this.$Timeline).toElement(Step);
+            }
+
             // render container
             var Next = new Element('div', {
                 html   : StepContent.get('html'),
