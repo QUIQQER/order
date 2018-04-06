@@ -111,3 +111,36 @@
 .quiqqer-order-profile-orders-pagination .quiqqer-pagination {
     text-align: right;
 }
+
+@media (max-width: 768px) {
+    .quiqqer-order-profile-orders-order-header-date,
+    .quiqqer-order-profile-orders-order-header-total,
+    .quiqqer-order-profile-orders-order-header-addressInvoice,
+    .quiqqer-order-profile-orders-order-header-addressDelivery {
+        width: 100%;
+    }
+
+    .quiqqer-order-profile-orders-order-header-orderId {
+        float: left;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .quiqqer-order-profile-orders-order-header-date > span,
+    .quiqqer-order-profile-orders-order-header-total > span,
+    .quiqqer-order-profile-orders-order-header-orderId > span,
+    .quiqqer-order-profile-orders-order-header-orderId > a,
+    .quiqqer-order-profile-orders-order-header-addressInvoice > span {
+        clear: none;
+        float: left;
+        width: 50%;
+    }
+
+    .quiqqer-order-profile-orders-order-header-addressInvoice address {
+        top: 40px !important;
+    }
+
+    .quiqqer-order-profile-orders .quiqqer-order-profile-orders-pagination:first-child {
+        margin-bottom: 20px;
+    }
+}
