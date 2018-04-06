@@ -46,7 +46,7 @@ class Factory extends QUI\Utils\Singleton
         $Orders = Handler::getInstance();
         $table  = $Orders->table();
 
-        QUI::getDataBase()->insert($table, array(
+        QUI::getDataBase()->insert($table, [
             'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId() ? $User->getId() : 0,
             'c_date'      => date('Y-m-d H:i:s'),
@@ -55,11 +55,26 @@ class Factory extends QUI\Utils\Singleton
             'customerId'  => 0,
             'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
             'successful'  => 0
-        ));
+        ]);
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
 
         return $Orders->get($orderId);
+    }
+
+    /**
+     * Use createOrderInProcess()
+     *
+     * @param null $PermissionUser
+     * @return OrderInProcess
+     * @throws Exception
+     * @throws QUI\Exception
+     *
+     * @deprecated
+     */
+    public function createOrderProcess($PermissionUser = null)
+    {
+        return $this->createOrderInProcess($PermissionUser);
     }
 
     /**
@@ -72,7 +87,7 @@ class Factory extends QUI\Utils\Singleton
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    public function createOrderProcess($PermissionUser = null)
+    public function createOrderInProcess($PermissionUser = null)
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -89,7 +104,7 @@ class Factory extends QUI\Utils\Singleton
 
         // @todo set default from customer
 
-        QUI::getDataBase()->insert($table, array(
+        QUI::getDataBase()->insert($table, [
             'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId(),
             'c_date'      => date('Y-m-d H:i:s'),
@@ -98,7 +113,7 @@ class Factory extends QUI\Utils\Singleton
             'status'      => AbstractOrder::STATUS_CREATED,
             'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
             'successful'  => 0
-        ));
+        ]);
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
 
@@ -121,7 +136,7 @@ class Factory extends QUI\Utils\Singleton
 
         QUI::getDataBase()->insert(
             Handler::getInstance()->tableBasket(),
-            array('uid' => $User->getId())
+            ['uid' => $User->getId()]
         );
 
         $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
@@ -136,7 +151,7 @@ class Factory extends QUI\Utils\Singleton
      */
     public function getOrderConstructNeedles()
     {
-        return array(
+        return [
             'id',
             'status',
             'customerId',
@@ -154,6 +169,6 @@ class Factory extends QUI\Utils\Singleton
             'hash',
             'c_date',
             'c_user'
-        );
+        ];
     }
 }

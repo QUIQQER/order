@@ -90,10 +90,28 @@ class Basket
     {
         $this->List->clear();
 
-        if ($this->hasOrder()) {
+        // if the order is successful, then create a new
+        try {
+            $Order = $this->getOrder();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
             try {
-                $this->getOrder()->clearArticles();
-            } catch (QUI\Exception $Exception) {
+                $Order = $this->createNewOrder();
+            } catch (QUi\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+
+                return;
+            }
+        }
+
+        if ($Order->isSuccessful()) {
+            try {
+                // create a new in process
+                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+                $this->hash = $NewOrder->getHash();
+            } catch (QUi\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
             }
         }
     }
@@ -418,15 +436,11 @@ class Basket
         // create a new order
         try {
             // select the last order in processing
-            $OrderInProcess = $Orders->getLastOrderInProcessFromUser($User);
-
-            if ($OrderInProcess->getOrderId()) {
-                return $OrderInProcess;
-            }
+            return $Orders->getLastOrderInProcessFromUser($User);
         } catch (QUI\Erp\Order\Exception $Exception) {
         }
 
-        return QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+        return QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
     }
 
     //endregion
