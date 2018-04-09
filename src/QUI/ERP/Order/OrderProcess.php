@@ -415,7 +415,7 @@ class OrderProcess extends QUI\Control
         $this->checkSubmission();
 
         // check if order is finished
-        if ($this->getOrder()->isSuccessful()) {
+        if ($this->getOrder() && $this->getOrder()->isSuccessful()) {
             return $this->renderFinish();
         }
 
