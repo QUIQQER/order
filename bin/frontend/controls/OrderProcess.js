@@ -43,7 +43,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             '$onChangeState',
             '$refreshButtonEvents',
             '$beginResultRendering',
-            '$endResultRendering'
+            '$endResultRendering',
+            '$onProcessingError'
         ],
 
         options: {
@@ -528,6 +529,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.setAttribute('current', result.step);
 
+
             // content
             var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
             var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
@@ -604,13 +606,19 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     duration: 500
                 });
 
-                self.Loader.hide();
+                // add processing events
+                QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
+                    Control.addEvent('onProcessingError', self.$onProcessingError);
+                });
 
                 return Promise.all([
                     Prom1,
                     Prom2
                 ]).then(function () {
+                    return self.resize();
+                }).then(function () {
                     self.fireEvent('change', [self]);
+                    self.Loader.hide();
                 });
             });
         },
@@ -623,6 +631,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $beginResultRendering: function (moveDirection) {
+            this.Loader.show();
+
             var Container = this.$StepContainer.getChildren();
             var leftPos   = 0;
 
@@ -647,7 +657,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.getElm().getElements('.quiqqer-order-ordering-error').destroy();
 
-            this.Loader.show();
             this.$runningAnimation = true;
 
             return this.$animate(Container, {
@@ -824,6 +833,60 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             return new Promise(function (resolve) {
                 options.callback = resolve;
                 moofx(Elm).animate(styles, options);
+            });
+        },
+
+        /**
+         * Execute a processing error
+         * This method is triggered when a payment trigger a payment error
+         * The processing step can now display a payment change step
+         */
+        $onProcessingError: function () {
+            if (this.getAttribute('current') !== 'Processing') {
+                return;
+            }
+
+            this.Loader.show();
+
+            var self      = this,
+                Container = this.getElm().getElement('.quiqqer-order-step-processing'),
+                Payments  = Container.getElement('quiqqer-order-processing-payments');
+
+            if (!Payments) {
+                Payments = new Element('div', {
+                    'class': 'quiqqer-order-processing-payments'
+                }).inject(Container);
+            }
+
+            QUIAjax.get('package_quiqqer_order_ajax_frontend_order_processing_getPayments', function (result) {
+                Payments.set('html', result);
+
+                QUI.parse(Payments).then(function () {
+                    Payments.getElement('[name="change-payment"]').addEvent('click', function (event) {
+                        event.stop();
+
+                        self.Loader.show();
+
+                        // save new payment method
+                        var paymentId = Payments.getElement('input:checked').value;
+                        var orderHash = self.getAttribute('orderHash');
+
+                        Orders.saveProcessingPaymentChange(
+                            orderHash,
+                            paymentId
+                        ).then(function () {
+                            return self.send();
+                        }).then(function () {
+                            self.Loader.hide();
+                        });
+                    });
+
+                    self.resize();
+                    self.Loader.hide();
+                });
+            }, {
+                'package': 'quiqqer/order',
+                orderHash: this.getAttribute('orderHash')
             });
         }
     });

@@ -1,0 +1,12 @@
+<h1>{locale group="quiqqer/order" var="ordering.processing.change.payment.title"}</h1>
+
+<div class="quiqqer-order-processing-payments-message">
+    {locale group="quiqqer/order" var="ordering.processing.change.payment.message"}
+</div>
+
+
+{$PaymentStep->getBody()}
+
+<button type="submit" name="change-payment" class="btn btn-secondary btn-outline">
+    {locale group="quiqqer/order" var="ordering.processing.change.payment.button"}
+</button>

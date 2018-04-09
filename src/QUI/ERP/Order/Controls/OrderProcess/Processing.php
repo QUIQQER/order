@@ -60,12 +60,53 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
+
         $Engine->assign([
             'display' => $this->ProcessingProvider->getDisplay($this->getOrder(), $this),
             'this'    => $this
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Processing.html');
+    }
+
+    /**
+     * Return the processing payments, if the current payment does not work
+     * This method checks if the payment can be changed
+     *
+     * @return string
+     */
+    public function getProcessingPayments()
+    {
+        if (!class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
+            return '';
+        }
+
+        // check if payment can be changed
+        $Order   = $this->getOrder();
+        $Payment = $Order->getPayment();
+
+        if (QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
+            return '';
+        }
+
+        try {
+            $Engine = QUI::getTemplateManager()->getEngine();
+
+            $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
+                'Order' => $this->getOrder()
+            ]);
+
+            $Engine->assign([
+                'this'        => $this,
+                'PaymentStep' => $PaymentStep
+            ]);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return '';
+        }
+
+        return $Engine->fetch(dirname(__FILE__).'/ProcessingPayments.html');
     }
 
     /**
@@ -105,6 +146,38 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function save()
     {
+    }
+
+    /**
+     * Save the payment to the order
+     *
+     * @param $payment
+     * @return void
+     *
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
+     * @throws QUI\Permissions\Exception
+     */
+    public function savePayment($payment)
+    {
+        if (!class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
+            return;
+        }
+
+        // check if payment can be changed
+        $Order   = $this->getOrder();
+        $Payment = $Order->getPayment();
+
+        if (QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
+            return;
+        }
+
+        $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
+            'Order'   => $this->getOrder(),
+            'payment' => $payment
+        ]);
+
+        $PaymentStep->save();
     }
 
     //region title

@@ -169,6 +169,25 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
                     showError: false
                 });
             });
+        },
+
+        /**
+         * Save (Change) the payment method during a processing step
+         *
+         * @param {String} orderHash - order hash
+         * @param {String|Number} payment - payment id
+         * @return {Promise}
+         */
+        saveProcessingPaymentChange: function (orderHash, payment) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_processing_savePayment', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: orderHash,
+                    payment  : payment,
+                    onError  : reject,
+                    showError: false
+                });
+            });
         }
     });
 });

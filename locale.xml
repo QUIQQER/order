@@ -284,6 +284,19 @@
             <en><![CDATA[Done!]]></en>
         </locale>
 
+        <locale name="ordering.processing.change.payment.title">
+            <de><![CDATA[Bezahlungsweise ändern]]></de>
+            <en><![CDATA[Change payment]]></en>
+        </locale>
+        <locale name="ordering.processing.change.payment.message" html="true">
+            <de><![CDATA[Falls Ihre Bezahlung nicht geklappt hat können Sie eine alternative Bezahlweise wählen.]]></de>
+            <en><![CDATA[If your payment did not work you can choose an alternative method of payment.]]></en>
+        </locale>
+        <locale name="ordering.processing.change.payment.button">
+            <de><![CDATA[Zahlungsweise ändern]]></de>
+            <en><![CDATA[Change payment]]></en>
+        </locale>
+
         <locale name="ordering.step.title.CustomerData.customerNo">
             <de><![CDATA[Kunden-Nr.]]></de>
             <en><![CDATA[Customer no]]></en>
