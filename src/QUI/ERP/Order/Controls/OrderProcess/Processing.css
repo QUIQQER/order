@@ -1,3 +1,8 @@
+.quiqqer-order-step-processing {
+    float: left;
+    padding-bottom: 20px;
+    width: 100%;
+}
 
 .quiqqer-order-step-processing header {
     margin-bottom: 20px;
@@ -5,4 +10,23 @@
 
 .quiqqer-order-step-processing-description {
     margin-bottom: 20px;
+}
+
+.quiqqer-order-processing-payments {
+    float: left;
+    margin-bottom: 20px;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.quiqqer-order-processing-payments-message {
+    margin-bottom: 20px;
+}
+
+.quiqqer-order-processing-payments .quiqqer-order-step-payments {
+    padding: 0;
+}
+
+.quiqqer-order-processing-payments .quiqqer-order-step-payments header {
+    display: none;
 }
