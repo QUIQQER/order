@@ -26,6 +26,11 @@ abstract class AbstractOrderProcessProvider
     protected $currentStatus = self::PROCESSING_STATUS_START;
 
     /**
+     * @var bool
+     */
+    protected $hasErrors = false;
+
+    /**
      * Can be overwritten
      *
      * @param OrderProcessSteps $OrderProcessSteps
@@ -86,5 +91,15 @@ abstract class AbstractOrderProcessProvider
         $this->currentStatus = self::PROCESSING_STATUS_FINISH;
 
         return self::PROCESSING_STATUS_FINISH;
+    }
+
+    /**
+     * Exists errors in the processing?
+     *
+     * @return bool
+     */
+    public function hasErrors()
+    {
+        return $this->hasErrors;
     }
 }

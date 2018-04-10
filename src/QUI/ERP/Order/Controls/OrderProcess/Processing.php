@@ -60,10 +60,22 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
+        try {
+            $display   = $this->ProcessingProvider->getDisplay($this->getOrder(), $this);
+            $hasErrors = $this->ProcessingProvider->hasErrors();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::write($Exception->getMessage());
+
+            $hasErrors = true;
+            $display   = '<div class="message-error">'.
+                         QUI::getLocale()->get('quiqqer/order', 'exception.processing.error').
+                         '</div>';
+        }
 
         $Engine->assign([
-            'display' => $this->ProcessingProvider->getDisplay($this->getOrder(), $this),
-            'this'    => $this
+            'display'   => $display,
+            'hasErrors' => $hasErrors,
+            'this'      => $this
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Processing.html');

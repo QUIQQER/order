@@ -615,6 +615,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     Prom1,
                     Prom2
                 ]).then(function () {
+                    return self.$parseProcessingPaymentChange();
+                }).then(function () {
                     return self.resize();
                 }).then(function () {
                     self.fireEvent('change', [self]);
@@ -861,32 +863,54 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             QUIAjax.get('package_quiqqer_order_ajax_frontend_order_processing_getPayments', function (result) {
                 Payments.set('html', result);
 
-                QUI.parse(Payments).then(function () {
-                    Payments.getElement('[name="change-payment"]').addEvent('click', function (event) {
-                        event.stop();
-
-                        self.Loader.show();
-
-                        // save new payment method
-                        var paymentId = Payments.getElement('input:checked').value;
-                        var orderHash = self.getAttribute('orderHash');
-
-                        Orders.saveProcessingPaymentChange(
-                            orderHash,
-                            paymentId
-                        ).then(function () {
-                            return self.send();
-                        }).then(function () {
-                            self.Loader.hide();
-                        });
-                    });
-
+                self.$parseProcessingPaymentChange().then(function () {
                     self.resize();
                     self.Loader.hide();
                 });
             }, {
                 'package': 'quiqqer/order',
                 orderHash: this.getAttribute('orderHash')
+            });
+        },
+
+        /**
+         * Parse the processing step -> payment change events
+         *
+         * @return {Promise}
+         */
+        $parseProcessingPaymentChange: function () {
+            var Container = this.getElm().getElement('.quiqqer-order-step-processing');
+
+            if (!Container) {
+                return Promise.resolve();
+            }
+
+            var self     = this,
+                Payments = Container.getElement('.quiqqer-order-processing-payments');
+
+            if (!Payments) {
+                return Promise.resolve();
+            }
+
+            return QUI.parse(Payments).then(function () {
+                Payments.getElement('[name="change-payment"]').addEvent('click', function (event) {
+                    event.stop();
+
+                    self.Loader.show();
+
+                    // save new payment method
+                    var paymentId = Payments.getElement('input:checked').value;
+                    var orderHash = self.getAttribute('orderHash');
+
+                    Orders.saveProcessingPaymentChange(
+                        orderHash,
+                        paymentId
+                    ).then(function () {
+                        return self.send();
+                    }).then(function () {
+                        self.Loader.hide();
+                    });
+                });
             });
         }
     });
