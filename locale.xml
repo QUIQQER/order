@@ -11,7 +11,19 @@
             <en><![CDATA[]]></en>
         </locale>
 
+        <locale name="erp.panel.accounting.text">
+            <de><![CDATA[Buchhaltung]]></de>
+            <en><![CDATA[Accounting]]></en>
+        </locale>
         <locale name="erp.panel.order.text">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="erp.panel.order.create.text">
+            <de><![CDATA[Bestellung anlegen]]></de>
+            <en><![CDATA[Create Order]]></en>
+        </locale>
+        <locale name="erp.panel.order.list.text">
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
         </locale>
