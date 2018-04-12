@@ -14,7 +14,7 @@ use QUI;
  *
  * @package QUI\ERP\Order\Controls\Order
  */
-class Order extends QUI\Controls\Control
+class Order extends QUI\Control
 {
     /**
      * @var null
@@ -31,7 +31,8 @@ class Order extends QUI\Controls\Control
         $this->setAttributes([
             'Site'      => false,
             'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/order/Order',
-            'orderHash' => false
+            'orderHash' => false,
+            'template'  => 'Order' // Order, OrderLikeBasket
         ]);
 
         parent::__construct($attributes);
@@ -47,7 +48,7 @@ class Order extends QUI\Controls\Control
      *
      * @throws QUI\Exception
      */
-    protected function onCreate()
+    public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
 
@@ -62,7 +63,13 @@ class Order extends QUI\Controls\Control
         }
 
         $Invoice = null;
-        $View    = $Order->getView();
+
+        if ($Order instanceof QUI\ERP\Order\Order) {
+            $View = $Order->getView();
+        } else {
+            // Order in process
+            $View = $Order;
+        }
 
         $View->setAttribute(
             'downloadLink',
@@ -71,9 +78,27 @@ class Order extends QUI\Controls\Control
 
         // invoice
         try {
-            $Invoice = $Order->getInvoice();
+            if ($Order->hasInvoice()) {
+                $Invoice = $Order->getInvoice();
+            }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
+        }
+
+        switch ($this->getAttribute('template')) {
+            case 'Order':
+                $template = dirname(__FILE__).'/Order.html';
+                break;
+
+            case 'OrderLikeBasket':
+                $template = dirname(__FILE__).'/OrderLikeBasket.html';
+
+                $this->addCSSFile(dirname(__FILE__).'/OrderLikeBasket.css');
+                $this->addCSSClass('quiqqer-order-control-orderLikeBasket');
+                break;
+
+            default:
+                $template = $this->getAttribute('template');
         }
 
         // template
@@ -87,7 +112,7 @@ class Order extends QUI\Controls\Control
             'Payment'      => $View->getPayment()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Order.html');
+        return $Engine->fetch($template);
     }
 
     /**

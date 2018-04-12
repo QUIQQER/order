@@ -51,6 +51,10 @@ class UserOrders extends Control implements ControlInterface
             $User = $this->getAttribute('User');
         }
 
+        if (!$this->getAttribute('limit')) {
+            $this->setAttribute('limit', 5);
+        }
+
         $limit        = (int)$this->getAttribute('limit');
         $sheetsMax    = 1;
         $sheetCurrent = (int)$this->getAttribute('page');
@@ -81,6 +85,8 @@ class UserOrders extends Control implements ControlInterface
 
             $orders[] = $View;
         }
+
+        $this->setAttribute('data-qui-options-limit', $this->getAttribute('limit'));
 
         $Engine->assign([
             'orders'  => $orders,
@@ -114,24 +120,35 @@ class UserOrders extends Control implements ControlInterface
         $Articles = $Order->getArticles();
         $Invoice  = null;
 
+        $paidStatus = $Order->getAttribute('paid_status');
+        $paidDate   = $Order->getAttribute('paid_date');
+
         $Articles->calc();
 
-        if ($Order->isPosted()) {
-            $Invoice = $Order->getInvoice();
+        if ($Order->hasInvoice()) {
+            $Invoice    = $Order->getInvoice();
+            $paidStatus = $Invoice->getAttribute('paid_status');
+            $paidDate   = $Invoice->getAttribute('paid_date');
         }
 
-        switch ($Order->getAttribute('paid_status')) {
+        switch ((int)$paidStatus) {
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_OPEN:
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
                 break;
 
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PAID:
+                $Formatter = QUI::getLocale()->getDateFormatter();
+                $date      = $Formatter->format($paidDate);
+
+                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.paid.text', [
+                    'date' => $date
+                ]);
+                break;
+
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PART:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_ERROR:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_CANCELED:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_DEBIT:
-                $status        = $Order->getAttribute('paid_status');
-                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.'.$status);
                 break;
 
             default:

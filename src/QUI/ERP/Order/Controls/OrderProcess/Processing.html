@@ -4,4 +4,10 @@
     {$display}
 
     <input type="hidden" name="paymentGateway" value="1"/>
+
+    {if $hasErrors}
+    <div class="quiqqer-order-processing-payments">
+        {$this->getProcessingPayments()}
+    </div>
+    {/if}
 </section>

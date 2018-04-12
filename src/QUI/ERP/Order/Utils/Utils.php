@@ -203,4 +203,17 @@ class Utils
 
         return mb_substr($prefix, 0, 100);
     }
+
+    /**
+     * Can another payment method be chosen if the payment method does not work in an order?
+     *
+     * @param QUI\ERP\Accounting\Payments\Types\Payment $Payment
+     * @return bool
+     */
+    public static function isPaymentChangeable(QUI\ERP\Accounting\Payments\Types\Payment $Payment)
+    {
+        $Settings = QUI\ERP\Order\Settings::getInstance();
+
+        return (bool)$Settings->get('paymentChangeable', $Payment->getId());
+    }
 }

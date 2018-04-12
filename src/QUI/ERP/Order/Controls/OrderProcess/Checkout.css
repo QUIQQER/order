@@ -29,10 +29,35 @@
 
 .quiqqer-order-step-checkout-payments-payment span {
     float: left;
-    padding: 10px;
 }
 
+.quiqqer-order-step-checkout-payments-payment-title {
+    clear: both;
+    font-weight: bold;
+    margin-top: 10px;
+}
 
-.quiqqer-order-step-checkout-gateway {
+.quiqqer-order-step-checkout-payments-payment-description {
+    clear: both;
+}
 
+.quiqqer-order-step-checkout-payments-payment-description p {
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .articles-article-header-pos {
+        width: 40px;
+    }
+
+    .quiqqer-order-step-checkout-invoiceAddress,
+    .quiqqer-order-step-checkout-payments {
+        clear: both;
+        width: 100% !important;
+    }
+
+    .quiqqer-order-step-checkout-notice label {
+        font-size: 12px;
+    }
 }

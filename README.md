@@ -58,6 +58,7 @@ Developers
 --------
 
 - onQuiqqerOrderSuccessful [Order]
+- onQuiqqerOrderCreated [Order]
 
 - onQuiqqerOrderDeleteBegin [Order]
 - onQuiqqerOrderDelete [$orderId, $orderData]

@@ -8,13 +8,17 @@
                     <type><![CDATA[string]]></type>
                     <defaultvalue>execute</defaultvalue>
                 </conf>
+                <conf name="prefix">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue><![CDATA[%Y-]]></defaultvalue>
+                </conf>
                 <conf name="autoInvoice">
                     <type><![CDATA[string]]></type>
                     <defaultvalue>onOrder</defaultvalue>
                 </conf>
-                <conf name="prefix">
-                    <type><![CDATA[string]]></type>
-                    <defaultvalue><![CDATA[%Y-]]></defaultvalue>
+                <conf name="sendOrderConfirmation">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
                 </conf>
             </section>
 
@@ -70,6 +74,16 @@
                                 <locale group="quiqqer/order" var="order.settings.autoInvoice.byPayment"/>
                             </option>
                         </select>
+
+                        <input type="checkbox" conf="order.sendOrderConfirmation">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.sendOrderConfirmation"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.sendOrderConfirmation.description"/>
+                            </description>
+                        </input>
 
                         <input type="text" conf="order.prefix">
                             <text>

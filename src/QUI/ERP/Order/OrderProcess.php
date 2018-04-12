@@ -253,8 +253,11 @@ class OrderProcess extends QUI\Control
         // all runs fine
 
         // @todo Vorgehen bei gescheiterter Zahlung -> only at failedPaymentProcedure = execute
-        $OrderInProcess->createOrder();
+        $Order = $OrderInProcess->createOrder();
         $OrderInProcess->delete();
+
+        $this->Order = $Order;
+        $this->setAttribute('orderHash', $Order->getHash());
 
         $this->setAttribute('current', 'finish');
         $this->setAttribute('step', 'finish');
@@ -275,10 +278,21 @@ class OrderProcess extends QUI\Control
             return;
         }
 
-        // if temp order exist, kill it
+        // if temp order exist, and a normal order kill it
         try {
-            $Order = Handler::getInstance()->getOrderInProcessByHash($this->Order->getHash());
-            $Order->delete();
+            $ProcessOrder = Handler::getInstance()->getOrderInProcessByHash(
+                $this->Order->getHash()
+            );
+
+            $Order = Handler::getInstance()->getOrderByHash(
+                $ProcessOrder->getHash()
+            );
+
+            if ($Order instanceof Order) {
+                $ProcessOrder->delete();
+            }
+
+            $this->Order = $Order;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -345,7 +359,8 @@ class OrderProcess extends QUI\Control
                     'CurrentStep'        => $ProcessingStep,
                     'currentStepContent' => QUI\ControlUtils::parse($ProcessingStep),
                     'Site'               => $this->getSite(),
-                    'Order'              => $this->getOrder()
+                    'Order'              => $this->getOrder(),
+                    'hash'               => $this->getStepHash()
                 ]);
 
                 return QUI\Output::getInstance()->parse($Engine->fetch($template));
@@ -362,7 +377,8 @@ class OrderProcess extends QUI\Control
                 'CurrentStep'        => $this->getCurrentStep(),
                 'currentStepContent' => QUI\ControlUtils::parse($this->getCurrentStep()),
                 'Site'               => $this->getSite(),
-                'Order'              => $this->getOrder()
+                'Order'              => $this->getOrder(),
+                'hash'               => $this->getStepHash()
             ]);
 
             return QUI\Output::getInstance()->parse($Engine->fetch($template));
@@ -399,10 +415,9 @@ class OrderProcess extends QUI\Control
         $this->checkSubmission();
 
         // check if order is finished
-        if ($this->getOrder()->isSuccessful()) {
+        if ($this->getOrder() && $this->getOrder()->isSuccessful()) {
             return $this->renderFinish();
         }
-
 
         // check all previous steps
         // is one invalid, go to them
@@ -498,7 +513,8 @@ class OrderProcess extends QUI\Control
             'CurrentStep'        => $Current,
             'currentStepContent' => QUI\ControlUtils::parse($Current),
             'Site'               => $this->getSite(),
-            'Order'              => $this->getOrder()
+            'Order'              => $this->getOrder(),
+            'hash'               => $this->getStepHash()
         ]);
 
         $this->Events->fireEvent('getBody', [$this]);
@@ -551,7 +567,7 @@ class OrderProcess extends QUI\Control
         }));
 
 
-        $render = function () {
+        $render = function () use ($Order, $Finish, &$Current) {
             // show processing step
             $Processing = new Controls\OrderProcess\Processing([
                 'Order'    => $this->getOrder(),
@@ -559,6 +575,21 @@ class OrderProcess extends QUI\Control
             ]);
 
             $this->setAttribute('step', $Processing->getName());
+
+            $Payment = $Order->getPayment();
+
+            if ($Payment->getPaymentType()->isGateway() === false) {
+                $this->setAttribute('step', $Finish->getName());
+                $Current = $Finish;
+
+                try {
+                    $this->send();
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::writeException($Exception);
+                }
+
+                return false;
+            }
 
             // rearrange the steps, insert the processing step
             $Steps = $this->parseSteps();
@@ -625,10 +656,11 @@ class OrderProcess extends QUI\Control
             'previous'           => false,
             'payableToOrder'     => false,
             'steps'              => $this->getSteps(),
-            'CurrentStep'        => $this->getCurrentStep(),
-            'currentStepContent' => QUI\ControlUtils::parse($this->getCurrentStep()),
+            'CurrentStep'        => $this->getLastStep(),
+            'currentStepContent' => QUI\ControlUtils::parse($this->getLastStep()),
             'Site'               => $this->getSite(),
-            'Order'              => $this->getOrder()
+            'Order'              => $this->getOrder(),
+            'hash'               => $this->getStepHash()
         ]);
 
         $this->Events->fireEvent('getBody', [$this]);
@@ -679,6 +711,19 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * @return mixed
+     * @throws Basket\Exception
+     * @throws Exception
+     * @throws QUI\Exception
+     */
+    public function getLastStep()
+    {
+        $steps = array_values($this->getSteps());
+
+        return $steps[count($steps) - 1];
+    }
+
+    /**
      * Return the next step
      *
      * @param null|AbstractOrderingStep $StartStep
@@ -715,6 +760,7 @@ class OrderProcess extends QUI\Control
         // if order are successful -> then show the finish step
         if ($Order->isSuccessful()) {
             $this->setAttribute('orderHash', $Order->getHash());
+            $this->cleanup();
 
             return new Controls\OrderProcess\Finish([
                 'Order' => $Order

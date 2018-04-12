@@ -430,7 +430,8 @@ class Handler extends Singleton
         $result = QUI::getDataBase()->fetch([
             'from'  => $this->tableOrderProcess(),
             'where' => [
-                'customerId' => $User->getId()
+                'customerId' => $User->getId(),
+                'successful' => 0
             ],
             'limit' => 1,
             'order' => 'c_date DESC'

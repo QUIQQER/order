@@ -34,14 +34,18 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             '$onChangeState'
         ],
 
+        options: {
+            limit: 10
+        },
+
         initialize: function (options) {
             this.parent(options);
 
-            this.$List = null;
-
             this.$OrderContainer = null;
             this.$orderOpened    = false;
+            this.$location       = null;
 
+            this.$List  = null;
             this.Loader = new QUILoader();
 
             this.addEvents({
@@ -89,6 +93,8 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                 });
             });
 
+            this.$location = window.location.href;
+
             if (window.location.hash !== '') {
                 this.$onChangeState();
             }
@@ -100,6 +106,11 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
         $onChangeState: function () {
             var self = this,
                 hash = window.location.hash;
+
+            if (this.$location === null) {
+                return;
+            }
+
 
             if (hash === '') {
                 if (this.$orderOpened) {
@@ -114,7 +125,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
 
             hash = hash.replace('#', '');
 
-            if (this.$orderOpened === hash) {
+            if (this.$orderOpened === hash || !this.$isOrderHash(hash)) {
                 return;
             }
 
@@ -167,6 +178,10 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             var self = this;
 
             this.Loader.show();
+
+            if (typeof limit === 'undefined') {
+                limit = this.getAttribute('limit');
+            }
 
             QUIAjax.get('package_quiqqer_order_ajax_frontend_orders_userOrders', function (result) {
                 var Ghost = new Element('div', {
@@ -221,6 +236,18 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
         },
 
         //region utils
+
+        /**
+         * Is the hash an order hash?
+         * can be used for the first check
+         *
+         * @param hash
+         * @return {boolean}
+         */
+        $isOrderHash: function (hash) {
+            var count = (hash.match(/-/g) || []).length;
+            return count === 4;
+        },
 
         /**
          * hide the order list

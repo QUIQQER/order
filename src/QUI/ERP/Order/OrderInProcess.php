@@ -304,6 +304,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         $data['paid_data']        = $this->getAttribute('paid_data');
         $data['successful']       = $this->successful;
 
+        if (empty($data['paid_date'])) {
+            $data['paid_date'] = null;
+        }
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
@@ -328,7 +332,15 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         if ($Payment->isSuccessful($Order->getHash())) {
             $Order->setSuccessfulStatus();
+            $this->setSuccessfulStatus();
         }
+
+        try {
+            QUI::getEvents()->fireEvent('quiqqerOrderCreated', [$Order]);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+
 
         // create invoice?
         if (Settings::getInstance()->createInvoiceOnOrder()) {

@@ -15,4 +15,8 @@
     <event on="onTransactionCreate"
            fire="\QUI\ERP\Order\EventHandling::onTransactionCreate"
     />
+
+    <event on="onQuiqqerOrderCreated"
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerOrderCreated"
+    />
 </events>

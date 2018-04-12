@@ -304,8 +304,6 @@ class Search extends Singleton
     /**
      * @param array $data
      * @return array
-     *
-     * @throws QUI\ERP\Order\Exception
      */
     protected function parseListForGrid($data)
     {
@@ -407,7 +405,13 @@ class Search extends Singleton
             }
 
             // articles
-            $calculations = $Order->getArticles()->getCalculations();
+            try {
+                $calculations = $Order->getArticles()->getCalculations();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+                continue;
+            }
+
 
             $vatSum = array_map(function ($data) {
                 if (!isset($data['sum'])) {

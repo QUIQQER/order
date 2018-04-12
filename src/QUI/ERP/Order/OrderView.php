@@ -41,6 +41,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
     {
         $this->Order    = $Order;
         $this->Articles = $this->Order->getArticles();
+
+        $this->setAttributes($this->Order->getAttributes());
     }
 
     /**
@@ -218,7 +220,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      */
     public function isPaid()
     {
-        return $this->Order->isPosted();
+        return $this->Order->isPaid();
     }
 
     //endregion
