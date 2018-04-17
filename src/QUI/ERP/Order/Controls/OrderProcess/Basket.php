@@ -103,11 +103,11 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getBody()
     {
-        if (!$this->Basket->count()) {
-            return '';
-        }
-
         $Engine = QUI::getTemplateManager()->getEngine();
+
+        if (!$this->Basket->count()) {
+            return $Engine->fetch(dirname(__FILE__).'/BasketEmpty.html');
+        }
 
         $BasketControl = new BasketControl();
         $BasketControl->setBasket($this->Basket);
