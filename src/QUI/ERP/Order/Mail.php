@@ -58,14 +58,14 @@ class Mail
 
         $Mailer->setSubject(
             QUI::getLocale()->get('quiqqer/order', 'order.confirmation.subject', [
-                'orderId' => $Order->getId()
+                'orderId' => $Order->getIdPrefix()
             ])
         );
 
 
         $Mailer->setBody(
             QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
-                'orderId'  => $Order->getId(),
+                'orderId'  => $Order->getIdPrefix(),
                 'order'    => QUI\ControlUtils::parse($OrderControl),
                 'user'     => $user,
                 'username' => $Customer->getUsername(),
