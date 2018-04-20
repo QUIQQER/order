@@ -91,6 +91,10 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                         self.$refreshOrder(Query.sheet, Query.limit);
                     }
                 });
+
+                (function () {
+                    this.$redraw();
+                }).delay(1000, Pagination);
             });
 
             this.$location = window.location.href;
