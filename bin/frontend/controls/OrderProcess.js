@@ -1,7 +1,7 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
+ * @author www.pcsg.de (Henning Leutz)
  */
-
 require.config({
     paths: {
         'Navigo'       : URL_OPT_DIR + 'bin/navigo/lib/navigo.min',
@@ -310,6 +310,41 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     });
                 });
             });
+        },
+
+        /**
+         * Check / valdate the step
+         * html5 validation
+         *
+         * @return {boolean}
+         */
+        validateStep: function () {
+            // test html5 required
+            var Required = this.getElm().getElements('[required]');
+
+            if (Required.length) {
+                var i, len, Field;
+
+                for (i = 0, len = Required.length; i < len; i++) {
+                    Field = Required[i];
+
+                    if (!("checkValidity" in Field)) {
+                        continue;
+                    }
+
+                    if (Field.checkValidity()) {
+                        continue;
+                    }
+
+                    // chrome validate message
+                    if ("reportValidity" in Field) {
+                        Field.reportValidity();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         },
 
         /**
@@ -775,41 +810,22 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on next click
          *
          * @param event
+         * @return {Boolean}
          */
         $onNextClick: function (event) {
             event.stop();
 
-            // test html5 required
-            var Required = this.getElm().getElements('[required]');
-
-            if (Required.length) {
-                var i, len, Field;
-
-                for (i = 0, len = Required.length; i < len; i++) {
-                    Field = Required[i];
-
-                    if (!("checkValidity" in Field)) {
-                        continue;
-                    }
-
-                    if (Field.checkValidity()) {
-                        continue;
-                    }
-
-                    // chrome validate message
-                    if ("reportValidity" in Field) {
-                        Field.reportValidity();
-                        return;
-                    }
-                }
+            if (this.validateStep() === false) {
+                return false;
             }
 
             if (event.target.get('value') === 'payableToOrder') {
                 this.send();
-                return;
+                return true;
             }
 
             this.next();
+            return true;
         },
 
         /**

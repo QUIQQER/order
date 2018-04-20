@@ -1,0 +1,16 @@
+<header>
+    <h1>{locale group="quiqqer/order" var="ordering.step.title.Basket"}</h1>
+</header>
+
+{template_event name="quiqqer::order::orderProcessBasketEmptyBegin"}
+
+<div class="quiqqer-order-basket-isEmpty">
+    {locale group="quiqqer/order" var="message.basket.is.empty"}
+</div>
+
+{template_event name="quiqqer::order::orderProcessBasketEmptyEnd" assign=content}
+{if !empty($content)}
+<div class="quiqqer-order-basket-end">
+    {$content}
+</div>
+{/if}

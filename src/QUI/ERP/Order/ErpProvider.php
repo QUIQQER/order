@@ -8,6 +8,9 @@ namespace QUI\ERP\Order;
 
 use QUI\ERP\Api\AbstractErpProvider;
 
+use QUI\Controls\Sitemap\Map;
+use QUI\Controls\Sitemap\Item;
+
 /**
  * Class ErpProvider
  *
@@ -16,19 +19,50 @@ use QUI\ERP\Api\AbstractErpProvider;
 class ErpProvider extends AbstractErpProvider
 {
     /**
-     * @return array
+     * @param \QUI\Controls\Sitemap\Map $Map
      */
-    public static function getMenuItems()
+    public static function addMenuItems(Map $Map)
     {
-        $menu = array();
+        $Accounting = $Map->getChildrenByName('accounting');
 
-        $menu[] = array(
-            'icon'  => 'fa fa-shopping-cart',
-            'text'  => array('quiqqer/order', 'erp.panel.order.text'),
-            'panel' => 'package/quiqqer/order/bin/backend/controls/panels/Orders'
+        if ($Accounting === null) {
+            $Accounting = new Item([
+                'icon'     => 'fa fa-book',
+                'name'     => 'accounting',
+                'text'     => ['quiqqer/order', 'erp.panel.accounting.text'],
+                'opened'   => true,
+                'priority' => 1
+            ]);
+
+            $Map->appendChild($Accounting);
+        }
+
+        $Order = new Item([
+            'icon'   => 'fa fa-shopping-basket',
+            'name'   => 'order',
+            'text'   => ['quiqqer/order', 'erp.panel.order.text'],
+            'opened' => true
+        ]);
+
+        $Order->appendChild(
+            new Item([
+                'icon'    => 'fa fa-plus',
+                'name'    => 'invoice-create',
+                'text'    => ['quiqqer/order', 'erp.panel.order.create.text'],
+                'require' => 'package/quiqqer/order/bin/backend/utils/ErpMenuOrderCreate'
+            ])
         );
 
-        return $menu;
+        $Order->appendChild(
+            new Item([
+                'icon'    => 'fa fa-shopping-basket',
+                'name'    => 'invoice-drafts',
+                'text'    => ['quiqqer/order', 'erp.panel.order.list.text'],
+                'require' => 'package/quiqqer/order/bin/backend/controls/panels/Orders'
+            ])
+        );
+
+        $Accounting->appendChild($Order);
     }
 
     /**
@@ -36,8 +70,8 @@ class ErpProvider extends AbstractErpProvider
      */
     public static function getNumberRanges()
     {
-        return array(
+        return [
             new NumberRanges\Order()
-        );
+        ];
     }
 }
