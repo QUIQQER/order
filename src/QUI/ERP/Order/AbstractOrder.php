@@ -296,6 +296,8 @@ abstract class AbstractOrder extends QUI\QDOM
             return;
         }
 
+        // @todo create invoice
+
         QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
 
         $this->successful = 1;
