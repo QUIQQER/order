@@ -39,7 +39,7 @@
                 {locale group="quiqqer/order" var="control.order.invoiceAddress.title"}
             </h2>
         </header>
-        <span>{locale group="quiqqer/order" var="control.profile.orders.order.invoiceAddress"}</span>
+        
         {if $Invoice}
         {assign var=Customer value=$Invoice->getCustomer()}
         {else}
