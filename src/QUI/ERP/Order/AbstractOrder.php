@@ -400,6 +400,16 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     /**
+     * Return the real order id for the customer
+     *
+     * @return string
+     */
+    public function getPrefixedId()
+    {
+        return $this->getIdPrefix().$this->getId();
+    }
+
+    /**
      * @return QUI\ERP\Accounting\Calculations
      *
      * @throws QUI\ERP\Exception
