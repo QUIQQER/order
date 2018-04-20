@@ -44,7 +44,13 @@ class Mail
         ]);
 
         $Customer = $Order->getCustomer();
+        $user     = $Customer->getName();
+        $user     = trim($user);
 
+        if (empty($user)) {
+            $Address = $Customer->getAddress();
+            $user    = $Address->getName();
+        }
 
         // mail
         $Mailer = QUI::getMailManager()->getMailer();
@@ -56,11 +62,12 @@ class Mail
             ])
         );
 
+
         $Mailer->setBody(
             QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
                 'orderId'  => $Order->getId(),
                 'order'    => QUI\ControlUtils::parse($OrderControl),
-                'user'     => $Customer->getName(),
+                'user'     => $user,
                 'username' => $Customer->getUsername(),
             ])
         );
