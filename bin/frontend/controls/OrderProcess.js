@@ -249,6 +249,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return this.refreshCurrentStep();
             }
 
+            if (this.validateStep() === false) {
+                return Promise.reject();
+            }
+
             var self = this;
 
             this.$beginResultRendering(-1);
@@ -824,7 +828,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return true;
             }
 
-            this.next();
+            this.next().catch(function (err) {
+                // nothing
+            });
+
             return true;
         },
 
