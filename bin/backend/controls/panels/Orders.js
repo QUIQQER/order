@@ -98,10 +98,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                     return entry;
                 });
-
+                console.log(result);
                 this.$Grid.setData(gridData);
                 this.$refreshButtonStatus();
-console.log(result);
+
                 this.$Total.set(
                     'html',
                     Mustache.render(templateTotal, result.total)

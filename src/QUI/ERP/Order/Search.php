@@ -6,6 +6,7 @@
 
 namespace QUI\ERP\Order;
 
+use function DusanKasan\Knapsack\toArray;
 use QUI;
 use QUI\Utils\Singleton;
 
@@ -164,7 +165,7 @@ class Search extends Singleton
 
         return [
             'grid'  => $Grid->parseResult($result, $count),
-            'total' => $calc
+            'total' => QUI\ERP\Accounting\Calc::calculateTotal($calc)
         ];
     }
 
@@ -304,10 +305,9 @@ class Search extends Singleton
      */
     protected function parseListForGrid($data)
     {
-        $Orders   = Handler::getInstance();
-        $Locale   = QUI::getLocale();
-        $Payments = Payments::getInstance();
-        $Currency = QUI\ERP\Defaults::getCurrency();
+        $Orders       = Handler::getInstance();
+        $Locale       = QUI::getLocale();
+        $Transactions = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
 
         $localeCode = QUI::getLocale()->getLocalesByLang(
             QUI::getLocale()->getCurrent()
@@ -395,7 +395,8 @@ class Search extends Singleton
             }
 
             // payment
-            $Payment = $Order->getPayment();
+            $Payment  = $Order->getPayment();
+            $Currency = $Order->getCurrency();
 
             if ($Payment) {
                 $orderData['payment_title'] = $Payment->getTitle($Locale);
@@ -408,15 +409,6 @@ class Search extends Singleton
                 QUI\System\Log::writeException($Exception);
                 continue;
             }
-
-
-            $vatSum = array_map(function ($data) {
-                if (!isset($data['sum'])) {
-                    return 0;
-                }
-
-                return $data['sum'];
-            }, $calculations['vatArray']);
 
             if ($Customer->getAttribute('quiqqer.erp.taxId')) {
                 $orderData['taxId'] = $Customer->getAttribute('quiqqer.erp.taxId');
@@ -436,6 +428,43 @@ class Search extends Singleton
                 }
             }
 
+            // currency data
+            $orderData['currency_data'] = json_encode($Currency->toArray());
+
+
+            // calculation
+            $transactions = $Transactions->getTransactionsByHash($Order->getHash());
+
+            $paid = array_map(function ($Transaction) {
+                /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
+                return $Transaction->getAmount();
+            }, $transactions);
+
+            $paid = array_sum($paid);
+
+            $orderData['calculated_nettosum'] = $calculations['nettoSum'];
+            $orderData['calculated_sum']      = $calculations['sum'];
+            $orderData['calculated_subsum']   = $calculations['subSum'];
+            $orderData['calculated_paid']     = $paid;
+            $orderData['calculated_toPay']    = $calculations['sum'] - $paid;
+
+
+            // vat information
+            $vatArray = $calculations['vatArray'];
+
+            $vat = array_map(function ($data) use ($Currency) {
+                return $data['text'].': '.$Currency->format($data['sum']);
+            }, $vatArray);
+
+            $vatSum = array_map(function ($data) {
+                return $data['sum'];
+            }, $vatArray);
+
+            $orderData['vat']               = implode('; ', $vat);
+            $orderData['display_vatsum']    = $Currency->format(array_sum($vatSum));
+            $orderData['calculated_vat']    = $vatSum;
+            $orderData['calculated_vatsum'] = array_sum($vatSum);
+
 
             // display
             $orderData['display_nettosum'] = $Currency->format($calculations['nettoSum']);
@@ -447,8 +476,7 @@ class Search extends Singleton
 
             $result[] = $orderData;
         }
-
-
+        
         return $result;
     }
 }
