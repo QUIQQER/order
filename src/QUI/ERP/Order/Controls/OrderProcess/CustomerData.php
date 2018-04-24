@@ -315,6 +315,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Address->save();
 
         $this->getOrder()->setInvoiceAddress($Address);
+        $this->getOrder()->setCustomer($User);
         $this->getOrder()->save();
     }
 
