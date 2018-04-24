@@ -63,9 +63,13 @@
     </div>
 
     <div class="quiqqer-order-ordering-buttons">
-        <a href="{url id=1}" class="btn btn-secondary btn-outline quiqqer-order-ordering-buttons-backToShop">
+        {if $CurrentStep->getName() === 'Basket'}
+        <a href="{url id=1}"
+           class="btn btn-light btn-outline quiqqer-order-ordering-buttons-backToShop"
+        >
             {locale group="quiqqer/order" var="ordering.btn.backToShop"}
         </a>
+        {/if}
 
         {if $previous}
         <a href="{$this->getStepUrl($previous)}"
