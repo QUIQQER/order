@@ -60,4 +60,41 @@
     .quiqqer-order-step-checkout-notice label {
         font-size: 12px;
     }
+
+    .quiqqer-order-step-checkout input[name="termsAndConditions"] {
+        float: left;
+        margin-bottom: 20px;
+    }
+
+    .articles-article table,
+    .articles-article tbody,
+    .articles-article th,
+    .articles-article td,
+    .articles-article tr {
+        display: block;
+        overflow: hidden;
+    }
+
+    .articles-article thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .articles-article td:before {
+        content: attr(data-label);
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        text-align: left;
+        width: 100px;
+    }
+
+    .articles-article td {
+        text-align: left;
+        padding-bottom: 5px;
+        padding-left: 100px;
+        position: relative;
+        width: initial;
+    }
 }
