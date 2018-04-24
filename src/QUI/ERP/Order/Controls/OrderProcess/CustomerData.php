@@ -122,7 +122,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine->assign([
             'User'            => $User,
             'Address'         => $Address,
-            'isB2B'           => QUI\ERP\Utils\Shop::isB2B(),
+            'isB2B'           => QUI\ERP\Utils\Shop::isOnlyB2B() || QUI\ERP\Utils\Shop::isOnlyB2C(),
             'b2bSelected'     => $isB2B(),
             'commentMessage'  => $commentMessage,
             'commentCustomer' => $commentCustomer
