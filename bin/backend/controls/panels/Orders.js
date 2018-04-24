@@ -41,6 +41,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$clickCreateOrder',
             '$clickCopyOrder',
             '$clickDeleteOrder',
+            '$clickOpenOrder',
             '$refreshButtonStatus',
             '$onOrderChange',
             '$onClickOrderDetails'
@@ -215,6 +216,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
+            Actions.appendChild({
+                name  : 'open',
+                text  : QUILocale.get(lg, 'panel.btn.openOrder'),
+                icon  : 'fa fa-shopping-cart',
+                events: {
+                    onClick: this.$clickOpenOrder
+                }
+            });
+
             this.addButton(Actions);
 
             // Grid
@@ -363,7 +373,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                             PanelUtils.openPanelInTasks(Panel);
                         });
-                        
+
                         return;
                     }
 
@@ -595,6 +605,19 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     }
                 }).open();
             });
+        },
+
+        /**
+         * Open the order
+         */
+        $clickOpenOrder: function () {
+            var selected = this.$Grid.getSelectedData();
+
+            if (!selected.length) {
+                return;
+            }
+
+            this.openOrder(this.$Grid.getSelectedData()[0].id);
         },
 
         /**

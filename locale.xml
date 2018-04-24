@@ -745,11 +745,11 @@
             <de><![CDATA[Bestellung löschen]]></de>
             <en><![CDATA[Delete order]]></en>
         </locale>
-
-        <locale name="panel.btn.deleteOrder">
-            <de><![CDATA[Bestellung löschen]]></de>
-            <en><![CDATA[Delete ordner]]></en>
+        <locale name="panel.btn.openOrder">
+            <de><![CDATA[Bestellung öffnen]]></de>
+            <en><![CDATA[Open order]]></en>
         </locale>
+
         <locale name="panel.btn.actions">
             <de><![CDATA[Aktionen]]></de>
             <en><![CDATA[Actions]]></en>
