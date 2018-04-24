@@ -138,11 +138,11 @@
     color: #75b947;
 }
 
-.quiqqer-order-customerData [name="open-edit"] {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
+/*.quiqqer-order-customerData [name="open-edit"] {*/
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*right: 0;*/
+/*}*/
 
 .quiqqer-order-customerData [name="open-edit"] .quiqqer-order-customerData-edit-text {
     display: none;
