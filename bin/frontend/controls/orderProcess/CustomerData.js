@@ -159,15 +159,15 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             var OrderProcess = self.$getOrderProcess();
 
             if (VatId.value !== '') {
-                VatId.disabled = true;
+                //VatId.disabled = true;
             }
 
             if (Company.value !== '') {
-                Company.disabled = true;
+                //Company.disabled = true;
             }
 
             if (BusinessType.value !== '') {
-                BusinessType.disabled = true;
+                //BusinessType.disabled = true;
             }
 
             return this.$fx(DisplayContainer, {

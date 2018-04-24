@@ -297,8 +297,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if (isset($_REQUEST['businessType'])) {
             if ($_REQUEST['businessType'] === 'b2b') {
                 $User->setAttribute('quiqqer.erp.isNettoUser', QUI\ERP\Utils\User::IS_NETTO_USER);
+                $User->setCompanyStatus(true);
             } else {
                 $User->setAttribute('quiqqer.erp.isNettoUser', QUI\ERP\Utils\User::IS_BRUTTO_USER);
+                $User->setCompanyStatus(false);
             }
         }
 

@@ -1,6 +1,15 @@
 <section class="quiqqer-order-customerData">
     <header>
-        <h1>{locale group="quiqqer/order" var="ordering.step.title.CustomerData"}</h1>
+        <h1>
+            {locale group="quiqqer/order" var="ordering.step.title.CustomerData"}
+
+            <button name="open-edit" disabled class="btn-light">
+                <span class="quiqqer-order-customerData-edit-icon fa fa-edit"></span>
+                <span class="quiqqer-order-customerData-edit-text">
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.addressEdit"}
+                </span>
+            </button>
+        </h1>
     </header>
 
     {template_event name="quiqqer::order::orderProcessCustomerDataBegin" User=$User Address=$Address}
@@ -33,13 +42,6 @@
             </span>
             {$Address->render()}
         </div>
-
-        <button name="open-edit" disabled class="btn-light">
-            <span class="quiqqer-order-customerData-edit-icon fa fa-edit"></span>
-            <span class="quiqqer-order-customerData-edit-text">
-                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.addressEdit"}
-            </span>
-        </button>
     </div>
 
     <div class="quiqqer-order-customerData-edit">
@@ -161,9 +163,9 @@
         <label class="quiqqer-order-customerData-edit-country">
             <span>{locale group="quiqqer/frontend-users" var="country"}</span>
             {control name="country" control="QUI\Countries\Controls\Select"
-                selected=$Address->getAttribute('country')
-                required="required"
-                use-geo-location=true
+            selected=$Address->getAttribute('country')
+            required="required"
+            use-geo-location=true
             }
         </label>
 
