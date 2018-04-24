@@ -6,7 +6,6 @@
 
 namespace QUI\ERP\Order;
 
-use function DusanKasan\Knapsack\toArray;
 use QUI;
 use QUI\Utils\Singleton;
 
@@ -476,7 +475,7 @@ class Search extends Singleton
 
             $result[] = $orderData;
         }
-        
+
         return $result;
     }
 }

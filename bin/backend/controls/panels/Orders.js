@@ -98,7 +98,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                     return entry;
                 });
-                console.log(result);
+
                 this.$Grid.setData(gridData);
                 this.$refreshButtonStatus();
 
