@@ -114,6 +114,7 @@
                    name="firstname"
                    autocomplete="given-name"
                    value="{$Address->getAttribute('firstname')|escape:'html'}"
+                   required
             />
         </label>
 
@@ -123,6 +124,7 @@
                    name="lastname"
                    autocomplete="family-name"
                    value="{$Address->getAttribute('lastname')|escape:'html'}"
+                   required
             />
         </label>
 
@@ -132,6 +134,7 @@
                    name="street_no"
                    autocomplete="address-line1"
                    value="{$Address->getAttribute('street_no')|escape:'html'}"
+                   required
             />
         </label>
 
@@ -141,6 +144,7 @@
                    name="zip"
                    autocomplete="postal-code"
                    value="{$Address->getAttribute('zip')|escape:'html'}"
+                   required
             />
         </label>
 
@@ -150,12 +154,17 @@
                    name="city"
                    autocomplete="city-name"
                    value="{$Address->getAttribute('city')|escape:'html'}"
+                   required
             />
         </label>
 
         <label class="quiqqer-order-customerData-edit-country">
             <span>{locale group="quiqqer/frontend-users" var="country"}</span>
-            {control name="country" control="QUI\Countries\Controls\Select" selected=$Address->getAttribute('country')}
+            {control name="country" control="QUI\Countries\Controls\Select"
+                selected=$Address->getAttribute('country')
+                required="required"
+                use-geo-location=true
+            }
         </label>
 
         <label class="quiqqer-order-customerData-edit-tel">

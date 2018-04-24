@@ -39,7 +39,7 @@
                 {locale group="quiqqer/order" var="control.order.invoiceAddress.title"}
             </h2>
         </header>
-        
+
         {if $Invoice}
         {assign var=Customer value=$Invoice->getCustomer()}
         {else}
@@ -135,7 +135,7 @@
 
         <div class="quiqqer-order-profile-orders-order-articles-article-image">
             {if $Article->getImage()}
-            {image image=$Article->getImage() height=200}
+            {image image=$Article->getImage() height=200 rewritten=true host=true}
             {/if}
 
             {if $Article->getQuantity() > 1}

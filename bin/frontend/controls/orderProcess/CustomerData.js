@@ -99,6 +99,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 Loader       = OrderProcess.Loader;
             }
 
+            if (OrderProcess) {
+                if (OrderProcess.validateStep() === false) {
+                    return Promise.reject();
+                }
+            }
+
             if (Loader) {
                 Loader.show();
             }
@@ -178,7 +184,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 // save event
                 EditContainer.getElement('[type="submit"]').addEvent('click', function (event) {
                     event.stop();
-                    self.save();
+                    self.save().catch(function () {
+                        // nothing
+                    });
                 });
 
                 return self.$fx(EditContainer, {
