@@ -157,6 +157,12 @@
     -moz-appearance: none;
 }
 
+.quiqqer-order-customerData label input:invalid,
+.quiqqer-order-customerData label select:invalid,
+.quiqqer-order-customerData label textarea:invalid {
+    border-color: #d35058;
+}
+
 /** comment
  ========================================== */
 

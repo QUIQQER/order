@@ -109,9 +109,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             return new Promise(function (resolve, reject) {
                 Orders.get(orderId).then(function (data) {
 
-                    console.log('refresh');
-                    console.log(data);
-
                     self.setAttribute('customerId', data.customerId);
                     self.setAttribute('customer', data.customer);
                     self.setAttribute('data', data.data);
@@ -630,7 +627,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 'utils/Panels'
                             ], function (InvoicePanel, PanelUtils) {
                                 Win.close();
-console.warn(invoiceId);
+                                console.warn(invoiceId);
                                 var Panel = new InvoicePanel({
                                     invoiceId: invoiceId
                                 });
