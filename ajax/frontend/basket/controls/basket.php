@@ -21,5 +21,5 @@ QUI::$Ajax->registerFunction(
 
         return $Control->create();
     },
-    array('basketId')
+    ['basketId']
 );

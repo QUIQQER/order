@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
         $payments = Payments::getInstance()->getPayments();
         $section  = $Config->getSection('paymentChangeable');
 
-        $result = array();
+        $result = [];
 
         /* @var $Payment Payment */
         foreach ($payments as $Payment) {
@@ -43,6 +43,6 @@ QUI::$Ajax->registerFunction(
         $Config->setSection('paymentChangeable', $result);
         $Config->save();
     },
-    array('data'),
+    ['data'],
     'Permission::checkAdminUser'
 );

@@ -278,7 +278,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     width    : 130,
                     className: 'clickable'
                 }, {
-                    der      : QUILocale.get(lg, 'grid.orderDate'),
+                    header      : QUILocale.get(lg, 'grid.orderDate'),
                     dataIndex: 'c_date',
                     dataType : 'date',
                     width    : 100

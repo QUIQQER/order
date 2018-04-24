@@ -16,6 +16,6 @@ QUI::$Ajax->registerFunction(
     function ($orderId) {
         return Handler::getInstance()->get($orderId)->toArray();
     },
-    array('orderId'),
+    ['orderId'],
     'Permission::checkAdminUser'
 );

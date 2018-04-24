@@ -20,6 +20,6 @@ QUI::$Ajax->registerFunction(
 
         return $Invoice->getId();
     },
-    array('orderId'),
+    ['orderId'],
     'Permission::checkAdminUser'
 );

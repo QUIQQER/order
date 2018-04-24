@@ -26,5 +26,5 @@ QUI::$Ajax->registerFunction(
 
         return false;
     },
-    array('productId')
+    ['productId']
 );

@@ -4,19 +4,29 @@
 <table class="quiqqer-order-basket-articles">
     <thead>
     <tr class="quiqqer-order-basket-articles-header">
-        <th class="quiqqer-order-basket-articles-header-pos">
+        <th class="quiqqer-order-basket-articles-header-pos"
+            title="{locale group='quiqqer/erp' var='article.list.articles.header.pos'}"
+        >
             {locale group="quiqqer/erp" var="article.list.articles.header.pos"}
         </th>
-        <th class="quiqqer-order-basket-articles-header-information">
+        <th class="quiqqer-order-basket-articles-header-information"
+            title="{locale group='quiqqer/erp' var='article.list.articles.header.description'}"
+        >
             {locale group="quiqqer/erp" var="article.list.articles.header.description"}
         </th>
-        <th class="quiqqer-order-basket-articles-header-quantity">
+        <th class="quiqqer-order-basket-articles-header-quantity"
+            title="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"
+        >
             {locale group="quiqqer/erp" var="article.list.articles.header.quantity"}
         </th>
-        <th class="quiqqer-order-basket-articles-unitPrice">
+        <th class="quiqqer-order-basket-articles-unitPrice"
+            title="{locale group='quiqqer/erp' var='article.list.articles.header.unitprice'}"
+        >
             {locale group="quiqqer/erp" var="article.list.articles.header.unitprice"}
         </th>
-        <th class="quiqqer-order-basket-articles-header-price">
+        <th class="quiqqer-order-basket-articles-header-price"
+            title="{locale group='quiqqer/erp' var='article.list.articles.header.price'}"
+        >
             {locale group="quiqqer/erp" var="article.list.articles.header.price"}
         </th>
     </tr>
@@ -25,8 +35,14 @@
     {assign var=pos value=1}
     {foreach $products as $product}
     <tr class="quiqqer-order-basket-articles-article">
-        <td class="quiqqer-order-basket-articles-article-pos">{$pos}</td>
-        <td class="quiqqer-order-basket-articles-article-data">
+        <td class="quiqqer-order-basket-articles-article-pos"
+            data-label="{locale group='quiqqer/erp' var='article.list.articles.header.pos'}"
+        >
+            {$pos}
+        </td>
+        <td class="quiqqer-order-basket-articles-article-data"
+            data-label="{locale group='quiqqer/erp' var='article.list.articles.header.description'}"
+        >
             <div class="quiqqer-order-basket-articles-article-title">{$product.title}</div>
             <div class="quiqqer-order-basket-articles-article-description">
                 {$product.description}
@@ -41,9 +57,21 @@
                 {/foreach}
             </ul>
         </td>
-        <td class="quiqqer-order-basket-articles-article-quantity">{$product.quantity}</td>
-        <td class="quiqqer-order-basket-articles-article-price">{$product.price}</td>
-        <td class="quiqqer-order-basket-articles-article-sum">{$product.sum}</td>
+        <td class="quiqqer-order-basket-articles-article-quantity"
+            data-label="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"
+        >
+            {$product.quantity}
+        </td>
+        <td class="quiqqer-order-basket-articles-article-price"
+            data-label="{locale group='quiqqer/erp' var='article.list.articles.header.unitprice'}"
+        >
+            {$product.price}
+        </td>
+        <td class="quiqqer-order-basket-articles-article-sum"
+            data-label="{locale group='quiqqer/erp' var='article.list.articles.header.price'}"
+        >
+            {$product.sum}
+        </td>
     </tr>
     {assign var=pos value=$pos+1}
     {/foreach}

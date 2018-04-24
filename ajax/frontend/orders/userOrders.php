@@ -20,5 +20,5 @@ QUI::$Ajax->registerFunction(
 
         return QUI\ControlUtils::parse($Control);
     },
-    array('page', 'limit')
+    ['page', 'limit']
 );

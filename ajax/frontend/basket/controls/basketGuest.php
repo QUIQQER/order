@@ -22,5 +22,5 @@ QUI::$Ajax->registerFunction(
 
         return $Control->create();
     },
-    array('products')
+    ['products']
 );
