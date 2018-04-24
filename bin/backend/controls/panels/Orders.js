@@ -101,7 +101,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                 this.$Grid.setData(gridData);
                 this.$refreshButtonStatus();
-
+console.log(result);
                 this.$Total.set(
                     'html',
                     Mustache.render(templateTotal, result.total)

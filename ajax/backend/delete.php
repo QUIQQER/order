@@ -17,6 +17,6 @@ QUI::$Ajax->registerFunction(
         $Order = Handler::getInstance()->get($orderId);
         $Order->delete();
     },
-    array('orderId'),
+    ['orderId'],
     'Permission::checkAdminUser'
 );

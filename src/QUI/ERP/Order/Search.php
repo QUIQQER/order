@@ -144,7 +144,6 @@ class Search extends Singleton
         $count = $this->executeQueryParams($this->getQueryCount());
         $count = (int)$count[0]['count'];
 
-
         // total - calculation is without limit and paid_status
         $oldFiler = $this->filter;
         $oldLimit = $this->limit;
@@ -159,11 +158,9 @@ class Search extends Singleton
         $this->filter = $oldFiler;
         $this->limit  = $oldLimit;
 
-
         // result
         $result = $this->parseListForGrid($orders);
         $Grid   = new QUI\Utils\Grid();
-
 
         return [
             'grid'  => $Grid->parseResult($result, $count),

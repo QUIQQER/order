@@ -19,6 +19,6 @@ QUI::$Ajax->registerFunction(
         $Order->addComment($message);
         $Order->update();
     },
-    array('orderId', 'message'),
+    ['orderId', 'message'],
     'Permission::checkAdminUser'
 );

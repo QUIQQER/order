@@ -18,6 +18,6 @@ QUI::$Ajax->registerFunction(
 
         return $Order->copy()->getId();
     },
-    array('orderId'),
+    ['orderId'],
     'Permission::checkAdminUser'
 );

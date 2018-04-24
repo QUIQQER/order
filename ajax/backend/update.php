@@ -120,6 +120,6 @@ QUI::$Ajax->registerFunction(
 
         $Order->update();
     },
-    array('orderId', 'data'),
+    ['orderId', 'data'],
     'Permission::checkAdminUser'
 );
