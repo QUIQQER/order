@@ -60,6 +60,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$StepContainer    = null;
             this.$Timeline         = null;
             this.$runningAnimation = false;
+            this.$isResizing       = false;
 
             this.$Buttons  = null;
             this.$Next     = null;
@@ -205,6 +206,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         resize: function () {
             var self = this;
 
+            if (this.$isResizing) {
+                return Promise.resolve();
+            }
+
+            this.$isResizing = true;
+
             return new Promise(function (resolve) {
                 var Next   = self.$StepContainer.getElement('.quiqqer-order-ordering-step-next');
                 var Basket = self.$StepContainer.getElement('.quiqqer-order-step-basket');
@@ -228,6 +235,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 }, {
                     duration: 250,
                     callback: function () {
+                        self.$isResizing = false;
                         resolve();
                         self.fireEvent('change', [self]);
                     }
