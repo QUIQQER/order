@@ -76,7 +76,7 @@ class Order extends AbstractOrder implements OrderInterface
     /**
      * Create an invoice for the order
      *
-     * @return QUI\ERP\Accounting\Invoice\Invoice
+     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
      * @throws QUI\Exception
      */
@@ -165,10 +165,18 @@ class Order extends AbstractOrder implements OrderInterface
 
         // create the real invoice
         try {
-            $TemporaryInvoice = InvoiceHandler::getInstance()->getTemporaryInvoice($TemporaryInvoice->getId());
-            $TemporaryInvoice->validate();
+            $TemporaryInvoice = InvoiceHandler::getInstance()->getTemporaryInvoice(
+                $TemporaryInvoice->getId()
+            );
 
-            // @todo setting -> rechnung automatisch buchen
+            $TemporaryInvoice->validate();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            throw $Exception;
+        }
+
+        // auto invoice post
+        if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
             $Invoice = $TemporaryInvoice->post();
 
             QUI::getDataBase()->update(
@@ -176,14 +184,13 @@ class Order extends AbstractOrder implements OrderInterface
                 ['invoice_id' => $Invoice->getCleanId()],
                 ['id' => $this->getId()]
             );
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-            throw $Exception;
+
+            $this->invoiceId = $Invoice->getId();
+
+            return InvoiceHandler::getInstance()->getInvoice($Invoice->getId());
         }
 
-        $this->invoiceId = $Invoice->getId();
-
-        return InvoiceHandler::getInstance()->getInvoice($Invoice->getId());
+        return $TemporaryInvoice;
     }
 
     /**
