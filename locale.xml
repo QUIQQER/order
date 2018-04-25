@@ -674,12 +674,12 @@
 
         <locale name="message.order.success" html="true">
             <de><![CDATA[
-            <h1>Vielen Dank für Ihre Bestellung.</h1>
-            <p>Danke, wir haben Ihre Bestellung erhalten</p>
+            <h1>Vielen Dank für Ihre Bestellung</h1>
+            <p>Wir haben Ihre Bestellung erhalten und werden diese schnellstmöglich ausführen.</p>
             ]]></de>
             <en><![CDATA[
-            <h1>Thank you for your order.</h1>
-            <p>Thank you, we have received your order</p>
+            <h1>Thank you for your order</h1>
+            <p>We have received your order and will process it as soon as possible.</p>
             ]]></en>
         </locale>
 
