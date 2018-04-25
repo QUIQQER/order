@@ -202,7 +202,7 @@ class OrderProcess extends QUI\Control
     /**
      * Check if the success full status is ok
      */
-    protected function checkSuccessFullStatus()
+    protected function checkSuccessfulStatus()
     {
         try {
             $Current = $this->getCurrentStep();
@@ -210,10 +210,10 @@ class OrderProcess extends QUI\Control
             return;
         }
 
-        if (!($Current instanceof Controls\OrderProcess\Finish)) {
+        if (!($Current instanceof Controls\OrderProcess\Finish)
+            && !($Current instanceof Controls\OrderProcess\Processing)) {
             return;
         }
-
 
         try {
             $Payment = $this->getOrder()->getPayment();
@@ -440,7 +440,7 @@ class OrderProcess extends QUI\Control
         $Current = $this->getCurrentStep();
 
         $this->checkSubmission();
-        $this->checkSuccessFullStatus();
+        $this->checkSuccessfulStatus();
 
         // check if order is finished
         if ($this->getOrder() && $this->getOrder()->isSuccessful()) {
