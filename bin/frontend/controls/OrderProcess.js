@@ -861,11 +861,23 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $animate: function (Elm, styles, options) {
+            var running = true;
+
             options = options || {};
 
             return new Promise(function (resolve) {
-                options.callback = resolve;
+                options.callback = function () {
+                    running = false;
+                    resolve();
+                };
                 moofx(Elm).animate(styles, options);
+
+                (function () {
+                    if (running) {
+                        running = false;
+                        resolve();
+                    }
+                }).delay(2000);
             });
         },
 
