@@ -259,6 +259,8 @@ class OrderProcess extends QUI\Control
         $OrderInProcess = $this->getOrder();
         $success        = [];
 
+        $failedPaymentProcedure = Settings::getInstance()->get('order', 'failedPaymentProcedure');
+
         foreach ($providers as $Provider) {
             /* @var $Provider AbstractOrderProcessProvider */
             $status = $Provider->onOrderStart($OrderInProcess);
@@ -266,7 +268,9 @@ class OrderProcess extends QUI\Control
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_PROCESSING) {
                 $this->ProcessingProvider = $Provider;
 
-                return;
+                if ($failedPaymentProcedure !== 'execute') {
+                    return;
+                }
             }
 
             if ($status === AbstractOrderProcessProvider::PROCESSING_STATUS_ABORT) {
@@ -278,13 +282,16 @@ class OrderProcess extends QUI\Control
         }
 
         // all runs fine
+        if ($OrderInProcess instanceof OrderInProcess) {
+            $Order = $OrderInProcess->createOrder();
+            $OrderInProcess->delete();
 
-        // @todo Vorgehen bei gescheiterter Zahlung -> only at failedPaymentProcedure = execute
-        $Order = $OrderInProcess->createOrder();
-        $OrderInProcess->delete();
+            $this->Order = $Order;
+        } else {
+            $this->Order = $OrderInProcess;
+        }
 
-        $this->Order = $Order;
-        $this->setAttribute('orderHash', $Order->getHash());
+        $this->setAttribute('orderHash', $this->Order->getHash());
 
         $this->setAttribute('current', 'finish');
         $this->setAttribute('step', 'finish');
@@ -617,6 +624,14 @@ class OrderProcess extends QUI\Control
                 }
 
                 return false;
+            }
+
+            if (Settings::getInstance()->get('order', 'failedPaymentProcedure') === 'execute') {
+                try {
+                    $this->send();
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::writeException($Exception);
+                }
             }
 
             // rearrange the steps, insert the processing step
