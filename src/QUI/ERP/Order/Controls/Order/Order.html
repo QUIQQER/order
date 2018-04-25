@@ -15,7 +15,9 @@
         <span>{$Order->getId()}</span>
     </div>
 
+    {if $Order->isPosted() || $Order->isSuccessful() === false}
     <span class="quiqqer-order-control-order-header-placer">|</span>
+    {/if}
 
     <div class="quiqqer-order-control-order-header-id">
         {if $Order->isPosted()}

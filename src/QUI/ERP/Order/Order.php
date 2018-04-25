@@ -175,7 +175,7 @@ class Order extends AbstractOrder implements OrderInterface
             throw $Exception;
         }
 
-        
+
         // auto invoice post
         if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
             $Invoice = $TemporaryInvoice->post();
@@ -332,10 +332,12 @@ class Order extends AbstractOrder implements OrderInterface
             $PermissionUser = QUI::getUserBySession();
         }
 
-        QUI\Permissions\Permission::hasPermission(
-            'quiqqer.order.update',
-            $PermissionUser
-        );
+        if ($PermissionUser->getId() !== $this->getCustomer()->getId()) {
+            QUI\Permissions\Permission::hasPermission(
+                'quiqqer.order.update',
+                $PermissionUser
+            );
+        }
 
         $data = $this->getDataForSaving();
 
