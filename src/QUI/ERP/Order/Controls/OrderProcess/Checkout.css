@@ -17,10 +17,6 @@
     margin-top: 20px;
 }
 
-.quiqqer-order-step-checkout-payments {
-
-}
-
 .quiqqer-order-step-checkout-payments-payment img {
     float: left;
     max-width: 100%;
@@ -44,6 +40,13 @@
 .quiqqer-order-step-checkout-payments-payment-description p {
     margin: 5px 0 0 0;
     padding: 0;
+}
+
+.quiqqer-order-customerData-display-customerNo span,
+.quiqqer-order-customerData-display-eMail span,
+.quiqqer-order-customerData-display-tel span {
+    float: left;
+    width: 50%;
 }
 
 @media (max-width: 768px) {

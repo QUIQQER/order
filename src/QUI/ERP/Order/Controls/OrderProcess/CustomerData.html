@@ -15,26 +15,26 @@
     {template_event name="quiqqer::order::orderProcessCustomerDataBegin" User=$User Address=$Address}
 
     <div class="quiqqer-order-customerData-display">
-        <label>
+        <div class="quiqqer-order-customerData-display-customerNo">
             <span>
                 {locale group="quiqqer/order" var="ordering.step.title.CustomerData.customerNo"}
             </span>
             <span>{$User->getId()}</span>
-        </label>
+        </div>
 
-        <label>
+        <div class="quiqqer-order-customerData-display-eMail">
             <span>
                 {locale group="quiqqer/order" var="ordering.step.title.CustomerData.eMail"}
             </span>
             <span>{$User->getAttribute('email')}</span>
-        </label>
+        </div>
 
-        <label>
+        <div class="quiqqer-order-customerData-display-tel">
             <span>
                 {locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}
             </span>
             <span>{if $Address->getPhone()}{$Address->getPhone()}{else}-{/if}</span>
-        </label>
+        </div>
 
         <div class="quiqqer-order-customerData-display-address">
             <span class="quiqqer-order-customerData-display-address-label">
