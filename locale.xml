@@ -533,6 +533,19 @@
             <en><![CDATA[Send order confirmation automatically]]></en>
         </locale>
 
+        <locale name="order.settings.autoInvoicePost">
+            <de><![CDATA[Rechnung automatisch buchen]]></de>
+            <en><![CDATA[Posting Invoices automatically]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoicePost.description">
+            <de><![CDATA[
+            Die Rechnung wird automatisch gebucht wenn eine Rechnung angelegt wird
+            ]]></de>
+            <en><![CDATA[
+            The invoice is posted automatically when the invoice is created
+            ]]></en>
+        </locale>
+
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
             <en><![CDATA[Checkout not found. Please create an order process.]]></en>
@@ -674,12 +687,12 @@
 
         <locale name="message.order.success" html="true">
             <de><![CDATA[
-            <h1>Vielen Dank für Ihre Bestellung.</h1>
-            <p>Danke, wir haben Ihre Bestellung erhalten</p>
+            <h1>Vielen Dank für Ihre Bestellung</h1>
+            <p>Wir haben Ihre Bestellung erhalten und werden diese schnellstmöglich ausführen.</p>
             ]]></de>
             <en><![CDATA[
-            <h1>Thank you for your order.</h1>
-            <p>Thank you, we have received your order</p>
+            <h1>Thank you for your order</h1>
+            <p>We have received your order and will process it as soon as possible.</p>
             ]]></en>
         </locale>
 

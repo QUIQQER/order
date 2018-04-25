@@ -44,7 +44,8 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
          * @return Promise
          */
         refresh: function () {
-            var self = this;
+            var self    = this,
+                current = QUILocale.getCurrent();
 
             return new Promise(function (resolve) {
                 Payments.getPayments().then(function (payments) {
@@ -56,7 +57,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                         list     = result[1],
                         data     = [];
 
-                    var i, len, paymentData;
+                    var i, len, title, paymentData;
 
                     var onChange = function () {
                         self.save();
@@ -64,6 +65,11 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
 
                     for (i = 0, len = payments.length; i < len; i++) {
                         paymentData = payments[i];
+                        title       = paymentData.title;
+
+                        if (current in title) {
+                            title = title[current];
+                        }
 
                         data.push({
                             status: new QUISwitch({
@@ -73,7 +79,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                                 }
                             }),
                             id    : paymentData.id,
-                            title : paymentData.title,
+                            title : title,
                             type  : paymentData.paymentType.title
                         });
                     }

@@ -16,6 +16,10 @@
                     <type><![CDATA[string]]></type>
                     <defaultvalue>onOrder</defaultvalue>
                 </conf>
+                <conf name="autoInvoicePost">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue>1</defaultvalue>
+                </conf>
                 <conf name="sendOrderConfirmation">
                     <type><![CDATA[bool]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
@@ -74,6 +78,16 @@
                                 <locale group="quiqqer/order" var="order.settings.autoInvoice.byPayment"/>
                             </option>
                         </select>
+
+                        <input type="checkbox" conf="order.autoInvoicePost">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.autoInvoicePost"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.autoInvoicePost.description"/>
+                            </description>
+                        </input>
 
                         <input type="checkbox" conf="order.sendOrderConfirmation">
                             <text>
