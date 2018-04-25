@@ -141,6 +141,31 @@ class EventHandling
     }
 
     /**
+     * @param QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary
+     * @param QUI\ERP\Accounting\Invoice\Invoice $Invoice
+     */
+    public static function onQuiqqerInvoiceTemporaryInvoicePostEnd(
+        QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary,
+        QUI\ERP\Accounting\Invoice\Invoice $Invoice
+    ) {
+        try {
+            $Order = Handler::getInstance()->getOrderByHash($Invoice->getHash());
+
+            if ($Order->isPosted()) {
+                return;
+            }
+
+            QUI::getDataBase()->update(
+                Handler::getInstance()->table(),
+                ['invoice_id' => $Invoice->getCleanId()],
+                ['id' => $Order->getId()]
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+    }
+
+    /**
      * event: order creation
      *
      * @param Order $Order

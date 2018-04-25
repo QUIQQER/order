@@ -19,4 +19,9 @@
     <event on="onQuiqqerOrderCreated"
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerOrderCreated"
     />
+
+    <event on="onQuiqqerInvoiceTemporaryInvoicePostEnd"
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerInvoiceTemporaryInvoicePostEnd"
+    />
+
 </events>
