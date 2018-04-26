@@ -883,7 +883,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             var self      = this,
                 Container = this.getElm().getElement('.quiqqer-order-step-processing'),
-                Payments  = Container.getElement('quiqqer-order-processing-payments');
+                Payments  = Container.getElement('.quiqqer-order-processing-payments');
 
             if (!Payments) {
                 Payments = new Element('div', {
