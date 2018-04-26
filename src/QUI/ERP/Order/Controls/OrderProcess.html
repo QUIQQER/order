@@ -79,6 +79,13 @@
         </a>
         {/if}
 
+        {if isset($changePayment) && $changePayment}
+        <button name="changePayment" class="btn btn-light quiqqer-order-ordering-buttons-changePayment">
+            {locale group="quiqqer/order" var="ordering.btn.changePayment"}
+        </button>
+        {/if}
+
+
         {if $payableToOrder}
         <button name="step" value="payableToOrder" class="btn-success quiqqer-order-ordering-buttons-next">
             {locale group="quiqqer/order" var="ordering.btn.pay.to.order"}

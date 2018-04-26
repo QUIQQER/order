@@ -200,6 +200,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
         },
 
+        // region API
+
         /**
          * Resize the order process
          */
@@ -553,6 +555,38 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Return the button html Node element
+         *
+         * @return {HTMLDivElement}
+         */
+        getButtonContainer: function () {
+            return this.$Buttons;
+        },
+
+        /**
+         * Return a specific button
+         *
+         * @param {String} name - next, previous, backToShop, changePayment
+         * @return {HTMLDivElement|null}
+         */
+        getButton: function (name) {
+            switch (name) {
+                case 'next':
+                    return this.$Buttons.getElement('.quiqqer-order-ordering-buttons-next');
+
+                case 'previous':
+                    return this.$Buttons.getElement('quiqqer-order-ordering-buttons-previous');
+
+                case 'backToShop':
+                    return this.$Buttons.getElement('quiqqer-order-ordering-buttons-backToShop');
+            }
+
+            return this.$Buttons.getElement('[name="' + name + '"]');
+        },
+
+        // endregion
+
+        /**
          * Render the result of an next / previous request
          *
          * @param {Object} result
@@ -656,6 +690,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 // add processing events
                 QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
                     Control.addEvent('onProcessingError', self.$onProcessingError);
+                });
+
+                self.$Buttons.getElements('[name="changePayment"]').addEvent('click', function (event) {
+                    event.stop();
+                    self.showProcessingPaymentChange();
                 });
 
                 return Promise.all([
@@ -836,7 +875,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return true;
             }
 
-            this.next().catch(function (err) {
+            this.next().catch(function () {
                 // nothing
             });
 
@@ -857,15 +896,28 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          *
          * @param {Element|HTMLElement} Elm
          * @param {object} styles
-         * @param {object} options
+         * @param {object} [options]
          * @return {Promise}
          */
         $animate: function (Elm, styles, options) {
+            var running = true;
+
             options = options || {};
 
             return new Promise(function (resolve) {
-                options.callback = resolve;
+                options.callback = function () {
+                    running = false;
+                    resolve();
+                };
+
                 moofx(Elm).animate(styles, options);
+
+                (function () {
+                    if (running) {
+                        running = false;
+                        resolve();
+                    }
+                }).delay(2000);
             });
         },
 
@@ -873,17 +925,19 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Execute a processing error
          * This method is triggered when a payment trigger a payment error
          * The processing step can now display a payment change step
+         *
+         * @return {Promise}
          */
         $onProcessingError: function () {
             if (this.getAttribute('current') !== 'Processing') {
-                return;
+                return Promise.resolve();
             }
 
             this.Loader.show();
 
             var self      = this,
                 Container = this.getElm().getElement('.quiqqer-order-step-processing'),
-                Payments  = Container.getElement('quiqqer-order-processing-payments');
+                Payments  = Container.getElement('.quiqqer-order-processing-payments');
 
             if (!Payments) {
                 Payments = new Element('div', {
@@ -891,16 +945,77 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 }).inject(Container);
             }
 
-            QUIAjax.get('package_quiqqer_order_ajax_frontend_order_processing_getPayments', function (result) {
-                Payments.set('html', result);
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_processing_getPayments', function (result) {
+                    Payments.set('html', result);
 
-                self.$parseProcessingPaymentChange().then(function () {
-                    self.resize();
-                    self.Loader.hide();
+                    self.$parseProcessingPaymentChange().then(function () {
+                        self.resize();
+                        self.Loader.hide();
+
+                        resolve();
+                    });
+                }, {
+                    'package': 'quiqqer/order',
+                    orderHash: self.getAttribute('orderHash'),
+                    onError  : reject
                 });
-            }, {
-                'package': 'quiqqer/order',
-                orderHash: this.getAttribute('orderHash')
+            });
+        },
+
+        /**
+         * This method shows the payment change, if it is allowed
+         * - it hides the order payment step
+         * - it shows the payment change
+         *
+         * @return {Promise}
+         */
+        showProcessingPaymentChange: function () {
+            if (this.getAttribute('current') !== 'Processing') {
+                return Promise.resolve();
+            }
+
+            var Container = this.getElm().getElement('.quiqqer-order-step-processing');
+
+            if (!Container) {
+                return Promise.resolve();
+            }
+
+            var children = Container.getChildren().filter(function (Child) {
+                return !Child.hasClass('quiqqer-order-processing-payments');
+            });
+
+            var self   = this,
+                Button = this.$Buttons.getElements('[name="changePayment"]');
+
+            this.Loader.setAttribute('opacity', 1);
+            this.Loader.setStyles({
+                background: 'rgba(255, 255, 255, 1)'
+            });
+
+            this.Loader.show();
+
+            return this.$animate(children, {
+                height : 0,
+                opacity: 0
+            }).then(function () {
+                return self.$animate(Button, {
+                    height : 0,
+                    opacity: 0
+                });
+            }).then(function () {
+                children.setStyle('display', 'none');
+                Button.setStyle('display', 'none');
+
+                return self.$onProcessingError();
+            }).then(function () {
+                var Payments = Container.getElement('.quiqqer-order-processing-payments');
+
+                return self.$animate(Payments, {
+                    marginTop: 0
+                });
+            }).then(function () {
+                self.Loader.hide();
             });
         },
 

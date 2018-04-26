@@ -382,13 +382,24 @@ class OrderProcess extends QUI\Control
                 $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
                 $ProcessingStep->setAttribute('Order', $this->getOrder());
 
+                $this->setAttribute('step', $ProcessingStep->getName());
+
+                // shows payment changing, if allowed
+                $changePayment = false;
+                $Payment       = $this->getOrder()->getPayment();
+
+                if (Settings::getInstance()->get('paymentChangeable', $Payment->getId())) {
+                    $changePayment = true;
+                }
+
                 $Engine->assign([
                     'listWidth'          => floor(100 / count($this->getSteps())),
                     'this'               => $this,
                     'error'              => false,
                     'next'               => false,
-                    'previous'           => $Checkout->getName(),
+                    'previous'           => false,
                     'payableToOrder'     => false,
+                    'changePayment'      => $changePayment,
                     'steps'              => $this->getSteps(),
                     'CurrentStep'        => $ProcessingStep,
                     'currentStepContent' => QUI\ControlUtils::parse($ProcessingStep),
@@ -424,6 +435,8 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * Return the html of the order process
+     *
      * @return string
      *
      * @throws QUi\Exception

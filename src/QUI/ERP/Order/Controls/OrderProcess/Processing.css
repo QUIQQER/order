@@ -30,3 +30,13 @@
 .quiqqer-order-processing-payments .quiqqer-order-step-payments header {
     display: none;
 }
+
+.quiqqer-order-ordering-buttons-changePayment {
+    display: block;
+    margin: 0 auto;
+}
+
+.quiqqer-order-step-processing [name="change-payment"] {
+    float: right;
+    margin-top: 10px;
+}
