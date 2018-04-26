@@ -15,8 +15,6 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
 ], function (QUI, QUIControl, QUISwitch, Grid, Payments, QUILocale, QUIAjax) {
     "use strict";
 
-    var lg = 'quiqqer/order';
-
     return new Class({
 
         Extends: QUIControl,
@@ -67,7 +65,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                         paymentData = payments[i];
                         title       = paymentData.title;
 
-                        if (current in title) {
+                        if (typeOf(title) === 'object' && current in title) {
                             title = title[current];
                         }
 

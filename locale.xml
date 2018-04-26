@@ -180,8 +180,8 @@
             <en><![CDATA[Back to the Shop]]></en>
         </locale>
         <locale name="ordering.btn.changePayment">
-            <de><![CDATA[Bezahlungsweise übernehmen & ändern]]></de>
-            <en><![CDATA[Accept & change payment method]]></en>
+            <de><![CDATA[Bezahlungsweise ändern]]></de>
+            <en><![CDATA[Change payment method]]></en>
         </locale>
         <locale name="ordering.title">
             <de><![CDATA[Bestellung]]></de>
@@ -309,8 +309,8 @@
             <en><![CDATA[If your payment did not work you can choose an alternative method of payment.]]></en>
         </locale>
         <locale name="ordering.processing.change.payment.button">
-            <de><![CDATA[Zahlungsweise ändern]]></de>
-            <en><![CDATA[Change payment]]></en>
+            <de><![CDATA[Zahlungsweise ändern und übernehmen]]></de>
+            <en><![CDATA[Change and accept the payment method]]></en>
         </locale>
 
         <locale name="ordering.step.title.CustomerData.customerNo">
