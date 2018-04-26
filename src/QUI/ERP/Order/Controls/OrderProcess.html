@@ -23,7 +23,9 @@
                         {assign var=cssClass value="current"}
                     {/if}
                     {assign var=cssProcessingClass value=""}
-                    {if $CurrentStep->getName() === 'Processing' || $CurrentStep->getName() === 'Finish'}
+                    {if $CurrentStep->getName() === 'Processing' ||
+                        $CurrentStep->getName() === $this->getLastStep()->getName() ||
+                        $Step->getName() === $this->getLastStep()->getName()}
                         {assign var=cssProcessingClass value=" disabled"}
                     {/if}
 
@@ -32,7 +34,7 @@
                         data-step="{$Step->getName()}"
                         data-icon="{$Step->getIcon()}"
                     >
-                    {if $Step->getName() === 'finish'}
+                    {if $Step->getName() === $this->getLastStep()->getName()}
                         <span class="title">{$Step->getTitle()}</span>
                         <span class="fa fa-check-circle"></span>
                     {else if}
