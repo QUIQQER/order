@@ -22,17 +22,17 @@ QUI::$Ajax->registerFunction(
             'step'      => $current
         ]);
 
-        $result = $OrderProcess->create();
-        $next   = false;
+        $result  = $OrderProcess->create();
+        $current = false;
 
-        if ($OrderProcess->getNextStep()) {
-            $next = $OrderProcess->getNextStep()->getName();
+        if ($OrderProcess->getCurrentStep()) {
+            $current = $OrderProcess->getCurrentStep()->getName();
         }
 
         return [
             'html' => $result,
-            'step' => $next,
-            'url'  => $OrderProcess->getStepUrl($next),
+            'step' => $current,
+            'url'  => $OrderProcess->getStepUrl($current),
             'hash' => $OrderProcess->getStepHash()
         ];
     },

@@ -179,6 +179,10 @@
             <de><![CDATA[Zurück zum Shop]]></de>
             <en><![CDATA[Back to the Shop]]></en>
         </locale>
+        <locale name="ordering.btn.changePayment">
+            <de><![CDATA[Bezahlungsweise übernehmen & ändern]]></de>
+            <en><![CDATA[Accept & change payment method]]></en>
+        </locale>
         <locale name="ordering.title">
             <de><![CDATA[Bestellung]]></de>
             <en><![CDATA[Order]]></en>
