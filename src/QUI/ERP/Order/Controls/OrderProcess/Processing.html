@@ -1,13 +1,11 @@
-<section class="quiqqer-order-step-processing quiqqer-order-step-processing-gateway">
-    {$this->getContent()}
+{$this->getContent()}
 
-    {$display}
+{$display}
 
-    <input type="hidden" name="paymentGateway" value="1"/>
+<input type="hidden" name="paymentGateway" value="1"/>
 
-    {if $hasErrors}
-    <div class="quiqqer-order-processing-payments">
-        {$this->getProcessingPayments()}
-    </div>
-    {/if}
-</section>
+{if $hasErrors}
+<div class="quiqqer-order-processing-payments">
+    {$this->getProcessingPayments()}
+</div>
+{/if}

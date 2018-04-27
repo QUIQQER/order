@@ -148,6 +148,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             ]);
         }
 
+        if ($Order instanceof QUI\ERP\Order\Order) {
+            return;
+        }
+
         if (!QUI::getSession()->get('termsAndConditions-'.$Order->getHash())) {
             throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',

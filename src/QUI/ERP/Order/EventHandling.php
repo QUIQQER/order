@@ -85,8 +85,11 @@ class EventHandling
             }
 
 
+            $Processing = new Controls\OrderProcess\Processing();
+
             $steps   = array_keys($OrderProcess->getSteps());
             $steps[] = 'Order';
+            $steps[] = $Processing->getName();
             $steps   = array_flip($steps);
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {

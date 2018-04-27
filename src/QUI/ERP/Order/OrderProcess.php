@@ -154,7 +154,7 @@ class OrderProcess extends QUI\Control
 
         // processing step beachten
         // processing step is ok
-        $Processing = new Controls\OrderProcess\Processing();
+        $Processing = $this->getProcessingStep();
 
         if ($Processing->getName() === $step) {
             $this->setAttribute('orderHash', $Order->getHash());
@@ -363,22 +363,7 @@ class OrderProcess extends QUI\Control
             // processing step
             // eq: payment gateway
             if ($this->ProcessingProvider !== null) {
-                /* @var $Checkout AbstractOrderingStep */
-                $Checkout = current(array_filter($this->getSteps(), function ($Step) {
-                    /* @var $Step AbstractOrderingStep */
-                    return $Step->getType() === Controls\OrderProcess\Checkout::class;
-                }));
-
-                /* @var $Checkout AbstractOrderingStep */
-                $ProcessingStep = current(array_filter($this->getSteps(), function ($Step) {
-                    /* @var $Step AbstractOrderingStep */
-                    return $Step->getType() === Controls\OrderProcess\Processing::class;
-                }));
-
-                if (!$ProcessingStep) {
-                    $ProcessingStep = new Controls\OrderProcess\Processing();
-                }
-
+                $ProcessingStep = $this->getProcessingStep();
                 $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
                 $ProcessingStep->setAttribute('Order', $this->getOrder());
 
@@ -593,7 +578,7 @@ class OrderProcess extends QUI\Control
             'termsAndConditions-'.$Order->getHash()
         );
 
-        if ($Order->isSuccessful()) {
+        if ($Order->isSuccessful() || $Order instanceof Order) {
             $checkedTermsAndConditions = true;
         }
 
@@ -603,7 +588,6 @@ class OrderProcess extends QUI\Control
 
         /* @var $Checkout AbstractOrderingStep */
         /* @var $Finish AbstractOrderingStep */
-
         $Checkout = current(array_filter($this->getSteps(), function ($Step) {
             /* @var $Step AbstractOrderingStep */
             return $Step->getType() === Controls\OrderProcess\Checkout::class;
@@ -617,10 +601,7 @@ class OrderProcess extends QUI\Control
 
         $render = function () use ($Order, $Finish, &$Current) {
             // show processing step
-            $Processing = new Controls\OrderProcess\Processing([
-                'Order'    => $this->getOrder(),
-                'priority' => 40
-            ]);
+            $Processing = $this->getProcessingStep();
 
             $this->setAttribute('step', $Processing->getName());
 
@@ -673,6 +654,10 @@ class OrderProcess extends QUI\Control
         };
 
         if (isset($_REQUEST['payableToOrder'])) {
+            return $render();
+        }
+
+        if ($Order instanceof Order) {
             return $render();
         }
 
@@ -743,7 +728,7 @@ class OrderProcess extends QUI\Control
             return $steps[$current];
         }
 
-        $Processing = new Controls\OrderProcess\Processing();
+        $Processing = $this->getProcessingStep();
 
         if ($current === $Processing->getName()) {
             return $Processing;
@@ -805,7 +790,7 @@ class OrderProcess extends QUI\Control
 
         // special -> processing step
         /* @var $Processing AbstractOrderingStep */
-        $Processing = new Controls\OrderProcess\Processing();
+        $Processing = $this->getProcessingStep();
 
         if ($step === $Processing->getName() && !$Order->isSuccessful()) {
             $this->setAttribute('orderHash', $Order->getHash());
@@ -862,7 +847,7 @@ class OrderProcess extends QUI\Control
 
         // special -> processing step
         /* @var $Processing AbstractOrderingStep */
-        $Processing = new Controls\OrderProcess\Processing();
+        $Processing = $this->getProcessingStep();
         $steps      = $this->getSteps();
 
         if ($step === $Processing->getName()) {
@@ -942,7 +927,7 @@ class OrderProcess extends QUI\Control
         $step  = $this->getAttribute('step');
         $steps = $this->getSteps();
 
-        $Processing = new Controls\OrderProcess\Processing();
+        $Processing = $this->getProcessingStep();
 
         if ($step === $Processing->getName()) {
             return $Processing->getName();
@@ -1154,6 +1139,37 @@ class OrderProcess extends QUI\Control
         }
 
         return $this->steps;
+    }
+
+    /**
+     * Return the processing step
+     * - if the processing step is already initialize, it will be returned
+     * - if the processing step is not initialize, a new one will be initialized and returned
+     *
+     * @return mixed|Controls\OrderProcess\Processing
+     * @throws Exception
+     * @throws QUI\Exception
+     */
+    protected function getProcessingStep()
+    {
+        try {
+            $Processing = current(array_filter($this->getSteps(), function ($Step) {
+                /* @var $Step AbstractOrderingStep */
+                return $Step->getType() === Controls\OrderProcess\Processing::class;
+            }));
+
+            if (!empty($Processing)) {
+                return $Processing;
+            }
+        } catch (QUI\Exception $Exception) {
+        }
+
+        $Processing = new Controls\OrderProcess\Processing([
+            'Order'    => $this->getOrder(),
+            'priority' => 40
+        ]);
+
+        return $Processing;
     }
 
     /**
