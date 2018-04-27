@@ -12,6 +12,8 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 /**
  * Class OrderBooked
  * - This order was ordered by the user
+ * - The user has already clicked here on order for a fee
+ * - OR this is an order created in the backend
  *
  * @package QUI\ERP\Order
  */

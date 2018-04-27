@@ -13,6 +13,8 @@ use QUI\ERP\Order\Utils\OrderProcessSteps;
 
 /**
  * Class OrderingProcess
+ *
+ * This is the ordering process
  * Coordinates the order process, (basket -> address -> delivery -> payment -> invoice)
  *
  * @package QUI\ERP\Order\Basket
@@ -657,7 +659,8 @@ class OrderProcess extends QUI\Control
             return $render();
         }
 
-        if ($Order instanceof Order) {
+        // show processing step if order is not paid
+        if ($Order instanceof Order && !$Order->isPaid()) {
             return $render();
         }
 
