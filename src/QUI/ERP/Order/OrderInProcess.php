@@ -11,6 +11,9 @@ use QUI;
 /**
  * Class OrderInProcess
  *
+ * this is a order in process and not the ordering process
+ * This order is currently being processed by the user
+ *
  * @package QUI\ERP\Order
  */
 class OrderInProcess extends AbstractOrder implements OrderInterface
