@@ -40,6 +40,10 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         parent::__construct($attributes);
 
+        $this->setAttribute('nodeName', 'section');
+
+        $this->addCSSClass('quiqqer-order-step-processing');
+        $this->addCSSClass('quiqqer-order-step-processing-gateway');
         $this->addCSSFile(dirname(__FILE__).'/Processing.css');
     }
 
@@ -197,8 +201,6 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @param null $Locale
      * @return string
-     *
-     * @throws \ReflectionException
      */
     public function getTitle($Locale = null)
     {
@@ -210,11 +212,16 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Locale = QUI::getLocale();
         }
 
-        $Reflection = new \ReflectionClass($this);
+        try {
+            $Reflection = new \ReflectionClass($this);
+            $className  = $Reflection->getShortName();
+        } catch (\ReflectionException $Exception) {
+            $className = 'Processing';
+        }
 
         return $Locale->get(
             'quiqqer/order',
-            'ordering.step.title.'.$Reflection->getShortName()
+            'ordering.step.title.'.$className
         );
     }
 

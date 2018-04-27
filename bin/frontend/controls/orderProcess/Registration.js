@@ -34,10 +34,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Registration', 
 
             // login
             var LoginElm  = this.getElm().getElement('[data-qui="controls/users/auth/QUIQQERLogin"]');
+
             var loginInit = function () {
                 var Login = QUI.Controls.getById(LoginElm.get('data-quiid'));
-
-                console.warn(Login);
             };
 
             if (LoginElm.get('data-quiid')) {

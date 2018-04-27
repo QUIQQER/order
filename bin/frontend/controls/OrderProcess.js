@@ -692,11 +692,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     Control.addEvent('onProcessingError', self.$onProcessingError);
                 });
 
-                self.$Buttons.getElements('[name="changePayment"]').addEvent('click', function (event) {
-                    event.stop();
-                    self.showProcessingPaymentChange();
-                });
-
                 return Promise.all([
                     Prom1,
                     Prom2
@@ -855,6 +850,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 self.openStep(Target.get('data-step'));
             });
+
+            self.$Buttons.getElements('[name="changePayment"]').addEvent('click', function (event) {
+                event.stop();
+                self.showProcessingPaymentChange();
+            });
         },
 
         /**
@@ -897,6 +897,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @param {Element|HTMLElement} Elm
          * @param {object} styles
          * @param {object} [options]
+         *
          * @return {Promise}
          */
         $animate: function (Elm, styles, options) {
