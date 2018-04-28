@@ -69,6 +69,17 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Return the real order id for the customer
+     * For the customer this method returns the hash, so he has an association to the real order
+     *
+     * @return string
+     */
+    public function getPrefixedId()
+    {
+        return $this->getHash();
+    }
+
+    /**
      * Alias for update
      *
      * @param null $PermissionUser
