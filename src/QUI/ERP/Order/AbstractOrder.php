@@ -466,8 +466,6 @@ abstract class AbstractOrder extends QUI\QDOM
      * Return the order articles list
      *
      * @return ArticleList
-     *
-     * @throws QUI\Exception
      */
     public function getArticles()
     {

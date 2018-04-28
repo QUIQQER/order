@@ -25,12 +25,16 @@ QUI::$Ajax->registerFunction(
 
         $_REQUEST['current'] = $step;
 
-        $Ordering = new QUI\ERP\Order\OrderProcess([
+        $OrderProcess = new QUI\ERP\Order\OrderProcess([
             'orderHash' => $orderHash
         ]);
 
-        $Step = $Ordering->getCurrentStep();
+        $Step = $OrderProcess->getCurrentStep();
         $Step->save();
+
+        return [
+            'hash' => $OrderProcess->getOrder()->getHash()
+        ];
     },
     ['step', 'data', 'orderHash']
 );

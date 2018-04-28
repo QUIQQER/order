@@ -44,7 +44,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$clickOpenOrder',
             '$refreshButtonStatus',
             '$onOrderChange',
-            '$onClickOrderDetails'
+            '$onClickOrderDetails',
+            '$clickCreateInvoice'
         ],
 
         initialize: function (options) {
@@ -193,8 +194,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 text  : QUILocale.get(lg, 'panel.btn.createInvoice'),
                 icon  : 'fa fa-money',
                 events: {
-                    onClick: function () {
-                    }
+                    onClick: this.$clickCreateInvoice
                 }
             });
 
@@ -278,7 +278,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     width    : 130,
                     className: 'clickable'
                 }, {
-                    header      : QUILocale.get(lg, 'grid.orderDate'),
+                    header   : QUILocale.get(lg, 'grid.orderDate'),
                     dataIndex: 'c_date',
                     dataType : 'date',
                     width    : 100
@@ -589,7 +589,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                             Orders.deleteOrder(orderId).then(function () {
                                 Win.close();
                                 resolve();
-                            }).then(function (err) {
+                            }).catch(function (err) {
                                 Win.Loader.hide();
 
                                 if (typeof err === 'undefined') {
@@ -618,6 +618,67 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }
 
             this.openOrder(this.$Grid.getSelectedData()[0].id);
+        },
+
+        /**
+         * open the create invoice dialog
+         */
+        $clickCreateInvoice: function () {
+            var selected = this.$Grid.getSelectedData();
+
+            if (!selected.length) {
+                return;
+            }
+
+            var orderId = selected[0].id;
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.createInvoice.title'),
+                text       : QUILocale.get(lg, 'dialog.order.createInvoice.text'),
+                information: QUILocale.get(lg, 'dialog.order.createInvoice.information', {
+                    id: orderId
+                }),
+                icon       : 'fa fa-money',
+                texticon   : 'fa fa-money',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get('quiqqer/system', 'create'),
+                    textimage: 'fa fa-money'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
+
+                        Orders.createInvoice(orderId).then(function (newInvoiceId) {
+                            Win.close();
+
+                            require([
+                                'package/quiqqer/invoice/bin/Invoices',
+                                'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoices'
+                            ], function (Invoices, Panel) {
+                                var HelperPanel = new Panel();
+
+                                Invoices.fireEvent('createInvoice', [Invoices, newInvoiceId]);
+
+                                HelperPanel.openInvoice(newInvoiceId);
+                                HelperPanel.destroy();
+                            });
+                        }).catch(function (err) {
+                            Win.Loader.hide();
+
+                            if (typeof err === 'undefined') {
+                                return;
+                            }
+
+                            QUI.getMessageHandler().then(function (MH) {
+                                MH.addError(err.getMessage());
+                            });
+                        });
+                    }
+                }
+            }).open();
         },
 
         /**

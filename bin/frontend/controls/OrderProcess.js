@@ -521,7 +521,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             return new Promise(function (resolve) {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_saveCurrentStep', resolve, {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_saveCurrentStep', function (result) {
+                    self.setAttribute('orderHash', result.hash);
+                    resolve(result);
+                }, {
                     'package': 'quiqqer/order',
                     orderHash: self.getAttribute('orderHash'),
                     step     : self.getAttribute('current'),

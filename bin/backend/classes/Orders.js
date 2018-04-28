@@ -223,6 +223,28 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
                     showError: false
                 });
             });
+        },
+
+
+        /**
+         * Create a new temporary invoice from the order
+         *
+         * @returns {Promise}
+         */
+        createInvoice: function (orderId) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_createInvoice', function (newInvoiceId) {
+                    self.fireEvent('orderInvoiceCreate', [self, newInvoiceId]);
+                    resolve(newInvoiceId);
+                }, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    orderId  : orderId,
+                    showError: false
+                });
+            });
         }
     });
 });
