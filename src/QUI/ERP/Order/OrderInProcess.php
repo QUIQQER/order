@@ -360,6 +360,11 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         if (Settings::getInstance()->createInvoiceOnOrder()) {
             $Order->createInvoice();
         }
+        
+        if (Settings::getInstance()->createInvoiceByPayment()
+            && $Order->getPayment()->isSuccessful($Order->getHash())) {
+            $Order->createInvoice();
+        }
 
         return $Order;
     }
