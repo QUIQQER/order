@@ -1,4 +1,9 @@
 
+.quiqqer-order-customerData-container {
+    float: left;
+    width: 100%;
+}
+
 .quiqqer-order-customerData,
 .quiqqer-order-customerData-comment {
     clear: both;
@@ -167,7 +172,7 @@
  ========================================== */
 
 .quiqqer-order-customerData-comment {
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 .quiqqer-order-customerData-comment label span {

@@ -29,6 +29,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'data-validate' => 0
         ]);
 
+        $this->addCSSClass('quiqqer-order-customerData-container');
         $this->addCSSFile(dirname(__FILE__).'/CustomerData.css');
     }
 
