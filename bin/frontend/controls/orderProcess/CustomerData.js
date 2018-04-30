@@ -28,6 +28,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             this.parent(options);
 
             this.$CheckTimeout = null;
+            this.$Close        = null;
 
             this.addEvents({
                 onImport: this.$onImport
@@ -38,15 +39,27 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          * event: on import
          */
         $onImport: function () {
-            var EditButton      = this.getElm().getElements('[name="open-edit"]');
-            var CloseEditButton = this.getElm().getElements('.quiqqer-order-customerData-edit-close');
-            var BusinessType    = this.getElm().getElements('[name="businessType"]');
-            var VatId           = this.getElm().getElements('[name="vatId"]');
+            var self         = this,
+                EditButton   = this.getElm().getElements('[name="open-edit"]'),
+                BusinessType = this.getElm().getElements('[name="businessType"]'),
+                VatId        = this.getElm().getElements('[name="vatId"]');
 
             EditButton.addEvent('click', this.openAddressEdit);
             EditButton.set('disabled', false);
 
-            CloseEditButton.addEvent('click', this.closeAddressEdit);
+            this.$Close = this.getElm().getElements('.quiqqer-order-customerData-edit-close');
+            this.$Close.addEvent('click', this.closeAddressEdit);
+
+            var EditContainer = this.getElm().getElement('.quiqqer-order-customerData-edit');
+
+            EditContainer.getElements('input,select').addEvent('change', function () {
+                if (self.isValid()) {
+                    self.$Close.setStyle('display', null);
+                    return;
+                }
+
+                self.$Close.setStyle('display', 'none');
+            });
 
             if (BusinessType) {
                 BusinessType.addEvent('change', this.$onBusinessTypeChange);
@@ -168,6 +181,15 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             if (BusinessType.value !== '') {
                 //BusinessType.disabled = true;
+            }
+
+
+            if (OrderProcess) {
+                OrderProcess.resize();
+            }
+
+            if (this.isValid() === false) {
+                this.$Close.setStyle('display', 'none');
             }
 
             return this.$fx(DisplayContainer, {
@@ -348,6 +370,14 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             } else {
                 show();
             }
+
+            (function () {
+                var OrderProcess = this.$getOrderProcess();
+
+                if (OrderProcess) {
+                    OrderProcess.resize();
+                }
+            }).delay(300, this);
         },
 
         /**
@@ -390,6 +420,36 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             }
 
             return OrderProcess;
+        },
+
+        /**
+         * Check / validate the step
+         * html5 validation
+         *
+         * @return {boolean}
+         */
+        isValid: function () {
+            var Required = this.getElm().getElements('[required]');
+
+            if (Required.length) {
+                var i, len, Field;
+
+                for (i = 0, len = Required.length; i < len; i++) {
+                    Field = Required[i];
+
+                    if (!("checkValidity" in Field)) {
+                        continue;
+                    }
+
+                    if (Field.checkValidity()) {
+                        continue;
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
         }
     });
 });
