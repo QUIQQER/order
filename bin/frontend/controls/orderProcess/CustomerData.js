@@ -377,7 +377,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 if (OrderProcess) {
                     OrderProcess.resize();
                 }
-            }).delay(300, this);
+            }).delay(500, this);
         },
 
         /**
