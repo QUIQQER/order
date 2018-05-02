@@ -209,7 +209,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var self = this;
 
             if (this.$isResizing) {
-                return Promise.resolve();
+                return new Promise(function (resolve) {
+                    (function () {
+                        self.resize().then(resolve);
+                    }).delay(200);
+                });
             }
 
             this.$isResizing = true;
