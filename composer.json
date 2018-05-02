@@ -2,7 +2,7 @@
   "name": "quiqqer/order",
   "type": "quiqqer-module",
   "description": "QUIQQER ERP Order",
-  "version": "dev-dev",
+  "version": "dev-master",
   "license": [
     "GPL-3.0+",
     "PCSG QEL-1.0"
