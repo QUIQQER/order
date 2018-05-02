@@ -236,16 +236,24 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     return size.y;
                 }).sum();
 
+                var finish = function () {
+                    if (self.$isResizing === false) {
+                        return;
+                    }
+
+                    self.$isResizing = false;
+                    resolve();
+                    self.fireEvent('change', [self]);
+                };
+
                 moofx(self.$StepContainer).animate({
                     height: innerHeight
                 }, {
                     duration: 250,
-                    callback: function () {
-                        self.$isResizing = false;
-                        resolve();
-                        self.fireEvent('change', [self]);
-                    }
+                    callback: finish
                 });
+
+                finish.delay(300);
             });
         },
 
