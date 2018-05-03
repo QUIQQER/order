@@ -417,6 +417,12 @@ class Search extends Singleton
                 $orderData['euVatId'] = $Customer->getAttribute('quiqqer.erp.euVatId');
             }
 
+            // payment
+            $orderData['paid_status_display'] = $Locale->get(
+                'quiqqer/invoice',
+                'payment.status.'.$Order->getAttribute('paid_status')
+            );
+
             // invoice
             if ($Order->hasInvoice()) {
                 try {

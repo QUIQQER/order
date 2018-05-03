@@ -115,6 +115,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
 
+                    self.setAttribute('cDate', data.cDate);
+                    self.setAttribute('cUser', data.cUser);
+                    self.setAttribute('cUsername', data.cUsername);
+
                     self.setAttribute('paymentId', data.paymentId);
                     self.setAttribute('paymentMethod', data.paymentMethod);
 
@@ -372,8 +376,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 var Content        = self.getContent(),
                     deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
 
-                var TaxId = Content.getElement('[name="quiqqer.erp.taxId"]');
-                var EUVAT = Content.getElement('[name="quiqqer.erp.euVatId"]');
+                var TaxId          = Content.getElement('[name="quiqqer.erp.taxId"]');
+                var EUVAT          = Content.getElement('[name="quiqqer.erp.euVatId"]');
+                var DateField      = Content.getElement('[name="date"]');
+                var OrderedByField = Content.getElement('[name="orderedBy"]');
 
                 var customer = self.getAttribute('customer');
 
@@ -482,12 +488,21 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                   .setStyle('display', null);
                 }
 
+                if (self.getAttribute('cDate')) {
+                    DateField.value = self.getAttribute('cDate');
+                }
+
+                if (self.getAttribute('cUsername') && self.getAttribute('cUser')) {
+                    OrderedByField.value = self.getAttribute('cUsername') + ' (' + self.getAttribute('cUser') + ')';
+                }
+
                 EUVAT.disabled = false;
                 TaxId.disabled = false;
 
             }).then(function () {
                 // payments
-                var Select = self.getContent().getElement('[name="paymentId"]');
+                var Select  = self.getContent().getElement('[name="paymentId"]'),
+                    current = QUILocale.getCurrent();
 
                 return Payments.getPayments().then(function (payments) {
                     new Element('option', {
@@ -495,9 +510,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         value: ''
                     }).inject(Select);
 
-                    for (var i = 0, len = payments.length; i < len; i++) {
+                    var i, len, title;
+
+                    for (i = 0, len = payments.length; i < len; i++) {
+                        title = payments[i].title;
+
+                        if (typeOf(title) === 'object' && typeof title[current] !== 'undefined') {
+                            title = title[current];
+                        }
+
                         new Element('option', {
-                            html : payments[i].title,
+                            html : title,
                             value: payments[i].id
                         }).inject(Select);
                     }
@@ -505,7 +528,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     Select.disabled = false;
                     Select.value    = self.getAttribute('paymentId');
                 });
-
             }).then(function () {
                 return self.$openCategory();
             }).then(function () {

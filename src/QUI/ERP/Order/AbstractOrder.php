@@ -364,6 +364,8 @@ abstract class AbstractOrder extends QUI\QDOM
             'invoiceId' => $this->invoiceId,
             'hash'      => $this->hash,
             'cDate'     => $this->cDate,
+            'cUser'     => $this->cUser,
+            'cUsername' => $this->getCreateUser()->getName(),
             'data'      => $this->data,
 
             'customerId' => $this->customerId,
@@ -484,6 +486,22 @@ abstract class AbstractOrder extends QUI\QDOM
     public function getCreateDate()
     {
         return $this->cDate;
+    }
+
+    /**
+     * Return the order create date
+     *
+     * @return QUI\Interfaces\Users\User
+     */
+    public function getCreateUser()
+    {
+        try {
+            return QUI::getUsers()->get($this->cUser);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return QUI::getUsers()->getSystemUser();
     }
 
     /**

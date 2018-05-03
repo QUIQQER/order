@@ -306,6 +306,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 180
                 }, {
+                    header   : QUILocale.get(lg, 'grid.paymentStatus'),
+                    dataIndex: 'paid_status_display',
+                    dataType : 'string',
+                    width    : 180
+                }, {
                     header   : QUILocale.get(lg, 'grid.taxId'),
                     dataIndex: 'taxId',
                     dataType : 'string',
@@ -644,7 +649,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 maxWidth   : 600,
                 autoclose  : false,
                 ok_button  : {
-                    text     : QUILocale.get('quiqqer/system', 'create'),
+                    text     : QUILocale.get('quiqqer/quiqqer', 'create'),
                     textimage: 'fa fa-money'
                 },
                 events     : {
