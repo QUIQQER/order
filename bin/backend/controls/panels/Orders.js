@@ -649,7 +649,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 maxWidth   : 600,
                 autoclose  : false,
                 ok_button  : {
-                    text     : QUILocale.get('quiqqer/system', 'create'),
+                    text     : QUILocale.get('quiqqer/quiqqer', 'create'),
                     textimage: 'fa fa-money'
                 },
                 events     : {

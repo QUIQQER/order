@@ -1044,6 +1044,29 @@
             ]]></en>
         </locale>
 
+        <locale name="dialog.order.createInvoice.title">
+            <de><![CDATA[Rechnung erstellen]]></de>
+            <en><![CDATA[Create invoice]]></en>
+        </locale>
+        <locale name="dialog.order.createInvoice.text">
+            <de><![CDATA[Rechnung erstellen]]></de>
+            <en><![CDATA[Create invoice]]></en>
+        </locale>
+        <locale name="dialog.order.createInvoice.information" html="true">
+            <de><![CDATA[
+            Möchten Sie eine Rechnung aus dieser Bestellung erstellen?
+            <br /><br />
+            Aus der Bestellung wird eine temporäre Rechnung erstellt.
+            Diese Rechnung ist noch anpassbar und kann bearbeitet werden.
+            ]]></de>
+            <en><![CDATA[
+            Would you like to create an invoice from this order?
+            <br /><br />
+            A temporary invoice is created from the purchase order.
+            This calculation is still customizable and can be edited.
+            ]]></en>
+        </locale>
+
         <!-- frontend controls -->
         <locale name="control.basket.button.text">
             <de><![CDATA[Warenkorb]]></de>
