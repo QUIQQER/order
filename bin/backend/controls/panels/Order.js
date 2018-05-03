@@ -12,6 +12,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'qui/controls/windows/Confirm',
     'package/quiqqer/order/bin/backend/Orders',
     'package/quiqqer/payments/bin/backend/Payments',
+    'package/quiqqer/erp/bin/backend/controls/Comments',
     'package/quiqqer/invoice/bin/backend/controls/articles/Text',
     'Locale',
     'Mustache',
@@ -20,7 +21,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
-             Orders, Payments, TextArticle, QUILocale, Mustache, Users, templateData) {
+             Orders, Payments, Comments, TextArticle, QUILocale, Mustache, Users, templateData) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -35,6 +36,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'save',
             'refresh',
             'openInfo',
+            'openHistory',
             'openCommunication',
             'openArticles',
             'openDeleteDialog',
@@ -307,6 +309,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             this.addCategory({
                 icon  : 'fa fa-comments-o',
+                name  : 'history',
+                title : QUILocale.get(lg, 'panel.order.category.history'),
+                text  : QUILocale.get(lg, 'panel.order.category.history'),
+                events: {
+                    onClick: this.openHistory
+                }
+            });
+
+            this.addCategory({
+                icon  : 'fa fa-comments-o',
                 name  : 'communication',
                 title : QUILocale.get(lg, 'panel.order.category.communication'),
                 text  : QUILocale.get(lg, 'panel.order.category.communication'),
@@ -537,6 +549,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         /**
          * Open communication
+         *
+         * @return {Promise<T>}
          */
         openCommunication: function () {
             var self = this;
@@ -557,6 +571,33 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }).inject(Container);
                     });
                 });
+            }).then(function () {
+                return self.$openCategory();
+            }).then(function () {
+                self.Loader.hide();
+            });
+        },
+
+        /**
+         * Opens the history category
+         *
+         * @return {Promise<T>}
+         */
+        openHistory: function () {
+            var self = this;
+
+            this.Loader.show();
+            this.getCategory('history').setActive();
+
+            return this.$closeCategory().then(function (Container) {
+                return Promise.all([
+                    Orders.getOrderHistory(self.getAttribute('orderId')),
+                    Container
+                ]);
+            }).then(function (result) {
+                new Comments({
+                    comments: result[0]
+                }).inject(result[1]);
             }).then(function () {
                 return self.$openCategory();
             }).then(function () {
@@ -621,6 +662,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             });
         },
 
+        /**
+         * Open the post / invoice creation dialog
+         */
         openPostDialog: function () {
             var self = this;
 
@@ -649,7 +693,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 'utils/Panels'
                             ], function (InvoicePanel, PanelUtils) {
                                 Win.close();
-                                console.warn(invoiceId);
+
                                 var Panel = new InvoicePanel({
                                     invoiceId: invoiceId
                                 });
