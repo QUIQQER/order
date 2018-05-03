@@ -307,7 +307,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     width    : 180
                 }, {
                     header   : QUILocale.get(lg, 'grid.paymentStatus'),
-                    dataIndex: 'payment_status',
+                    dataIndex: 'paid_status_display',
                     dataType : 'string',
                     width    : 180
                 }, {
