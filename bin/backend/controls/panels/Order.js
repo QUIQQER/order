@@ -115,6 +115,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
 
+                    self.setAttribute('cDate', data.cDate);
+                    self.setAttribute('cUser', data.cUser);
+                    self.setAttribute('cUsername', data.cUsername);
+
                     self.setAttribute('paymentId', data.paymentId);
                     self.setAttribute('paymentMethod', data.paymentMethod);
 
@@ -372,8 +376,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 var Content        = self.getContent(),
                     deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
 
-                var TaxId = Content.getElement('[name="quiqqer.erp.taxId"]');
-                var EUVAT = Content.getElement('[name="quiqqer.erp.euVatId"]');
+                var TaxId          = Content.getElement('[name="quiqqer.erp.taxId"]');
+                var EUVAT          = Content.getElement('[name="quiqqer.erp.euVatId"]');
+                var DateField      = Content.getElement('[name="date"]');
+                var OrderedByField = Content.getElement('[name="orderedBy"]');
 
                 var customer = self.getAttribute('customer');
 
@@ -482,6 +488,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                   .setStyle('display', null);
                 }
 
+                if (self.getAttribute('cDate')) {
+                    DateField.value = self.getAttribute('cDate');
+                }
+
+                if (self.getAttribute('cUsername') && self.getAttribute('cUser')) {
+                    OrderedByField.value = self.getAttribute('cUsername') + ' (' + self.getAttribute('cUser') + ')';
+                }
+
                 EUVAT.disabled = false;
                 TaxId.disabled = false;
 
@@ -514,7 +528,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     Select.disabled = false;
                     Select.value    = self.getAttribute('paymentId');
                 });
-
             }).then(function () {
                 return self.$openCategory();
             }).then(function () {
