@@ -78,11 +78,12 @@ class Order extends AbstractOrder implements OrderInterface
     /**
      * Create an invoice for the order
      *
+     * @param null|QUI\Interfaces\Users\User $PermissionUser
      * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
      * @throws QUI\Exception
      */
-    public function createInvoice()
+    public function createInvoice($PermissionUser = null)
     {
         if ($this->isPosted()) {
             return $this->getInvoice();
@@ -95,8 +96,12 @@ class Order extends AbstractOrder implements OrderInterface
             ]);
         }
 
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUsers()->getUserBySession();
+        }
+
         $InvoiceFactory   = QUI\ERP\Accounting\Invoice\Factory::getInstance();
-        $TemporaryInvoice = $InvoiceFactory->createInvoice(null, $this->getHash());
+        $TemporaryInvoice = $InvoiceFactory->createInvoice($PermissionUser, $this->getHash());
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
@@ -152,7 +157,7 @@ class Order extends AbstractOrder implements OrderInterface
             $this->getArticles()->getPriceFactors()
         );
 
-        $TemporaryInvoice->save();
+        $TemporaryInvoice->save($PermissionUser);
 
         // save payment data
         QUI::getDataBase()->update(
