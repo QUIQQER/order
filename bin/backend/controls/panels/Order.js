@@ -487,7 +487,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             }).then(function () {
                 // payments
-                var Select = self.getContent().getElement('[name="paymentId"]');
+                var Select  = self.getContent().getElement('[name="paymentId"]'),
+                    current = QUILocale.getCurrent();
 
                 return Payments.getPayments().then(function (payments) {
                     new Element('option', {
@@ -495,9 +496,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         value: ''
                     }).inject(Select);
 
-                    for (var i = 0, len = payments.length; i < len; i++) {
+                    var i, len, title;
+
+                    for (i = 0, len = payments.length; i < len; i++) {
+                        title = payments[i].title;
+
+                        if (typeOf(title) === 'object' && typeof title[current] !== 'undefined') {
+                            title = title[current];
+                        }
+
                         new Element('option', {
-                            html : payments[i].title,
+                            html : title,
                             value: payments[i].id
                         }).inject(Select);
                     }
