@@ -306,6 +306,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 180
                 }, {
+                    header   : QUILocale.get(lg, 'grid.paymentStatus'),
+                    dataIndex: 'payment_status',
+                    dataType : 'string',
+                    width    : 180
+                }, {
                     header   : QUILocale.get(lg, 'grid.taxId'),
                     dataIndex: 'taxId',
                     dataType : 'string',

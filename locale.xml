@@ -847,6 +847,10 @@
             <de><![CDATA[Zahlungsart]]></de>
             <en><![CDATA[Payment method]]></en>
         </locale>
+        <locale name="grid.paymentStatus">
+            <de><![CDATA[Zahlungsstatus]]></de>
+            <en><![CDATA[Payment status]]></en>
+        </locale>
         <locale name="grid.timeForPayment">
             <de><![CDATA[Zahlungsziel (In Tagen)]]></de>
             <en><![CDATA[Payment term (days)]]></en>
