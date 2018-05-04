@@ -38,10 +38,11 @@ class ErpProvider extends AbstractErpProvider
         }
 
         $Order = new Item([
-            'icon'   => 'fa fa-shopping-basket',
-            'name'   => 'order',
-            'text'   => ['quiqqer/order', 'erp.panel.order.text'],
-            'opened' => true
+            'icon'     => 'fa fa-shopping-basket',
+            'name'     => 'order',
+            'text'     => ['quiqqer/order', 'erp.panel.order.text'],
+            'opened'   => true,
+            'priority' => 1
         ]);
 
         $Order->appendChild(

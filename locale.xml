@@ -805,6 +805,10 @@
             <de><![CDATA[Zahlungsinformationen]]></de>
             <en><![CDATA[Payment information]]></en>
         </locale>
+        <locale name="panel.order.category.history">
+            <de><![CDATA[Verlauf]]></de>
+            <en><![CDATA[History]]></en>
+        </locale>
 
         <locale name="panel.order.data.title">
             <de><![CDATA[Bestellungsdaten]]></de>
