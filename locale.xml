@@ -672,7 +672,7 @@
             <en><![CDATA[Subtotal]]></en>
         </locale>
         <locale name="control.order.overview.sum">
-            <de><![CDATA[Gesammtsumme]]></de>
+            <de><![CDATA[Gesamtsumme]]></de>
             <en><![CDATA[Total]]></en>
         </locale>
         <locale name="control.order.article.title">
