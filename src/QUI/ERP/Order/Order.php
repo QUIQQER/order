@@ -277,8 +277,8 @@ class Order extends AbstractOrder implements OrderInterface
 
         //payment
         $idPrefix      = '';
-        $paymentId     = '';
-        $paymentMethod = '';
+        $paymentId     = null;
+        $paymentMethod = null;
 
         $Payment = $this->getPayment();
 
