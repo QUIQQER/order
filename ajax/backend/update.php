@@ -94,8 +94,11 @@ QUI::$Ajax->registerFunction(
             $Order->setInvoiceAddress($data['addressInvoice']);
         }
 
-        if (isset($data['addressDelivery'])) {
+
+        if (isset($data['addressDelivery']) && !empty($data['addressDelivery'])) {
             $Order->setDeliveryAddress($data['addressInvoice']);
+        } elseif (isset($data['addressDelivery']) && empty($data['addressDelivery'])) {
+            $Order->removeDeliveryAddress();
         }
 
         if (isset($data['articles'])) {

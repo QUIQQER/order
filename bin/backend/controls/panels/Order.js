@@ -155,9 +155,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 paymentId      : this.getAttribute('paymentId')
             };
 
-            // console.warn(orderId);
-            // console.warn(data);
-
             return new Promise(function (resolve) {
                 Orders.updateOrder(orderId, data).then(function () {
                     resolve();
@@ -344,7 +341,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         $onInject: function () {
             this.refresh().then(this.openInfo).catch(function (Err) {
                 QUI.getMessageHandler().then(function (MH) {
-                    MH.addError(Err.getMessage());
+                    if ("getMessage" in Err) {
+                        MH.addError(Err.getMessage());
+                    } else {
+                        console.error(Err);
+                    }
                 });
             }.bind(this));
         },
@@ -490,7 +491,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.$AddressInvoice.setValue(self.getAttribute('addressInvoice'));
                 }
 
-                if (self.getAttribute('addressDelivery')) {
+                if (self.getAttribute('addressDelivery') && self.getAttribute('hasDeliveryAddress')) {
                     self.$AddressDelivery.setValue(self.getAttribute('addressDelivery'));
 
                     deliverAddress.checked = true;
