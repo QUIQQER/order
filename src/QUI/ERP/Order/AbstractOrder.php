@@ -371,11 +371,12 @@ abstract class AbstractOrder extends QUI\QDOM
             'customerId' => $this->customerId,
             'customer'   => $this->getCustomer()->getAttributes(),
 
-            'comments'        => $this->getComments()->toArray(),
-            'articles'        => $articles,
-            'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
-            'addressInvoice'  => $this->getInvoiceAddress()->getAttributes(),
-            'paymentId'       => $paymentId
+            'comments'           => $this->getComments()->toArray(),
+            'articles'           => $articles,
+            'hasDeliveryAddress' => $this->hasDeliveryAddress(),
+            'addressDelivery'    => $this->getDeliveryAddress()->getAttributes(),
+            'addressInvoice'     => $this->getInvoiceAddress()->getAttributes(),
+            'paymentId'          => $paymentId
         ];
     }
 
@@ -622,6 +623,14 @@ abstract class AbstractOrder extends QUI\QDOM
         if (is_array($address)) {
             $this->addressDelivery = $this->parseAddressData($address);
         }
+    }
+
+    /**
+     * Clear up / remove the deliver address from the order
+     */
+    public function removeDeliveryAddress()
+    {
+        $this->addressDelivery = [];
     }
 
     /**
