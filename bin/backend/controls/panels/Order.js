@@ -305,7 +305,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             });
 
             this.addCategory({
-                icon  : 'fa fa-comments-o',
+                icon  : 'fa fa-history',
                 name  : 'history',
                 title : QUILocale.get(lg, 'panel.order.category.history'),
                 text  : QUILocale.get(lg, 'panel.order.category.history'),

@@ -936,8 +936,8 @@
         </locale>
 
         <locale name="panel.order.category.communication">
-            <de><![CDATA[Benachrichtigungen]]></de>
-            <en><![CDATA[Notifications]]></en>
+            <de><![CDATA[Kommentare]]></de>
+            <en><![CDATA[Comments]]></en>
         </locale>
 
         <locale name="dialog.order.delete.title">
