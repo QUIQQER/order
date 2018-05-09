@@ -1112,7 +1112,7 @@ class OrderProcess extends QUI\Control
 
         if ($this->Order === null) {
             // if no order exists, we create one
-            $this->Order = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+            $this->Order = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
         }
 
         return $this->Order;
