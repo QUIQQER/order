@@ -60,6 +60,21 @@ class Product extends UniqueProduct
             $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
         }
 
+        if (isset($attributes['description'])) {
+            $current = QUI::getLocale()->getCurrent();
+
+            try {
+                $Field = Fields::getField(Fields::FIELD_SHORT_DESC);
+                $Field->setValue([
+                    $current => $attributes['description']
+                ]);
+
+                $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
         // fehlende fields setzen
         $productFields = $Product->getFields();
 
