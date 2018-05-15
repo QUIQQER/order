@@ -220,6 +220,19 @@
             <de><![CDATA[Bezahlt am [date]]]></de>
             <en><![CDATA[Paid at [date]]]></en>
         </locale>
+
+        <locale name="permission.quiqqer.frontendUsers.profile.view.erp._header">
+            <de><![CDATA[Profil-Kategorien: ERP / E-Commerce]]></de>
+            <en><![CDATA[Profile categories: ERP / E commerce]]></en>
+        </locale>
+        <locale name="profile.orders.title">
+            <de><![CDATA[Meine Bestellungen]]></de>
+            <en><![CDATA[My orders]]></en>
+        </locale>
+        <locale name="profile.opened.orders.title">
+            <de><![CDATA[Meine offene Bestellungen]]></de>
+            <en><![CDATA[My open orders]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -553,15 +566,6 @@
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
             <en><![CDATA[Checkout not found. Please create an order process.]]></en>
-        </locale>
-
-        <locale name="profile.orders.title">
-            <de><![CDATA[Meine Bestellungen]]></de>
-            <en><![CDATA[My orders]]></en>
-        </locale>
-        <locale name="profile.opened.orders.title">
-            <de><![CDATA[Meine offene Bestellungen]]></de>
-            <en><![CDATA[My open orders]]></en>
         </locale>
 
         <locale name="message.no.orders">

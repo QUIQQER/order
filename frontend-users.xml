@@ -12,6 +12,7 @@
                               name="erp-orders"
                               icon="fa fa-shopping-basket"
                               showinprofilbar="1"
+                              priority="1"
                     >
                         <title>
                             <locale group="quiqqer/order" var="profile.orders.title"/>
@@ -28,6 +29,7 @@
                               name="erp-opened-orders"
                               icon="fa fa-shopping-basket"
                               showinprofilbar="1"
+                              priority="2"
                     >
                         <title>
                             <locale group="quiqqer/order" var="profile.opened.orders.title"/>

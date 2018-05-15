@@ -145,13 +145,11 @@ class UserOrders extends Control implements ControlInterface
                 ]);
                 break;
 
+            default:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PART:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_ERROR:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_CANCELED:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_DEBIT:
-                break;
-
-            default:
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
         }
 
