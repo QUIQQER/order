@@ -106,12 +106,21 @@ class Search extends Singleton
      */
     public function order($order)
     {
-        switch ($order) {
-            case 'id':
-            case 'id ASC':
-            case 'id DESC':
-                $this->order = $order;
-                break;
+        $allowed = [];
+
+        foreach ($this->getAllowedFields() as $field) {
+            $allowed[] = $field;
+            $allowed[] = $field.' ASC';
+            $allowed[] = $field.' asc';
+            $allowed[] = $field.' DESC';
+            $allowed[] = $field.' desc';
+        }
+
+        $order   = trim($order);
+        $allowed = array_flip($allowed);
+
+        if (isset($allowed[$order])) {
+            $this->order = $order;
         }
     }
 
@@ -483,5 +492,50 @@ class Search extends Singleton
         }
 
         return $result;
+    }
+
+
+    /**
+     * @return array
+     */
+    protected function getAllowedFields()
+    {
+        return [
+            'id',
+            'id_prefix',
+            'order_process_id',
+
+            'parent_order',
+
+            'invoice_id',
+            'temporary_invoice_id',
+            'status',
+
+            'customerId',
+            'customer',
+            'addressInvoice',
+            'addressDelivery',
+
+            'articles',
+            'data',
+
+            'payment_id',
+            'payment_method',
+            'payment_data',
+            'payment_time',
+            'payment_address',
+            'paid_status',
+            'paid_date',
+            'paid_data',
+            'successful',
+
+            'history',
+            'comments',
+
+            'hash',
+            'c_date',
+            'c_user',
+
+        ];
     }
 }

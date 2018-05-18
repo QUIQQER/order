@@ -83,40 +83,57 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
+            var self = this;
+
             this.Loader.show();
 
-            Orders.search({
-                perPage: this.$Grid.options.perPage,
-                page   : this.$Grid.options.page
-            }, {
-                from: this.$TimeFilter.getValue().from,
-                to  : this.$TimeFilter.getValue().to
-            }).then(function (result) {
-                var gridData = result.grid;
+            // db mapping
+            var sortOn = self.$Grid.options.sortOn;
 
-                gridData.data = gridData.data.map(function (entry) {
-                    entry.opener = '&nbsp;';
+            switch (sortOn) {
+                case 'customer_id':
+                    sortOn = 'customerId';
+                    break;
+            }
 
-                    return entry;
+            return new Promise(function (resolve, reject) {
+                Orders.search({
+                    perPage: self.$Grid.options.perPage,
+                    page   : self.$Grid.options.page,
+                    sortBy : self.$Grid.options.sortBy,
+                    sortOn : sortOn
+                }, {
+                    from: self.$TimeFilter.getValue().from,
+                    to  : self.$TimeFilter.getValue().to
+                }).then(function (result) {
+                    var gridData = result.grid;
+
+                    gridData.data = gridData.data.map(function (entry) {
+                        entry.opener = '&nbsp;';
+
+                        return entry;
+                    });
+
+                    self.$Grid.setData(gridData);
+                    self.$refreshButtonStatus();
+
+                    self.$Total.set(
+                        'html',
+                        Mustache.render(templateTotal, result.total)
+                    );
+
+                    self.Loader.hide();
+                    resolve();
+                }).catch(function (Err) {
+                    reject(Err);
+
+                    if ("getMessage" in Err) {
+                        console.error(Err.getMessage());
+                        return;
+                    }
+
+                    console.error(Err);
                 });
-
-                this.$Grid.setData(gridData);
-                this.$refreshButtonStatus();
-
-                this.$Total.set(
-                    'html',
-                    Mustache.render(templateTotal, result.total)
-                );
-
-                this.Loader.hide();
-
-            }.bind(this)).catch(function (Err) {
-                if ("getMessage" in Err) {
-                    console.error(Err.getMessage());
-                    return;
-                }
-
-                console.error(Err);
             });
         },
 
@@ -234,6 +251,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.$Grid = new Grid(Container, {
                 accordion            : true,
+                serverSort           : true,
                 autoSectionToggle    : false,
                 openAccordionOnClick : false,
                 toggleiconTitle      : '',
@@ -276,7 +294,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataIndex: 'customer_name',
                     dataType : 'string',
                     width    : 130,
-                    className: 'clickable'
+                    className: 'clickable',
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.orderDate'),
                     dataIndex: 'c_date',
@@ -287,44 +306,52 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataIndex: 'display_nettosum',
                     dataType : 'currency',
                     width    : 100,
-                    className: 'payment-status-amountCell'
+                    className: 'payment-status-amountCell',
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.vat'),
                     dataIndex: 'display_vatsum',
                     dataType : 'currency',
                     width    : 100,
-                    className: 'payment-status-amountCell'
+                    className: 'payment-status-amountCell',
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.sum'),
                     dataIndex: 'display_sum',
                     dataType : 'currency',
                     width    : 100,
-                    className: 'payment-status-amountCell'
+                    className: 'payment-status-amountCell',
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.paymentMethod'),
                     dataIndex: 'payment_title',
                     dataType : 'string',
-                    width    : 180
+                    width    : 180,
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.paymentStatus'),
                     dataIndex: 'paid_status_display',
                     dataType : 'string',
-                    width    : 180
+                    width    : 180,
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.taxId'),
                     dataIndex: 'taxId',
                     dataType : 'string',
-                    width    : 120
+                    width    : 120,
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.euVatId'),
                     dataIndex: 'euVatId',
                     dataType : 'string',
-                    width    : 120
+                    width    : 120,
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.processingStatus'),
                     dataIndex: 'processing',
                     dataType : 'string',
-                    width    : 150
+                    width    : 150,
+                    sortable : false
                 }, {
                     header   : QUILocale.get(lg, 'grid.invoiceNo'),
                     dataIndex: 'invoice_id',
