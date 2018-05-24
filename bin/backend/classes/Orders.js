@@ -63,6 +63,23 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
         },
 
         /**
+         * Return the article html from an specific order
+         *
+         * @param {Number} orderId
+         * @return {Promise}
+         */
+        getArticleHtml: function (orderId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_backend_getArticleHtml', resolve, {
+                    'package': 'quiqqer/order',
+                    orderId  : orderId,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
+
+        /**
          * Return the combined history of the order
          * - history, transaction, comments
          *

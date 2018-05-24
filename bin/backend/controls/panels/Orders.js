@@ -725,30 +725,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ParentNode.setStyle('padding', 10);
             ParentNode.set('html', '<div class="fa fa-spinner fa-spin"></div>');
 
-            Orders.get(this.$Grid.getDataByRow(row).id).then(function (result) {
-                var articles = [];
+            Orders.getArticleHtml(this.$Grid.getDataByRow(row).id).then(function (result) {
+                ParentNode.set('html', '');
 
-                if ("articles" in result) {
-                    articles = result.articles;
-                }
-
-                var list = articles.articles;
-
-                for (var i = 0, len = list.length; i < len; i++) {
-                    list[i].position  = i + 1;
-                    list[i].articleNo = list[i].articleNo || '---';
-                }
-
-                ParentNode.set('html', Mustache.render(templateOrderDetails, {
-                    articles       : list,
-                    calculations   : articles.calculations,
-                    textPosition   : '#',
-                    textArticleNo  : QUILocale.get(lg, 'order.products.articleNo'),
-                    textDescription: QUILocale.get(lg, 'order.products.description'),
-                    textQuantity   : QUILocale.get(lg, 'order.products.quantity'),
-                    textUnitPrice  : QUILocale.get(lg, 'order.products.unitPrice'),
-                    textTotalPrice : QUILocale.get(lg, 'order.products.price')
-                }));
+                new Element('div', {
+                    'class': 'orders-order-details',
+                    html   : result
+                }).inject(ParentNode);
             });
         },
 
