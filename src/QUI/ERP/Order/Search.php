@@ -383,7 +383,8 @@ class Search extends Singleton
             $Customer  = $Order->getCustomer();
             $orderData = $entry;
 
-            $orderData['hash'] = $Order->getHash();
+            $orderData['hash']        = $Order->getHash();
+            $orderData['prefixed-id'] = $Order->getPrefixedId();
 
 
             if (empty($orderData['customer_id'])) {
