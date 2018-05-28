@@ -280,8 +280,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     width    : 30
                 }, {
                     header   : QUILocale.get(lg, 'grid.orderNo'),
-                    dataIndex: 'id',
-                    dataType : 'integer',
+                    dataIndex: 'prefixed-id',
+                    dataType : 'string',
                     width    : 80
                 }, {
                     header   : QUILocale.get(lg, 'grid.customerNo'),
@@ -369,6 +369,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataType : 'string',
                     width    : 280,
                     className: 'monospace'
+                }, {
+                    header   : QUILocale.get('quiqqer/system', 'id'),
+                    dataIndex: 'id',
+                    dataType : 'integer',
+                    width    : 80
                 }]
             });
 
