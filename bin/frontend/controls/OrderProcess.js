@@ -886,7 +886,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             if (event.target.get('value') === 'payableToOrder') {
-                this.send();
+                this.send().catch(function () {
+                    // if an error, refresh the current step
+                    this.$runningAnimation = false;
+                    this.refreshCurrentStep();
+                }.bind(this));
+
                 return true;
             }
 
