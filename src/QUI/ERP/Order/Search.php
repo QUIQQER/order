@@ -324,7 +324,7 @@ class Search extends Singleton
         $DateFormatter = new \IntlDateFormatter(
             $localeCode[0],
             \IntlDateFormatter::SHORT,
-            \IntlDateFormatter::NONE
+            \IntlDateFormatter::MEDIUM
         );
 
         // helper

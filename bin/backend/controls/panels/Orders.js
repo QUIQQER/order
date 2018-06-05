@@ -300,7 +300,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     header   : QUILocale.get(lg, 'grid.orderDate'),
                     dataIndex: 'c_date',
                     dataType : 'date',
-                    width    : 100
+                    width    : 140
                 }, {
                     header   : QUILocale.get(lg, 'grid.netto'),
                     dataIndex: 'display_nettosum',

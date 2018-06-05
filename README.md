@@ -76,7 +76,7 @@ Developers
 
 ### Order Events
 
-- onOrderStart [Order]
+- onOrderStart [\QUI\ERP\Order\OrderProcess]
 - onOrderSuccess [Order]
 - onOrderAbort [Order]
 
