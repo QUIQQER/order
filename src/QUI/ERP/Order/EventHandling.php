@@ -164,7 +164,7 @@ class EventHandling
                 ['id' => $Order->getId()]
             );
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
+            QUI\System\Log::writeDebugException($Exception);
         }
     }
 
