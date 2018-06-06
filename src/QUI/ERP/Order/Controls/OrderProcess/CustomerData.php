@@ -305,6 +305,13 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
+        $addressId = $User->getAttribute('quiqqer.erp.address');
+
+        if (empty($addressId)) {
+            $User->setAttribute('quiqqer.erp.address', $Address->getId());
+        }
+
+
         // @todo validate vat id??
         $currentVat = $User->getAttribute('quiqqer.erp.euVatId');
 
