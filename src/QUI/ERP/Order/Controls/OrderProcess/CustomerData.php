@@ -72,10 +72,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         try {
-            if ($Address->getId() !== $this->getOrder()->getInvoiceAddress()->getId()) {
-                $this->getOrder()->setInvoiceAddress($Address);
-                $this->getOrder()->save();
-            }
+            $this->getOrder()->setInvoiceAddress($Address);
+            $this->getOrder()->save();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

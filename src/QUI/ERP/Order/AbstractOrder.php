@@ -10,6 +10,7 @@ use QUI;
 use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Money\Price;
+use QUI\ERP\Products\Handler\Products;
 
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
@@ -305,6 +306,48 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     //region API
+
+    /**
+     * Recalculate all article prices
+     */
+
+    /**
+     * @throws Basket\Exception
+     * @throws QUI\ERP\Exception
+     * @throws QUI\Exception
+     */
+    public function recalculate()
+    {
+        $Basket = new QUI\ERP\Order\Basket\BasketOrder(
+            $this->getHash(),
+            $this->getCustomer()
+        );
+
+        $Products = $Basket->getProducts();
+
+        $ArticleList = new ArticleList();
+        $ArticleList->setUser($this->getCustomer());
+
+        $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
+        $ProductCalc->setUser($this->getCustomer());
+        $Products->calc($ProductCalc);
+
+        $products = $Products->getProducts();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $ArticleList->addArticle($Product->toArticle(null, false));
+            } catch (QUI\Exception $Exception) {
+                // @todo hinweis an benutzer, das artikel nicht mit aufgenommen werden konnte
+            }
+        }
+
+        $ArticleList->calc();
+
+        $this->Articles = $ArticleList;
+        $this->update();
+    }
 
     /**
      * Refresh the order data

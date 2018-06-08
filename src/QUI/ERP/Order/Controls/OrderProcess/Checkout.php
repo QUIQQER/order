@@ -83,6 +83,8 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $this->getOrder();
 
+        $Order->recalculate();
+
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
 
