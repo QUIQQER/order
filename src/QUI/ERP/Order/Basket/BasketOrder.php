@@ -170,6 +170,9 @@ class BasketOrder
 
                 $this->List->addProduct($Product);
             } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+
+                // @todo message an benutzer - Product konnte nicht aufgenommen werden
             }
         }
     }

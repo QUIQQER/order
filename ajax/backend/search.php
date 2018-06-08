@@ -19,7 +19,6 @@ QUI::$Ajax->registerFunction(
         $Search = Search::getInstance();
         $Grid   = new QUI\Utils\Grid();
 
-
         // filter
         $filter = json_decode($filter);
 

@@ -55,7 +55,7 @@ class Search extends Singleton
     {
         $keys = array_flip($this->allowedFilters);
 
-        if (!isset($keys[$filter])) {
+        if (!isset($keys[$filter]) && $filter !== 'from' && $filter !== 'to') {
             return;
         }
 
@@ -63,21 +63,24 @@ class Search extends Singleton
             $value = [$value];
         }
 
-//        foreach ($value as $val) {
-//
-//            if ($filter === 'from' && is_numeric($val)) {
-//                $val = date('Y-m-d 00:00:00', $val);
-//            }
-//
-//            if ($filter === 'to' && is_numeric($val)) {
-//                $val = date('Y-m-d 23:59:59', $val);
-//            }
-//
-//            $this->filter[] = array(
-//                'filter' => $filter,
-//                'value'  => $val
-//            );
-//        }
+        foreach ($value as $val) {
+            if ($val === '') {
+                continue;
+            }
+
+            if ($filter === 'from' && is_numeric($val)) {
+                $val = date('Y-m-d 00:00:00', $val);
+            }
+
+            if ($filter === 'to' && is_numeric($val)) {
+                $val = date('Y-m-d 23:59:59', $val);
+            }
+
+            $this->filter[] = [
+                'filter' => $filter,
+                'value'  => $val
+            ];
+        }
     }
 
     /**
@@ -225,11 +228,11 @@ class Search extends Singleton
 
             switch ($filter['filter']) {
                 case 'from':
-                    $where[] = 'date >= '.$bind;
+                    $where[] = 'c_date >= '.$bind;
                     break;
 
                 case 'to':
-                    $where[] = 'date <= '.$bind;
+                    $where[] = 'c_date <= '.$bind;
                     break;
 
                 default:
