@@ -45,7 +45,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$refreshButtonStatus',
             '$onOrderChange',
             '$onClickOrderDetails',
-            '$clickCreateInvoice'
+            '$clickCreateInvoice',
+            '$onSearchKeyUp'
         ],
 
         initialize: function (options) {
@@ -59,6 +60,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$Grid       = null;
             this.$Total      = null;
             this.$TimeFilter = null;
+            this.$Search     = null;
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -103,8 +105,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     sortBy : self.$Grid.options.sortBy,
                     sortOn : sortOn
                 }, {
-                    from: self.$TimeFilter.getValue().from,
-                    to  : self.$TimeFilter.getValue().to
+                    from  : self.$TimeFilter.getValue().from,
+                    to    : self.$TimeFilter.getValue().to,
+                    search: self.$Search.value
                 }).then(function (result) {
                     var gridData = result.grid;
 
@@ -172,6 +175,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $onCreate: function () {
             var self = this;
 
+            // panel buttons
             this.getContent().setStyles({
                 padding: 10
             });
@@ -197,6 +201,39 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.addButton(this.$TimeFilter);
 
+            this.addButton({
+                type  : 'separator',
+                styles: {
+                    'float': 'right'
+                }
+            });
+
+            this.addButton({
+                name  : 'search',
+                icon  : 'fa fa-search',
+                styles: {
+                    'float': 'right'
+                },
+                events: {
+                    onClick: this.refresh
+                }
+            });
+
+            this.$Search = new Element('input', {
+                placeholder: 'Search...',
+                styles     : {
+                    'float': 'right',
+                    margin : '10px 0 0 0',
+                    width  : 200
+                },
+                events     : {
+                    keyup: this.$onSearchKeyUp
+                }
+            });
+
+            this.addButton(this.$Search);
+
+            // grid buttons
             var Actions = new QUIButton({
                 name      : 'actions',
                 text      : QUILocale.get(lg, 'panel.btn.actions'),
@@ -802,6 +839,26 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     }
                 });
             });
+        },
+
+        /**
+         * key up event at the search input
+         *
+         * @param {DOMEvent} event
+         */
+        $onSearchKeyUp: function (event) {
+            console.log(event.key);
+
+            if (event.key === 'up' ||
+                event.key === 'down' ||
+                event.key === 'left' ||
+                event.key === 'right') {
+                return;
+            }
+
+            if (event.key === 'enter') {
+                this.refresh();
+            }
         }
     });
 });
