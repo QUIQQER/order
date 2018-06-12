@@ -22,6 +22,11 @@ class Settings extends QUI\Utils\Singleton
     protected $isInvoiceInstalled = null;
 
     /**
+     * @var bool
+     */
+    protected $forceCreateInvoice = false;
+
+    /**
      * @var array
      */
     protected $settings = [];
@@ -162,6 +167,36 @@ class Settings extends QUI\Utils\Singleton
         }
 
         return $Config->get('order', 'autoInvoice') === 'byPayment';
+    }
+
+    /**
+     * should invoice creation still be executed even if an invoice already exists?
+     *
+     * @return bool
+     */
+    public function forceCreateInvoice()
+    {
+        if ($this->isInvoiceInstalled() === false) {
+            return false;
+        }
+
+        return $this->forceCreateInvoice;
+    }
+
+    /**
+     * Set force create invoice on
+     */
+    public function forceCreateInvoiceOn()
+    {
+        $this->forceCreateInvoice = true;
+    }
+
+    /**
+     * Set force create invoice off
+     */
+    public function forceCreateInvoiceOff()
+    {
+        $this->forceCreateInvoice = false;
     }
 
     //endregion

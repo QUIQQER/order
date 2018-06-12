@@ -274,9 +274,10 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->successful = (int)$data['successful'];
 
         $this->setAttributes([
-            'paid_status' => (int)$data['paid_status'],
-            'paid_data'   => json_decode($data['paid_data'], true),
-            'paid_date'   => $data['paid_date']
+            'paid_status'          => (int)$data['paid_status'],
+            'paid_data'            => json_decode($data['paid_data'], true),
+            'paid_date'            => $data['paid_date'],
+            'temporary_invoice_id' => $data['temporary_invoice_id'],
         ]);
 
         if (isset($data['payment_data'])) {

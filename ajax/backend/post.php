@@ -15,8 +15,12 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_post',
     function ($orderId) {
+        QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOn();
+
         $Order   = QUI\ERP\Order\Handler::getInstance()->get($orderId);
-        $Invoice = $Order->post();
+        $Invoice = $Order->createInvoice();
+
+        QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOff();
 
         return $Invoice->getId();
     },

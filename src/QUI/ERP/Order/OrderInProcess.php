@@ -216,10 +216,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             ['id' => $this->getId()]
         );
 
+        $Order = $this;
+
         // create order, if the payment status is paid and no order exists
         if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID
             && !$this->orderId) {
-            $this->createOrder(QUI::getUsers()->getSystemUser());
+            $Order = $this->createOrder();
         }
 
         // Payment Status has changed
@@ -229,7 +231,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent(
             'onQuiqqerOrderPaymentStatusChanged',
-            [$this, $calculations['paidStatus'], $oldPaidStatus]
+            [$Order, $calculations['paidStatus'], $oldPaidStatus]
         );
 
         QUI\ERP\Debug::getInstance()->log(
@@ -359,11 +361,15 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         // create invoice?
         if (Settings::getInstance()->createInvoiceOnOrder()) {
             $Order->createInvoice($SystemUser);
+
+            return $Order;
         }
 
         if (Settings::getInstance()->createInvoiceByPayment()
             && $Order->getPayment()->isSuccessful($Order->getHash())) {
             $Order->createInvoice($SystemUser);
+
+            return $Order;
         }
 
         if (Settings::getInstance()->createInvoiceByPayment()
@@ -382,15 +388,19 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     protected function hasPermissions($PermissionUser = null)
     {
-        if ($this->cUser === QUI::getUserBySession()->getId()) {
-            return true;
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
         }
 
-        if ($PermissionUser && $this->cUser === $PermissionUser->getId()) {
+        if ($this->cUser === $PermissionUser->getId()) {
             return true;
         }
 
         if (QUI::getUsers()->isSystemUser($PermissionUser)) {
+            return true;
+        }
+
+        if ($PermissionUser->isSU()) {
             return true;
         }
 

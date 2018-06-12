@@ -53,14 +53,22 @@ class Order extends AbstractOrder implements OrderInterface
     /**
      * It return the invoice, if an invoice exist for the order
      *
-     * @return QUI\ERP\Accounting\Invoice\Invoice
+     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
     public function getInvoice()
     {
-        return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
+        try {
+            return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return InvoiceHandler::getInstance()->getTemporaryInvoice(
+            $this->getAttribute('temporary_invoice_id')
+        );
     }
 
     /**
@@ -85,7 +93,8 @@ class Order extends AbstractOrder implements OrderInterface
      */
     public function createInvoice($PermissionUser = null)
     {
-        if ($this->isPosted()) {
+        if (Settings::getInstance()->forceCreateInvoice() === false &&
+            $this->isPosted()) {
             return $this->getInvoice();
         }
 
@@ -100,8 +109,12 @@ class Order extends AbstractOrder implements OrderInterface
             $PermissionUser = QUI::getUsers()->getUserBySession();
         }
 
-        $InvoiceFactory   = QUI\ERP\Accounting\Invoice\Factory::getInstance();
-        $TemporaryInvoice = $InvoiceFactory->createInvoice($PermissionUser, $this->getHash());
+        $InvoiceFactory = QUI\ERP\Accounting\Invoice\Factory::getInstance();
+
+        $TemporaryInvoice = $InvoiceFactory->createInvoice(
+            QUI::getUserBySession(),
+            $this->getHash()
+        );
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
@@ -176,6 +189,7 @@ class Order extends AbstractOrder implements OrderInterface
                 $TemporaryInvoice->getId()
             );
 
+            $this->setAttribute('temporary_invoice_id', $TemporaryInvoice->getId());
             $TemporaryInvoice->validate();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -208,8 +222,20 @@ class Order extends AbstractOrder implements OrderInterface
      */
     public function isPosted()
     {
-        if (!$this->invoiceId) {
+        if (!$this->invoiceId && !$this->getAttribute('temporary_invoice_id')) {
             return false;
+        }
+
+        if (!$this->invoiceId && $this->getAttribute('temporary_invoice_id')) {
+            try {
+                InvoiceHandler::getInstance()->getTemporaryInvoice(
+                    $this->getAttribute('temporary_invoice_id')
+                );
+
+                return true;
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
         }
 
         try {

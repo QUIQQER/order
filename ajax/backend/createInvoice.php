@@ -14,11 +14,15 @@ QUI::$Ajax->registerFunction(
     function ($orderId) {
         // check if invoice is installed
         QUI::getPackage('quiqqer/invoice');
+
         QUI\ERP\Order\Settings::getInstance()->set('order', 'autoInvoicePost', 0);
+        QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOn();
 
         $Handler = QUI\ERP\Order\Handler::getInstance();
         $Order   = $Handler->get($orderId);
         $Invoice = $Order->createInvoice();
+
+        QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOff();
 
         return $Invoice->getId();
     },
