@@ -768,6 +768,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ParentNode.set('html', '<div class="fa fa-spinner fa-spin"></div>');
 
             Orders.getArticleHtml(this.$Grid.getDataByRow(row).id).then(function (result) {
+                if (result.indexOf('<table') === -1) {
+                    ParentNode.set('html', QUILocale.get(lg, 'message.orders.panel.empty.articles'));
+                    return;
+                }
+
                 ParentNode.set('html', '');
 
                 new Element('div', {
@@ -847,8 +852,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @param {DOMEvent} event
          */
         $onSearchKeyUp: function (event) {
-            console.log(event.key);
-
             if (event.key === 'up' ||
                 event.key === 'down' ||
                 event.key === 'left' ||
