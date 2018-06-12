@@ -102,6 +102,7 @@ class Search extends Singleton
     public function clearFilter()
     {
         $this->filter = [];
+        $this->search = null;
     }
 
     /**
@@ -177,7 +178,7 @@ class Search extends Singleton
         $this->filter = array_filter($this->filter, function ($filter) {
             return $filter['filter'] != 'paid_status';
         });
-        
+
         $calc = $this->parseListForGrid($this->executeQueryParams($this->getQuery()));
 
         $this->filter = $oldFiler;
@@ -289,6 +290,10 @@ class Search extends Singleton
         }
 
         $whereQuery = 'WHERE '.implode(' AND ', $where);
+
+        if (!count($where)) {
+            $whereQuery = '';
+        }
 
 
         if ($count) {
