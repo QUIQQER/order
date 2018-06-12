@@ -23,6 +23,13 @@ class Search extends Singleton
     protected $filter = [];
 
     /**
+     * search value
+     *
+     * @var null
+     */
+    protected $search = null;
+
+    /**
      * @var array
      */
     protected $limit = [0, 20];
@@ -53,6 +60,12 @@ class Search extends Singleton
      */
     public function setFilter($filter, $value)
     {
+        if ($filter === 'search') {
+            $this->search = $value;
+
+            return;
+        }
+
         $keys = array_flip($this->allowedFilters);
 
         if (!isset($keys[$filter]) && $filter !== 'from' && $filter !== 'to') {
@@ -164,7 +177,7 @@ class Search extends Singleton
         $this->filter = array_filter($this->filter, function ($filter) {
             return $filter['filter'] != 'paid_status';
         });
-
+        
         $calc = $this->parseListForGrid($this->executeQueryParams($this->getQuery()));
 
         $this->filter = $oldFiler;
@@ -200,7 +213,7 @@ class Search extends Singleton
             $limit = " LIMIT {$start},{$end}";
         }
 
-        if (empty($this->filter)) {
+        if (empty($this->filter) && empty($this->search)) {
             if ($count) {
                 return [
                     'query' => " SELECT COUNT(*)  AS count FROM {$table}",
@@ -245,6 +258,34 @@ class Search extends Singleton
             ];
 
             $fc++;
+        }
+
+        if (!empty($this->search)) {
+            $where[] = '(
+                id LIKE :search OR
+                order_process_id LIKE :search OR
+                parent_order LIKE :search OR
+                invoice_id LIKE :search OR
+                temporary_invoice_id LIKE :search OR
+                customerId LIKE :search OR
+                customer LIKE :search OR
+                addressInvoice LIKE :search OR
+                addressDelivery LIKE :search OR
+                data LIKE :search OR
+                payment_time LIKE :search OR
+                payment_address LIKE :search OR
+                paid_status LIKE :search OR
+                paid_date LIKE :search OR
+                paid_data LIKE :search OR
+                hash LIKE :search OR
+                c_date LIKE :search OR
+                c_user LIKE :search
+            )';
+
+            $binds['search'] = [
+                'value' => '%'.$this->search.'%',
+                'type'  => \PDO::PARAM_STR
+            ];
         }
 
         $whereQuery = 'WHERE '.implode(' AND ', $where);
