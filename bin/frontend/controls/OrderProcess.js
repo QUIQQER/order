@@ -440,7 +440,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.$beginResultRendering(-1);
             }
 
-            this.saveCurrentStep().then(function () {
+            return this.saveCurrentStep().then(function () {
                 return new Promise(function (resolve) {
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getStep', function (result) {
                         if (self.getCurrentStepData().step === step) {
