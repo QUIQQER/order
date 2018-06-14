@@ -15,7 +15,7 @@ Order=$Order
 
     <div class="quiqqer-order-step-checkout-invoiceAddress">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.billing.address"}</h2>
-        {$InvoiceAddress->render()}
+        {$InvoiceAddress->render(['tel' => false, 'mail' => false])}
     </div>
 
     <div class="quiqqer-order-step-checkout-payments">
