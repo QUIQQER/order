@@ -19,7 +19,7 @@
             {/if}
 
             {assign var=Address value=$Customer->getAddress()}
-            {$Address->render()}
+            {$Address->render(['tel' => false, 'mail' => false])}
             <span>
                 <span>{$Address->getName()}</span>
                 <span class="fa fa-angle-down"></span>
