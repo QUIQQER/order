@@ -49,7 +49,7 @@
         {/if}
 
         {assign var=Address value=$Customer->getAddress()}
-        {$Address->render()}
+        {$Address->render(['tel' => false, 'mail' => false])}
     </section>
 
     <section class="quiqqer-order-control-order-information-orderData">
@@ -154,6 +154,17 @@
 
             <div class="quiqqer-order-profile-orders-order-articles-article-description">
                 {$Article->getDescription()}
+
+                {if count($customFields)}
+                <ul class="quiqqer-order-profile-orders-order-articles-article-description-customFields">
+                    {foreach $customFields as $field}
+                    <li class="quiqqer-order-profile-orders-order-articles-article-description-customFields-field">
+                        <span>{$field.title}:</span>
+                        <span>{$field.custom_calc.valueText}</span>
+                    </li>
+                    {/foreach}
+                </ul>
+                {/if}
             </div>
 
             <div class="quiqqer-order-profile-orders-order-articles-article-price">

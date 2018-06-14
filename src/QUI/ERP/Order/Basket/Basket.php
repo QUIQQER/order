@@ -108,7 +108,7 @@ class Basket
         if ($Order->isSuccessful()) {
             try {
                 // create a new in process
-                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
                 $this->hash = $NewOrder->getHash();
             } catch (QUi\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
@@ -279,7 +279,7 @@ class Basket
                     continue;
                 }
 
-                $fields[$Field->getId()] = $Field->getValue();
+                $fields[$Field->getId()] = $Field->getView()->getAttributes();
             }
 
             $result[] = [
