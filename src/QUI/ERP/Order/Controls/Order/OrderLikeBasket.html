@@ -42,7 +42,6 @@
 
         {if $Invoice}
         {assign var=Customer value=$Invoice->getCustomer()}
-        {$Invoice|get_class}
         {else}
         {assign var=Customer value=$Order->getCustomer()}
         {/if}
