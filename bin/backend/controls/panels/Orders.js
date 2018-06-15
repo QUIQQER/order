@@ -127,10 +127,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 );
 
                 self.Loader.hide();
-                resolve();
             }).catch(function (Err) {
-                reject(Err);
-
                 if ("getMessage" in Err) {
                     console.error(Err.getMessage());
                     return;
