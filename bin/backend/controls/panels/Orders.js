@@ -79,10 +79,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
         /**
          * Refresh the grid
+         *
+         * @return {Promise}
          */
         refresh: function () {
             if (!this.$Grid) {
-                return;
+                return Promise.resolve();
             }
 
             var self = this;
@@ -98,45 +100,43 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     break;
             }
 
-            return new Promise(function (resolve, reject) {
-                Orders.search({
-                    perPage: self.$Grid.options.perPage,
-                    page   : self.$Grid.options.page,
-                    sortBy : self.$Grid.options.sortBy,
-                    sortOn : sortOn
-                }, {
-                    from  : self.$TimeFilter.getValue().from,
-                    to    : self.$TimeFilter.getValue().to,
-                    search: self.$Search.value
-                }).then(function (result) {
-                    var gridData = result.grid;
+            return Orders.search({
+                perPage: self.$Grid.options.perPage,
+                page   : self.$Grid.options.page,
+                sortBy : self.$Grid.options.sortBy,
+                sortOn : sortOn
+            }, {
+                from  : self.$TimeFilter.getValue().from,
+                to    : self.$TimeFilter.getValue().to,
+                search: self.$Search.value
+            }).then(function (result) {
+                var gridData = result.grid;
 
-                    gridData.data = gridData.data.map(function (entry) {
-                        entry.opener = '&nbsp;';
+                gridData.data = gridData.data.map(function (entry) {
+                    entry.opener = '&nbsp;';
 
-                        return entry;
-                    });
-
-                    self.$Grid.setData(gridData);
-                    self.$refreshButtonStatus();
-
-                    self.$Total.set(
-                        'html',
-                        Mustache.render(templateTotal, result.total)
-                    );
-
-                    self.Loader.hide();
-                    resolve();
-                }).catch(function (Err) {
-                    reject(Err);
-
-                    if ("getMessage" in Err) {
-                        console.error(Err.getMessage());
-                        return;
-                    }
-
-                    console.error(Err);
+                    return entry;
                 });
+
+                self.$Grid.setData(gridData);
+                self.$refreshButtonStatus();
+
+                self.$Total.set(
+                    'html',
+                    Mustache.render(templateTotal, result.total)
+                );
+
+                self.Loader.hide();
+                resolve();
+            }).catch(function (Err) {
+                reject(Err);
+
+                if ("getMessage" in Err) {
+                    console.error(Err.getMessage());
+                    return;
+                }
+
+                console.error(Err);
             });
         },
 

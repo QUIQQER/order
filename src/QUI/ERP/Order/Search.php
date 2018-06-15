@@ -443,6 +443,17 @@ class Search extends Singleton
                     $orderData['customer_id'] = Handler::EMPTY_VALUE;
                 } else {
                     $orderData['customer_name'] = $Customer->getName();
+
+                    $Address = $Order->getInvoiceAddress();
+
+                    if ($Address) {
+                        $address = $Address->getAttributes();
+
+                        if (!empty($address['company'])) {
+                            $orderData['customer_name'] = trim($orderData['customer_name']);
+                            $orderData['customer_name'] = $address['company'].' ('.$orderData['customer_name'].')';
+                        }
+                    }
                 }
             }
 
