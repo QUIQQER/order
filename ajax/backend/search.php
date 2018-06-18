@@ -18,6 +18,11 @@ QUI::$Ajax->registerFunction(
     function ($params, $filter) {
         $Search = Search::getInstance();
         $Grid   = new QUI\Utils\Grid();
+        $params = json_decode($params, true);
+
+        if (isset($params['sortOn']) && $params['sortOn'] === 'prefixed-id') {
+            $params['sortOn'] = 'id';
+        }
 
         // filter
         $filter = json_decode($filter);
@@ -27,7 +32,7 @@ QUI::$Ajax->registerFunction(
         }
 
         // query params
-        $query = $Grid->parseDBParams(json_decode($params, true));
+        $query = $Grid->parseDBParams($params);
 
         if (isset($query['limit'])) {
             $limit = explode(',', $query['limit']);
