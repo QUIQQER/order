@@ -415,38 +415,115 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 onRefresh : this.refresh,
                 onClick   : this.$refreshButtonStatus,
                 onDblClick: function (data) {
-                    if (data.cell.get('data-index') === 'customer_id' ||
-                        data.cell.get('data-index') === 'customer_name') {
+                    var Cell     = data.cell,
+                        position = Cell.getPosition(),
+                        rowData  = self.$Grid.getDataByRow(data.row);
 
-                        require(['utils/Panels'], function (PanelUtils) {
-                            PanelUtils.openUserPanel(
-                                self.$Grid.getDataByRow(data.row).customer_id
-                            );
-                        });
 
-                        return;
-                    }
-
-                    if (data.cell.get('data-index') === 'invoice_id') {
-                        var invoiceId = self.$Grid.getDataByRow(data.row).invoice_id;
-
-                        if (invoiceId === '' || invoiceId === '---') {
-                            return;
-                        }
+                    if (Cell.get('data-index') === 'customer_id' ||
+                        Cell.get('data-index') === 'customer_name' ||
+                        Cell.get('data-index') === 'invoice_id') {
 
                         require([
-                            'package/quiqqer/invoice/bin/backend/controls/panels/Invoice',
-                            'utils/Panels'
-                        ], function (InvoicePanel, PanelUtils) {
-                            var Panel = new InvoicePanel({
-                                invoiceId: invoiceId
+                            'qui/controls/contextmenu/Menu',
+                            'qui/controls/contextmenu/Item'
+                        ], function (QUIMenu, QUIMenuItem) {
+                            var Menu = new QUIMenu({
+                                events: {
+                                    onBlur: function () {
+                                        Menu.hide();
+                                        Menu.destroy();
+                                    }
+                                }
                             });
 
-                            PanelUtils.openPanelInTasks(Panel);
+                            Menu.appendChild(
+                                new QUIMenuItem({
+                                    icon  : 'fa fa-calculator',
+                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.order'),
+                                    events: {
+                                        onClick: function () {
+                                            self.openOrder(rowData.id);
+                                        }
+                                    }
+                                })
+                            );
+
+                            Menu.appendChild(
+                                new QUIMenuItem({
+                                    icon  : 'fa fa-users',
+                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.user'),
+                                    events: {
+                                        onClick: function () {
+                                            require(['utils/Panels'], function (PanelUtils) {
+                                                PanelUtils.openUserPanel(rowData.customer_id);
+                                            });
+                                        }
+                                    }
+                                })
+                            );
+
+                            if (rowData.invoice_id !== '') {
+                                Menu.appendChild(
+                                    new QUIMenuItem({
+                                        icon  : 'fa fa-file-text-o',
+                                        text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.invoice'),
+                                        events: {
+                                            onClick: function () {
+                                                require([
+                                                    'utils/Panels',
+                                                    'package/quiqqer/invoice/bin/backend/controls/panels/Invoice'
+                                                ], function (PanelUtils, InvoicePanel) {
+                                                    var Panel = new InvoicePanel({
+                                                        invoiceId: rowData.invoice_id
+                                                    });
+
+                                                    PanelUtils.openPanelInTasks(Panel);
+                                                });
+                                            }
+                                        }
+                                    })
+                                );
+                            }
+
+                            Menu.inject(document.body);
+                            Menu.setPosition(position.x, position.y + 30);
+                            Menu.setTitle(rowData['prefixed-id']);
+                            Menu.show();
+                            Menu.focus();
+
+
                         });
+
+                        // require(['utils/Panels'], function (PanelUtils) {
+                        //     PanelUtils.openUserPanel(
+                        //         self.$Grid.getDataByRow(data.row).customer_id
+                        //     );
+                        // });
 
                         return;
                     }
+                    //
+                    // if (data.cell.get('data-index') === 'invoice_id') {
+                    //     var invoiceId = self.$Grid.getDataByRow(data.row).invoice_id;
+                    //
+                    //     if (invoiceId === '' || invoiceId === '---') {
+                    //         return;
+                    //     }
+                    //
+                    //     require([
+                    //         'package/quiqqer/invoice/bin/backend/controls/panels/Invoice',
+                    //         'utils/Panels'
+                    //     ], function (InvoicePanel, PanelUtils) {
+                    //         var Panel = new InvoicePanel({
+                    //             invoiceId: invoiceId
+                    //         });
+                    //
+                    //         PanelUtils.openPanelInTasks(Panel);
+                    //     });
+                    //
+                    //     return;
+                    // }
 
                     self.openOrder(self.$Grid.getSelectedData()[0].id);
                 }
