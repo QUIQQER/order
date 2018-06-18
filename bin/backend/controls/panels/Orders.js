@@ -495,35 +495,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                         });
 
-                        // require(['utils/Panels'], function (PanelUtils) {
-                        //     PanelUtils.openUserPanel(
-                        //         self.$Grid.getDataByRow(data.row).customer_id
-                        //     );
-                        // });
-
                         return;
                     }
-                    //
-                    // if (data.cell.get('data-index') === 'invoice_id') {
-                    //     var invoiceId = self.$Grid.getDataByRow(data.row).invoice_id;
-                    //
-                    //     if (invoiceId === '' || invoiceId === '---') {
-                    //         return;
-                    //     }
-                    //
-                    //     require([
-                    //         'package/quiqqer/invoice/bin/backend/controls/panels/Invoice',
-                    //         'utils/Panels'
-                    //     ], function (InvoicePanel, PanelUtils) {
-                    //         var Panel = new InvoicePanel({
-                    //             invoiceId: invoiceId
-                    //         });
-                    //
-                    //         PanelUtils.openPanelInTasks(Panel);
-                    //     });
-                    //
-                    //     return;
-                    // }
 
                     self.openOrder(self.$Grid.getSelectedData()[0].id);
                 }
