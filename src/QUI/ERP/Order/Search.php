@@ -451,7 +451,12 @@ class Search extends Singleton
 
                         if (!empty($address['company'])) {
                             $orderData['customer_name'] = trim($orderData['customer_name']);
-                            $orderData['customer_name'] = $address['company'].' ('.$orderData['customer_name'].')';
+
+                            if (!empty($orderData['customer_name'])) {
+                                $orderData['customer_name'] = ' ('.$orderData['customer_name'].')';
+                            }
+
+                            $orderData['customer_name'] = $address['company'].$orderData['customer_name'];
                         }
                     }
                 }
