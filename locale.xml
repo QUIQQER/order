@@ -831,6 +831,19 @@
             <en><![CDATA[Ordered by]]></en>
         </locale>
 
+        <locale name="panel.orders.contextMenu.open.order">
+            <de><![CDATA[Bestellung öffnen]]></de>
+            <en><![CDATA[Open order]]></en>
+        </locale>
+        <locale name="panel.orders.contextMenu.open.user">
+            <de><![CDATA[Benutzer öffnen]]></de>
+            <en><![CDATA[Open user]]></en>
+        </locale>
+        <locale name="panel.orders.contextMenu.open.invoice">
+            <de><![CDATA[Rechnung öffnen]]></de>
+            <en><![CDATA[Open invoice]]></en>
+        </locale>
+
         <locale name="grid.orderNo">
             <de><![CDATA[Bestell-Nr]]></de>
             <en><![CDATA[Order no]]></en>
