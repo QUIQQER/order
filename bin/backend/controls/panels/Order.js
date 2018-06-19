@@ -305,6 +305,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             });
 
             this.addCategory({
+                icon  : 'fa fa-comments-o',
+                name  : 'communication',
+                title : QUILocale.get(lg, 'panel.order.category.details'),
+                text  : QUILocale.get(lg, 'panel.order.category.details'),
+                events: {
+                    onClick: this.openCommunication
+                }
+            });
+
+            this.addCategory({
                 icon  : 'fa fa-history',
                 name  : 'history',
                 title : QUILocale.get(lg, 'panel.order.category.history'),
@@ -313,17 +323,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     onClick: this.openHistory
                 }
             });
-
-            this.addCategory({
-                icon  : 'fa fa-comments-o',
-                name  : 'communication',
-                title : QUILocale.get(lg, 'panel.order.category.communication'),
-                text  : QUILocale.get(lg, 'panel.order.category.communication'),
-                events: {
-                    onClick: this.openCommunication
-                }
-            });
-
         },
 
         /**

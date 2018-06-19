@@ -802,8 +802,8 @@
         </locale>
 
         <locale name="panel.order.category.data">
-            <de><![CDATA[Rechnungsdaten]]></de>
-            <en><![CDATA[Invoicedata]]></en>
+            <de><![CDATA[Bestelldaten]]></de>
+            <en><![CDATA[Order data]]></en>
         </locale>
         <locale name="panel.order.category.articles">
             <de><![CDATA[Artikel]]></de>
@@ -956,9 +956,9 @@
             <en><![CDATA[Payment informations]]></en>
         </locale>
 
-        <locale name="panel.order.category.communication">
-            <de><![CDATA[Kommentare]]></de>
-            <en><![CDATA[Comments]]></en>
+        <locale name="panel.order.category.details">
+            <de><![CDATA[Details]]></de>
+            <en><![CDATA[Details]]></en>
         </locale>
 
         <locale name="dialog.order.delete.title">
