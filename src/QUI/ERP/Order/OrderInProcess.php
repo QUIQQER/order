@@ -353,7 +353,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         try {
             QUI::getEvents()->fireEvent('quiqqerOrderCreated', [$Order]);
-        } catch (QUI\Exception $Exception) {
+        } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
 
