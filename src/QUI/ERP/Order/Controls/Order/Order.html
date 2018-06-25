@@ -15,12 +15,12 @@
         <span>{$Order->getId()}</span>
     </div>
 
-    {if $Order->isPosted() || $Order->isSuccessful() === false}
+    {if $Order->getAttribute('downloadLink') || $Order->isSuccessful() === false}
     <span class="quiqqer-order-control-order-header-placer">|</span>
     {/if}
 
     <div class="quiqqer-order-control-order-header-id">
-        {if $Order->isPosted()}
+        {if $Order->isPosted() && $Order->getAttribute('downloadLink')}
         <a href="{$Order->getAttribute('downloadLink')}" target="_blank">
             <span class="fa fa-file-pdf-o"></span>
             <span>{locale group="quiqqer/order" var="control.order.details.invoice"}</span>
