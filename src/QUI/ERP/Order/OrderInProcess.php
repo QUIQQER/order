@@ -498,4 +498,25 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             404
         );
     }
+
+    /**
+     * Set the successful status to the order
+     * is overwritten here, because the order in process checks if there is an order.
+     * if so, do not fire the event quiqqerOrderSuccessful twice, the order already fires this
+     *
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    public function setSuccessfulStatus()
+    {
+        if ($this->successful === 1) {
+            return;
+        }
+
+        if ($this->orderId) {
+            return;
+        }
+
+        parent::setSuccessfulStatus();
+    }
 }

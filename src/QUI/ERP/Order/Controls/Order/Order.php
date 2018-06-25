@@ -81,8 +81,16 @@ class Order extends QUI\Control
             if ($Order->hasInvoice()) {
                 $Invoice = $Order->getInvoice();
             }
+
+            if ($Invoice instanceof QUI\ERP\Accounting\Invoice\InvoiceTemporary) {
+                $View->setAttribute('downloadLink', false);
+            }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
+
+            if ($Invoice instanceof QUI\ERP\Accounting\Invoice\InvoiceTemporary) {
+                $View->setAttribute('downloadLink', false);
+            }
         }
 
         switch ($this->getAttribute('template')) {
