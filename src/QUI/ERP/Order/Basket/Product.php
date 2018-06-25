@@ -37,27 +37,11 @@ class Product extends UniqueProduct
         }
 
         foreach ($fields as $fieldId => $fieldValue) {
-            try {
-                if (is_array($fieldValue) && isset($fieldValue['value'])) {
-                    $Field = Fields::getField($fieldValue['id']);
-                    $Field->setValue($fieldValue['value']);
-                } elseif (Fields::isField($fieldValue)) {
-                    /* @var $fieldValue QUI\ERP\Products\Interfaces\FieldInterface */
-                    $Field = Fields::getField($fieldValue->getId());
-                    $Field->setValue($fieldValue->getValue());
-                } else {
-                    $Field = Fields::getField($fieldId);
-                    $Field->setValue($fieldValue);
-                }
-            } catch (QUI\Exception $Exception) {
-                continue;
-            } catch (\Exception $Exception) {
-                QUI\System\Log::writeRecursive($fieldValue);
-                QUI\System\Log::writeException($Exception);
-                continue;
-            }
+            $Field = $this->importFieldData($fieldId, $fieldValue);
 
-            $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
+            if ($Field) {
+                $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
+            }
         }
 
         if (isset($attributes['description'])) {
@@ -75,6 +59,16 @@ class Product extends UniqueProduct
             }
         }
 
+        if (isset($attributes['customFields'])) {
+            foreach ($attributes['customFields'] as $fieldId => $fieldValue) {
+                $Field = $this->importFieldData($fieldId, $fieldValue);
+
+                if ($Field) {
+                    $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
+                }
+            }
+        }
+
         // fehlende fields setzen
         $productFields = $Product->getFields();
 
@@ -89,5 +83,36 @@ class Product extends UniqueProduct
         $attributes['uid']    = QUI::getUserBySession()->getId();
 
         parent::__construct($pid, $attributes);
+    }
+
+    /**
+     * @param $fieldId
+     * @param $fieldValue
+     * @return null|QUI\ERP\Products\Field\Field
+     */
+    protected function importFieldData($fieldId, $fieldValue)
+    {
+        try {
+            if (is_array($fieldValue) && isset($fieldValue['value'])) {
+                $Field = Fields::getField($fieldValue['id']);
+                $Field->setValue($fieldValue['value']);
+            } elseif (Fields::isField($fieldValue)) {
+                /* @var $fieldValue QUI\ERP\Products\Interfaces\FieldInterface */
+                $Field = Fields::getField($fieldValue->getId());
+                $Field->setValue($fieldValue->getValue());
+            } else {
+                $Field = Fields::getField($fieldId);
+                $Field->setValue($fieldValue);
+            }
+        } catch (QUI\Exception $Exception) {
+            return null;
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeRecursive($fieldValue);
+            QUI\System\Log::writeException($Exception);
+
+            return null;
+        }
+
+        return $Field;
     }
 }
