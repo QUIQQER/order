@@ -289,6 +289,8 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     /**
+     * Set the successful status to the order
+     *
      * @throws QUI\Exception
      * @throws QUI\ExceptionStack
      */
