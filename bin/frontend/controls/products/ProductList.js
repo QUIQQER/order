@@ -57,7 +57,7 @@ define('package/quiqqer/order/bin/frontend/controls/products/ProductList', [
         $onImport: function () {
             var self = this;
 
-            this.getElm().getElements('.quiqqer-order-productList-article-addToBasket').addEvents({
+            this.getElm().getElements('.quiqqer-order-productList-product-addToBasket').addEvents({
                 click: function (event) {
                     var Target = event.target;
 
@@ -67,8 +67,8 @@ define('package/quiqqer/order/bin/frontend/controls/products/ProductList', [
 
                     Target.set('disabled', true);
 
-                    var Article   = Target.getParent('article');
-                    var productId = Article.get('data-product');
+                    var Product   = Target.getParent('article');
+                    var productId = Product.get('data-product');
 
                     require(['package/quiqqer/order/bin/frontend/Basket'], function (Basket) {
                         Basket.addProduct(productId, 1);

@@ -15,6 +15,15 @@ use QUI;
  */
 class ProductList extends QUI\Control
 {
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->setAttribute('class', 'quiqqer-order-productList');
+        $this->setAttribute('nodeName', 'section');
+        $this->addCSSFile(dirname(__FILE__).'/ProductList.css');
+    }
+
     /**
      * @return string
      *
@@ -22,15 +31,9 @@ class ProductList extends QUI\Control
      */
     public function getBody()
     {
-        $this->setAttribute('nodeName', 'section');
-        $this->setAttribute('nodeName', 'section');
-
         $Engine     = QUI::getTemplateManager()->getEngine();
         $productIds = $this->getAttribute('productsIds');
         $products   = [];
-
-        QUI\System\Log::writeRecursive('#####');
-        QUI\System\Log::writeRecursive($productIds);
 
         if (!is_array($productIds)) {
             $productIds = json_decode($productIds, true);

@@ -1,15 +1,19 @@
 {foreach $products as $Product}
-<article class="quiqqer-order-productList-article" data-product="{$Product->getId()}">
-    <header>
+<article class="quiqqer-order-productList-product" data-product="{$Product->getId()}">
+    <header class="quiqqer-order-productList-product-header">
         {$Product->getTitle()}
     </header>
 
-    <div class="article-description">
+    <div class="quiqqer-order-productList-product-image">
+        {image Image=$Product->getImage() width=500}
+    </div>
+
+    <div class="quiqqer-order-productList-product-description">
         {$Product->getDescription()}
     </div>
 
     <footer>
-        <button class="quiqqer-order-productList-article-addToBasket">
+        <button class="quiqqer-order-productList-product-addToBasket">
             <span class="fa fa-shopping-cart"></span>
             <span>
                 {locale group="quiqqer/order" var="control.productList.add"}
@@ -18,4 +22,3 @@
     </footer>
 </article>
 {/foreach}
-
