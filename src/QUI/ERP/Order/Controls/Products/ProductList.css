@@ -1,0 +1,43 @@
+.quiqqer-order-productList {
+    width: 100%;
+}
+
+.quiqqer-order-productList-product {
+    float: left;
+    padding: 10px;
+    width: 300px;
+}
+
+.quiqqer-order-productList-product-header {
+    padding: 10px 0;
+    font-size: 18px;
+}
+
+.quiqqer-order-productList-product-addToBasket {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}
+
+.quiqqer-order-productList-product-addToBasket .fa {
+    display: inline-block;
+    width: 100%;
+}
+
+.quiqqer-order-productList-product-image {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    display: inline-grid;
+    height: 100px;
+    width: 100%;
+}
+
+.quiqqer-order-productList-product-image img {
+    align-self: center;
+    justify-self: center;
+}
+
+.quiqqer-order-productList-product-description {
+    height: 140px;
+    padding: 10px 0;
+}

@@ -237,6 +237,11 @@
             <de><![CDATA[Die Bestellung besitzt keine Artikel.]]></de>
             <en><![CDATA[The order does not own any articles.]]></en>
         </locale>
+
+        <locale name="control.productList.add">
+            <de><![CDATA[Zum Warenkorb]]></de>
+            <en><![CDATA[To the Basket]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
