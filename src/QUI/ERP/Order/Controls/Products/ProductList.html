@@ -1,0 +1,21 @@
+{foreach $products as $Product}
+<article class="quiqqer-order-productList-article" data-product="{$Product->getId()}">
+    <header>
+        {$Product->getTitle()}
+    </header>
+
+    <div class="article-description">
+        {$Product->getDescription()}
+    </div>
+
+    <footer>
+        <button class="quiqqer-order-productList-article-addToBasket">
+            <span class="fa fa-shopping-cart"></span>
+            <span>
+                {locale group="quiqqer/order" var="control.productList.add"}
+            </span>
+        </button>
+    </footer>
+</article>
+{/foreach}
+
