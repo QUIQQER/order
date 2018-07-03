@@ -31,7 +31,9 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
 
         Binds: [
             '$addArticleToBasket',
-            '$onChangeState'
+            '$onChangeState',
+            '$onInject',
+            '$onImport'
         ],
 
         options: {
@@ -49,7 +51,8 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             this.Loader = new QUILoader();
 
             this.addEvents({
-                onImport: this.$onImport
+                onImport: this.$onImport,
+                onInject: this.$onInject
             });
 
             window.addEventListener('changestate', this.$onChangeState, false);
@@ -102,6 +105,35 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             if (window.location.hash !== '') {
                 this.$onChangeState();
             }
+        },
+
+        /**
+         * event: on inject
+         */
+        $onInject: function () {
+            var self = this,
+                Elm  = this.getElm();
+
+            if (Elm.get('html') !== '') {
+                return;
+            }
+
+            QUIAjax.get('package_quiqqer_order_ajax_frontend_orders_userOrders', function (result) {
+                var Ghost = new Element('div', {
+                    html: result
+                });
+
+                var Orders = Ghost.getElement('.quiqqer-order-profile-orders');
+
+                Orders.replaces(Elm);
+
+                self.$Elm = Orders;
+                self.$onImport();
+            }, {
+                'package': 'quiqqer/order',
+                page     : 1,
+                limit    : this.getAttribute('limit') || 10
+            });
         },
 
         /**
