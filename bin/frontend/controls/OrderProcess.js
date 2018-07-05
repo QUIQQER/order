@@ -832,6 +832,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Refresh the button events
          */
         $refreshButtonEvents: function () {
+            if (!this.$Buttons) {
+                return;
+            }
+
             this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
 
