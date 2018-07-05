@@ -12,6 +12,10 @@
         {$Product->getDescription()}
     </div>
 
+    <div class="quiqqer-order-productList-product-price">
+        {$Product->getPriceDisplay()->create()}
+    </div>
+
     <footer>
         <button class="quiqqer-order-productList-product-addToBasket">
             <span class="fa fa-shopping-cart"></span>

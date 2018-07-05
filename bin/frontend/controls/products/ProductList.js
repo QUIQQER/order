@@ -3,6 +3,8 @@
  * @author www.pcsg.de (Henning Leutz)
  *
  * List of Products
+ *
+ * @event onAddBasketProduct [this, productId] - fires if a Product is added to the Basket
  */
 define('package/quiqqer/order/bin/frontend/controls/products/ProductList', [
 
@@ -72,6 +74,7 @@ define('package/quiqqer/order/bin/frontend/controls/products/ProductList', [
 
                     require(['package/quiqqer/order/bin/frontend/Basket'], function (Basket) {
                         Basket.addProduct(productId, 1);
+                        self.fireEvent('addBasketProduct', [self, productId]);
 
                         Target.set('disabled', false);
                     });
