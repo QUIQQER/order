@@ -646,7 +646,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 // refresh the timeline
                 this.$TimelineContainer.set('html', TimeLine.get('html'));
             }
-
+            
             // scroll the the timeline step
             // Fx.Scroll();
             var Step = this.$TimelineContainer.getElement('.current');
@@ -731,6 +731,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $beginResultRendering: function (moveDirection) {
             this.Loader.show();
 
+            var self      = this;
             var Container = this.$StepContainer.getChildren();
             var leftPos   = 0;
 
@@ -763,6 +764,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }, {
                 duration: 500
             }).then(function () {
+                var styles = Container.getElements('style');
+
+                for (var i = 0, len = styles.length; i < len; i++) {
+                    styles[i].inject(self.$TimelineContainer);
+                }
+
                 Container.destroy();
             });
         },
@@ -787,6 +794,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Helper function for the end of the fx rendering
          */
         $endResultRendering: function () {
+            this.$TimelineContainer.getElements('style').destroy();
+
             this.$runningAnimation = false;
             this.fireEvent('stepLoaded', [this]);
         },
