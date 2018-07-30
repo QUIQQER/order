@@ -646,13 +646,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 // refresh the timeline
                 this.$TimelineContainer.set('html', TimeLine.get('html'));
             }
-            
+
             // scroll the the timeline step
             // Fx.Scroll();
             var Step = this.$TimelineContainer.getElement('.current');
 
             if (Step) {
-                new window.Fx.Scroll(this.$Timeline).toElement(Step);
+                (function () {
+                    new window.Fx.Scroll(this.$Timeline).toElement(Step);
+                }).delay(200, this);
             }
 
             // render container
