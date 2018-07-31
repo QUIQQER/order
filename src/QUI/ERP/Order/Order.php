@@ -158,6 +158,10 @@ class Order extends AbstractOrder implements OrderInterface
 
         $articles = $this->getArticles()->getArticles();
 
+        $TemporaryInvoice->getArticles()->setUser(
+            $this->getCustomer()
+        );
+
         foreach ($articles as $Article) {
             try {
                 $TemporaryInvoice->getArticles()->addArticle($Article);

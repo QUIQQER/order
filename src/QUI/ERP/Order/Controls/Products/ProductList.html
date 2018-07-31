@@ -5,7 +5,7 @@
     </header>
 
     <div class="quiqqer-order-productList-product-image">
-        {image Image=$Product->getImage() width=500}
+        {image image=$Product->getImage() width=500}
     </div>
 
     <div class="quiqqer-order-productList-product-description">
@@ -13,7 +13,7 @@
     </div>
 
     <div class="quiqqer-order-productList-product-price">
-        {$PriceDisplay->create()}
+        {$Product->getPriceDisplay()->create()}
     </div>
 
     <footer>
