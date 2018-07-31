@@ -237,6 +237,18 @@ abstract class AbstractOrder extends QUI\QDOM
                 QUI\System\Log::writeRecursive($this->customer);
                 QUI\System\Log::addWarning($Exception->getMessage());
             }
+
+            if (isset($customerData['address']['id']) && $customerData['address']['id']) {
+                $this->Customer->setAddress($this->getInvoiceAddress());
+            } elseif (isset($customerData['quiqqer.erp.address'])) {
+                try {
+                    $User    = QUI::getUsers()->get($this->Customer->getId());
+                    $Address = $User->getAddress($customerData['quiqqer.erp.address']);
+                    $this->Customer->setAddress($Address);
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::writeDebugException($Exception);
+                }
+            }
         }
 
 
@@ -247,6 +259,13 @@ abstract class AbstractOrder extends QUI\QDOM
             $articles = json_decode($data['articles'], true);
 
             if ($articles) {
+                // clear vat for recalculation
+                if (isset($articles['articles'])) {
+                    foreach ($articles['articles'] as $key => $article) {
+                        unset($articles['articles'][$key]['vat']);
+                    }
+                }
+
                 try {
                     $this->Articles = new ArticleList($articles);
                 } catch (QUI\ERP\Exception $Exception) {
@@ -254,6 +273,9 @@ abstract class AbstractOrder extends QUI\QDOM
                 }
             }
         }
+
+        $this->Articles->setUser($this->getCustomer());
+        $this->Articles->calc();
 
         // comments
         $this->Comments = new QUI\ERP\Comments();
