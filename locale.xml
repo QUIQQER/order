@@ -1108,6 +1108,15 @@
             <en><![CDATA[Order details of order no. [orderId]]]></en>
         </locale>
 
+        <locale name="window.unlock.order.title">
+            <de><![CDATA[Bestellung gesperrt]]></de>
+            <en><![CDATA[Order is locked]]></en>
+        </locale>
+        <locale name="window.unlock.order.text">
+            <de><![CDATA[Wird gerade bearbeitet]]></de>
+            <en><![CDATA[Currently being processed]]></en>
+        </locale>
+
         <locale name="control.orders.backButton">
             <de><![CDATA[Zurück zu den Bestellungen]]></de>
             <en><![CDATA[Back to the orders]]></en>

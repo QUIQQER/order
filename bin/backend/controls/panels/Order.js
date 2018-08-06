@@ -49,7 +49,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             '$onCreate',
             '$onDestroy',
             '$onInject',
-            '$onOrderDelete'
+            '$onOrderDelete',
+            '$showLockMessage'
         ],
 
         options: {
@@ -270,6 +271,22 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.addButton(this.$ArticleSort);
 
 
+            this.addButton({
+                name  : 'lock',
+                icon  : 'fa fa-warning',
+                styles: {
+                    background: '#fcf3cf',
+                    color     : '#7d6608',
+                    'float'   : 'right'
+                },
+                events: {
+                    onClick: this.$showLockMessage
+                }
+            });
+
+            this.getButtons('lock').hide();
+
+
             var Actions = new QUIButton({
                 name      : 'actions',
                 text      : QUILocale.get(lg, 'panel.btn.actions'),
@@ -405,6 +422,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         lockPanel: function () {
             this.getButtons('save').disable();
             this.getButtons('actions').disable();
+            this.getButtons('lock').show();
 
             var categories = this.getCategoryBar().getChildren();
 
@@ -444,6 +462,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                 self.getButtons('save').enable();
                 self.getButtons('actions').enable();
+                self.getButtons('lock').hide();
+
+                self.getButtons('lock').setAttribute(
+                    'title',
+                    QUILocale.get(lg, 'message.invoice.is.locked', isLocked)
+                );
 
                 var categories = self.getCategoryBar().getChildren();
 
@@ -455,6 +479,47 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }).then(function () {
                 return self.openInfo();
             });
+        },
+
+        /**
+         * show the lock message window
+         */
+        $showLockMessage: function () {
+            var self    = this,
+                btnText = QUILocale.get('quiqqer/quiqqer', 'submit');
+
+            if (window.USER.isSU) {
+                btnText = QUILocale.get(lg, 'button.unlock.order.is.locked');
+            }
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'window.unlock.order.title'),
+                icon       : 'fa fa-warning',
+                texticon   : 'fa fa-warning',
+                text       : QUILocale.get(lg, 'window.unlock.order.text', this.$locked),
+                information: QUILocale.get(lg, 'message.order.is.locked', this.$locked),
+                autoclose  : false,
+                maxHeight  : 400,
+                maxWidth   : 600,
+                ok_button  : {
+                    text: btnText
+                },
+
+                events: {
+                    onSubmit: function (Win) {
+                        if (!window.USER.isSU) {
+                            Win.close();
+                            return;
+                        }
+
+                        Win.Loader.show();
+
+                        self.unlockPanel().then(function () {
+                            Win.close();
+                        });
+                    }
+                }
+            }).open();
         },
 
         //region categories
@@ -491,32 +556,32 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     })
                 });
 
-                if (self.$locked) {
-                    var Locked = new Element('div', {
-                        'class': 'messages-message message-attention',
-                        html   : '<div class="messages-message-text">' + QUILocale.get(lg, 'message.order.is.locked', self.$locked) + '</div>',
-                        styles : {
-                            marginBottom: 20,
-                            opacity     : 1
-                        }
-                    }).inject(Container, 'top');
-
-                    if (window.USER.isSU) {
-                        new QUIButton({
-                            text  : QUILocale.get(lg, 'button.unlock.order.is.locked'),
-                            styles: {
-                                display: 'block',
-                                'float': 'none',
-                                margin : '10px auto 0'
-                            },
-                            events: {
-                                onClick: function () {
-                                    self.unlockPanel();
-                                }
-                            }
-                        }).inject(Locked);
-                    }
-                }
+                // if (self.$locked) {
+                //     var Locked = new Element('div', {
+                //         'class': 'messages-message message-attention',
+                //         html   : '<div class="messages-message-text">' + QUILocale.get(lg, 'message.order.is.locked', self.$locked) + '</div>',
+                //         styles : {
+                //             marginBottom: 20,
+                //             opacity     : 1
+                //         }
+                //     }).inject(Container, 'top');
+                //
+                //     if (window.USER.isSU) {
+                //         new QUIButton({
+                //             text  : QUILocale.get(lg, 'button.unlock.order.is.locked'),
+                //             styles: {
+                //                 display: 'block',
+                //                 'float': 'none',
+                //                 margin : '10px auto 0'
+                //             },
+                //             events: {
+                //                 onClick: function () {
+                //                     self.unlockPanel();
+                //                 }
+                //             }
+                //         }).inject(Locked);
+                //     }
+                // }
 
                 return QUI.parse(Container);
             }).then(function () {
