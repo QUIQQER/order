@@ -359,6 +359,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             Orders.removeEvents({
                 onOrderDelete: this.$onOrderDelete
             });
+
+            Locker.unlock(
+                this.$getLockKey(),
+                this.$getLockGroups()
+            );
         },
 
         /**
