@@ -14,6 +14,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'package/quiqqer/payments/bin/backend/Payments',
     'package/quiqqer/erp/bin/backend/controls/Comments',
     'package/quiqqer/invoice/bin/backend/controls/articles/Text',
+    'utils/Lock',
+    'Ajax',
     'Locale',
     'Mustache',
     'Users',
@@ -21,7 +23,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
-             Orders, Payments, Comments, TextArticle, QUILocale, Mustache, Users, templateData) {
+             Orders, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
+             templateData) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -75,6 +78,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 })
             });
 
+            this.$locked = false;
+
             this.$Customer        = null;
             this.$AddressInvoice  = null;
             this.$AddressDelivery = null;
@@ -99,6 +104,23 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             Orders.addEvents({
                 onOrderDelete: this.$onOrderDelete
             });
+        },
+
+        /**
+         * Return the lock key
+         *
+         * @return {string}
+         */
+        $getLockKey: function () {
+            return 'order-edit-' + this.getAttribute('orderId');
+        },
+
+        /**
+         * Return the lock group
+         * @return {string}
+         */
+        $getLockGroups: function () {
+            return 'quiqqer/order';
         },
 
         /**
@@ -139,6 +161,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @return {Promise}
          */
         update: function () {
+            if (this.$locked) {
+                return Promise.reject('Order is locked');
+            }
+
             var self    = this,
                 orderId = this.getAttribute('orderId');
 
@@ -230,6 +256,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             // insert buttons
             this.addButton({
+                name     : 'save',
                 textimage: 'fa fa-save',
                 text     : QUILocale.get('quiqqer/quiqqer', 'save'),
                 events   : {
@@ -338,7 +365,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * event: on inject
          */
         $onInject: function () {
-            this.refresh().then(this.openInfo).catch(function (Err) {
+            var self = this;
+
+            Locker.isLocked(
+                this.$getLockKey(),
+                this.$getLockGroups()
+            ).then(function (isLocked) {
+                if (isLocked) {
+                    self.$locked = isLocked;
+                    self.lockPanel();
+                    return;
+                }
+
+                return Locker.lock(
+                    self.$getLockKey(),
+                    self.$getLockGroups()
+                );
+            }).then(function () {
+                return self.refresh();
+            }).then(this.openInfo).catch(function (Err) {
                 QUI.getMessageHandler().then(function (MH) {
                     if ("getMessage" in Err) {
                         MH.addError(Err.getMessage());
@@ -346,7 +391,65 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         console.error(Err);
                     }
                 });
-            }.bind(this));
+            });
+        },
+
+        /**
+         * lock the complete panel
+         */
+        lockPanel: function () {
+            this.getButtons('save').disable();
+            this.getButtons('actions').disable();
+
+            var categories = this.getCategoryBar().getChildren();
+
+            for (var i = 0, len = categories.length; i < len; i++) {
+                if (categories[i].getAttribute('name') === 'info') {
+                    continue;
+                }
+
+                categories[i].disable();
+            }
+        },
+
+        /**
+         * Unlock the locked order and refresh the panel
+         *
+         * @return {*|Promise|void}
+         */
+        unlockPanel: function () {
+            var self = this;
+
+            this.Loader.show();
+
+            return Locker.unlock(
+                this.$getLockKey(),
+                this.$getLockGroups()
+            ).then(function () {
+                return Locker.isLocked(
+                    self.$getLockKey(),
+                    self.$getLockGroups()
+                );
+            }).then(function (isLocked) {
+                if (isLocked) {
+                    return;
+                }
+
+                self.$locked = isLocked;
+
+                self.getButtons('save').enable();
+                self.getButtons('actions').enable();
+
+                var categories = self.getCategoryBar().getChildren();
+
+                for (var i = 0, len = categories.length; i < len; i++) {
+                    categories[i].enable();
+                }
+
+                return self.refresh();
+            }).then(function () {
+                return self.openInfo();
+            });
         },
 
         //region categories
@@ -382,6 +485,33 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textPayment             : QUILocale.get(lg, 'order.payment.panel.payment')
                     })
                 });
+
+                if (self.$locked) {
+                    var Locked = new Element('div', {
+                        'class': 'messages-message message-attention',
+                        html   : '<div class="messages-message-text">' + QUILocale.get(lg, 'message.order.is.locked', self.$locked) + '</div>',
+                        styles : {
+                            marginBottom: 20,
+                            opacity     : 1
+                        }
+                    }).inject(Container, 'top');
+
+                    if (window.USER.isSU) {
+                        new QUIButton({
+                            text  : QUILocale.get(lg, 'button.unlock.order.is.locked'),
+                            styles: {
+                                display: 'block',
+                                'float': 'none',
+                                margin : '10px auto 0'
+                            },
+                            events: {
+                                onClick: function () {
+                                    self.unlockPanel();
+                                }
+                            }
+                        }).inject(Locked);
+                    }
+                }
 
                 return QUI.parse(Container);
             }).then(function () {

@@ -1112,6 +1112,24 @@
             <de><![CDATA[Zurück zu den Bestellungen]]></de>
             <en><![CDATA[Back to the orders]]></en>
         </locale>
+
+        <locale name="message.order.is.locked" html="true">
+            <de><![CDATA[
+            Die Bestellung wird gerade von [username] ([id]) bearbeitet. Die Bestellung kann daher leider nicht verändert werden.
+            ]]></de>
+            <en><![CDATA[
+            The order is currently being processed by [username] ([id]). The order can therefore unfortunately not be changed.
+            ]]></en>
+        </locale>
+
+        <locale name="button.unlock.order.is.locked">
+            <de><![CDATA[
+            Bestellung freischalten und trotzdem bearbeiten.
+            ]]></de>
+            <en><![CDATA[
+            Unlock the order and still edit it.
+            ]]></en>
+        </locale>
     </groups>
 
 </locales>
