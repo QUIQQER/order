@@ -556,33 +556,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     })
                 });
 
-                // if (self.$locked) {
-                //     var Locked = new Element('div', {
-                //         'class': 'messages-message message-attention',
-                //         html   : '<div class="messages-message-text">' + QUILocale.get(lg, 'message.order.is.locked', self.$locked) + '</div>',
-                //         styles : {
-                //             marginBottom: 20,
-                //             opacity     : 1
-                //         }
-                //     }).inject(Container, 'top');
-                //
-                //     if (window.USER.isSU) {
-                //         new QUIButton({
-                //             text  : QUILocale.get(lg, 'button.unlock.order.is.locked'),
-                //             styles: {
-                //                 display: 'block',
-                //                 'float': 'none',
-                //                 margin : '10px auto 0'
-                //             },
-                //             events: {
-                //                 onClick: function () {
-                //                     self.unlockPanel();
-                //                 }
-                //             }
-                //         }).inject(Locked);
-                //     }
-                // }
-
                 return QUI.parse(Container);
             }).then(function () {
                 var Content        = self.getContent(),
