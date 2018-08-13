@@ -291,6 +291,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 toggleiconTitle      : '',
                 accordionLiveRenderer: this.$onClickOrderDetails,
                 pagination           : true,
+                exportData           : true,
+                exportTypes          : {
+                    csv : 'CSV',
+                    json: 'JSON'
+                },
                 buttons              : [Actions, {
                     name     : 'create',
                     text     : QUILocale.get(lg, 'panel.btn.createOrder'),
@@ -308,10 +313,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     }
                 }],
                 columnModel          : [{
-                    header   : '&nbsp;',
-                    dataIndex: 'opener',
-                    dataType : 'int',
-                    width    : 30
+                    header         : '&nbsp;',
+                    dataIndex      : 'opener',
+                    dataType       : 'int',
+                    width          : 30,
+                    showNotInExport: true
                 }, {
                     header   : QUILocale.get(lg, 'grid.orderNo'),
                     dataIndex: 'prefixed-id',
