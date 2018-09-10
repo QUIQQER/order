@@ -1,6 +1,8 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
  * @author www.pcsg.de (Henning Leutz)
+ *
+ * @event QUI Event: onQuiqqerOrderProcessOpenStep  [this, step]
  */
 require.config({
     paths: {
@@ -625,6 +627,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.setAttribute('current', result.step);
 
+            QUI.fireEvent('quiqqerOrderProcessOpenStep', [this, result.step]);
 
             // content
             var Error       = Ghost.getElement('.quiqqer-order-ordering-error');
