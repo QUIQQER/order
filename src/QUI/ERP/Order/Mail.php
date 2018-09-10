@@ -56,6 +56,13 @@ class Mail
         $Mailer = QUI::getMailManager()->getMailer();
         $Mailer->addRecipient($email);
 
+        if (Settings::getInstance()->get('order', 'sendOrderConfirmationToAdmin')
+            && QUI::conf('mail', 'admin_mail')) {
+            $Mailer->addBCC(
+                QUI::conf('mail', 'admin_mail')
+            );
+        }
+
         $Mailer->setSubject(
             QUI::getLocale()->get('quiqqer/order', 'order.confirmation.subject', [
                 'orderId' => $Order->getPrefixedId()
