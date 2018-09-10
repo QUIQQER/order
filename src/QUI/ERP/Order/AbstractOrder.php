@@ -481,6 +481,17 @@ abstract class AbstractOrder extends QUI\QDOM
     }
 
     /**
+     * Return the order id
+     * -> alias for getId(), this method is used in the calc classes
+     *
+     * @return integer
+     */
+    public function getCleanId()
+    {
+        return $this->getId();
+    }
+
+    /**
      * @return QUI\ERP\Accounting\Calculations
      *
      * @throws QUI\ERP\Exception
@@ -781,6 +792,10 @@ abstract class AbstractOrder extends QUI\QDOM
                 try {
                     $Customer = QUI::getUsers()->get($User['id']);
 
+                    if (isset($User['address'])) {
+                        $address = $User['address'];
+                    }
+
                     foreach ($missing as $missingAttribute) {
                         if ($missingAttribute === 'username') {
                             $User[$missingAttribute] = $Customer->getUsername();
@@ -792,10 +807,47 @@ abstract class AbstractOrder extends QUI\QDOM
                             continue;
                         }
 
+                        if (!empty($address[$missingAttribute])) {
+                            $User[$missingAttribute] = $address[$missingAttribute];
+                            continue;
+                        }
+
                         $User[$missingAttribute] = $Customer->getAttribute($missingAttribute);
                     }
                 } catch (QUI\Exception $Exception) {
                     // we have a problem, we cant set the user
+                    // we need to fill the user data with empty values
+                    $address = [];
+
+                    if (isset($User['address'])) {
+                        $address = $User['address'];
+                    }
+
+                    foreach ($missing as $missingAttribute) {
+                        if ($missingAttribute === 'isCompany') {
+                            if (!empty($address['company'])) {
+                                $User[$missingAttribute] = 1;
+                                continue;
+                            }
+
+                            $User[$missingAttribute] = 0;
+                            continue;
+                        }
+
+                        if ($missingAttribute === 'country' ||
+                            $missingAttribute === 'lastname' ||
+                            $missingAttribute === 'firstname') {
+                            if (!empty($address[$missingAttribute])) {
+                                $User[$missingAttribute] = $address[$missingAttribute];
+                                continue;
+                            }
+
+                            $User[$missingAttribute] = '';
+                            continue;
+                        }
+
+                        $User[$missingAttribute] = '';
+                    }
                 }
             }
 
