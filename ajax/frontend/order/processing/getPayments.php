@@ -25,7 +25,11 @@ QUI::$Ajax->registerFunction(
 
         $Processing->setAttribute('Order', $Order);
 
-        return $Processing->getProcessingPayments();
+        if ($Processing instanceof QUI\ERP\Order\Controls\OrderProcess\Processing) {
+            return $Processing->getProcessingPayments();
+        }
+
+        return '';
     },
     ['orderHash']
 );
