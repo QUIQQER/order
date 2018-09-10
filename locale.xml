@@ -558,6 +558,14 @@
             <de><![CDATA[Bestellbestätigung automatisch versenden]]></de>
             <en><![CDATA[Send order confirmation automatically]]></en>
         </locale>
+        <locale name="order.settings.order.sendOrderConfirmationToAdmin">
+            <de><![CDATA[Bestellbestätigung (Administrator)]]></de>
+            <en><![CDATA[Confirmation of order (Administrator)]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmationToAdmin.description">
+            <de><![CDATA[Kopie der Bestellbestätigung an den Administrator senden.]]></de>
+            <en><![CDATA[Send order confirmation copy to the admin.]]></en>
+        </locale>
 
         <locale name="order.settings.autoInvoicePost">
             <de><![CDATA[Rechnung automatisch buchen]]></de>

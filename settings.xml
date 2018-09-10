@@ -24,6 +24,10 @@
                     <type><![CDATA[bool]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
                 </conf>
+                <conf name="sendOrderConfirmationToAdmin">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -96,6 +100,16 @@
                             <description>
                                 <locale group="quiqqer/order"
                                         var="order.settings.order.sendOrderConfirmation.description"/>
+                            </description>
+                        </input>
+
+                        <input type="checkbox" conf="order.sendOrderConfirmationToAdmin">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.sendOrderConfirmationToAdmin"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.sendOrderConfirmationToAdmin.description"/>
                             </description>
                         </input>
 
