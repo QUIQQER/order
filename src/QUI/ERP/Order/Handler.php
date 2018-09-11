@@ -155,6 +155,39 @@ class Handler extends Singleton
     }
 
     /**
+     * Return the specific order via its global process id
+     * If a order exists with the id, this will be returned
+     * An order has higher priority as an order in process
+     *
+     * @param string $id - Global process id
+     * @return Order|OrderInProcess|Order|Order
+     *
+     * @throws QUI\Exception
+     * @throws Exception
+     */
+    public function getOrderByGlobalProcessId($id)
+    {
+        $result = QUI::getDataBase()->fetch([
+            'select'   => 'id',
+            'from'     => $this->table(),
+            'where_or' => [
+                'hash'              => $id,
+                'global_process_id' => $id
+            ],
+            'limit'    => 1
+        ]);
+
+        if (!isset($result[0])) {
+            throw new Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                self::ERROR_ORDER_NOT_FOUND
+            );
+        }
+
+        return $this->get($result[0]['id']);
+    }
+
+    /**
      * Return the specific order via its id
      * If a order exists with the hash, this will be returned
      * An order has higher priority as an order in process
