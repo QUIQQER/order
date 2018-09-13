@@ -133,10 +133,8 @@ class EventHandling
      */
     public static function onTransactionCreate(Transaction $Transaction)
     {
-        $hash = $Transaction->getHash();
-
         try {
-            $Order = Handler::getInstance()->getOrderByHash($hash);
+            $Order = Handler::getInstance()->getOrderByGlobalProcessId($Transaction->getGlobalProcessId());
             $Order->addTransaction($Transaction);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
