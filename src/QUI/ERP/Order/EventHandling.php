@@ -133,10 +133,37 @@ class EventHandling
      */
     public static function onTransactionCreate(Transaction $Transaction)
     {
-        $hash = $Transaction->getHash();
+        $Order = null;
 
         try {
-            $Order = Handler::getInstance()->getOrderByHash($hash);
+            $Order = Handler::getInstance()->getOrderByGlobalProcessId(
+                $Transaction->getGlobalProcessId()
+            );
+        } catch (QUI\Exception $Exception) {
+        }
+
+        if ($Order === null) {
+            try {
+                $Order = Handler::getInstance()->getOrderByHash(
+                    $Transaction->getHash()
+                );
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if ($Order === null) {
+            if (isset($Exception)) {
+                QUI\System\Log::writeException($Exception);
+            } else {
+                QUI\System\Log::writeRecursive(
+                    'Order could not be found. Hash:: '.$Transaction->getHash()
+                );
+            }
+
+            return;
+        }
+
+        try {
             $Order->addTransaction($Transaction);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);

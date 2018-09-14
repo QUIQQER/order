@@ -890,6 +890,7 @@ abstract class AbstractOrder extends QUI\QDOM
         try {
             return $Payments->getPayment($this->paymentId);
         } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         return null;
