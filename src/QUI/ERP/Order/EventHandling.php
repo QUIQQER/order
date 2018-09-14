@@ -142,7 +142,7 @@ class EventHandling
         } catch (QUI\Exception $Exception) {
         }
 
-        if ($Order === null) {
+        if ($Order === null && $Transaction->getHash() === '') {
             try {
                 $Order = Handler::getInstance()->getOrderByHash(
                     $Transaction->getHash()
@@ -152,14 +152,6 @@ class EventHandling
         }
 
         if ($Order === null) {
-            if (isset($Exception)) {
-                QUI\System\Log::writeException($Exception);
-            } else {
-                QUI\System\Log::writeRecursive(
-                    'Order could not be found. Hash:: '.$Transaction->getHash()
-                );
-            }
-
             return;
         }
 
