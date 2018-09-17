@@ -217,18 +217,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
         /**
          * Return the basket calculations (sum, subSum, prices)
-         *
-         * @return {
-         * currencyData: {},
-         * isEuVat: number,
-         * isNetto: boolean,
-         * nettoSubSum: number,
-         * nettoSum: number,
-         * subSum: number,
-         * sum: number,
-         * vatArray: {},
-         * vatText: {}
-         * }
+         * @return {{currencyData: {}, isEuVat: number, isNetto: number, nettoSubSum: number, nettoSum: number, subSum: number, sum: number, vatArray: {}, vatText: {}}}
          */
         getCalculations: function () {
             if ("calculations" in this.$calculations) {

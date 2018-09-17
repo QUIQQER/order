@@ -412,8 +412,12 @@ class Basket
             }
         }
 
+        $PriceFactors = $Products->getPriceFactors();
+
+        QUI::getEvents()->fireEvent('quiqqerOrderBasketToOrder', [$this, $Order, $PriceFactors]);
+
         $Order->getArticles()->importPriceFactors(
-            $Products->getPriceFactors()->toErpPriceFactorList()
+            $PriceFactors->toErpPriceFactorList()
         );
 
         $Order->getArticles()->calc();
