@@ -59,7 +59,11 @@ class Handler extends Singleton
                 }
             }
 
-            QUI\Cache\Manager::set($cacheProvider, $providers);
+            try {
+                QUI\Cache\Manager::set($cacheProvider, $providers);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
         }
 
         // filter provider
@@ -81,7 +85,6 @@ class Handler extends Singleton
 
         return $result;
     }
-
 
     //region Order
 
@@ -155,9 +158,11 @@ class Handler extends Singleton
     }
 
     /**
-     * Return the specific order via its global process id
+     * Return an order via its global process id
      * If a order exists with the id, this will be returned
      * An order has higher priority as an order in process
+     *
+     * If you want to get all orders, use getOrdersByGlobalProcessId()
      *
      * @param string $id - Global process id
      * @return Order|OrderInProcess|Order|Order
@@ -185,6 +190,40 @@ class Handler extends Singleton
         }
 
         return $this->get($result[0]['id']);
+    }
+
+    /**
+     * Return all orders via its global process id
+     *
+     * @param string $id - Global process id
+     * @return Order[]|OrderInProcess|Order|Order[]
+     */
+    public function getOrdersByGlobalProcessId($id)
+    {
+        $dbData = QUI::getDataBase()->fetch([
+            'select'   => 'id',
+            'from'     => $this->table(),
+            'where_or' => [
+                'hash'              => $id,
+                'global_process_id' => $id
+            ]
+        ]);
+
+        $result = [];
+
+        if (!isset($result[0])) {
+            return $result;
+        }
+
+        foreach ($dbData as $entry) {
+            try {
+                $result[] = $this->get($entry['id']);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+        return $result;
     }
 
     /**
