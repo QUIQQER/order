@@ -497,14 +497,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                             Menu.setTitle(rowData['prefixed-id']);
                             Menu.show();
                             Menu.focus();
-
-
                         });
 
                         return;
                     }
 
-                    self.openOrder(self.$Grid.getSelectedData()[0].id);
+                    var selected = self.$Grid.getSelectedData();
+
+                    if (selected.length) {
+                        self.openOrder(selected[0].id);
+                    }
                 }
             });
 
