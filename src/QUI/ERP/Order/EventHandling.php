@@ -142,12 +142,21 @@ class EventHandling
         } catch (QUI\Exception $Exception) {
         }
 
-        if ($Order === null && $Transaction->getHash() === '') {
+        if ($Order === null && $Transaction->getHash() !== '') {
             try {
                 $Order = Handler::getInstance()->getOrderByHash(
                     $Transaction->getHash()
                 );
             } catch (QUI\Exception $Exception) {
+            }
+
+            if ($Order === null) {
+                try {
+                    $Order = Handler::getInstance()->getOrderInProcessByHash(
+                        $Transaction->getHash()
+                    );
+                } catch (QUI\Exception $Exception) {
+                }
             }
         }
 
