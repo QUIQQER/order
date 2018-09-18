@@ -367,6 +367,11 @@ abstract class AbstractOrder extends QUI\QDOM
             }
         }
 
+        // recalculate price factors
+        $ArticleList->importPriceFactors(
+            $Products->getPriceFactors()->toErpPriceFactorList()
+        );
+
         $ArticleList->calc();
 
         $this->Articles = $ArticleList;
