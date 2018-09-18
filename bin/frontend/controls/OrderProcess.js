@@ -205,6 +205,23 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         // region API
 
         /**
+         * Return the order hash of the order process
+         *
+         * @return {Promise}
+         */
+        getOrder: function () {
+            var oderHash = this.getAttribute('orderHash');
+
+            if (oderHash) {
+                return Promise.resolve(oderHash);
+            }
+
+            return Orders.getLastOrder().then(function (order) {
+                return order.hash;
+            });
+        },
+
+        /**
          * Resize the order process
          */
         resize: function () {

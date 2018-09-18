@@ -10,7 +10,6 @@ use QUI;
 use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Money\Price;
-use QUI\ERP\Products\Handler\Products;
 
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
@@ -367,6 +366,11 @@ abstract class AbstractOrder extends QUI\QDOM
                 // @todo hinweis an benutzer, das artikel nicht mit aufgenommen werden konnte
             }
         }
+
+        // recalculate price factors
+        $ArticleList->importPriceFactors(
+            $Products->getPriceFactors()->toErpPriceFactorList()
+        );
 
         $ArticleList->calc();
 
@@ -1185,7 +1189,7 @@ abstract class AbstractOrder extends QUI\QDOM
     //region articles
 
     /**
-     * Add an Product to the order
+     * Add an article to the order
      *
      * @param QUI\ERP\Accounting\Article $Article
      */

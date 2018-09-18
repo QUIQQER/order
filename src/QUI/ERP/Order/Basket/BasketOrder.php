@@ -74,6 +74,15 @@ class BasketOrder
         $articles = $data['articles'];
 
         $this->import($articles);
+
+        // PriceFactors
+        $factors = $this->Order->getArticles()->getPriceFactors()->toArray();
+
+        foreach ($factors as $factor) {
+            $this->List->getPriceFactors()->add(
+                new QUI\ERP\Products\Utils\PriceFactor($factor)
+            );
+        }
     }
 
     /**
@@ -221,8 +230,9 @@ class BasketOrder
         }
 
         return [
-            'id'       => $this->getId(),
-            'products' => $result
+            'id'           => $this->getId(),
+            'products'     => $result,
+            'priceFactors' => $Products->getPriceFactors()->toArray()
         ];
     }
 
