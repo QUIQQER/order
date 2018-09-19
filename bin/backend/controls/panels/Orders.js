@@ -16,12 +16,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'Mustache',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Total.html',
-    'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Details.html',
     'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUISelect, QUIConfirm,
              Grid, Orders, TimeFilter, QUILocale,
-             Mustache, templateTotal, templateOrderDetails) {
+             Mustache, templateTotal) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -217,7 +216,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             this.$Search = new Element('input', {
-                placeholder: 'Search...',
+                placeholder: 'Search...', // #locale
                 styles     : {
                     'float': 'right',
                     margin : '10px 0 0 0',
@@ -252,7 +251,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             Actions.appendChild({
                 name  : 'cancel',
                 text  : QUILocale.get(lg, 'panel.btn.deleteOrder'),
-                icon  : 'fa fa-times-circle-o',
+                icon  : 'fa fa-trash',
                 events: {
                     onClick: this.$clickDeleteOrder
                 }
@@ -586,42 +585,36 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
         /**
          * event: create click
-         *
-         * @return {Promise}
          */
         $clickCreateOrder: function () {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
-                new QUIConfirm({
-                    title      : QUILocale.get(lg, 'dialog.order.create.title'),
-                    text       : QUILocale.get(lg, 'dialog.order.create.text'),
-                    information: QUILocale.get(lg, 'dialog.order.create.information'),
-                    icon       : 'fa fa-plus',
-                    texticon   : 'fa fa-plus',
-                    maxHeight  : 400,
-                    maxWidth   : 600,
-                    autoclose  : false,
-                    ok_button  : {
-                        text     : QUILocale.get(lg, 'dialog.order.create.button'),
-                        textimage: 'fa fa-plus'
-                    },
-                    events     : {
-                        onSubmit: function (Win) {
-                            Win.Loader.show();
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.create.title'),
+                text       : QUILocale.get(lg, 'dialog.order.create.text'),
+                information: QUILocale.get(lg, 'dialog.order.create.information'),
+                icon       : 'fa fa-plus',
+                texticon   : 'fa fa-plus',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get(lg, 'dialog.order.create.button'),
+                    textimage: 'fa fa-plus'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
 
-                            Orders.createOrder().then(function (orderId) {
-                                self.openOrder(orderId).then(resolve);
-                                Win.close();
-                            }).catch(function () {
-                                Win.Loader.hide();
-                            });
-                        },
-
-                        onCancel: reject
+                        Orders.createOrder().then(function (orderId) {
+                            self.openOrder(orderId);
+                            Win.close();
+                        }).catch(function () {
+                            Win.Loader.hide();
+                        });
                     }
-                }).open();
-            });
+                }
+            }).open();
         },
 
         /**
@@ -636,51 +629,44 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             var orderId = selected[0].id;
 
-            return new Promise(function (resolve, reject) {
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.copy.title'),
+                text       : QUILocale.get(lg, 'dialog.order.copy.text'),
+                information: QUILocale.get(lg, 'dialog.order.copy.information', {
+                    id: orderId
+                }),
+                icon       : 'fa fa-copy',
+                texticon   : 'fa fa-copy',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get('quiqqer/system', 'copy'),
+                    textimage: 'fa fa-copy'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
 
-                new QUIConfirm({
-                    title      : QUILocale.get(lg, 'dialog.order.copy.title'),
-                    text       : QUILocale.get(lg, 'dialog.order.copy.text'),
-                    information: QUILocale.get(lg, 'dialog.order.copy.information', {
-                        id: orderId
-                    }),
-                    icon       : 'fa fa-copy',
-                    texticon   : 'fa fa-copy',
-                    maxHeight  : 400,
-                    maxWidth   : 600,
-                    autoclose  : false,
-                    ok_button  : {
-                        text     : QUILocale.get('quiqqer/system', 'copy'),
-                        textimage: 'fa fa-copy'
-                    },
-                    events     : {
-                        onSubmit: function (Win) {
-                            Win.Loader.show();
-
-                            Orders.copyOrder(orderId).then(function (newOrderId) {
-                                require([
-                                    'package/quiqqer/order/bin/backend/controls/panels/Order',
-                                    'utils/Panels'
-                                ], function (Order, PanelUtils) {
-                                    var Panel = new Order({
-                                        orderId: newOrderId,
-                                        '#id'  : newOrderId
-                                    });
-
-                                    PanelUtils.openPanelInTasks(Panel);
-                                    Win.close();
-                                    resolve();
+                        Orders.copyOrder(orderId).then(function (newOrderId) {
+                            require([
+                                'package/quiqqer/order/bin/backend/controls/panels/Order',
+                                'utils/Panels'
+                            ], function (Order, PanelUtils) {
+                                var Panel = new Order({
+                                    orderId: newOrderId,
+                                    '#id'  : newOrderId
                                 });
-                            }).then(function () {
-                                Win.Loader.hide();
+
+                                PanelUtils.openPanelInTasks(Panel);
+                                Win.close();
                             });
-                        },
-
-                        onClose: reject
+                        }).then(function () {
+                            Win.Loader.hide();
+                        });
                     }
-                }).open();
-
-            });
+                }
+            }).open();
         },
 
         /**
@@ -693,47 +679,49 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            var orderId = selected[0].id;
+            var self    = this,
+                orderId = selected[0].id;
 
-            return new Promise(function (resolve, reject) {
-                new QUIConfirm({
-                    title      : QUILocale.get(lg, 'dialog.order.delete.title'),
-                    text       : QUILocale.get(lg, 'dialog.order.delete.text'),
-                    information: QUILocale.get(lg, 'dialog.order.delete.information', {
-                        id: orderId
-                    }),
-                    icon       : 'fa fa-trash',
-                    texticon   : 'fa fa-trash',
-                    maxHeight  : 400,
-                    maxWidth   : 600,
-                    autoclose  : false,
-                    ok_button  : {
-                        text     : QUILocale.get('quiqqer/system', 'delete'),
-                        textimage: 'fa fa-trash'
-                    },
-                    events     : {
-                        onSubmit: function (Win) {
-                            Win.Loader.show();
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.delete.title'),
+                text       : QUILocale.get(lg, 'dialog.order.delete.text'),
+                information: QUILocale.get(lg, 'dialog.order.delete.information', {
+                    id: selected[0]['prefixed-id']
+                }),
+                icon       : 'fa fa-trash',
+                texticon   : 'fa fa-trash',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get('quiqqer/system', 'delete'),
+                    textimage: 'fa fa-trash'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
 
-                            Orders.deleteOrder(orderId).then(function () {
-                                Win.close();
-                                resolve();
-                            }).catch(function (err) {
-                                Win.Loader.hide();
+                        Orders.deleteOrder(orderId).then(function () {
+                            self.refresh();
+                            Win.close();
+                        }).catch(function (err) {
+                            Win.Loader.hide();
 
-                                if (typeof err === 'undefined') {
-                                    return;
-                                }
+                            if (typeof err === 'undefined') {
+                                return;
+                            }
 
+                            if (typeof err.getMessage === 'function') {
                                 QUI.getMessageHandler().then(function (MH) {
                                     MH.addError(err.getMessage());
                                 });
-                            });
-                        },
-                        onClose : reject
+                            } else {
+                                console.error(err);
+                            }
+                        });
                     }
-                }).open();
-            });
+                }
+            }).open();
         },
 
         /**
