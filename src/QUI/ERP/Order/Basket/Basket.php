@@ -94,8 +94,6 @@ class Basket
         try {
             $Order = $this->getOrder();
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
             try {
                 $Order = $this->createNewOrder();
             } catch (QUi\Exception $Exception) {

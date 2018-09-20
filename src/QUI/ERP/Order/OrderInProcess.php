@@ -161,6 +161,60 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Add price factors to the order
+     *
+     * @param array $priceFactors
+     * @throws QUI\Exception
+     */
+    public function addPriceFactors($priceFactors = [])
+    {
+        $Basket = new QUI\ERP\Order\Basket\BasketOrder(
+            $this->getHash(),
+            $this->getCustomer()
+        );
+
+        $Products = $Basket->getProducts();
+
+        $ArticleList = new QUI\ERP\Accounting\ArticleList();
+        $ArticleList->setUser($this->getCustomer());
+
+        $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
+        $ProductCalc->setUser($this->getCustomer());
+        $Products->calc($ProductCalc);
+
+        $products = $Products->getProducts();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $ArticleList->addArticle($Product->toArticle(null, false));
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+        foreach ($priceFactors as $PriceFactor) {
+            if (!($PriceFactor instanceof QUI\ERP\Products\Interfaces\PriceFactorInterface)) {
+                continue;
+            }
+
+            $Products->getPriceFactors()->addToEnd($PriceFactor);
+        }
+
+        $Products->recalculation();
+
+        // recalculate price factors
+        $ArticleList->importPriceFactors(
+            $Products->getPriceFactors()->toErpPriceFactorList()
+        );
+
+        $ArticleList->calc();
+
+        $this->Articles = $ArticleList;
+        $this->update();
+    }
+
+    /**
      * Calculates the payment for the order
      *
      * @throws Exception

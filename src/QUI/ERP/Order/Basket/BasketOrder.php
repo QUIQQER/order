@@ -284,7 +284,8 @@ class BasketOrder
      */
     public function updateOrder()
     {
-        $this->Order->save();
+        $Order = $this->Order;
+        $Order->save();
     }
 
     //endregion
