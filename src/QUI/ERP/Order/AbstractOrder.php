@@ -336,24 +336,28 @@ abstract class AbstractOrder extends QUI\QDOM
      */
 
     /**
+     * @param $Basket - optional
+     *
      * @throws Basket\Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\Exception
      */
-    public function recalculate()
+    public function recalculate($Basket = null)
     {
-        $Basket = new QUI\ERP\Order\Basket\BasketOrder(
-            $this->getHash(),
-            $this->getCustomer()
-        );
-
-        $Products = $Basket->getProducts();
+        if ($Basket === null) {
+            $Basket = new QUI\ERP\Order\Basket\BasketOrder(
+                $this->getHash(),
+                $this->getCustomer()
+            );
+        }
 
         $ArticleList = new ArticleList();
         $ArticleList->setUser($this->getCustomer());
 
         $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
         $ProductCalc->setUser($this->getCustomer());
+
+        $Products = $Basket->getProducts();
         $Products->calc($ProductCalc);
 
         $products = $Products->getProducts();
@@ -367,7 +371,13 @@ abstract class AbstractOrder extends QUI\QDOM
             }
         }
 
-        // recalculate price factors
+        $Products->getPriceFactors()->clear();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrder',
+            [$Basket, $this, $Products]
+        );
+
         $ArticleList->importPriceFactors(
             $Products->getPriceFactors()->toErpPriceFactorList()
         );

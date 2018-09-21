@@ -84,6 +84,9 @@ class BasketOrder
                 new QUI\ERP\Products\Utils\PriceFactor($factor)
             );
         }
+
+        $this->List->recalculate();
+        $this->Order->recalculate($this);
     }
 
     /**
