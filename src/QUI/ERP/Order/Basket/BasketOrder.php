@@ -62,16 +62,17 @@ class BasketOrder
             ], 404);
         }
 
-        $this->List            = new ProductList();
-        $this->List->duplicate = true;
-
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
-
-        $this->User = $User;
-        $this->hash = $orderHash;
 
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
+
+
+        $this->List            = new ProductList($data);
+        $this->List->duplicate = true;
+
+        $this->User = $User;
+        $this->hash = $orderHash;
 
         $this->import($articles);
 
