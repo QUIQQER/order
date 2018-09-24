@@ -632,7 +632,7 @@ class Handler extends Singleton
      * @throws Basket\ExceptionBasketNotFound
      * @throws QUI\Users\Exception
      */
-    public function getBasketByHash($hash, $User)
+    public function getBasketByHash($hash, $User = null)
     {
         $data = QUI::getDataBase()->fetch([
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
