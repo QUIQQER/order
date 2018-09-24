@@ -127,6 +127,7 @@ class Factory extends QUI\Utils\Singleton
      * @return QUI\ERP\Order\Basket\Basket
      *
      * @throws QUI\ERP\Order\Basket\Exception
+     * @throws QUI\ERP\Order\Basket\ExceptionBasketNotFound
      */
     public function createBasket($User = null)
     {

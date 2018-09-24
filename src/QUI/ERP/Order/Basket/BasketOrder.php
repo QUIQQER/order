@@ -41,6 +41,11 @@ class BasketOrder
     protected $hash = null;
 
     /**
+     * @var null
+     */
+    protected $id = null;
+
+    /**
      * Basket constructor.
      *
      * @param integer|bool $orderHash - ID of the order
@@ -67,7 +72,6 @@ class BasketOrder
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
 
-
         $this->List            = new ProductList($data);
         $this->List->duplicate = true;
 
@@ -87,6 +91,19 @@ class BasketOrder
 
         $this->List->recalculate();
         $this->Order->recalculate($this);
+
+
+        // get basket id
+        try {
+            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketByHash(
+                $this->Order->getHash(),
+                $this->User
+            );
+
+            $this->id = $Basket->getId();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 
     /**
@@ -96,7 +113,7 @@ class BasketOrder
      */
     public function getId()
     {
-        return $this->Order->getId();
+        return $this->id;
     }
 
     /**
