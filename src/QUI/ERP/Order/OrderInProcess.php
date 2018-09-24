@@ -273,8 +273,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         $Order = $this;
 
         // create order, if the payment status is paid and no order exists
-        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID
-            && !$this->orderId) {
+        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID && !$this->orderId) {
             $Order = $this->createOrder();
         }
 
@@ -391,7 +390,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order calculatePayments');
 
         try {
+            // reset & recalculation
+            $Order->setAttribute('paid_status', QUI\ERP\Accounting\Invoice\Invoice::PAYMENT_STATUS_OPEN);
             $Order->calculatePayments();
+
+            if ($data['paid_status'] !== $Order->getAttribute('paid_status')) {
+                $Order->save();
+            }
         } catch (QUI\Exception $Exception) {
             if (defined('QUIQQER_DEBUG')) {
                 QUI\System\Log::writeException($Exception);

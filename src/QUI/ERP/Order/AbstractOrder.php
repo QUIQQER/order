@@ -1032,6 +1032,7 @@ abstract class AbstractOrder extends QUI\QDOM
         if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
             $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
         ) {
+            $this->getAttribute('paid_status', self::PAYMENT_STATUS_OPEN);
             $this->calculatePayments();
 
             return;
@@ -1149,7 +1150,7 @@ abstract class AbstractOrder extends QUI\QDOM
     /**
      * Return all transactions related to the order
      *
-     * @return array
+     * @return Transaction[]
      */
     public function getTransactions()
     {

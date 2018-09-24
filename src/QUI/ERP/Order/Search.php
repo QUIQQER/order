@@ -525,6 +525,10 @@ class Search extends Singleton
 
             $paid = array_map(function ($Transaction) {
                 /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
+                if ($Transaction->isPending()) {
+                    return 0;
+                }
+
                 return $Transaction->getAmount();
             }, $transactions);
 
