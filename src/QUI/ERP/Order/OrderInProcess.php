@@ -472,6 +472,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * Return the order data for saving
      *
      * @return array
+     * @throws QUI\Exception
      */
     protected function getDataForSaving()
     {

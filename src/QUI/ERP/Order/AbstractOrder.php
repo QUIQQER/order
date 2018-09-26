@@ -321,8 +321,6 @@ abstract class AbstractOrder extends QUI\QDOM
             return;
         }
 
-        // @todo create invoice
-
         QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
 
         $this->successful = 1;
@@ -1032,7 +1030,7 @@ abstract class AbstractOrder extends QUI\QDOM
         if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
             $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
         ) {
-            $this->getAttribute('paid_status', self::PAYMENT_STATUS_OPEN);
+            $this->setAttribute('paid_status', self::PAYMENT_STATUS_OPEN);
             $this->calculatePayments();
 
             return;
