@@ -13,8 +13,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_small',
     function ($basketId) {
-        $User   = QUI::getUserBySession();
-        $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
+        $Basket = QUI\ERP\Order\Handler::getInstance()->getBasket($basketId);
 
         $Control = new QUI\ERP\Order\Controls\Basket\Small();
         $Control->setBasket($Basket);

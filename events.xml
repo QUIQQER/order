@@ -24,4 +24,7 @@
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerInvoiceTemporaryInvoicePostEnd"
     />
 
+    <event on="onTransactionStatusChange"
+           fire="\QUI\ERP\Order\EventHandling::onTransactionStatusChange"
+    />
 </events>

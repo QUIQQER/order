@@ -34,6 +34,8 @@ QUI::$Ajax->registerFunction(
                     $Basket->setHash('');
                     $Basket->save();
                 }
+
+                $Basket = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
             } catch (QUI\Exception $Exception) {
             }
         }

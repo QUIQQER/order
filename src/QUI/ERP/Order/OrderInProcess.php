@@ -161,6 +161,60 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Add price factors to the order
+     *
+     * @param array $priceFactors
+     * @throws QUI\Exception
+     */
+    public function addPriceFactors($priceFactors = [])
+    {
+        $Basket = new QUI\ERP\Order\Basket\BasketOrder(
+            $this->getHash(),
+            $this->getCustomer()
+        );
+
+        $Products = $Basket->getProducts();
+
+        $ArticleList = new QUI\ERP\Accounting\ArticleList();
+        $ArticleList->setUser($this->getCustomer());
+
+        $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
+        $ProductCalc->setUser($this->getCustomer());
+        $Products->calc($ProductCalc);
+
+        $products = $Products->getProducts();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $ArticleList->addArticle($Product->toArticle(null, false));
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+        foreach ($priceFactors as $PriceFactor) {
+            if (!($PriceFactor instanceof QUI\ERP\Products\Interfaces\PriceFactorInterface)) {
+                continue;
+            }
+
+            $Products->getPriceFactors()->addToEnd($PriceFactor);
+        }
+
+        $Products->recalculation();
+
+        // recalculate price factors
+        $ArticleList->importPriceFactors(
+            $Products->getPriceFactors()->toErpPriceFactorList()
+        );
+
+        $ArticleList->calc();
+
+        $this->Articles = $ArticleList;
+        $this->update();
+    }
+
+    /**
      * Calculates the payment for the order
      *
      * @throws Exception
@@ -219,8 +273,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         $Order = $this;
 
         // create order, if the payment status is paid and no order exists
-        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID
-            && !$this->orderId) {
+        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID && !$this->orderId) {
             $Order = $this->createOrder();
         }
 
@@ -313,6 +366,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         // copy the data to the order
         $data                     = $this->getDataForSaving();
+        $data['id_prefix']        = $Order->getIdPrefix();
+        $data['id_str']           = $Order->getPrefixedId();
         $data['order_process_id'] = $this->getId();
         $data['c_user']           = $this->cUser;
         $data['paid_status']      = $this->getAttribute('paid_status');
@@ -337,7 +392,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order calculatePayments');
 
         try {
+            // reset & recalculation
+            $Order->setAttribute('paid_status', QUI\ERP\Accounting\Invoice\Invoice::PAYMENT_STATUS_OPEN);
             $Order->calculatePayments();
+
+            if ($data['paid_status'] !== $Order->getAttribute('paid_status')) {
+                $Order->save();
+            }
         } catch (QUI\Exception $Exception) {
             if (defined('QUIQQER_DEBUG')) {
                 QUI\System\Log::writeException($Exception);
@@ -413,6 +474,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * Return the order data for saving
      *
      * @return array
+     * @throws QUI\Exception
      */
     protected function getDataForSaving()
     {

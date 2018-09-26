@@ -1,14 +1,14 @@
 <?php
 
 try {
-    $OrderProcess = new QUI\ERP\Order\OrderProcess(array(
+    $OrderProcess = new QUI\ERP\Order\OrderProcess([
         'step'      => $Site->getAttribute('order::step'),
         'orderHash' => $Site->getAttribute('order::hash')
-    ));
+    ]);
 
-    $Engine->assign(array(
+    $Engine->assign([
         'OrderProcess' => $OrderProcess
-    ));
+    ]);
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);
 

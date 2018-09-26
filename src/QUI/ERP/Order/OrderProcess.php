@@ -661,7 +661,17 @@ class OrderProcess extends QUI\Control
 
         // show processing step if order is not paid
         if ($Order instanceof Order && !$Order->isPaid()) {
-            return $render();
+            // if a payment transaction exists, maybe the transaction is in pending
+            // as long as, the order is "successful"
+            $transactions = $Order->getTransactions();
+            $isInPending  = array_filter($transactions, function ($Transaction) {
+                /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
+                return $Transaction->isPending();
+            });
+
+            if (!$isInPending) {
+                return $render();
+            }
         }
 
         if ($Finish->getName() === $Current->getName()

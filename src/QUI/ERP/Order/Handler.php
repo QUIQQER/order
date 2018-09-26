@@ -562,13 +562,38 @@ class Handler extends Singleton
     }
 
     /**
+     * Return a basket by its string
+     * Can be a basket id or a basket hash
+     *
+     * @param string|integer $str - hash or basket id
+     * @param $User - optional, user of the basket
+     *
+     * @return QUI\ERP\Order\Basket\Basket
+     *
+     * @throws Basket\Exception
+     * @throws Basket\ExceptionBasketNotFound
+     * @throws QUI\Users\Exception
+     */
+    public function getBasket($str, $User = null)
+    {
+        if (is_numeric($str)) {
+            return self::getBasketById($str, $User);
+        }
+
+        return self::getBasketByHash($str, $User);
+    }
+
+    /**
      * @param int $basketId
+     * @param $User - optional, user of the basket
+     *
      * @return Basket\Basket
      *
      * @throws Basket\Exception
+     * @throws Basket\ExceptionBasketNotFound
      * @throws QUI\Users\Exception
      */
-    public function getBasketById($basketId)
+    public function getBasketById($basketId, $User = null)
     {
         $data = QUI::getDataBase()->fetch([
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
@@ -579,14 +604,18 @@ class Handler extends Singleton
         ]);
 
         if (!isset($data[0])) {
-            throw new Basket\Exception([
+            throw new Basket\ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
         }
 
-        $basketData = $data[0];
-        $User       = QUI::getUsers()->get($basketData['uid']);
+        if ($User === null) {
+            $User = QUI::getUserBySession();
+        } else {
+            $basketData = $data[0];
+            $User       = QUI::getUsers()->get($basketData['uid']);
+        }
 
         $this->checkBasketPermissions($User);
 
@@ -595,12 +624,15 @@ class Handler extends Singleton
 
     /**
      * @param string $hash
+     * @param $User - optional, user of the basket
+     *
      * @return Basket\Basket
      *
      * @throws Basket\Exception
+     * @throws Basket\ExceptionBasketNotFound
      * @throws QUI\Users\Exception
      */
-    public function getBasketByHash($hash)
+    public function getBasketByHash($hash, $User = null)
     {
         $data = QUI::getDataBase()->fetch([
             'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
@@ -611,14 +643,19 @@ class Handler extends Singleton
         ]);
 
         if (!isset($data[0])) {
-            throw new Basket\Exception([
+            throw new Basket\ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
         }
 
-        $basketData = $data[0];
-        $User       = QUI::getUsers()->get($basketData['uid']);
+
+        if ($User === null) {
+            $User = QUI::getUserBySession();
+        } else {
+            $basketData = $data[0];
+            $User       = QUI::getUsers()->get($basketData['uid']);
+        }
 
         $this->checkBasketPermissions($User);
 
@@ -630,6 +667,7 @@ class Handler extends Singleton
      * @return QUI\ERP\Order\Basket\Basket
      *
      * @throws Basket\Exception
+     * @throws Basket\ExceptionBasketNotFound
      */
     public function getBasketFromUser(QUI\Interfaces\Users\User $User)
     {
@@ -646,7 +684,7 @@ class Handler extends Singleton
 
 
         if (!isset($data[0])) {
-            throw new Basket\Exception([
+            throw new Basket\ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
@@ -663,6 +701,7 @@ class Handler extends Singleton
      * @return array
      *
      * @throws Basket\Exception
+     * @throws Basket\ExceptionBasketNotFound
      */
     public function getBasketData($basketId, $User = null)
     {
@@ -682,7 +721,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($data[0])) {
-            throw new Basket\Exception([
+            throw new Basket\ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);

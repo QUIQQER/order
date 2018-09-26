@@ -8,6 +8,8 @@ namespace QUI\ERP\Order\Basket;
 
 use QUI;
 use QUI\ERP\Products\Product\ProductList;
+use QUI\ERP\Order\Factory;
+use QUI\ERP\Order\Handler;
 
 /**
  * Class Basket
@@ -65,7 +67,25 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
-        $data       = QUI\ERP\Order\Handler::getInstance()->getBasketData($basketId, $User);
+        try {
+            $data = Handler::getInstance()->getBasketData($basketId, $User);
+        } catch (QUI\Exception $Exception) {
+        }
+
+        if (isset($Exception)) {
+            try {
+                if ($Exception instanceof ExceptionBasketNotFound) {
+                    $Basket = Factory::getInstance()->createBasket($User);
+                    $data   = Handler::getInstance()->getBasketData($Basket->getId(), $User);
+                }
+            } catch (QUI\Exception $Exception) {
+                throw new Exception(
+                    $Exception->getMessage(),
+                    $Exception->getCode()
+                );
+            }
+        }
+
         $this->id   = $basketId;
         $this->User = $User;
         $this->hash = $data['hash'];
@@ -94,8 +114,6 @@ class Basket
         try {
             $Order = $this->getOrder();
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
             try {
                 $Order = $this->createNewOrder();
             } catch (QUi\Exception $Exception) {

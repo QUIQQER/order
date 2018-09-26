@@ -282,7 +282,7 @@ class Order extends AbstractOrder implements OrderInterface
      * Return the order data for saving
      *
      * @return array
-     * @throws
+     * @throws QUI\Exception
      */
     protected function getDataForSaving()
     {
@@ -321,7 +321,7 @@ class Order extends AbstractOrder implements OrderInterface
             $idPrefix = $this->idPrefix;
         }
 
-        if (!$this->successful) {
+        if (!$this->successful && $this->idPrefix === null) {
             $idPrefix = QUI\ERP\Order\Utils\Utils::getOrderPrefix();
         }
 
@@ -334,6 +334,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         return [
             'id_prefix'    => $idPrefix,
+            'id_str'       => $idPrefix.$this->getId(),
             'parent_order' => null,
             'invoice_id'   => $invoiceId,
             'status'       => $this->status,

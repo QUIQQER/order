@@ -172,6 +172,50 @@ class EventHandling
     }
 
     /**
+     * @param Transaction $Transaction
+     */
+    public static function onTransactionStatusChange(Transaction $Transaction)
+    {
+        $Order = null;
+
+        try {
+            $Order = Handler::getInstance()->getOrderByGlobalProcessId(
+                $Transaction->getGlobalProcessId()
+            );
+        } catch (QUI\Exception $Exception) {
+        }
+
+        if ($Order === null && $Transaction->getHash() !== '') {
+            try {
+                $Order = Handler::getInstance()->getOrderByHash(
+                    $Transaction->getHash()
+                );
+            } catch (QUI\Exception $Exception) {
+            }
+
+            if ($Order === null) {
+                try {
+                    $Order = Handler::getInstance()->getOrderInProcessByHash(
+                        $Transaction->getHash()
+                    );
+                } catch (QUI\Exception $Exception) {
+                }
+            }
+        }
+
+        if ($Order === null) {
+            return;
+        }
+
+        try {
+            $Order->setAttribute('paid_status', Order::PAYMENT_STATUS_OPEN);
+            $Order->calculatePayments();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+    }
+
+    /**
      * @param QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary
      * @param QUI\ERP\Accounting\Invoice\Invoice $Invoice
      */

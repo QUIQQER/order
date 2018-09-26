@@ -41,6 +41,11 @@ class BasketOrder
     protected $hash = null;
 
     /**
+     * @var null
+     */
+    protected $id = null;
+
+    /**
      * Basket constructor.
      *
      * @param integer|bool $orderHash - ID of the order
@@ -62,16 +67,16 @@ class BasketOrder
             ], 404);
         }
 
-        $this->List            = new ProductList();
-        $this->List->duplicate = true;
-
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
-
-        $this->User = $User;
-        $this->hash = $orderHash;
 
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
+
+        $this->List            = new ProductList($data);
+        $this->List->duplicate = true;
+
+        $this->User = $User;
+        $this->hash = $orderHash;
 
         $this->import($articles);
 
@@ -83,6 +88,22 @@ class BasketOrder
                 new QUI\ERP\Products\Utils\PriceFactor($factor)
             );
         }
+
+        $this->List->recalculate();
+        $this->Order->recalculate($this);
+
+
+        // get basket id
+        try {
+            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketByHash(
+                $this->Order->getHash(),
+                $this->User
+            );
+
+            $this->id = $Basket->getId();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**
@@ -92,7 +113,7 @@ class BasketOrder
      */
     public function getId()
     {
-        return $this->Order->getId();
+        return $this->id;
     }
 
     /**
@@ -284,7 +305,8 @@ class BasketOrder
      */
     public function updateOrder()
     {
-        $this->Order->save();
+        $Order = $this->Order;
+        $Order->save();
     }
 
     //endregion
