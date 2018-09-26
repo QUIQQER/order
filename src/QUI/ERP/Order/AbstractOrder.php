@@ -210,6 +210,7 @@ abstract class AbstractOrder extends QUI\QDOM
     {
         $this->invoiceId = $data['invoice_id'];
 
+        $this->idPrefix        = $data['id_prefix'];
         $this->addressDelivery = json_decode($data['addressDelivery'], true);
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);
         $this->data            = json_decode($data['data'], true);

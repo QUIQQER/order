@@ -366,6 +366,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         // copy the data to the order
         $data                     = $this->getDataForSaving();
+        $data['id_prefix']        = $Order->getIdPrefix();
+        $data['id_str']           = $Order->getPrefixedId();
         $data['order_process_id'] = $this->getId();
         $data['c_user']           = $this->cUser;
         $data['paid_status']      = $this->getAttribute('paid_status');

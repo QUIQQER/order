@@ -321,7 +321,7 @@ class Order extends AbstractOrder implements OrderInterface
             $idPrefix = $this->idPrefix;
         }
 
-        if (!$this->successful) {
+        if (!$this->successful && $this->idPrefix === null) {
             $idPrefix = QUI\ERP\Order\Utils\Utils::getOrderPrefix();
         }
 
