@@ -9,8 +9,6 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\Utils\Singleton;
 
-use QUI\ERP\Accounting\Payments\Payments as Payments;
-
 /**
  * Class Search
  * @package QUI\ERP\Order
@@ -264,6 +262,8 @@ class Search extends Singleton
         if (!empty($this->search)) {
             $where[] = '(
                 id LIKE :search OR
+                id_prefix LIKE :search OR
+                id_str LIKE :search OR
                 order_process_id LIKE :search OR
                 parent_order LIKE :search OR
                 invoice_id LIKE :search OR
