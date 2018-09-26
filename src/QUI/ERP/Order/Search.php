@@ -446,7 +446,7 @@ class Search extends Singleton
 
                     $Address = $Order->getInvoiceAddress();
 
-                    if (empty($orderData['customer_name'])) {
+                    if (empty(trim($orderData['customer_name']))) {
                         $orderData['customer_name'] = $Address->getAttribute('firstname');
                         $orderData['customer_name'] .= ' ';
                         $orderData['customer_name'] .= $Address->getAttribute('lastname');
