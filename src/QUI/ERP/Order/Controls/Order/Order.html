@@ -168,7 +168,9 @@
             </div>
 
             <div class="quiqqer-order-profile-orders-order-articles-article-price">
+                {if $Article->displayPrice()}
                 {$Article->getPrice()->getDisplayPrice()}
+                {/if}
             </div>
         </div>
     </article>
