@@ -12,7 +12,7 @@
  * @return array
  */
 QUI::$Ajax->registerFunction(
-    'package_quiqqer_order_ajax_frontend_order_getStep',
+    'package_quiqqer_order_ajax_frontend_order_reload',
     function ($orderId, $step, $orderHash) {
         $_REQUEST['current'] = $step;
 
@@ -21,6 +21,7 @@ QUI::$Ajax->registerFunction(
             'orderHash' => $orderHash
         ]);
 
+        $Order   = $OrderProcess->getOrder();
         $Current = $OrderProcess->getCurrentStep();
 
         if (!$Current) {
@@ -28,6 +29,7 @@ QUI::$Ajax->registerFunction(
         }
 
         $OrderProcess->setAttribute('step', $Current->getName());
+        $OrderProcess->setAttribute('orderHash', $Order->getHash());
 
         $html    = $OrderProcess->create();
         $current = $OrderProcess->getCurrentStep()->getName();
@@ -36,7 +38,7 @@ QUI::$Ajax->registerFunction(
             'html' => $html,
             'step' => $current,
             'url'  => $OrderProcess->getStepUrl($Current->getName()),
-            'hash' => $OrderProcess->getStepHash()
+            'hash' => $Order->getHash()
         ];
     },
     ['orderId', 'step', 'orderHash']

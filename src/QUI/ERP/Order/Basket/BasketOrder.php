@@ -179,32 +179,10 @@ class BasketOrder
             $products = [];
         }
 
-        foreach ($products as $productData) {
-            if (!isset($productData['id'])) {
-                continue;
-            }
-
-            try {
-                $Product = new Product($productData['id'], $productData);
-
-                // check if active
-                $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
-
-                if (!$Real->isActive()) {
-                    continue;
-                }
-
-                if (isset($productData['quantity'])) {
-                    $Product->setQuantity($productData['quantity']);
-                }
-
-                $this->List->addProduct($Product);
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-
-                // @todo message an benutzer - Product konnte nicht aufgenommen werden
-            }
-        }
+        $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(
+            $this->List,
+            $products
+        );
     }
 
     /**

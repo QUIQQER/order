@@ -216,4 +216,81 @@ class Utils
 
         return (bool)$Settings->get('paymentChangeable', $Payment->getId());
     }
+
+    /**
+     * @param QUI\ERP\Products\Product\ProductList $List
+     * @param array $products
+     *
+     * @return QUI\ERP\Products\Product\ProductList
+     */
+    public static function importProductsToBasketList(
+        QUI\ERP\Products\Product\ProductList $List,
+        $products = []
+    ) {
+        if (!is_array($products)) {
+            $products = [];
+        }
+
+        foreach ($products as $productData) {
+            if (!isset($productData['id'])) {
+                continue;
+            }
+
+            $productId    = $productData['id'];
+            $productClass = null;
+
+            if (isset($productData['class'])) {
+                $productClass = $productData['class'];
+            }
+
+
+            // bridge for text articles
+            if ($productClass === QUI\ERP\Accounting\Invoice\Articles\Text::class
+                || empty($productId)
+                || $productId === '-') {
+                $Product = new QUI\ERP\Products\Product\TextProduct($productData);
+
+                try {
+                    $List->addProduct($Product);
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::write($Exception->getMessage());
+                }
+
+                continue;
+            }
+
+
+            if ($productClass !== QUI\ERP\Accounting\Article::class &&
+                $productClass !== null) {
+                QUI\System\Log::writeRecursive('######### Basket product import');
+                QUI\System\Log::writeRecursive('######### unknown article class for product');
+                QUI\System\Log::writeRecursive($productData);
+                continue;
+            }
+
+
+            try {
+                $Product = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
+
+                // check if active
+                $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
+
+                if (!$Real->isActive()) {
+                    continue;
+                }
+
+                if (isset($productData['quantity'])) {
+                    $Product->setQuantity($productData['quantity']);
+                }
+
+                $List->addProduct($Product);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+
+                // @todo message an benutzer - Product konnte nicht aufgenommen werden
+            }
+        }
+
+        return $List;
+    }
 }

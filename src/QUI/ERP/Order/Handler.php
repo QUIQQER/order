@@ -31,6 +31,11 @@ class Handler extends Singleton
     protected $cache = [];
 
     /**
+     * @var array
+     */
+    protected $orders = [];
+
+    /**
      * Return all order process Provider
      *
      * @return array
@@ -109,7 +114,11 @@ class Handler extends Singleton
      */
     public function get($orderId)
     {
-        return new Order($orderId);
+        if (!isset($this->orders[$orderId])) {
+            $this->orders[$orderId] = new Order($orderId);
+        }
+
+        return $this->orders[$orderId];
     }
 
     /**
