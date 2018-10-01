@@ -210,13 +210,16 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         getOrder: function () {
-            var oderHash = this.getAttribute('orderHash');
+            var self     = this,
+                oderHash = this.getAttribute('orderHash');
 
             if (oderHash) {
                 return Promise.resolve(oderHash);
             }
 
             return Orders.getLastOrder().then(function (order) {
+                self.setAttribute('orderHash', order.hash);
+
                 return order.hash;
             });
         },
@@ -488,6 +491,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
         /**
          * Refresh the current step
+         * Saves the current data and reload it
          *
          * @return {Promise}
          */
@@ -495,6 +499,36 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             return this.openStep(
                 this.getCurrentStepData().step
             );
+        },
+
+        /**
+         * Reload the basket
+         *
+         * @return {Promise}
+         */
+        reload: function () {
+            var self = this;
+
+            this.$beginResultRendering(0);
+
+            return new Promise(function (resolve) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_reload', function (result) {
+                    self.setAttribute('orderHash', result.hash);
+
+                    self.$renderResult(result, 0).then(function () {
+                        self.$endResultRendering();
+                        resolve();
+                    });
+
+                    if (Router) {
+                        Router.navigate(result.url);
+                    }
+                }, {
+                    'package': 'quiqqer/order',
+                    orderHash: self.getAttribute('orderHash'),
+                    step     : self.getCurrentStepData().step
+                });
+            });
         },
 
         /**
