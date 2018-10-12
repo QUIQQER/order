@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crons>
+    <cron exec="QUI\ERP\Order\Cron\CleanupOrderInProcess::run">
+        <title>
+            <locale group="quiqqer/order" var="cron.cleanup.orderInProcess"/>
+        </title>
+        <description>
+            <locale group="quiqqer/order" var="cron.cleanup.orderInProcess.description"/>
+        </description>
+
+        <params>
+            <param name="days" type="integer"/>
+        </params>
+    </cron>
+</crons>

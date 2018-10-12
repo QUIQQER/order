@@ -751,6 +751,23 @@
             [order]
             ]]></en>
         </locale>
+
+        <locale name="cron.cleanup.orderInProcess">
+            <de><![CDATA[Bestellungen in Bearbeitung säubern]]></de>
+            <en><![CDATA[Cleanup orders in process]]></en>
+        </locale>
+        <locale name="cron.cleanup.orderInProcess.description">
+            <de><![CDATA[
+            Dieser Cron säubert alte Bestellungen die nicht ausgeführt wurden und nicht mehr benötigt werden.
+            Dieser Cron beeinflust keine Bestellungen sondern nur Bestellungen in Bearbeitung.
+            Bestellungen in Bearbeitung sind sozusagen abgebrochene Bestellungen.
+            ]]></de>
+            <en><![CDATA[
+            This cron cleans old orders that have not been executed and are no longer needed.
+            This cron does not influence any orders but only orders in process.
+            Orders in process are canceled orders.
+            ]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
