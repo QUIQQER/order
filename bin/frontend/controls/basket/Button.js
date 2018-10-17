@@ -3,7 +3,7 @@
  * @author www.pcsg.de (Henning Leutz)
  *
  * @event onCreate [self]
- * @event onShowBasketBegin [self, pos]
+ * @event onShowBasketBegin [self, pos, height]
  * @event onShowBasketEnd [self]
  *
  * CSS classes which can be used as placeholder
@@ -185,7 +185,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 }).inject(document.body);
             }
 
-            this.fireEvent('showBasketBegin', [this, pos]);
+            this.fireEvent('showBasketBegin', [this, pos, height]);
 
             this.$BasketContainer.setStyles({
                 display: null,
