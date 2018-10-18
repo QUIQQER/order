@@ -67,7 +67,7 @@ class ProductToBasket extends QUI\Control
             $html .= '<input type="number" value="1" title="Anzahl" min="1"/>';
         }
 
-        $html .= '<span class="text">'.
+        $html .= '<span class="text btn btn-primary">'.
                  QUI::getLocale()->get('quiqqer/order', 'control.basket.buttonAdd.text').
                  '</span>';
 
