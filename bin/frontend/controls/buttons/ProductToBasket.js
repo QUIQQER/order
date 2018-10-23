@@ -53,6 +53,16 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             this.$Input = Elm.getElement('input');
             this.$Text  = Elm.getElement('.text');
+            this.changeButtons = Elm.getElements(
+                '.quiqqer-order-button-add-quantity-decrease, .quiqqer-order-button-add-quantity-increase'
+            );
+
+            this.changeButtons.addEvent('click', function (event) {
+                event.stop();
+                var Target = event.target;
+
+                this.changeValue(Target);
+            }.bind(this));
 
             this.$Input.setStyles({
                 zIndex: 10
@@ -62,7 +72,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 event.stop();
             });
 
-            Elm.addEvent('click', this.$addProductToBasket);
+            this.$Text.addEvent('click', this.$addProductToBasket);
             Elm.removeClass('disabled');
         },
 
@@ -163,6 +173,31 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
                 }).delay(1000);
             }.bind(this));
+        },
+
+        /**
+         * Change value of input
+         *
+         * @param Button | DOM Object
+         */
+        changeValue: function(Button) {
+            var type = Button.getProperty('data-button-type'),
+                value = parseInt(this.$Input.value);
+
+            if (!value) {
+                value = 0;
+            }
+
+            if (type === 'decrease') {
+                if (value < 2) {
+                    return;
+                }
+
+                this.$Input.value = --value;
+                return;
+            }
+
+            this.$Input.value = ++value;
         }
     });
 });

@@ -7,15 +7,23 @@
     white-space: nowrap;
 }
 
-.quiqqer-order-button-add-quantity {
-    margin-right: 10px;
-    display: flex;
+.quiqqer-order-button-add-quantity-wrapper {
+    float: left;
+    margin-right: 20px;
 }
 
-.quiqqer-order-button-add input {
+.quiqqer-order-button-add-quantity {
+    float: left;
+}
+
+.quiqqer-order-button-add-quantity-label {
+    float: left;
+}
+
+.quiqqer-order-button-add-quantity-input {
     line-height: 26px;
     text-align: center;
-    width: 60px;
+    width: 40px;
     -webkit-appearance: textfield;
     -moz-appearance: textfield;
     appearance: textfield;
@@ -32,6 +40,6 @@
 .quiqqer-order-button-add input::-webkit-outer-spin-button,
 .quiqqer-order-button-add input::-webkit-inner-spin-button {
     display: none;
-    -webkit-appearance: none;
     margin: 0;
+    -webkit-appearance: none;
 }

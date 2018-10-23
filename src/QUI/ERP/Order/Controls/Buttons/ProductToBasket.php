@@ -66,7 +66,7 @@ class ProductToBasket extends QUI\Control
         $Engine->assign([
             'this' => $this
         ]);
-        
+
         return $Engine->fetch(dirname(__FILE__) . '/ProductToBasket.html');
     }
 }

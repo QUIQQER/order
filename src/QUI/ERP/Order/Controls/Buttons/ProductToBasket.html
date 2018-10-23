@@ -1,9 +1,12 @@
 {if $this->getAttribute('input')}
-<div class="quiqqer-order-button-add-quantity">
-    <span class="quiqqer-order-button-add-quantity-decrease btn">-</span>
-    <input type="number" value="1" min="1" class="quiqqer-order-button-add-quantity-input"
-           title="{locale group='quiqqer/order' var='control.basket.quantity.text'}"/>
-    <span class="quiqqer-order-button-add-quantity-increase btn">+</span>
+<div class="quiqqer-order-button-add-quantity-wrapper">
+    <label class="quiqqer-order-button-add-quantity-label">Anzahl</label>
+    <div class="quiqqer-order-button-add-quantity">
+        <span class="quiqqer-order-button-add-quantity-decrease btn" data-button-type="decrease">-</span>
+        <input type="number" value="1" min="1" class="quiqqer-order-button-add-quantity-input"
+               title="{locale group='quiqqer/order' var='control.basket.quantity.text'}"/>
+        <span class="quiqqer-order-button-add-quantity-increase btn" data-button-type="increase">+</span>
+    </div>
 </div>
 {/if}
 
