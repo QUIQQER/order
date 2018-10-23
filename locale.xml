@@ -162,6 +162,10 @@
             <de><![CDATA[Zum Warenkorb]]></de>
             <en><![CDATA[To the Basket]]></en>
         </locale>
+        <locale name="control.basket.quantity.text">
+            <de><![CDATA[Anzahl]]></de>
+            <en><![CDATA[Quantity]]></en>
+        </locale>
 
         <locale name="ordering.btn.next">
             <de><![CDATA[Übernehmen und weiter]]></de>

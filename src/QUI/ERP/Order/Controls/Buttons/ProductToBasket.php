@@ -45,6 +45,8 @@ class ProductToBasket extends QUI\Control
      */
     public function getBody()
     {
+        $Engine  = QUI::getTemplateManager()->getEngine();
+
         if ($this->getAttribute('Product')) {
             /* @var $Product QUI\ERP\Products\Product\Product */
             $Product = $this->getAttribute('Product');
@@ -61,16 +63,10 @@ class ProductToBasket extends QUI\Control
             ));
         }
 
-        $html = '';
-
-        if ($this->getAttribute('input')) {
-            $html .= '<input type="number" value="1" title="Anzahl" min="1"/>';
-        }
-
-        $html .= '<span class="text btn btn-primary">'.
-                 QUI::getLocale()->get('quiqqer/order', 'control.basket.buttonAdd.text').
-                 '</span>';
-
-        return $html;
+        $Engine->assign([
+            'this' => $this
+        ]);
+        
+        return $Engine->fetch(dirname(__FILE__) . '/ProductToBasket.html');
     }
 }
