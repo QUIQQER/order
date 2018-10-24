@@ -160,11 +160,23 @@
 
         <locale name="control.basket.buttonAdd.text">
             <de><![CDATA[Zum Warenkorb]]></de>
-            <en><![CDATA[To the Basket]]></en>
+            <en><![CDATA[To the basket]]></en>
+        </locale>
+        <locale name="control.basket.buttonAdd.title">
+            <de><![CDATA[[product] zum Warenkorb hinzufügen]]></de>
+            <en><![CDATA[[product] add to basket]]></en>
         </locale>
         <locale name="control.basket.quantity.text">
             <de><![CDATA[Anzahl]]></de>
             <en><![CDATA[Quantity]]></en>
+        </locale>
+        <locale name="control.basket.quantity.button.decrease">
+            <de><![CDATA[Anzahl verringern]]></de>
+            <en><![CDATA[Decrease quantity]]></en>
+        </locale>
+        <locale name="control.basket.quantity.button.increase">
+            <de><![CDATA[Anzahl erhöhen]]></de>
+            <en><![CDATA[Increase quantity]]></en>
         </locale>
 
         <locale name="ordering.btn.next">

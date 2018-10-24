@@ -13,32 +13,31 @@
 }
 
 .quiqqer-order-button-add-quantity {
-    float: left;
-}
-
-.quiqqer-order-button-add-quantity-label {
-    float: left;
+    display: inline;
 }
 
 .quiqqer-order-button-add-quantity-input {
     line-height: 26px;
     text-align: center;
-    width: 40px;
+    width: 60px;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-decrease {
+    margin-right: 5px;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-increase {
+    margin-left: 5px;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-input {
     -webkit-appearance: textfield;
     -moz-appearance: textfield;
     appearance: textfield;
 }
 
-.quiqqer-order-button-add-quantity-decrease {
-    margin-right: 5px;
-}
-
-.quiqqer-order-button-add-quantity-increase {
-    margin-left: 5px;
-}
-
-.quiqqer-order-button-add input::-webkit-outer-spin-button,
-.quiqqer-order-button-add input::-webkit-inner-spin-button {
+.disable-spins .quiqqer-order-button-add-quantity-input::-webkit-outer-spin-button,
+.disable-spins .quiqqer-order-button-add-quantity-input::-webkit-inner-spin-button {
     display: none;
     margin: 0;
     -webkit-appearance: none;
