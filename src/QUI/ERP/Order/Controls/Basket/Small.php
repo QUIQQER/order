@@ -49,13 +49,18 @@ class Small extends QUI\Controls\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts()->getView();
         $Project  = $this->getProject();
+        $Order    = $this->Basket->getOrder();
 
         $Engine->assign([
             'data'         => $Products->toArray(),
             'Basket'       => $this->Basket,
             'Products'     => $Products,
             'products'     => $Products->getProducts(),
-            'OrderProcess' => QUI\ERP\Order\Utils\Utils::getOrderProcess($Project)
+            'OrderProcess' => QUI\ERP\Order\Utils\Utils::getOrderProcess($Project),
+            'checkoutUrl'  => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+                $Project,
+                $Order->getHash()
+            )
         ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Small.html');

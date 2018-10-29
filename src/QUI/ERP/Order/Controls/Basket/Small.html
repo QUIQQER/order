@@ -92,8 +92,8 @@
 {template_event name="quiqqer::order::basketSmall::beforeCheckoutButton" Basket=$Basket}
 
 <div class="quiqqer-order-basket-small-buttons">
-    <a href="{url site=$OrderProcess rewritten=true}" class="to-the-checkout button">
-        {locale group="quiqqer/order" var="control.basket.small.buy.button"
+    <a href="{$checkoutUrl}" class="to-the-checkout button">
+        {locale group="quiqqer/order" var="control.basket.small.buy.button"}
     </a>
 </div>
 
