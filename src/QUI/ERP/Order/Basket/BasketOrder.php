@@ -159,6 +159,7 @@ class BasketOrder
         if ($this->hasOrder()) {
             try {
                 $this->getOrder()->addArticle($Product->toArticle());
+                $this->save();
             } catch (QUI\Exception $Exception) {
             }
         }
@@ -221,15 +222,18 @@ class BasketOrder
                 $fields[$Field->getId()] = $Field->getValue();
             }
 
-            $result[] = [
+            $attributes = [
                 'id'       => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
                 'fields'   => $fields
             ];
+
+            $result[] = $attributes;
         }
 
         return [
             'id'           => $this->getId(),
+            'orderHash'    => $this->getOrder()->getHash(),
             'products'     => $result,
             'priceFactors' => $Products->getPriceFactors()->toArray()
         ];

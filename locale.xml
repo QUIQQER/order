@@ -784,6 +784,11 @@
             Orders in process are canceled orders.
             ]]></en>
         </locale>
+
+        <locale name="control.basket.small.buy.button">
+            <de><![CDATA[Zur Kasse]]></de>
+            <en><![CDATA[Checkout]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

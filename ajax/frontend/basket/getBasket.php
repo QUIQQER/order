@@ -11,12 +11,16 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_getBasket',
-    function () {
+    function ($orderHash) {
         $User    = QUI::getUserBySession();
         $Handler = QUI\ERP\Order\Handler::getInstance();
 
         try {
-            $Basket = $Handler->getBasketFromUser($User);
+            if ($orderHash) {
+                $Basket = new QUI\ERP\Order\Basket\BasketOrder($orderHash);
+            } else {
+                $Basket = $Handler->getBasketFromUser($User);
+            }
         } catch (QUI\Exception $Exception) {
             $Basket = QUI\ERP\Order\Factory::getInstance()->createBasket($User);
         }
@@ -42,5 +46,5 @@ QUI::$Ajax->registerFunction(
 
         return $Basket->toArray();
     },
-    false
+    ['orderHash']
 );

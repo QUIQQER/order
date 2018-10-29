@@ -76,6 +76,7 @@ class OrderProcess extends QUI\Control
 
         $this->Events = new QUI\Events\Event();
 
+        $Order    = null;
         $User     = QUI::getUserBySession();
         $isNobody = QUI::getUsers()->isNobodyUser($User);
 
@@ -106,6 +107,15 @@ class OrderProcess extends QUI\Control
             $this->Basket = Handler::getInstance()->getBasketFromUser(
                 QUI::getUserBySession()
             );
+
+            $hash = $this->Basket->getHash();
+
+            if (!empty($hash)) {
+                try {
+                    $this->Order = Handler::getInstance()->getOrderInProcessByHash($hash);
+                } catch (QUI\Exception $Exception) {
+                }
+            }
         } elseif ($this->Basket === null && $isNobody) {
             $this->Basket = new QUI\ERP\Order\Basket\BasketGuest();
         }
