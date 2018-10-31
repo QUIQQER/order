@@ -188,6 +188,25 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
                     showError: false
                 });
             });
+        },
+
+        /**
+         * Remove a product by its order position
+         *
+         * @param {String} orderHash - order hash
+         * @param {Number} pos -
+         * @return {Promise}
+         */
+        removePosition: function (orderHash, pos) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_removePosition', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: orderHash,
+                    pos      : pos,
+                    onError  : reject,
+                    showError: false
+                });
+            });
         }
     });
 });

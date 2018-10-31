@@ -6,10 +6,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
     'qui/QUI',
     'qui/classes/DOM',
+    'package/quiqqer/order/bin/frontend/Orders',
     'Ajax',
     'Locale'
 
-], function (QUI, QUIDOM, QUIAjax, QUILocale) {
+], function (QUI, QUIDOM, Orders, QUIAjax, QUILocale) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -201,9 +202,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             var products = data.products;
 
             return new Promise(function (resolve) {
-                require([
-                    'package/quiqqer/order/bin/frontend/classes/Product'
-                ], function (ProductCls) {
+                require(['package/quiqqer/order/bin/frontend/classes/Product'], function (ProductCls) {
                     for (var i = 0, len = products.length; i < len; i++) {
                         self.$products.push(
                             new ProductCls(products[i])
@@ -348,6 +347,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         removeProductPos: function (pos) {
+            var Remove;
+
             var self  = this,
                 index = pos - 1;
 
@@ -356,10 +357,21 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             }
 
             this.fireEvent('refreshBegin', [this]);
-            this.$products.splice(index, 1);
 
-            return this.save().then(function () {
-                self.fireEvent('refresh', [self]);
+            if (this.$orderHash) {
+                Remove = Orders.removePosition(this.$orderHash, pos).then(function (result) {
+                    return self.$loadData(result);
+                });
+            } else {
+                Remove = new Promise();
+            }
+
+            return Remove.then(function () {
+                self.$products.splice(index, 1);
+
+                return self.save().then(function () {
+                    self.fireEvent('refresh', [self]);
+                });
             });
         },
 
@@ -381,7 +393,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     resolve(result);
                 }, {
                     'package': 'quiqqer/order',
-                    basketId : self.$basketId
+                    basketId : self.$basketId,
+                    orderHash: self.$orderHash
                 });
             });
         },
