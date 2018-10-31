@@ -85,9 +85,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
                 self.getElm().getElements(
                     '.quiqqer-order-basket-small-articles-article-delete'
                 ).addEvent('click', function () {
-                    Basket.removeProductPos(
+                    var pos = parseInt(
                         this.getParent('.quiqqer-order-basket-small-articles-article').get('data-pos')
                     );
+
+                    Basket.removeProductPos(pos - 1);
                 });
 
                 QUI.parse(self.getElm());

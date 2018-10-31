@@ -347,8 +347,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         removeProductPos: function (pos) {
-            var Remove;
-
             var self  = this,
                 index = pos - 1;
 
@@ -359,19 +357,18 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             this.fireEvent('refreshBegin', [this]);
 
             if (this.$orderHash) {
-                Remove = Orders.removePosition(this.$orderHash, pos).then(function (result) {
+                return Orders.removePosition(this.$orderHash, pos).then(function (result) {
                     return self.$loadData(result);
-                });
-            } else {
-                Remove = new Promise();
-            }
-
-            return Remove.then(function () {
-                self.$products.splice(index, 1);
-
-                return self.save().then(function () {
+                }).then(function () {
                     self.fireEvent('refresh', [self]);
                 });
+            }
+
+
+            self.$products.splice(index, 1);
+
+            return self.save().then(function () {
+                self.fireEvent('refresh', [self]);
             });
         },
 
