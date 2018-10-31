@@ -136,6 +136,10 @@ class BasketOrder
     public function clear()
     {
         $this->List->clear();
+
+        if ($this->hasOrder()) {
+            $this->getOrder()->clearArticles();
+        }
     }
 
     /**
@@ -190,6 +194,10 @@ class BasketOrder
      */
     public function removePosition($pos)
     {
+        if (!$this->hasOrder()) {
+            return;
+        }
+
         $this->getOrder()->removeArticle($pos);
         $this->getOrder()->save();
 
