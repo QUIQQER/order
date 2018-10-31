@@ -115,7 +115,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
             // user
             QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_small', render, {
                 'package': 'quiqqer/order',
-                basketId : parseInt(this.getAttribute('basketId'))
+                basketId : parseInt(this.getAttribute('basketId')),
+                orderHash: Basket.getHash()
             });
         },
 

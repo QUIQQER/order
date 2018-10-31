@@ -33,7 +33,8 @@ class Small extends QUI\Controls\Control
     public function setBasket($Basket)
     {
         if ($Basket instanceof QUI\ERP\Order\Basket\Basket ||
-            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest
+            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest ||
+            $Basket instanceof QUI\ERP\Order\Basket\BasketOrder
         ) {
             $this->Basket = $Basket;
         }
@@ -48,14 +49,19 @@ class Small extends QUI\Controls\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts()->getView();
         $Project  = $this->getProject();
- 
-        $Engine->assign(array(
+        $Order    = $this->Basket->getOrder();
+
+        $Engine->assign([
             'data'         => $Products->toArray(),
             'Basket'       => $this->Basket,
             'Products'     => $Products,
             'products'     => $Products->getProducts(),
-            'OrderProcess' => QUI\ERP\Order\Utils\Utils::getOrderProcess($Project)
-        ));
+            'OrderProcess' => QUI\ERP\Order\Utils\Utils::getOrderProcess($Project),
+            'checkoutUrl'  => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+                $Project,
+                $Order->getHash()
+            )
+        ]);
 
         return $Engine->fetch(dirname(__FILE__).'/Small.html');
     }

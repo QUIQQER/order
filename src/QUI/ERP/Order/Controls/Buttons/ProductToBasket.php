@@ -20,14 +20,16 @@ class ProductToBasket extends QUI\Control
      *
      * @param array $attributes
      */
-    public function __construct($attributes = array())
+    public function __construct($attributes = [])
     {
-        $this->setAttributes(array(
-            'nodeName' => 'div',
-            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket',
-            'input'    => true,
-            'Product'  => false
-        ));
+        $this->setAttributes([
+            'nodeName'     => 'div',
+            'data-qui'     => 'package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket',
+            'input'        => true,
+            'Product'      => false,
+            'showLabel'    => true,
+            'showControls' => true // show decrease and increase buttons -/+
+        ]);
 
         parent::__construct($attributes);
 
@@ -35,7 +37,7 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(dirname(__FILE__).'/ProductToBasket.css');
+        $this->addCSSFile(dirname(__FILE__) . '/ProductToBasket.css');
     }
 
     /**
@@ -45,32 +47,43 @@ class ProductToBasket extends QUI\Control
      */
     public function getBody()
     {
+        $Engine = QUI::getTemplateManager()->getEngine();
+
+        $addButtonTitle = QUI::getLocale()->get(
+            'quiqqer/order',
+            'control.basket.buttonAdd.text'
+        );
+
         if ($this->getAttribute('Product')) {
             /* @var $Product QUI\ERP\Products\Product\Product */
             $Product = $this->getAttribute('Product');
 
             $this->setAttribute('data-pid', $Product->getId());
 
-            $this->setAttribute('title', QUI::getLocale()->get(
+            $addButtonTitle = QUI::getLocale()->get(
                 'quiqqer/order',
-                'control.order.buttonAdd.title',
-                array(
+                'control.basket.buttonAdd.title',
+                [
                     'productId' => $Product->getId(),
                     'product'   => $Product->getTitle(),
-                )
-            ));
+                ]
+            );
         }
 
-        $html = '';
-
-        if ($this->getAttribute('input')) {
-            $html .= '<input type="number" value="1" title="Anzahl" min="1"/>';
+        // css class to manage the default browser spin (input from type "number")
+        $disableSpins = '';
+        if ($this->getAttribute('showControls')) {
+            $disableSpins = 'disable-spins';
         }
 
-        $html .= '<span class="text">'.
-                 QUI::getLocale()->get('quiqqer/order', 'control.basket.buttonAdd.text').
-                 '</span>';
+        $Engine->assign([
+            'this'           => $this,
+            'addButtonTitle' => $addButtonTitle,
+            'showLabel'      => $this->getAttribute('showLabel'),
+            'showControls'   => $this->getAttribute('showControls'),
+            'disableSpins'   => $disableSpins
+        ]);
 
-        return $html;
+        return $Engine->fetch(dirname(__FILE__) . '/ProductToBasket.html');
     }
 }

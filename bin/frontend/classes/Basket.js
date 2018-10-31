@@ -1,5 +1,6 @@
 /**
  * @module package/quiqqer/order/bin/frontend/classes/Basket
+ * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -25,8 +26,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$products = [];
-            this.$basketId = null;
+            this.$products  = [];
+            this.$basketId  = null;
+            this.$orderHash = null;
 
             this.$isLoaded  = false;
             this.$saveDelay = null;
@@ -129,6 +131,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         * Return the order hash, if an order is active
+         *
+         * @return {null|*}
+         */
+        getHash: function () {
+            return this.$orderHash;
+        },
+
+        /**
          * Return the quantity of the products in the current list
          *
          * @returns {Number}
@@ -153,12 +164,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         loadBasket: function () {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
-                self.getBasket().then(function (basket) {
-                    self.$calculations = basket;
+            return self.getBasket().then(function (basket) {
+                self.$calculations = basket;
 
-                    return self.$loadData(basket);
-                }).then(resolve, reject);
+                if (typeof basket.orderHash !== 'undefined') {
+                    self.$orderHash = basket.orderHash;
+                }
+
+                return self.$loadData(basket);
             });
         },
 
@@ -208,15 +221,19 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         getBasket: function () {
+            var self = this;
+
             return new Promise(function (resolve) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getBasket', resolve, {
-                    'package': 'quiqqer/order'
+                    'package': 'quiqqer/order',
+                    orderHash: self.$orderHash
                 });
             });
         },
 
         /**
          * Return the basket calculations (sum, subSum, prices)
+         *
          * @return {{currencyData: {}, isEuVat: number, isNetto: number, nettoSubSum: number, nettoSum: number, subSum: number, sum: number, vatArray: {}, vatText: {}}}
          */
         getCalculations: function () {
@@ -287,6 +304,26 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                             });
                         }
 
+                        if (self.$orderHash) {
+                            // order basket
+                            QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function (result) {
+                                self.refresh().then(function () {
+                                    self.fireEvent('add', [self]);
+                                    resolve();
+                                });
+                            }, {
+                                'package': 'quiqqer/order',
+                                basketId : self.$basketId,
+                                orderHash: self.$orderHash,
+                                productId: productId,
+                                fields   : JSON.encode(fields),
+                                quantity : quantity
+                            });
+
+                            return;
+                        }
+
+                        // normal basket
                         Product.setQuantity(quantity).then(function () {
                             return Product.setFieldValues(fields);
                         }).then(function () {
@@ -346,6 +383,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     'package': 'quiqqer/order',
                     basketId : self.$basketId
                 });
+            });
+        },
+
+        refresh: function () {
+            var self = this;
+
+            return this.loadBasket().then(function () {
+                self.fireEvent('refresh', [self]);
             });
         },
 
@@ -411,6 +456,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }, {
                         'package': 'quiqqer/order',
                         basketId : this.$basketId,
+                        orderHash: this.$orderHash,
                         products : JSON.encode(products)
                     });
 

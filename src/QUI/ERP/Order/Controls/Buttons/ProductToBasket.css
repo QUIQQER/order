@@ -1,4 +1,3 @@
-
 .quiqqer-order-button-add {
     float: left;
     overflow: hidden;
@@ -8,10 +7,38 @@
     white-space: nowrap;
 }
 
-.quiqqer-order-button-add input {
-    border: 1px solid #ddd;
+.quiqqer-order-button-add-quantity-wrapper {
+    float: left;
+    margin-right: 20px;
+}
+
+.quiqqer-order-button-add-quantity {
+    display: inline;
+}
+
+.quiqqer-order-button-add-quantity-input {
     line-height: 26px;
-    margin-right: 10px;
     text-align: center;
-    width: 40px;
+    width: 60px;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-decrease {
+    margin-right: 5px;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-increase {
+    margin-left: 5px;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-input {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.disable-spins .quiqqer-order-button-add-quantity-input::-webkit-outer-spin-button,
+.disable-spins .quiqqer-order-button-add-quantity-input::-webkit-inner-spin-button {
+    display: none;
+    margin: 0;
+    -webkit-appearance: none;
 }

@@ -30,7 +30,8 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             this.parent(options);
 
             this.$Input = null;
-            this.$Text  = null;
+            this.$Text  = null; // Button
+            this.changeButtons = null; // buttons to change quantity -/+
 
             this.addEvents({
                 onImport: this.$onImport,
@@ -53,16 +54,31 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             this.$Input = Elm.getElement('input');
             this.$Text  = Elm.getElement('.text');
+            this.changeButtons = Elm.getElements(
+                '.quiqqer-order-button-add-quantity-decrease, .quiqqer-order-button-add-quantity-increase'
+            );
+
+            this.changeButtons.addEvent('click', function (event) {
+                event.stop();
+                var Target = event.target;
+
+                this.changeValue(Target);
+            }.bind(this));
 
             this.$Input.setStyles({
                 zIndex: 10
             });
 
-            this.$Input.addEvent('click', function (event) {
-                event.stop();
+            // set number to input
+            this.$Input.addEvent('blur', function () {
+                var value = parseInt(this.value);
+
+                if (!value || value < 1) {
+                    this.value = 1;
+                }
             });
 
-            Elm.addEvent('click', this.$addProductToBasket);
+            this.$Text.addEvent('click', this.$addProductToBasket);
             Elm.removeClass('disabled');
         },
 
@@ -80,7 +96,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             this.getElm().addClass('disabled');
 
             this.$Text.setStyles({
-                visibility: 'hidden'
+//                visibility: 'hidden'
             });
 
             var self  = this,
@@ -89,8 +105,8 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             if (this.$Input) {
                 this.$Input.setStyles({
-                    opacity   : 0,
-                    visibility: 'hidden'
+//                    opacity   : 0,
+//                    visibility: 'hidden'
                 });
 
                 count = parseInt(this.$Input.value);
@@ -101,6 +117,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             }
 
             var Loader = new Element('div', {
+                'class' : 'quiqqer-order-button-add-loader',
                 html  : '<span class="fa fa-spinner fa-spin"></span>',
                 styles: {
                     fontSize  : (size.y / 3).round(),
@@ -110,7 +127,8 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                     position  : 'absolute',
                     textAlign : 'center',
                     top       : 0,
-                    width     : '100%'
+                    width     : '100%',
+                    background: 'rgba(255,255,255,0.65)'
                 }
             }).inject(this.getElm());
 
@@ -143,26 +161,60 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 Span.addClass('fa-check');
 
                 (function () {
-                    Loader.destroy();
+                    moofx(Loader).animate({
+                        opacity: 0
+                    }, {
+                        duration: 300,
+                        callback: function () {
+                            Loader.destroy();
+                        }
+                    });
 
                     self.getElm().removeClass('disabled');
 
-                    if (self.$Input) {
+                    /*if (self.$Input) {
                         self.$Input.setStyle('visibility', null);
 
                         moofx(self.$Input).animate({
                             opacity: 1
                         });
-                    }
+                    }*/
 
-                    self.$Text.setStyle('visibility', null);
+//                    self.$Text.setStyle('visibility', null);
 
-                    moofx(self.$Text).animate({
+                    /*moofx(self.$Text).animate({
                         opacity: 1
-                    });
+                    });*/
 
                 }).delay(1000);
             }.bind(this));
+        },
+
+        /**
+         * Change value of input depend of button type (decrease / increase)
+         *
+         * @param Button | DOM Object
+         */
+        changeValue: function(Button) {
+            var type = Button.getProperty('data-button-type'),
+                value = parseInt(this.$Input.value);
+
+            if (!value) {
+                value = 1;
+                this.$Input.value = value;
+            }
+
+            if (type === 'decrease') {
+                if (value < 2) {
+                    return;
+                }
+
+                this.$Input.value = --value;
+                return;
+            }
+
+            // increase
+            this.$Input.value = ++value;
         }
     });
 });

@@ -1,0 +1,27 @@
+{if $this->getAttribute('input')}
+<div class="quiqqer-order-button-add-quantity-wrapper">
+    {if $showLabel}
+    <label class="quiqqer-order-button-add-quantity-label">
+        {locale group='quiqqer/order' var='control.basket.quantity.text'}
+    </label>
+    {/if}
+    <div class="quiqqer-order-button-add-quantity {$disableSpins}">
+        {if $showControls}
+        <span class="quiqqer-order-button-add-quantity-decrease btn"
+              title="{locale group='quiqqer/order' var='control.basket.quantity.button.decrease'}"
+              data-button-type="decrease">-</span>
+        {/if}
+        <input type="number" value="1" min="1" class="quiqqer-order-button-add-quantity-input"
+               title="{locale group='quiqqer/order' var='control.basket.quantity.text'}"/>
+        {if $showControls}
+        <span class="quiqqer-order-button-add-quantity-increase btn"
+              title="{locale group='quiqqer/order' var='control.basket.quantity.button.increase'}"
+              data-button-type="increase">+</span>
+        {/if}
+    </div>
+</div>
+{/if}
+
+<span class="text btn btn-primary" title="{$addButtonTitle}">
+    {locale group='quiqqer/order' var='control.basket.buttonAdd.text'}
+</span>

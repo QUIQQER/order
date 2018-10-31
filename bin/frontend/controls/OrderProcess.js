@@ -69,6 +69,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Previous = null;
             this.Loader    = new QUILoader();
 
+            if (!this.getAttribute('orderHash') && Basket.getHash()) {
+                this.setAttribute('orderHash', Basket.getHash());
+            }
+
             this.Loader.addEvents({
                 onShow: function () {
                     this.fireEvent('loaderShow', [this]);
@@ -125,7 +129,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (window.location.pathname.indexOf(url) === 0) {
                 Router = new Navigo(null, false, '');
 
-                // workaround - dont know why its needed, but its needed :D
+                // workaround - don't know why its needed, but its needed :D
                 Router.on(url + '/*', function () {
                 });
             }
@@ -523,6 +527,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     if (Router) {
                         Router.navigate(result.url);
                     }
+
+                    Basket.refresh();
                 }, {
                     'package': 'quiqqer/order',
                     orderHash: self.getAttribute('orderHash'),
