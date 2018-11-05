@@ -30,7 +30,7 @@ QUI::$Ajax->registerFunction(
         }
 
         try {
-            $Product = new QUI\ERP\Order\Basket\Product($productId, $fields);
+            $Product = new QUI\ERP\Order\Basket\Product($productId, ['fields' => $fields]);
             $Real    = QUI\ERP\Products\Handler\Products::getProduct($productId); // check if active
 
             if (!$Real->isActive()) {
