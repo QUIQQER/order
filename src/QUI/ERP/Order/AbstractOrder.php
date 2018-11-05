@@ -898,9 +898,16 @@ abstract class AbstractOrder extends QUI\QDOM
             return null;
         }
 
-        $Payments = Payments::getInstance();
+        $Payments     = Payments::getInstance();
+        $calculations = $this->Articles->getCalculations();
 
         try {
+            if ($calculations['sum'] === 0) {
+                return $Payments->getPayment(
+                    QUI\ERP\Accounting\Payments\Methods\Free\Payment::ID
+                );
+            }
+
             return $Payments->getPayment($this->paymentId);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
