@@ -67,16 +67,41 @@ class BasketOrder
             ], 404);
         }
 
-        $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
+        $this->User = $User;
+        $this->hash = $orderHash;
+
+        $this->readOrder();
+
+        // get basket id
+        try {
+            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketByHash(
+                $this->Order->getHash(),
+                $this->User
+            );
+
+            $this->id = $Basket->getId();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+    }
+
+    /**
+     * imports the order data into the basket
+     *
+     * @throws Exception
+     * @throws QUI\ERP\Exception
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
+     */
+    protected function readOrder()
+    {
+        $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
 
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
 
         $this->List            = new ProductList($data);
         $this->List->duplicate = true;
-
-        $this->User = $User;
-        $this->hash = $orderHash;
 
         $this->import($articles);
 
@@ -91,19 +116,6 @@ class BasketOrder
 
         $this->List->recalculate();
         $this->Order->recalculate($this);
-
-
-        // get basket id
-        try {
-            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketByHash(
-                $this->Order->getHash(),
-                $this->User
-            );
-
-            $this->id = $Basket->getId();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-        }
     }
 
     /**
@@ -124,6 +136,10 @@ class BasketOrder
     public function clear()
     {
         $this->List->clear();
+
+        if ($this->hasOrder()) {
+            $this->getOrder()->clearArticles();
+        }
     }
 
     /**
@@ -163,6 +179,29 @@ class BasketOrder
             } catch (QUI\Exception $Exception) {
             }
         }
+    }
+
+    /**
+     * Removes a position from the products
+     *
+     * @param integer $pos
+     *
+     * @throws Exception
+     * @throws QUI\ERP\Exception
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Exception
+     * @throws QUI\Permissions\Exception
+     */
+    public function removePosition($pos)
+    {
+        if (!$this->hasOrder()) {
+            return;
+        }
+
+        $this->getOrder()->removeArticle($pos);
+        $this->getOrder()->save();
+
+        $this->readOrder();
     }
 
     //endregion
