@@ -81,11 +81,17 @@ class OrderProcess extends QUI\Control
 
         // @todo guest ordering
 
-
         // current step
         $steps = $this->getSteps();
         $step  = $this->getAttribute('step');
         $Order = $this->getOrder();
+
+        if ($Order->getCustomer()->getId() !== $User->getId()) {
+            throw new QUI\Permissions\Exception([
+                'quiqqer/order',
+                'exception.no.permission.for.this.order'
+            ]);
+        }
 
         // basket into the order
         $Basket = $this->getBasket();

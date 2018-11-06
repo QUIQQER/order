@@ -257,6 +257,23 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
         },
 
+        /**
+         * Return the products of the current order
+         *
+         * @return {Promise}
+         */
+        getArticles: function () {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getArticles', resolve, {
+                    'package': 'quiqqer/order',
+                    hash     : self.getAttribute('orderHash'),
+                    onError  : reject
+                });
+            });
+        },
+
         //endregion
 
         // region API
