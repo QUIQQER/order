@@ -69,10 +69,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Previous = null;
             this.Loader    = new QUILoader();
 
-            if (!this.getAttribute('orderHash') && Basket.getHash()) {
-                this.setAttribute('orderHash', Basket.getHash());
-            }
-
             this.Loader.addEvents({
                 onShow: function () {
                     this.fireEvent('loaderShow', [this]);
@@ -197,8 +193,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     });
 
                     self.$onImport();
-
-                    self.fireEvent('load', [self]);
                 }, {
                     'package': 'quiqqer/order',
                     orderHash: self.getAttribute('orderHash')
@@ -268,7 +262,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getArticles', resolve, {
                     'package': 'quiqqer/order',
-                    hash     : self.getAttribute('orderHash'),
+                    orderHash: self.getAttribute('orderHash'),
                     onError  : reject
                 });
             });
