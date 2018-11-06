@@ -206,6 +206,49 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
         },
 
+        //region products
+
+        /**
+         * add a product to the order process
+         *
+         * @param {Integer} productId
+         * @param {Object} fields
+         * @param {Integer} [quantity]
+         *
+         * @return {Promise}
+         */
+        addProduct: function (productId, fields, quantity) {
+            var self = this;
+
+            quantity = quantity || 1;
+
+            if (!quantity) {
+                return Promise.reject('Product need a quantity');
+            }
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function () {
+                    self.refreshCurrentStep().then(resolve);
+                }, {
+                    'package': 'quiqqer/order',
+                    hash     : self.getAttribute('orderHash'),
+                    productId: productId,
+                    quantity : quantity,
+                    fields   : JSON.encode(fields),
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         *
+         */
+        addArticle: function () {
+
+        },
+
+        //endregion
+
         // region API
 
         /**
