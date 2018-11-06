@@ -560,7 +560,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
 
         QUI::getDataBase()->update(
-            Handler::getInstance()->table(),
+            Handler::getInstance()->tableOrderProcess(),
             [
                 'articles'   => '[]',
                 'status'     => AbstractOrder::STATUS_CREATED,
