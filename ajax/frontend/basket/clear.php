@@ -22,7 +22,6 @@ QUI::$Ajax->registerFunction(
             if ($orderHash) {
                 $OrderBasket = new QUI\ERP\Order\Basket\BasketOrder($orderHash);
                 $OrderBasket->clear();
-                $OrderBasket->save();
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);

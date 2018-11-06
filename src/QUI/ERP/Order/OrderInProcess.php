@@ -542,6 +542,50 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     *
+     * @throws Exception
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    public function clear($PermissionUser = null)
+    {
+        if ($this->hasPermissions($PermissionUser) === false) {
+            throw new QUI\Permissions\Exception(
+                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
+                403
+            );
+        }
+
+        QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            [
+                'articles'   => '[]',
+                'status'     => AbstractOrder::STATUS_CREATED,
+                'successful' => 0,
+                'data'       => '[]',
+
+                'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
+                'paid_data'   => '',
+                'paid_date'   => '',
+
+                'payment_id'      => '',
+                'payment_method'  => '',
+                'payment_data'    => '',
+                'payment_time'    => null,
+                'payment_address' => '',
+            ],
+            ['id' => $this->getId()]
+        );
+
+        $this->refresh();
+
+        QUI::getEvents()->fireEvent('quiqqerOrderClear', [$this]);
+    }
+
+    /**
      * @return bool
      */
     public function hasInvoice()
