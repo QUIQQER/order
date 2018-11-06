@@ -382,12 +382,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             return new Promise(function (resolve) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_clear', function (result) {
-                    self.$calculations = result;
-                    self.$products     = [];
-
-                    self.fireEvent('refresh', [self]);
-
-                    resolve(result);
+                    self.refresh().then(function () {
+                        resolve(result);
+                    });
                 }, {
                     'package': 'quiqqer/order',
                     basketId : self.$basketId,
@@ -396,6 +393,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             });
         },
 
+        /**
+         * Refresh the basket data
+         *
+         * @return {Promise}
+         */
         refresh: function () {
             var self = this;
 

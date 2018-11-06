@@ -332,9 +332,7 @@ abstract class AbstractOrder extends QUI\QDOM
 
     /**
      * Recalculate all article prices
-     */
-
-    /**
+     *
      * @param $Basket - optional
      *
      * @throws Basket\Exception
@@ -386,6 +384,13 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->Articles = $ArticleList;
         $this->update();
     }
+
+    /**
+     * Clears the complete order
+     *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     */
+    abstract public function clear($PermissionUser = null);
 
     /**
      * Refresh the order data

@@ -112,7 +112,8 @@ class OrderProcess extends QUI\Control
 
             if (!empty($hash)) {
                 try {
-                    $this->Order = Handler::getInstance()->getOrderInProcessByHash($hash);
+                    $this->Order  = Handler::getInstance()->getOrderInProcessByHash($hash);
+                    $this->Basket = new QUI\ERP\Order\Basket\BasketOrder($hash);
                 } catch (QUI\Exception $Exception) {
                 }
             }
@@ -120,22 +121,9 @@ class OrderProcess extends QUI\Control
             $this->Basket = new QUI\ERP\Order\Basket\BasketGuest();
         }
 
-        // insert basket products into the articles
-        $Order = $this->getOrder();
-
-        if ($Order) {
-            $this->Basket->setHash($Order->getHash());
-            $this->Basket->updateOrder();
-            $this->Basket->save();
-
-            if ($Order->isSuccessful()) {
-                $this->setAttribute('orderHash', $Order->getHash());
-            }
-
-            $this->cleanup();
-        }
 
         // current step
+        $Order = $this->getOrder();
         $steps = $this->getSteps();
         $step  = $this->getAttribute('step');
 

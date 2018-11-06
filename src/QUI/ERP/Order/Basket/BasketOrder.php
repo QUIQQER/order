@@ -132,13 +132,15 @@ class BasketOrder
      * Clear the basket
      * This method don't clear the order articles
      * if you want to clear the order articles, you must use Order->clear()
+     *
+     * @throws QUI\Exception
      */
     public function clear()
     {
         $this->List->clear();
 
         if ($this->hasOrder()) {
-            $this->getOrder()->clearArticles();
+            $this->getOrder()->clear();
         }
     }
 
@@ -210,6 +212,8 @@ class BasketOrder
      * Import the products to the basket
      *
      * @param array $products
+     *
+     * @throws QUI\Exception
      */
     public function import($products = [])
     {
@@ -227,6 +231,8 @@ class BasketOrder
 
     /**
      * Save the basket -> order
+     *
+     * @throws QUI\Exception
      */
     public function save()
     {
@@ -323,11 +329,12 @@ class BasketOrder
 
     /**
      * placeholder for api
+     *
+     * @throws QUI\Exception
      */
     public function updateOrder()
     {
-        $Order = $this->Order;
-        $Order->save();
+        $this->Order->save();
     }
 
     //endregion
