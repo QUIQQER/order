@@ -231,7 +231,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     self.refreshCurrentStep().then(resolve);
                 }, {
                     'package': 'quiqqer/order',
-                    hash     : self.getAttribute('orderHash'),
+                    orderHash: self.getAttribute('orderHash'),
                     productId: productId,
                     quantity : quantity,
                     fields   : JSON.encode(fields),
