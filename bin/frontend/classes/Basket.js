@@ -329,15 +329,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             this.fireEvent('refreshBegin', [this]);
 
-            // if (this.$orderHash) {
-            //     return Orders.removePosition(this.$orderHash, pos).then(function (result) {
-            //         return self.$loadData(result);
-            //     }).then(function () {
-            //         self.fireEvent('refresh', [self]);
-            //     });
-            // }
-
-
             self.$products.splice(index, 1);
 
             return self.save().then(function () {

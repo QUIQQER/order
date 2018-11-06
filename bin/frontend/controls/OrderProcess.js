@@ -242,9 +242,19 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
         /**
          *
+         * @param {Integer} pos
+         *
+         * @return {Promise}
          */
-        addArticle: function () {
+        removeProductPos: function (pos) {
+            var self = this;
 
+            return Orders.removePosition(
+                this.getAttribute('orderHash'),
+                pos
+            ).then(function () {
+                return self.refreshCurrentStep();
+            });
         },
 
         //endregion
