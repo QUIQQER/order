@@ -130,10 +130,8 @@ class BasketOrder
 
     /**
      * Clear the basket
-     * This method don't clear the order articles
-     * if you want to clear the order articles, you must use Order->clear()
-     *
-     * @throws QUI\Exception
+     * This method clears only  the order articles
+     * if you want to clear the order, you must use Order->clear()
      */
     public function clear()
     {

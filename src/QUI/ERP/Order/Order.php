@@ -625,14 +625,14 @@ class Order extends AbstractOrder implements OrderInterface
                 'data'       => '[]',
 
                 'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
-                'paid_data'   => '',
-                'paid_date'   => '',
+                'paid_data'   => null,
+                'paid_date'   => null,
 
-                'payment_id'      => '',
-                'payment_method'  => '',
-                'payment_data'    => '',
+                'payment_id'      => null,
+                'payment_method'  => null,
+                'payment_data'    => null,
                 'payment_time'    => null,
-                'payment_address' => '',
+                'payment_address' => null
             ],
             ['id' => $this->getId()]
         );
