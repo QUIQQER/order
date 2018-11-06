@@ -614,7 +614,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         getCurrentStepData: function () {
             var current = this.getAttribute('current');
 
-            if (this.$TimelineContainer) {
+            if (!this.$TimelineContainer) {
                 return {
                     icon : 'fa-shopping-bag',
                     title: QUILocale.get(lg, 'ordering.title'),
