@@ -274,6 +274,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
         },
 
+        /**
+         * Clears the current order
+         *
+         * @return {Promise}
+         */
+        clear: function () {
+            return Orders.clearOrder(this.getAttribute('orderHash'));
+        },
+
         //endregion
 
         // region API
