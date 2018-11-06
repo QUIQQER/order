@@ -29,7 +29,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             this.$products  = [];
             this.$basketId  = null;
-            this.$orderHash = null;
 
             this.$isLoaded  = false;
             this.$saveDelay = null;
@@ -168,10 +167,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             return self.getBasket().then(function (basket) {
                 self.$calculations = basket;
 
-                if (typeof basket.orderHash !== 'undefined') {
-                    self.$orderHash = basket.orderHash;
-                }
-
                 return self.$loadData(basket);
             });
         },
@@ -220,12 +215,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         getBasket: function () {
-            var self = this;
-
             return new Promise(function (resolve) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getBasket', resolve, {
-                    'package': 'quiqqer/order',
-                    orderHash: self.$orderHash
+                    'package': 'quiqqer/order'
                 });
             });
         },
@@ -302,25 +294,25 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                 }
                             });
                         }
-
-                        if (self.$orderHash) {
-                            // order basket
-                            QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function (result) {
-                                self.refresh().then(function () {
-                                    self.fireEvent('add', [self]);
-                                    resolve();
-                                });
-                            }, {
-                                'package': 'quiqqer/order',
-                                basketId : self.$basketId,
-                                orderHash: self.$orderHash,
-                                productId: productId,
-                                fields   : JSON.encode(fields),
-                                quantity : quantity
-                            });
-
-                            return;
-                        }
+                        //
+                        // if (self.$orderHash) {
+                        //     // order basket
+                        //     QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function (result) {
+                        //         self.refresh().then(function () {
+                        //             self.fireEvent('add', [self]);
+                        //             resolve();
+                        //         });
+                        //     }, {
+                        //         'package': 'quiqqer/order',
+                        //         basketId : self.$basketId,
+                        //         orderHash: self.$orderHash,
+                        //         productId: productId,
+                        //         fields   : JSON.encode(fields),
+                        //         quantity : quantity
+                        //     });
+                        //
+                        //     return;
+                        // }
 
                         // normal basket
                         Product.setQuantity(quantity).then(function () {
@@ -356,13 +348,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             this.fireEvent('refreshBegin', [this]);
 
-            if (this.$orderHash) {
-                return Orders.removePosition(this.$orderHash, pos).then(function (result) {
-                    return self.$loadData(result);
-                }).then(function () {
-                    self.fireEvent('refresh', [self]);
-                });
-            }
+            // if (this.$orderHash) {
+            //     return Orders.removePosition(this.$orderHash, pos).then(function (result) {
+            //         return self.$loadData(result);
+            //     }).then(function () {
+            //         self.fireEvent('refresh', [self]);
+            //     });
+            // }
 
 
             self.$products.splice(index, 1);
@@ -387,8 +379,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     });
                 }, {
                     'package': 'quiqqer/order',
-                    basketId : self.$basketId,
-                    orderHash: self.$orderHash
+                    basketId : self.$basketId
                 });
             });
         },
@@ -468,7 +459,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }, {
                         'package': 'quiqqer/order',
                         basketId : this.$basketId,
-                        orderHash: this.$orderHash,
+                        // orderHash: this.$orderHash,
                         products : JSON.encode(products)
                     });
 

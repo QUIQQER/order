@@ -559,27 +559,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
 
+        $hash = $this->getHash();
+
+        $this->delete();
+        $NewOrder = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            [
-                'articles'   => '[]',
-                'status'     => AbstractOrder::STATUS_CREATED,
-                'successful' => 0,
-                'data'       => '[]',
-
-                'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
-                'paid_data'   => null,
-                'paid_date'   => null,
-
-                'payment_id'      => null,
-                'payment_method'  => null,
-                'payment_data'    => null,
-                'payment_time'    => null,
-                'payment_address' => null
-            ],
-            ['id' => $this->getId()]
+            ['hash' => $hash],
+            ['id' => $NewOrder->getId()]
         );
 
+        $this->id = $NewOrder->getId();
         $this->refresh();
 
         QUI::getEvents()->fireEvent('quiqqerOrderClear', [$this]);

@@ -27,13 +27,17 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param array $attributes
      *
-     * @throws QUI\ERP\Order\Basket\Exception
+     * @throws QUI\Exception
      */
     public function __construct($attributes = [])
     {
         parent::__construct($attributes);
 
-        if ($this->getAttribute('Basket')) {
+        if ($this->getAttribute('Order')) {
+            $this->Basket = new QUI\ERP\Order\Basket\BasketOrder(
+                $this->getAttribute('Order')->getHash()
+            );
+        } elseif ($this->getAttribute('Basket')) {
             $this->Basket = $this->getAttribute('Basket');
         } else {
             $this->Basket = new QUI\ERP\Order\Basket\Basket(

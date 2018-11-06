@@ -183,8 +183,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             Prom.then(function () {
-                Basket.$orderHash = self.getAttribute('orderHash');
-
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function (html) {
                     var Process = new Element('div', {
                         html: html

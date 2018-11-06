@@ -18,7 +18,7 @@ QUI::$Ajax->registerFunction(
         try {
             $Order = $Orders->getLastOrderInProcessFromUser($User);
         } catch (QUI\Exception $Exception) {
-            $Order = QUI\ERP\Order\Factory::getInstance()->createOrderProcess();
+            $Order = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
         }
 
         return $Order->toArray();

@@ -76,56 +76,26 @@ class OrderProcess extends QUI\Control
 
         $this->Events = new QUI\Events\Event();
 
-        $Order    = null;
         $User     = QUI::getUserBySession();
         $isNobody = QUI::getUsers()->isNobodyUser($User);
 
-        // current basket
-        if ($this->getAttribute('orderHash')) {
-            try {
-                $this->Basket = new QUI\ERP\Order\Basket\BasketOrder(
-                    $this->getAttribute('orderHash')
-                );
-
-                $this->Order = $this->Basket->getOrder();
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-            }
-        }
-
-        $basketId = $this->getAttribute('basketId');
-
-        if ($this->Basket === null && $basketId) {
-            try {
-                $this->Basket = new Basket\Basket($basketId);
-            } catch (QUI\ERP\Order\Basket\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-            }
-        }
-
-        if ($this->Basket === null && $isNobody === false) {
-            $this->Basket = Handler::getInstance()->getBasketFromUser(
-                QUI::getUserBySession()
-            );
-
-            $hash = $this->Basket->getHash();
-
-            if (!empty($hash)) {
-                try {
-                    $this->Order  = Handler::getInstance()->getOrderInProcessByHash($hash);
-                    $this->Basket = new QUI\ERP\Order\Basket\BasketOrder($hash);
-                } catch (QUI\Exception $Exception) {
-                }
-            }
-        } elseif ($this->Basket === null && $isNobody) {
-            $this->Basket = new QUI\ERP\Order\Basket\BasketGuest();
-        }
+        // @todo guest ordering
 
 
         // current step
-        $Order = $this->getOrder();
         $steps = $this->getSteps();
         $step  = $this->getAttribute('step');
+        $Order = $this->getOrder();
+
+        // basket into the order
+        $Basket = $this->getBasket();
+
+        if (!$this->getAttribute('orderHash')) {
+            $Basket->toOrder($Order);
+        }
+
+        $this->setAttribute('basketId', $Basket->getId());
+        $this->setAttribute('orderHash', $Order->getHash());
 
         // order is successfull, so no other step must be shown
         if ($Order && $Order->isSuccessful()) {
@@ -152,7 +122,7 @@ class OrderProcess extends QUI\Control
             $this->setAttribute('step', $step);
         }
 
-        // processing step beachten
+        // consider processing step
         // processing step is ok
         $Processing = $this->getProcessingStep();
 
@@ -1087,35 +1057,36 @@ class OrderProcess extends QUI\Control
         }
 
         // for nobody a temporary order cant be created
+        // @todo gast bestellung
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
             return null;
         }
 
-        $orderHash = $this->getAttribute('orderHash');
-        $Orders    = QUI\ERP\Order\Handler::getInstance();
-        $User      = QUI::getUserBySession();
+        $Orders = QUI\ERP\Order\Handler::getInstance();
+        $User   = QUI::getUserBySession();
 
         try {
-            if ($orderHash !== false) {
-                $Order = $Orders->getOrderByHash($orderHash);
+            if ($this->getAttribute('orderHash')) {
+                $Order = $Orders->getOrderByHash($this->getAttribute('orderHash'));
 
                 if ($Order->getCustomer()->getId() == $User->getId()) {
                     $this->Order = $Order;
+
+                    return $this->Order;
                 }
             }
         } catch (QUI\Erp\Order\Exception $Exception) {
         }
 
-        if ($this->Order === null) {
-            try {
-                // select the last order in processing
-                $OrderInProcess = $Orders->getLastOrderInProcessFromUser($User);
 
-                if (!$OrderInProcess->getOrderId()) {
-                    $this->Order = $OrderInProcess;
-                }
-            } catch (QUI\Erp\Order\Exception $Exception) {
+        try {
+            // select the last order in processing
+            $OrderInProcess = $Orders->getLastOrderInProcessFromUser($User);
+
+            if (!$OrderInProcess->getOrderId()) {
+                $this->Order = $OrderInProcess;
             }
+        } catch (QUI\Erp\Order\Exception $Exception) {
         }
 
         if ($this->Order === null) {
@@ -1129,9 +1100,27 @@ class OrderProcess extends QUI\Control
     /**
      * @return Basket\Basket
      */
-    public function getBasket()
+    protected function getBasket()
     {
-        return $this->Basket;
+        if ($this->getAttribute('basketId')) {
+            try {
+                return new Basket\Basket($this->getAttribute('basketId'));
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+        try {
+            return Handler::getInstance()->getBasketFromUser(
+                QUI::getUserBySession()
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return QUI\ERP\Order\Factory::getInstance()->createBasket(
+            QUI::getUserBySession()
+        );
     }
 
     /**
@@ -1204,12 +1193,14 @@ class OrderProcess extends QUI\Control
         ]);
 
         $Basket = new Controls\OrderProcess\Basket([
-            'Basket'   => $this->Basket,
+            'Basket'   => $this->getBasket(),
+            'Order'    => $this->getOrder(),
             'priority' => 10
         ]);
 
         $CustomerData = new Controls\OrderProcess\CustomerData([
-            'Basket'   => $this->Basket,
+            'Basket'   => $this->getBasket(),
+            'Order'    => $this->getOrder(),
             'priority' => 20
         ]);
 
