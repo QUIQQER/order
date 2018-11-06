@@ -140,7 +140,7 @@ class BasketOrder
         $this->List->clear();
 
         if ($this->hasOrder()) {
-            $this->getOrder()->clear();
+            $this->getOrder()->getArticles()->clear();
         }
     }
 
