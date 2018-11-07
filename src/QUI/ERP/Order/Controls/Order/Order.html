@@ -155,6 +155,7 @@
             <div class="quiqqer-order-profile-orders-order-articles-article-description">
                 {$Article->getDescription()}
 
+                {assign var=customFields value=$Article->getCustomFields()}
                 {if count($customFields)}
                 <ul class="quiqqer-order-profile-orders-order-articles-article-description-customFields">
                     {foreach $customFields as $field}
