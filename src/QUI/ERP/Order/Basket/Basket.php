@@ -70,6 +70,9 @@ class Basket
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
         } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return;
         }
 
         if (isset($Exception)) {
@@ -377,15 +380,6 @@ class Basket
     public function updateOrder()
     {
         try {
-            // insert basket products into the articles
-            $Products = $this->getProducts()->calc();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return;
-        }
-
-        try {
             $Order = $this->getOrder();
         } catch (QUI\Exception $Exception) {
             if ($Exception->getCode() !== QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND) {
@@ -397,10 +391,33 @@ class Basket
             $Order = $this->createNewOrder();
         }
 
+        $this->toOrder($Order);
+        $this->setHash($Order->getHash());
+    }
+
+    /**
+     * @param QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess $Order
+     *
+     * @throws QUI\ERP\Exception
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     * @throws QUI\Permissions\Exception
+     */
+    public function toOrder($Order)
+    {
+        try {
+            // insert basket products into the articles
+            $Products = $this->getProducts()->calc();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return;
+        }
+
         // update the data
         $products = $Products->getProducts();
 
-        $Order->clearArticles();
+        $Order->clear();
 
         foreach ($products as $Product) {
             try {
@@ -424,8 +441,6 @@ class Basket
 
         $Order->getArticles()->calc();
         $Order->save();
-
-        $this->setHash($Order->getHash());
     }
 
     /**

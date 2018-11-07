@@ -155,6 +155,29 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
         },
 
         /**
+         * Clears the complete order
+         *
+         * @param orderHash
+         * @return {Promise}
+         */
+        clearOrder: function (orderHash) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_clear', function () {
+                    self.fireEvent('orderClear', [self, orderHash]);
+                    resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    orderHash: orderHash,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+
+        },
+
+        /**
          * Validate a VAT ID
          *
          * @param {String|Number} vatId

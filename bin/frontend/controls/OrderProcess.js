@@ -69,10 +69,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Previous = null;
             this.Loader    = new QUILoader();
 
-            if (!this.getAttribute('orderHash') && Basket.getHash()) {
-                this.setAttribute('orderHash', Basket.getHash());
-            }
-
             this.Loader.addEvents({
                 onShow: function () {
                     this.fireEvent('loaderShow', [this]);
@@ -183,8 +179,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             Prom.then(function () {
-                Basket.$orderHash = self.getAttribute('orderHash');
-
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function (html) {
                     var Process = new Element('div', {
                         html: html
@@ -199,14 +193,91 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     });
 
                     self.$onImport();
-
-                    self.fireEvent('load', [self]);
                 }, {
                     'package': 'quiqqer/order',
                     orderHash: self.getAttribute('orderHash')
                 });
             });
         },
+
+        //region products
+
+        /**
+         * add a product to the order process
+         *
+         * @param {Integer} productId
+         * @param {Object} fields
+         * @param {Integer} [quantity]
+         *
+         * @return {Promise}
+         */
+        addProduct: function (productId, fields, quantity) {
+            var self = this;
+
+            quantity = quantity || 1;
+
+            if (!quantity) {
+                return Promise.reject('Product need a quantity');
+            }
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function () {
+                    self.refreshCurrentStep().then(resolve);
+                }, {
+                    'package': 'quiqqer/order',
+                    orderHash: self.getAttribute('orderHash'),
+                    productId: productId,
+                    quantity : quantity,
+                    fields   : JSON.encode(fields),
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         *
+         * @param {Integer} pos
+         *
+         * @return {Promise}
+         */
+        removeProductPos: function (pos) {
+            var self = this;
+
+            return Orders.removePosition(
+                this.getAttribute('orderHash'),
+                pos
+            ).then(function () {
+                return self.refreshCurrentStep();
+            });
+        },
+
+        /**
+         * Return the products of the current order
+         *
+         * @return {Promise}
+         */
+        getArticles: function () {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getArticles', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: self.getAttribute('orderHash'),
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Clears the current order
+         *
+         * @return {Promise}
+         */
+        clear: function () {
+            return Orders.clearOrder(this.getAttribute('orderHash'));
+        },
+
+        //endregion
 
         // region API
 
