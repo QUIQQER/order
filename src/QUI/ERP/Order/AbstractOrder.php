@@ -907,7 +907,7 @@ abstract class AbstractOrder extends QUI\QDOM
         $calculations = $this->Articles->getCalculations();
 
         try {
-            if ($calculations['sum'] === 0) {
+            if ($calculations['sum'] >= 0 && $calculations['sum'] <= 0) {
                 return $Payments->getPayment(
                     QUI\ERP\Accounting\Payments\Methods\Free\Payment::ID
                 );
