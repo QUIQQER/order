@@ -68,13 +68,19 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          * @return {Element|null}
          */
         create: function () {
+            if (this.mayBeDisplayed() === false) {
+                this.$Elm = new Element('div');
+
+                return this.$Elm;
+            }
+
             var text = QUILocale.get(lg, 'control.basket.button.text');
 
             this.$Elm = new Element('button', {
                 'class': 'quiqqer-order-basketButton button--callToAction',
                 'html' : '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
-                '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
-                '<span class="quiqqer-order-basketButton-batch">0</span>'
+                    '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
+                    '<span class="quiqqer-order-basketButton-batch">0</span>'
             });
 
             if (this.getAttribute('styles')) {
@@ -101,6 +107,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          * event: on import
          */
         $onImport: function () {
+            if (this.mayBeDisplayed() === false) {
+                return;
+            }
+
             var self = this,
                 Elm  = this.getElm();
 
@@ -214,6 +224,23 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
                 self.fireEvent('showBasketEnd', [this]);
             });
+        },
+
+        /**
+         * Can the mini basket be displayed?
+         *
+         * @return {boolean}
+         */
+        mayBeDisplayed: function () {
+            if (typeof window.QUIQQER_SITE === 'undefined') {
+                return true;
+            }
+
+            if (typeof window.QUIQQER_SITE.type === 'undefined') {
+                return true;
+            }
+
+            return window.QUIQQER_SITE.type !== 'quiqqer/order:types/orderingProcess';
         },
 
         /**
