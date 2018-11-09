@@ -253,6 +253,10 @@
             <de><![CDATA[Die Bestellung besitzt keine Artikel.]]></de>
             <en><![CDATA[The order does not own any articles.]]></en>
         </locale>
+        <locale name="message.different,delivery.address">
+            <de><![CDATA[Der Lieferadresse weicht von der Rechnungsadresse ab]]></de>
+            <en><![CDATA[The delivery address differs from the billing address.]]></en>
+        </locale>
 
         <locale name="control.productList.add">
             <de><![CDATA[Zum Warenkorb]]></de>
@@ -881,6 +885,10 @@
             <de><![CDATA[Bestellt durch]]></de>
             <en><![CDATA[Ordered by]]></en>
         </locale>
+        <locale name="panel.order.data.status">
+            <de><![CDATA[Bestellstatus]]></de>
+            <en><![CDATA[Order status]]></en>
+        </locale>
 
         <locale name="panel.orders.contextMenu.open.order">
             <de><![CDATA[Bestellung öffnen]]></de>
@@ -898,6 +906,10 @@
         <locale name="grid.orderNo">
             <de><![CDATA[Bestell-Nr]]></de>
             <en><![CDATA[Order no]]></en>
+        </locale>
+        <locale name="grid.orderStatus">
+            <de><![CDATA[Bestellstatus]]></de>
+            <en><![CDATA[Order status]]></en>
         </locale>
         <locale name="grid.invoiceNo">
             <de><![CDATA[Rech.-Nr]]></de>

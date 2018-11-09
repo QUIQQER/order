@@ -114,6 +114,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 gridData.data = gridData.data.map(function (entry) {
                     entry.opener = '&nbsp;';
 
+                    entry.status = new Element('span', {
+                        text  : entry.status_title,
+                        styles: {
+                            color: entry.status_color !== '---' ? entry.status_color : ''
+                        }
+                    });
+
                     return entry;
                 });
 
@@ -322,6 +329,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataIndex: 'prefixed-id',
                     dataType : 'string',
                     width    : 80
+                }, {
+                    header   : QUILocale.get(lg, 'grid.orderStatus'),
+                    dataIndex: 'status',
+                    dataType : 'node',
+                    width    : 100
                 }, {
                     header   : QUILocale.get(lg, 'grid.customerNo'),
                     dataIndex: 'customer_id',

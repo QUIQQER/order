@@ -215,6 +215,11 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);
         $this->data            = json_decode($data['data'], true);
 
+
+        if (isset($data['status'])) {
+            $this->status = $data['status'];
+        }
+
         // user
         $this->customerId = (int)$data['customerId'];
 
@@ -431,6 +436,7 @@ abstract class AbstractOrder extends QUI\QDOM
     public function toArray()
     {
         $articles  = '';
+        $status    = '';
         $paymentId = '';
 
         $Payment = $this->getPayment();
@@ -441,6 +447,13 @@ abstract class AbstractOrder extends QUI\QDOM
 
         try {
             $articles = $this->getArticles()->toArray();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        try {
+            $ProcessingStatus = $this->getProcessingStatus();
+            $status           = $ProcessingStatus->getId();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -462,7 +475,8 @@ abstract class AbstractOrder extends QUI\QDOM
             'hasDeliveryAddress' => $this->hasDeliveryAddress(),
             'addressDelivery'    => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'     => $this->getInvoiceAddress()->getAttributes(),
-            'paymentId'          => $paymentId
+            'paymentId'          => $paymentId,
+            'status'             => $status
         ];
     }
 
