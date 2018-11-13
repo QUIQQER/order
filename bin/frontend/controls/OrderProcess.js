@@ -51,6 +51,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
         options: {
             orderHash : false,
+            basket    : true, // use the basket for the loading
             buttons   : true,
             showLoader: true
         },
@@ -195,7 +196,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     self.$onImport();
                 }, {
                     'package': 'quiqqer/order',
-                    orderHash: self.getAttribute('orderHash')
+                    orderHash: self.getAttribute('orderHash'),
+                    basket   : self.getAttribute('basket')
                 });
             });
         },

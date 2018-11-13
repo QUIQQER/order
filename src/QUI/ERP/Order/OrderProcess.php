@@ -67,7 +67,8 @@ class OrderProcess extends QUI\Control
         $this->setAttributes([
             'Site'      => false,
             'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
-            'orderHash' => false
+            'orderHash' => false,
+            'basket'    => true // import basket articles to the order, use the basket
         ]);
 
         parent::__construct($attributes);
@@ -96,7 +97,7 @@ class OrderProcess extends QUI\Control
         // basket into the order
         $Basket = $this->getBasket();
 
-        if (!$this->getAttribute('orderHash')) {
+        if (!$this->getAttribute('orderHash') && $this->getAttribute('basket')) {
             $Basket->toOrder($Order);
         }
 

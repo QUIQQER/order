@@ -414,7 +414,7 @@ class Order extends AbstractOrder implements OrderInterface
             ['id' => $this->getId()]
         );
 
-        
+
         if ($this->statusChanged) {
             try {
                 QUI::getEvents()->fireEvent('quiqqerOrderProcessStatusChange', [
