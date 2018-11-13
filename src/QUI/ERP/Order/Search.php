@@ -400,6 +400,10 @@ class Search extends Singleton
             'payment_method',
             'payment_title',
             'processing_status',
+            'status',
+            'status_id',
+            'status_title',
+            'status_color',
             'taxId',
             'euVatId'
         ];
@@ -432,10 +436,11 @@ class Search extends Singleton
             $Customer  = $Order->getCustomer();
             $orderData = $entry;
 
+            $orderData['id']          = (int)$orderData['id'];
             $orderData['hash']        = $Order->getHash();
             $orderData['prefixed-id'] = $Order->getPrefixedId();
 
-
+            // customer data
             if (empty($orderData['customer_id'])) {
                 $orderData['customer_id'] = $Customer->getId();
 
@@ -474,6 +479,21 @@ class Search extends Singleton
                 $orderData['c_date'] = $DateFormatter->format(
                     strtotime($Order->getCreateDate())
                 );
+            }
+
+            // processing status
+            $orderData['status_id']    = Handler::EMPTY_VALUE;
+            $orderData['status_title'] = Handler::EMPTY_VALUE;
+            $orderData['status_color'] = '';
+
+            try {
+                $ProcessingStatus = $Order->getProcessingStatus();
+
+                $orderData['status_id']    = $ProcessingStatus->getId();
+                $orderData['status_title'] = $ProcessingStatus->getTitle();
+                $orderData['status_color'] = $ProcessingStatus->getColor();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::addDebug($Exception->getMessage());
             }
 
             // payment

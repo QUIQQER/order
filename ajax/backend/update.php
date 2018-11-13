@@ -121,6 +121,13 @@ QUI::$Ajax->registerFunction(
             }
         }
 
+        if (isset($data['status']) && $data['status'] !== false) {
+            try {
+                $Order->setProcessingStatus($data['status']);
+            } catch (QUI\ERP\Order\Exception $Exception) {
+            }
+        }
+
         $Order->update();
     },
     ['orderId', 'data'],

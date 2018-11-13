@@ -377,13 +377,6 @@ class Order extends AbstractOrder implements OrderInterface
             );
         }
 
-        $data = $this->getDataForSaving();
-
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderUpdateBegin',
-            [$this, $data]
-        );
-
         // set status change
         if ($this->statusChanged) {
             $status = $this->status;
@@ -407,11 +400,20 @@ class Order extends AbstractOrder implements OrderInterface
             );
         }
 
+        // save data
+        $data = $this->getDataForSaving();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderUpdateBegin',
+            [$this, $data]
+        );
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
             ['id' => $this->getId()]
         );
+
 
         if ($this->statusChanged) {
             try {

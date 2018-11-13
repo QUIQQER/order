@@ -105,6 +105,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 self.$OrderTitle.set('html', data.title);
                 self.$OrderIcon.className = 'fa ' + data.icon;
 
+                var BasketEnd = Content.getElement('.quiqqer-order-basket-end');
+
+                if (BasketEnd) {
+                    QUI.parse(BasketEnd);
+                }
+
                 if (step === 'checkout') {
                     self.$Next.hide();
                     self.$Submit.show();

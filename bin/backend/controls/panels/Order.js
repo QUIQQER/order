@@ -11,6 +11,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'qui/controls/buttons/Separator',
     'qui/controls/windows/Confirm',
     'package/quiqqer/order/bin/backend/Orders',
+    'package/quiqqer/order/bin/backend/ProcessingStatus',
     'package/quiqqer/payments/bin/backend/Payments',
     'package/quiqqer/erp/bin/backend/controls/Comments',
     'package/quiqqer/invoice/bin/backend/controls/articles/Text',
@@ -23,7 +24,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
-             Orders, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
+             Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
              templateData) {
     "use strict";
 
@@ -146,6 +147,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     self.setAttribute('paymentId', data.paymentId);
                     self.setAttribute('paymentMethod', data.paymentMethod);
+                    self.setAttribute('status', data.status);
 
                     if (data.articles) {
                         self.$serializedList = data.articles;
@@ -179,7 +181,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 addressDelivery: this.getAttribute('addressDelivery'),
                 data           : this.getAttribute('data'),
                 articles       : this.getAttribute('articles'),
-                paymentId      : this.getAttribute('paymentId')
+                paymentId      : this.getAttribute('paymentId'),
+                status         : this.getAttribute('status')
             };
 
             return new Promise(function (resolve) {
@@ -551,8 +554,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textOrderData           : QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate           : QUILocale.get(lg, 'panel.order.data.date'),
                         textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy'),
+                        textStatus              : QUILocale.get(lg, 'panel.order.data.status'),
                         textPaymentTitle        : QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
-                        textPayment             : QUILocale.get(lg, 'order.payment.panel.payment')
+                        textPayment             : QUILocale.get(lg, 'order.payment.panel.payment'),
+
+                        messageDifferentDeliveryAddress: QUILocale.get(lg, 'message.different,delivery.address')
                     })
                 });
 
@@ -715,6 +721,42 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     Select.disabled = false;
                     Select.value    = self.getAttribute('paymentId');
+                });
+            }).then(function () {
+                // order status
+                var StatusSelect = self.getContent().getElement('.order-data-status-field-select');
+                var StatusColor  = self.getContent().getElement('.order-data-status-field-colorPreview');
+
+                StatusSelect.addEvent('change', function () {
+                    var Option = StatusSelect.getElement('[value="' + this.value + '"]');
+
+                    if (Option) {
+                        StatusColor.setStyle('backgroundColor', Option.get('data-color'));
+                    } else {
+                        StatusColor.setStyle('backgroundColor', '');
+                    }
+                });
+
+                return ProcessingStatus.getList().then(function (statusList) {
+                    statusList = statusList.data;
+
+                    new Element('option', {
+                        html        : '',
+                        value       : '',
+                        'data-color': ''
+                    }).inject(StatusSelect);
+
+                    for (var i = 0, len = statusList.length; i < len; i++) {
+                        new Element('option', {
+                            html        : statusList[i].title,
+                            value       : statusList[i].id,
+                            'data-color': statusList[i].color
+                        }).inject(StatusSelect);
+                    }
+
+                    StatusSelect.disabled = false;
+                    StatusSelect.value    = self.getAttribute('status');
+                    StatusSelect.fireEvent('change');
                 });
             }).then(function () {
                 return self.$openCategory();
@@ -1085,9 +1127,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * drop the data into the order
          */
         $unLoadCategory: function () {
-            var Content        = this.getContent(),
-                deliverAddress = Content.getElement('[name="differentDeliveryAddress"]'),
-                PaymentForm    = Content.getElement('form[name="payment"]');
+            var Content          = this.getContent(),
+                deliverAddress   = Content.getElement('[name="differentDeliveryAddress"]'),
+                PaymentForm      = Content.getElement('form[name="payment"]'),
+                ProcessingStatus = Content.getElement('[name="status"]');
 
             if (this.$AddressInvoice) {
                 this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
@@ -1104,6 +1147,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             if (this.$ArticleList) {
                 this.setAttribute('articles', this.$ArticleList.save());
                 this.$serializedList = this.$ArticleList.serialize();
+            }
+
+            // processing status
+            if (ProcessingStatus) {
+                this.setAttribute('status', ProcessingStatus.value);
             }
 
             // payments
