@@ -180,7 +180,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $firstName = $Address->getAttribute('firstname');
         $lastName  = $Address->getAttribute('lastname');
         $street_no = $Address->getAttribute('street_no');
-        $zip       = $Address->getAttribute('zip');
+//        $zip       = $Address->getAttribute('zip');
         $city      = $Address->getAttribute('city');
         $country   = $Address->getAttribute('country');
 
@@ -214,11 +214,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
-        if (empty($zip)) {
-            $throwException(
-                QUI::getLocale()->get('quiqqer/order', 'zip')
-            );
-        }
+//        if (empty($zip)) {
+//            $throwException(
+//                QUI::getLocale()->get('quiqqer/order', 'zip')
+//            );
+//        }
 
         if (empty($city)) {
             $throwException(
