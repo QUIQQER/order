@@ -73,7 +73,13 @@
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.price'}"
         >
             {if !isset($product.displayPrice) || $product.displayPrice}
-                {$product.sum}
+            <span>{$product.sum}</span>
+            {/if}
+
+            {if !isset($product.hasOfferPrice) || $product.hasOfferPrice}
+            <span class="offer-original-price">
+                {$product.originalPrice}
+            </span>
             {/if}
         </td>
     </tr>

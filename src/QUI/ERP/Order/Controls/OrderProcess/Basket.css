@@ -17,3 +17,10 @@
 .quiqqer-order-btn-submit:hover {
     background: #538018;
 }
+
+.offer-original-price {
+    clear: both;
+    display: block;
+    font-size: 80%;
+    text-decoration: line-through;
+}
