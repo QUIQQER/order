@@ -65,8 +65,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 BusinessType.addEvent('change', this.$onBusinessTypeChange);
             }
 
-            VatId.addEvent('change', this.$onVatIdChange);
-            VatId.addEvent('keyup', this.$onVatIdChange);
+            // VatId.addEvent('change', this.$onVatIdChange);
+            // VatId.addEvent('keyup', this.$onVatIdChange);
+            VatId.addEvent('blur', this.$onVatIdChange);
 
             var val = parseInt(this.getElm().get('data-validate'));
 
