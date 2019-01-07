@@ -11,7 +11,9 @@ Order=$Order
         <h1>{locale group="quiqqer/order" var="ordering.step.title.Checkout"}</h1>
     </header>
 
-    {locale group="quiqqer/order" var="ordering.step.checkout.text"}
+    <div class="quiqqer-order-step-checkout-attention">
+        {locale group="quiqqer/order" var="ordering.step.checkout.text"}
+    </div>
 
     <div class="quiqqer-order-step-checkout-invoiceAddress">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.billing.address"}</h2>
