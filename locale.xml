@@ -411,13 +411,11 @@
 
         <locale name="ordering.step.checkout.text" html="true">
             <de><![CDATA[
-            Bitte überprüfen Sie noch einmal alle Angaben ihrer Bestellung.<br /><br />
-            Mit einem Klick auf "Kostenpflichtig bestellen" bestätigen Sie Ihre Angaben und schließen
-            Ihre Bestellung ab. Sie erhalten eine Bestätigung an Ihre angegebene E-Mail Adresse.
+            Bitte überprüfen Sie noch einmal alle Angaben ihrer Bestellung.<br />Mit einem Klick auf "Kostenpflichtig bestellen" bestätigen Sie Ihre Angaben und schließen Ihre Bestellung ab.
+            Sie erhalten eine Bestätigung an Ihre angegebene E-Mail Adresse.
             ]]></de>
             <en><![CDATA[
-            Please check all the details of your order. <br /><br />
-            By clicking on "Pay to order", you confirm your details and close your order.
+            Please check all the details of your order. <br />By clicking on "Pay to order", you confirm your details and close your order.
             You will receive a confirmation to your e-mail address.
             ]]></en>
         </locale>
