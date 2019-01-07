@@ -222,6 +222,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.reject('Product need a quantity');
             }
 
+            if (!this.$Timeline) {
+                return new Promise(function (resolve) {
+                    (function () {
+                        self.addProduct(productId, fields, quantity).then(resolve);
+                    }).delay(500);
+                });
+            }
+
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function () {
                     self.refreshCurrentStep().then(resolve);
@@ -524,6 +532,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         openStep: function (step) {
             if (this.$runningAnimation) {
+                return Promise.resolve();
+            }
+
+            if (!this.$TimelineContainer) {
                 return Promise.resolve();
             }
 
@@ -926,6 +938,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Number}
          */
         $getCount: function () {
+            if (!this.$Form) {
+                return 0;
+            }
+
             var productCount = parseInt(this.$Form.get('data-products-count'));
 
             // if no order hash set, we can ask the basket
