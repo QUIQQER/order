@@ -45,6 +45,10 @@ class EventHandling
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
+        if (defined('QUIQQER_AJAX')) {
+            return;
+        }
+
         try {
             $Project      = $Rewrite->getProject();
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
