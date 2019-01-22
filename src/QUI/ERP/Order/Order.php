@@ -345,10 +345,11 @@ class Order extends AbstractOrder implements OrderInterface
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
-            'articles' => $this->Articles->toJSON(),
-            'comments' => $this->Comments->toJSON(),
-            'history'  => $this->History->toJSON(),
-            'data'     => json_encode($this->data),
+            'articles'      => $this->Articles->toJSON(),
+            'comments'      => $this->Comments->toJSON(),
+            'history'       => $this->History->toJSON(),
+            'data'          => json_encode($this->data),
+            'currency_data' => $this->getCurrency()->toArray(),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
@@ -357,6 +358,7 @@ class Order extends AbstractOrder implements OrderInterface
                 json_encode($this->paymentData)
             ),
             'payment_address' => ''  // verschlüsselt
+
         ];
     }
 

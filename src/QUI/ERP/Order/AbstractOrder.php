@@ -170,6 +170,11 @@ abstract class AbstractOrder extends QUI\QDOM
     protected $statusChanged = false;
 
     /**
+     * @var QUI\ERP\Currency\Currency
+     */
+    protected $Currency = null;
+
+    /**
      * Order constructor.
      *
      * @param array $data
@@ -214,7 +219,6 @@ abstract class AbstractOrder extends QUI\QDOM
         $this->addressDelivery = json_decode($data['addressDelivery'], true);
         $this->addressInvoice  = json_decode($data['addressInvoice'], true);
         $this->data            = json_decode($data['data'], true);
-
 
         if (isset($data['status'])) {
             $this->status = $data['status'];
@@ -312,6 +316,27 @@ abstract class AbstractOrder extends QUI\QDOM
             $paymentData = json_decode($paymentData, true);
 
             $this->paymentData = $paymentData;
+        }
+
+        // currency
+        if (!empty($data['currency_data'])) {
+            $currency = json_decode($data['currency_data'], true);
+
+            if (is_string($currency)) {
+                $currency = json_decode($currency, true);
+            }
+
+            if ($currency && isset($currency['code'])) {
+                try {
+                    $this->Currency = QUI\ERP\Currency\Handler::getCurrency($currency['code']);
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::addDebug($Exception->getMessage());
+                }
+            }
+        }
+
+        if ($this->Currency === null) {
+            $this->Currency = QUI\ERP\Defaults::getCurrency();
         }
     }
 
