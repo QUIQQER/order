@@ -528,7 +528,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'comments'      => $this->Comments->toJSON(),
             'history'       => $this->History->toJSON(),
             'data'          => json_encode($this->data),
-            'currency_data' => $this->getCurrency()->toArray(),
+            'currency_data' => json_encode($this->getCurrency()->toArray()),
             'status'        => $status,
             'successful'    => $this->successful,
 

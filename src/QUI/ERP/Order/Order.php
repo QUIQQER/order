@@ -349,7 +349,7 @@ class Order extends AbstractOrder implements OrderInterface
             'comments'      => $this->Comments->toJSON(),
             'history'       => $this->History->toJSON(),
             'data'          => json_encode($this->data),
-            'currency_data' => $this->getCurrency()->toArray(),
+            'currency_data' => json_encode($this->getCurrency()->toArray()),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
