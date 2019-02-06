@@ -1,6 +1,19 @@
 /**
  * @module package/quiqqer/order/bin/frontend/classes/Basket
  * @author www.pcsg.de (Henning Leutz)
+ *
+ * @event onRemoveBegin [self]
+ * @event onRemove [self]
+ *
+ * @event onAddBegin [self]
+ * @event onAdd [self]
+ *
+ * @event onClearBegin [self]
+ * @event onClear [self]
+ *
+ * @event onRefreshBegin [self]
+ * @event onRefresh [self]
+ *
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -327,11 +340,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            this.fireEvent('refreshBegin', [this]);
+            self.fireEvent('refreshBegin', [this]);
+            this.fireEvent('removeBegin', [this]);
 
             self.$products.splice(index, 1);
 
             return self.save().then(function () {
+                self.fireEvent('remove', [self]);
                 self.fireEvent('refresh', [self]);
             });
         },
@@ -344,9 +359,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         clear: function () {
             var self = this;
 
+            this.fireEvent('clearBegin', [this]);
+
             return new Promise(function (resolve) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_clear', function (result) {
                     self.refresh().then(function () {
+                        self.fireEvent('clear', [self]);
                         resolve(result);
                     });
                 }, {
