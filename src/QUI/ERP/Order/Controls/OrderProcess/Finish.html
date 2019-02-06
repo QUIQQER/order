@@ -1,3 +1,10 @@
 {locale group="quiqqer/order" var="message.order.success"}
 
 {$OrderControl->create()}
+
+<script>
+    require(['qui/QUI'], function (QUI) {
+        QUI.fireEvent('quiqqerOrderProcessFinish', ["{$orderHash}"]);
+        QUI.setAttribute('QUIQQER_ORDER_CHECKOUT_FINISH', "{$orderHash}");
+    });
+</script>

@@ -3,6 +3,7 @@
  * @author www.pcsg.de (Henning Leutz)
  *
  * @event QUI Event: onQuiqqerOrderProcessOpenStep  [this, step]
+ * @event QUI Event: quiqqerOrderProcessFinish  [orderHash]
  */
 require.config({
     paths: {
