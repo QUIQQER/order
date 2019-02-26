@@ -420,6 +420,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
 
         // create invoice?
+
+        /**
+         * The special attribute 'no_invoice_auto_create' was added to allow
+         * plugins (e.g. via events) to prevent an Order from creating any invoices
+         * so they may create them on their own. This is used by e.g. quiqqer/contracts.
+         *
+         * @author Patrick Müller [26.02.2018]
+         */
+        if ($Order->getAttribute('no_invoice_auto_create')) {
+            return $Order;
+        }
+
         if (Settings::getInstance()->createInvoiceOnOrder()) {
             $Order->createInvoice();
 

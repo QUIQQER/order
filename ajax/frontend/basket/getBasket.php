@@ -15,6 +15,10 @@ use QUI\ERP\Order\Factory as OrderFactory;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_getBasket',
     function () {
+        if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
+            return [];
+        }
+
         try {
             $Basket = OrderHandler::getInstance()->getBasketFromUser(QUI::getUserBySession());
         } catch (QUI\Exception $Exception) {
