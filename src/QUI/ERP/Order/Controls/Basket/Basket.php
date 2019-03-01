@@ -53,7 +53,7 @@ class Basket extends QUI\Control
         $Products->setUser(QUI::getUserBySession());
         $Products->calc();
 
-        $View = $Products->getView();
+        $View = $Products->getView(QUI::getLocale());
 
         $Engine->assign([
             'data'     => $View->toArray(),
