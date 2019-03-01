@@ -89,7 +89,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
                         this.getParent('.quiqqer-order-basket-small-articles-article').get('data-pos')
                     );
 
-                    Basket.removeProductPos(pos - 1);
+                    Basket.removeProductPos(pos);
                 });
 
                 QUI.parse(self.getElm());
