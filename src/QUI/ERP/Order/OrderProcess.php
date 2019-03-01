@@ -81,6 +81,11 @@ class OrderProcess extends QUI\Control
         $isNobody = QUI::getUsers()->isNobodyUser($User);
 
         // @todo guest ordering
+        if ($isNobody) {
+            header('Location: '.$this->getProject()->firstChild()->getUrlRewritten(), false, 301);
+            exit;
+        }
+
 
         // current step
         $steps = $this->getSteps();
@@ -1105,7 +1110,7 @@ class OrderProcess extends QUI\Control
     }
 
     /**
-     * @return Basket\Basket
+     * @return Basket\Basket|Basket\BasketGuest
      */
     protected function getBasket()
     {
@@ -1117,17 +1122,25 @@ class OrderProcess extends QUI\Control
             }
         }
 
+        $SessionUser = QUI::getUserBySession();
+
+        if (QUI::getUsers()->isNobodyUser($SessionUser)) {
+            return new Basket\BasketGuest();
+        }
+
         try {
-            return Handler::getInstance()->getBasketFromUser(
-                QUI::getUserBySession()
-            );
+            return Handler::getInstance()->getBasketFromUser($SessionUser);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        return QUI\ERP\Order\Factory::getInstance()->createBasket(
-            QUI::getUserBySession()
-        );
+        try {
+            return QUI\ERP\Order\Factory::getInstance()->createBasket($SessionUser);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return new Basket\BasketGuest();
     }
 
     /**
