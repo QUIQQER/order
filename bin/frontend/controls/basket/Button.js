@@ -77,10 +77,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             var text = QUILocale.get(lg, 'control.basket.button.text');
 
             this.$Elm = new Element('button', {
-                'class': 'quiqqer-order-basketButton button--callToAction',
-                'html' : '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
+                'class' : 'quiqqer-order-basketButton button--callToAction',
+                'html'  : '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
                     '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
-                    '<span class="quiqqer-order-basketButton-batch">0</span>'
+                    '<span class="quiqqer-order-basketButton-batch">0</span>',
+                disabled: true
             });
 
             if (this.getAttribute('styles')) {
@@ -140,6 +141,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 }
 
                 this.$isLoaded = true;
+                this.getElm().set('disabled', false);
             }.bind(this);
 
             require([
