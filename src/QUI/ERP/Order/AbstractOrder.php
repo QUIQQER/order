@@ -23,7 +23,7 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder extends QUI\QDOM
+abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
     const PAYMENT_STATUS_OPEN = 0;
     const PAYMENT_STATUS_PAID = 1;
