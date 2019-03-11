@@ -726,7 +726,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getCurrency()
     {
-        return QUI\ERP\Defaults::getCurrency();
+        return $this->Currency;
     }
 
     /**
