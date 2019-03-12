@@ -309,9 +309,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
                     Loader.destroy();
                 }).catch(function (err) {
-                    QUI.getMessageHandler().then(function (MH) {
-                        MH.addError(err.getMessage(), Target);
-                    });
+                    if (typeof err !== 'undefined' && typeof err.getMessage === 'function') {
+                        QUI.getMessageHandler().then(function (MH) {
+                            MH.addError(err.getMessage(), Target);
+                        });
+                    }
 
                     Loader.destroy();
                 });
