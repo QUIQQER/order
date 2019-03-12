@@ -430,7 +430,13 @@ class OrderProcess extends QUI\Control
         $this->checkSuccessfulStatus();
 
         // check if order is finished
-        if ($this->getOrder() && $this->getOrder()->isSuccessful()) {
+        $Order = $this->getOrder();
+
+        if ($Order && $Order->isSuccessful()) {
+            if (!$Order->getOrderId()) {
+                $Order->createOrder();
+            }
+
             return $this->renderFinish();
         }
 
