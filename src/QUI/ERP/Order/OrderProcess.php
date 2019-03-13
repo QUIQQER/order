@@ -1045,7 +1045,7 @@ class OrderProcess extends QUI\Control
 
         $sites = $Project->getSitesIds([
             'where' => [
-                'type'   => 'quiqqer / order:types / orderingProcess',
+                'type'   => 'quiqqer/order:types/orderingProcess',
                 'active' => 1
             ],
             'limit' => 1
