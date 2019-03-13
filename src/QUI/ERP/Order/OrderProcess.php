@@ -433,7 +433,7 @@ class OrderProcess extends QUI\Control
         $Order = $this->getOrder();
 
         if ($Order && $Order->isSuccessful()) {
-            if (!$Order->getOrderId()) {
+            if ($Order instanceof OrderInProcess && !$Order->getOrderId()) {
                 $Order->createOrder();
             }
 
