@@ -437,6 +437,11 @@ class OrderProcess extends QUI\Control
                 $Order->createOrder();
             }
 
+            $LastStep = end($steps);
+
+            $this->setAttribute('step', $LastStep->getName());
+            $this->setAttribute('orderHash', $Order->getHash());
+
             return $this->renderFinish();
         }
 
