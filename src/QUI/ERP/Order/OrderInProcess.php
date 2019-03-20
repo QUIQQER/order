@@ -420,7 +420,6 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
 
         // create invoice?
-
         /**
          * The special attribute 'no_invoice_auto_create' was added to allow
          * plugins (e.g. via events) to prevent an Order from creating any invoices
@@ -428,7 +427,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
          *
          * @author Patrick Müller [26.02.2018]
          */
-        if ($Order->getAttribute('no_invoice_auto_create')) {
+        if ($this->getAttribute('no_invoice_auto_create') || $Order->getAttribute('no_invoice_auto_create')) {
             return $Order;
         }
 
