@@ -169,8 +169,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.getElm().set('data-quiid', this.getId());
 
-            var Prom = new Promise(function () {
-                return self.getAttribute('orderHash');
+            var Prom = new Promise(function (resolve) {
+                resolve(self.getAttribute('orderHash'));
             });
 
             if (!this.getAttribute('orderHash')) {
@@ -1236,7 +1236,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             return QUI.parse(Payments).then(function () {
-                Payments.getElement('[name="change-payment"]').addEvent('click', function (event) {
+                var Change = Payments.getElement('[name="change-payment"]');
+
+                if (!Change) {
+                    return;
+                }
+
+                Change.addEvent('click', function (event) {
                     event.stop();
 
                     self.Loader.show();
