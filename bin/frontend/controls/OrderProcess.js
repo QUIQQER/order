@@ -169,8 +169,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.getElm().set('data-quiid', this.getId());
 
-            var Prom = new Promise(function () {
-                return self.getAttribute('orderHash');
+            var Prom = new Promise(function (resolve) {
+                resolve(self.getAttribute('orderHash'));
             });
 
             if (!this.getAttribute('orderHash')) {
