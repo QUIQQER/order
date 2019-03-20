@@ -184,6 +184,12 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @returns {Promise}
          */
         validateVatId: function (vatId) {
+            vatId = vatId.trim();
+
+            if (vatId === '') {
+                return Promise.reject();
+            }
+
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_validateVatId', resolve, {
                     'package': 'quiqqer/order',

@@ -430,7 +430,18 @@ class OrderProcess extends QUI\Control
         $this->checkSuccessfulStatus();
 
         // check if order is finished
-        if ($this->getOrder() && $this->getOrder()->isSuccessful()) {
+        $Order = $this->getOrder();
+
+        if ($Order && $Order->isSuccessful()) {
+            if ($Order instanceof OrderInProcess && !$Order->getOrderId()) {
+                $Order->createOrder();
+            }
+
+            $LastStep = end($steps);
+
+            $this->setAttribute('step', $LastStep->getName());
+            $this->setAttribute('orderHash', $Order->getHash());
+
             return $this->renderFinish();
         }
 
@@ -1039,7 +1050,7 @@ class OrderProcess extends QUI\Control
 
         $sites = $Project->getSitesIds([
             'where' => [
-                'type'   => 'quiqqer / order:types / orderingProcess',
+                'type'   => 'quiqqer/order:types/orderingProcess',
                 'active' => 1
             ],
             'limit' => 1
