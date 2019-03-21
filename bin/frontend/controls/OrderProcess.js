@@ -1107,6 +1107,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     resolve();
                 };
 
+                if (!Elm || !moofx(Elm)) {
+                    options.callback();
+                    return;
+                }
+
                 moofx(Elm).animate(styles, options);
 
                 (function () {

@@ -622,6 +622,14 @@
             If you think this is an error, please contact the administrator.
             ]]></en>
         </locale>
+        <locale name="exception.order.unknown.error">
+            <de><![CDATA[
+            Es ist ein unerwarteter Fehler aufgetreten, der Support wurde benachrichtigt.
+            ]]></de>
+            <en><![CDATA[
+            An unexpected error has occurred, support has been notified.
+            ]]></en>
+        </locale>
 
         <locale name="control.profile.orders.order.date">
             <de><![CDATA[Bestellungsdatum]]></de>
@@ -757,16 +765,12 @@
             <h1>Hallo [user],</h1>
             vielen Dank für Ihre Bestellung.
             Hier sind die Details zu Ihrer Bestellung:<br />
-            Bestellnummer: [orderId]<br />
-            <br />
-            [order]
+            Bestellnummer: [orderId]
             ]]></de>
             <en><![CDATA[
             Dear [user],<br />
             Thank you for your order. Here are the details:<br />
-            Order ID: [orderId]<br />
-            <br />
-            [order]
+            Order ID: [orderId]
             ]]></en>
         </locale>
 

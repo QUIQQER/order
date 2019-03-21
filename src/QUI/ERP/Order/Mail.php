@@ -45,7 +45,7 @@ class Mail
 
         $Customer = $Order->getCustomer();
         $user     = $Customer->getName();
-        $user     = trim($user);
+        $user     = \trim($user);
 
         if (empty($user)) {
             $Address = $Customer->getAddress();
@@ -69,14 +69,24 @@ class Mail
             ])
         );
 
+        $Engine = QUI::getTemplateManager()->getEngine();
+        $Order  = $OrderControl->getOrder();
 
-        $Mailer->setBody(
-            QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
+        $Articles = $Order->getArticles()->toUniqueList();
+        $Articles->hideHeader();
+
+        $Engine->assign([
+            'Order'    => $Order,
+            'Articles' => $Articles,
+            'message'  => QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
                 'orderId'  => $Order->getPrefixedId(),
-                'order'    => QUI\ControlUtils::parse($OrderControl),
                 'user'     => $user,
                 'username' => $Customer->getUsername(),
             ])
+        ]);
+
+        $Mailer->setBody(
+            $Engine->fetch(\dirname(__FILE__).'/MailTemplates/orderConfirmation.html')
         );
 
         $Mailer->send();
