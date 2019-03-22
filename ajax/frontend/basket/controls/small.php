@@ -13,18 +13,24 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_small',
     function ($basketId) {
-        if (isset($basketId)) {
-            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasket($basketId);
-        } else {
-            $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketFromUser(
-                QUI::getUserBySession()
-            );
+        try {
+            if (isset($basketId)) {
+                $Basket = QUI\ERP\Order\Handler::getInstance()->getBasket($basketId);
+            } else {
+                $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketFromUser(
+                    QUI::getUserBySession()
+                );
+            }
+
+            $Control = new QUI\ERP\Order\Controls\Basket\Small();
+            $Control->setBasket($Basket);
+
+            return $Control->create();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            return '';
         }
-
-        $Control = new QUI\ERP\Order\Controls\Basket\Small();
-        $Control->setBasket($Basket);
-
-        return $Control->create();
     },
     ['basketId']
 );
