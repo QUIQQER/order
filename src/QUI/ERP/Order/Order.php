@@ -372,7 +372,8 @@ class Order extends AbstractOrder implements OrderInterface
             $PermissionUser = QUI::getUserBySession();
         }
 
-        if ($PermissionUser->getId() !== $this->getCustomer()->getId()) {
+        if (!QUI::getUsers()->isSystemUser($PermissionUser)
+            && $PermissionUser->getId() !== $this->getCustomer()->getId()) {
             QUI\Permissions\Permission::hasPermission(
                 'quiqqer.order.update',
                 $PermissionUser

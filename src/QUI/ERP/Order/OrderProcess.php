@@ -92,7 +92,8 @@ class OrderProcess extends QUI\Control
         $step  = $this->getAttribute('step');
         $Order = $this->getOrder();
 
-        if ($Order->getCustomer()->getId() !== $User->getId()) {
+        if ($Order->getCustomer()->getId() !== $User->getId()
+            && !QUI::getUsers()->isSystemUser($User)) {
             throw new QUI\Permissions\Exception([
                 'quiqqer/order',
                 'exception.no.permission.for.this.order'
@@ -434,7 +435,7 @@ class OrderProcess extends QUI\Control
 
         if ($Order && $Order->isSuccessful()) {
             if ($Order instanceof OrderInProcess && !$Order->getOrderId()) {
-                $Order->createOrder();
+                $Order = $Order->createOrder();
             }
 
             $LastStep = end($steps);
@@ -651,7 +652,14 @@ class OrderProcess extends QUI\Control
         }
 
         // show processing step if order is not paid
-        if ($Order instanceof Order && !$Order->isPaid()) {
+        $paymentIsSuccessful = false;
+        $Payment             = $Order->getPayment();
+
+        if ($Payment->isSuccessful($Order->getHash())) {
+            $paymentIsSuccessful = true;
+        }
+
+        if ($Order instanceof Order && !$Order->isPaid() && !$paymentIsSuccessful) {
             // if a payment transaction exists, maybe the transaction is in pending
             // as long as, the order is "successful"
             $transactions = $Order->getTransactions();
@@ -1092,7 +1100,8 @@ class OrderProcess extends QUI\Control
             if ($this->getAttribute('orderHash')) {
                 $Order = $Orders->getOrderByHash($this->getAttribute('orderHash'));
 
-                if ($Order->getCustomer()->getId() == $User->getId()) {
+                if (QUI::getUsers()->isSystemUser($User)
+                    || $Order->getCustomer()->getId() === $User->getId()) {
                     $this->Order = $Order;
 
                     return $this->Order;
@@ -1217,33 +1226,40 @@ class OrderProcess extends QUI\Control
         $Steps     = new OrderProcessSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
+        $Order  = $this->getOrder();
+        $Basket = $this->Basket;
+
+        if ($Order instanceof OrderInProcess) {
+            $Basket = $this->getBasket();
+        }
+
         $Registration = new Controls\OrderProcess\Registration([
-            'Basket'   => $this->Basket,
-            'Order'    => $this->getOrder(),
+            'Basket'   => $Basket,
+            'Order'    => $Order,
             'priority' => 1
         ]);
 
         $Basket = new Controls\OrderProcess\Basket([
-            'Basket'   => $this->getBasket(),
-            'Order'    => $this->getOrder(),
+            'Basket'   => $Basket,
+            'Order'    => $Order,
             'priority' => 10
         ]);
 
         $CustomerData = new Controls\OrderProcess\CustomerData([
-            'Basket'   => $this->getBasket(),
-            'Order'    => $this->getOrder(),
+            'Basket'   => $Basket,
+            'Order'    => $Order,
             'priority' => 20
         ]);
 
 //        $Delivery = new Controls\Delivery($params);
 
         $Checkout = new Controls\OrderProcess\Checkout([
-            'Order'    => $this->getOrder(),
+            'Order'    => $Order,
             'priority' => 40
         ]);
 
         $Finish = new Controls\OrderProcess\Finish([
-            'Order'    => $this->getOrder(),
+            'Order'    => $Order,
             'priority' => 50
         ]);
 
