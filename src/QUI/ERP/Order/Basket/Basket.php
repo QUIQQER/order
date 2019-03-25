@@ -295,8 +295,12 @@ class Basket
         $calculations = [];
 
         try {
-            $data         = $Products->toArray();
-            $calculations = $data['calculations'];
+            $data = $Products->getFrontendView()->toArray();
+
+            unset($data['attributes']);
+            unset($data['products']);
+
+            $calculations = $data;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

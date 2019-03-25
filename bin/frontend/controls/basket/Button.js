@@ -165,6 +165,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                     }
                 });
 
+                QUI.addEvent('onQuiqqerCurrencyChange', function () {
+                    Basket.refresh();
+                });
+
                 if (Basket.isLoaded()) {
                     isLoaded();
 
@@ -255,9 +259,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             var SumElm = this.getElm().getElement(
                 '.quiqqer-order-basketButton-sum'
             );
-
+            
             if (SumElm) {
-                SumElm.set('text', Basket.getCalculations().display_sum);
+                SumElm.set('text', Basket.getCalculations().sum);
             }
 
             // subsum display
@@ -266,7 +270,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             );
 
             if (SubSumElm) {
-                SubSumElm.set('text', Basket.getCalculations().display_subSum);
+                SubSumElm.set('text', Basket.getCalculations().subSum);
             }
 
             // quantity display
