@@ -338,6 +338,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         if ($this->Currency === null) {
             $this->Currency = QUI\ERP\Defaults::getCurrency();
         }
+
+        $this->Articles->setCurrency($this->Currency);
     }
 
     /**
@@ -460,20 +462,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function toArray()
     {
-        $articles  = '';
         $status    = '';
         $paymentId = '';
 
-        $Payment = $this->getPayment();
+        $articles = $this->getArticles()->toArray();
+        $Payment  = $this->getPayment();
 
         if ($Payment) {
             $paymentId = $Payment->getId();
-        }
-
-        try {
-            $articles = $this->getArticles()->toArray();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
         }
 
         try {
@@ -827,6 +823,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function setData($key, $value)
     {
         $this->data[$key] = $value;
+    }
+
+    /**
+     * Set the currency of the order
+     *
+     * @param QUI\ERP\Currency\Currency $Currency
+     */
+    public function setCurrency(QUI\ERP\Currency\Currency $Currency)
+    {
+        $this->Currency = $Currency;
+        $this->Articles->setCurrency($Currency);
     }
 
     /**

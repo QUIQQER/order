@@ -69,7 +69,7 @@ class Product extends UniqueProduct
             }
         }
 
-        // fehlende fields setzen
+        // set missing fields
         $productFields = $Product->getFields();
 
         /* @var $Field QUI\ERP\Products\Field\Field */
@@ -79,7 +79,7 @@ class Product extends UniqueProduct
             }
         }
 
-        $attributes['fields'] = array_values($fieldList);
+        $attributes['fields'] = \array_values($fieldList);
         $attributes['uid']    = QUI::getUserBySession()->getId();
 
         parent::__construct($pid, $attributes);
@@ -93,7 +93,7 @@ class Product extends UniqueProduct
     protected function importFieldData($fieldId, $fieldValue)
     {
         try {
-            if (is_array($fieldValue) && isset($fieldValue['value'])) {
+            if (\is_array($fieldValue) && isset($fieldValue['value'])) {
                 $Field = Fields::getField($fieldValue['id']);
                 $Field->setValue($fieldValue['value']);
             } elseif (Fields::isField($fieldValue)) {

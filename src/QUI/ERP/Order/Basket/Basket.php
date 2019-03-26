@@ -67,6 +67,8 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
+        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
+
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
         } catch (QUI\Exception $Exception) {
@@ -93,7 +95,7 @@ class Basket
         $this->User = $User;
         $this->hash = $data['hash'];
 
-        $this->import(json_decode($data['products'], true));
+        $this->import(\json_decode($data['products'], true));
     }
 
     /**
@@ -113,28 +115,32 @@ class Basket
     {
         $this->List->clear();
 
+
+        return;
+
+        // @todo überdenken
         // if the order is successful, then create a new
-        try {
-            $Order = $this->getOrder();
-        } catch (QUI\Exception $Exception) {
-            try {
-                $Order = $this->createNewOrder();
-            } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-
-                return;
-            }
-        }
-
-        if ($Order->isSuccessful()) {
-            try {
-                // create a new in process
-                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
-                $this->hash = $NewOrder->getHash();
-            } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-            }
-        }
+//        try {
+//            $Order = $this->getOrder();
+//        } catch (QUI\Exception $Exception) {
+//            try {
+//                $Order = $this->createNewOrder();
+//            } catch (QUi\Exception $Exception) {
+//                QUI\System\Log::writeException($Exception);
+//
+//                return;
+//            }
+//        }
+//
+//        if ($Order->isSuccessful()) {
+//            try {
+//                // create a new in process
+//                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+//                $this->hash = $NewOrder->getHash();
+//            } catch (QUi\Exception $Exception) {
+//                QUI\System\Log::writeDebugException($Exception);
+//            }
+//        }
     }
 
     /**
@@ -197,7 +203,7 @@ class Basket
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 
@@ -243,17 +249,21 @@ class Basket
             $result[] = $productData;
         }
 
-        QUI::getDataBase()->update(
-            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            [
-                'products' => json_encode($result),
-                'hash'     => $this->hash
-            ],
-            [
-                'id'  => $this->getId(),
-                'uid' => $this->User->getId()
-            ]
-        );
+        try {
+            QUI::getDataBase()->update(
+                QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+                [
+                    'products' => \json_encode($result),
+                    'hash'     => $this->hash
+                ],
+                [
+                    'id'  => $this->getId(),
+                    'uid' => $this->User->getId()
+                ]
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 
     /**
@@ -263,9 +273,13 @@ class Basket
      */
     public function toArray()
     {
+        QUI\System\Log::writeRecursive('##########');
+        QUI\System\Log::writeRecursive($this->getProducts()->count());
+
         $Products = $this->getProducts();
         $products = $Products->getProducts();
         $result   = [];
+
 
         /* @var $Product Product */
         foreach ($products as $Product) {

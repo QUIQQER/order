@@ -102,6 +102,7 @@ class BasketOrder
 
         $this->List            = new ProductList($data);
         $this->List->duplicate = true;
+        $this->List->setCurrency($this->Order->getCurrency());
 
         $this->import($articles);
 
@@ -210,8 +211,6 @@ class BasketOrder
      * Import the products to the basket
      *
      * @param array $products
-     *
-     * @throws QUI\Exception
      */
     public function import($products = [])
     {

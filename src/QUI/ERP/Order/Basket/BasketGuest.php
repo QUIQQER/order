@@ -31,6 +31,7 @@ class BasketGuest
     {
         $this->List            = new ProductList();
         $this->List->duplicate = true;
+        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
     /**

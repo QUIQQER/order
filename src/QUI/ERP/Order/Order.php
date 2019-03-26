@@ -328,12 +328,10 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         // currency exchange rate
-        $Currency     = $this->getCurrency();
-        $UserCurrency = QUI\ERP\Defaults::getUserCurrency();
+        $Currency = $this->getCurrency();
 
-        if ($UserCurrency && $UserCurrency->getCode() !== $Currency->getCode()) {
-            $this->setData('user-currency-exchange-rate', $UserCurrency->getExchangeRate());
-            $this->setData('user-currency', $UserCurrency->getCode());
+        if (QUI\ERP\Defaults::getCurrency()->getCode() !== $Currency->getCode()) {
+            $this->setData('currency-exchange-rate', $Currency->getExchangeRate());
         }
 
         return [

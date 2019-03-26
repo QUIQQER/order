@@ -355,7 +355,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         $Order = Factory::getInstance()->create($SystemUser, $this->getHash());
 
-        // bind the new order to the process order
+        // bind the new order to the order in process
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             ['order_id' => $Order->getId()],
@@ -540,6 +540,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'history'       => $this->History->toJSON(),
             'data'          => json_encode($this->data),
             'currency_data' => json_encode($this->getCurrency()->toArray()),
+            'currency'      => $this->getCurrency()->getCode(),
             'status'        => $status,
             'successful'    => $this->successful,
 

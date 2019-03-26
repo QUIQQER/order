@@ -110,6 +110,14 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('basketId', $Basket->getId());
         $this->setAttribute('orderHash', $Order->getHash());
 
+        // set order currency
+        $UserCurrency = QUI\ERP\Defaults::getUserCurrency();
+
+        if ($UserCurrency && $UserCurrency->getCode() !== $Order->getCurrency()->getCode()) {
+            $Order->setCurrency($UserCurrency);
+            $Order->save();
+        }
+
         // order is successfull, so no other step must be shown
         if ($Order && $Order->isSuccessful()) {
             $LastStep = end($steps);

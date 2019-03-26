@@ -50,6 +50,7 @@ class Basket extends QUI\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts();
 
+        $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
         $Products->setUser(QUI::getUserBySession());
         $Products->calc();
 
