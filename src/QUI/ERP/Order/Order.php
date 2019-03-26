@@ -156,6 +156,11 @@ class Order extends AbstractOrder implements OrderInterface
             'delivery_address_id' => $deliveryAddressId
         ]);
 
+        // pass data to the invoice
+        foreach ($this->data as $key => $value) {
+            $TemporaryInvoice->setData($key, $value);
+        }
+
         $articles = $this->getArticles()->getArticles();
 
         $TemporaryInvoice->getArticles()->setUser(
@@ -163,11 +168,7 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         foreach ($articles as $Article) {
-            try {
-                $TemporaryInvoice->getArticles()->addArticle($Article);
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-            }
+            $TemporaryInvoice->getArticles()->addArticle($Article);
         }
 
         $TemporaryInvoice->getArticles()->importPriceFactors(
@@ -288,22 +289,16 @@ class Order extends AbstractOrder implements OrderInterface
     {
         $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
-
         $deliveryAddress = '';
-        $customer        = '';
 
         if ($DeliveryAddress) {
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
         // customer
-        try {
-            $Customer = $this->getCustomer();
-            $customer = $Customer->getAttributes();
-            $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-        }
+        $Customer = $this->getCustomer();
+        $customer = $Customer->getAttributes();
+        $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
         //payment
         $idPrefix      = '';
@@ -332,6 +327,15 @@ class Order extends AbstractOrder implements OrderInterface
             $invoiceId = $this->getInvoice()->getCleanId();
         }
 
+        // currency exchange rate
+        $Currency     = $this->getCurrency();
+        $UserCurrency = QUI\ERP\Defaults::getUserCurrency();
+
+        if ($UserCurrency && $UserCurrency->getCode() !== $Currency->getCode()) {
+            $this->setData('user-currency-exchange-rate', $UserCurrency->getExchangeRate());
+            $this->setData('user-currency', $UserCurrency->getCode());
+        }
+
         return [
             'id_prefix'    => $idPrefix,
             'id_str'       => $idPrefix.$this->getId(),
@@ -350,6 +354,7 @@ class Order extends AbstractOrder implements OrderInterface
             'history'       => $this->History->toJSON(),
             'data'          => json_encode($this->data),
             'currency_data' => json_encode($this->getCurrency()->toArray()),
+            'currency'      => $this->getCurrency()->getCode(),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
@@ -358,7 +363,6 @@ class Order extends AbstractOrder implements OrderInterface
                 json_encode($this->paymentData)
             ),
             'payment_address' => ''  // verschlüsselt
-
         ];
     }
 
@@ -617,9 +621,7 @@ class Order extends AbstractOrder implements OrderInterface
             );
         }
 
-
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
-
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
