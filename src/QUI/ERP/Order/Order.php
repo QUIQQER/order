@@ -446,6 +446,47 @@ class Order extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Set Order payment status (paid_status)
+     *
+     * @param int $status
+     * @return void
+     * @throws \QUI\Exception
+     */
+    public function setPaymentStatus(int $status)
+    {
+        $oldPaidStatus = $this->getAttribute('paid_status');
+
+        if ($oldPaidStatus == $status) {
+            return;
+        }
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            [
+                'paid_status' => $status
+            ],
+            ['id' => $this->getId()]
+        );
+
+        QUI\ERP\Debug::getInstance()->log(
+            'Order:: Paid Status changed to '.$status
+        );
+
+        // Payment Status has changed
+        if ($oldPaidStatus != $status) {
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaymentChanged',
+                [$this, $status, $oldPaidStatus]
+            );
+
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaidStatusChanged',
+                [$this, $status, $oldPaidStatus]
+            );
+        }
+    }
+
+    /**
      * Calculates the payment for the order
      *
      * @throws QUI\Exception
@@ -476,6 +517,7 @@ class Order extends AbstractOrder implements OrderInterface
             case self::PAYMENT_STATUS_ERROR:
             case self::PAYMENT_STATUS_DEBIT:
             case self::PAYMENT_STATUS_CANCELED:
+            case self::PAYMENT_STATUS_PLAN:
                 break;
 
             default:
@@ -507,16 +549,10 @@ class Order extends AbstractOrder implements OrderInterface
             Handler::getInstance()->table(),
             [
                 'paid_data'   => json_encode($calculation['paidData']),
-                'paid_date'   => $calculation['paidDate'],
-                'paid_status' => $calculation['paidStatus']
+                'paid_date'   => $calculation['paidDate']
             ],
             ['id' => $this->getId()]
         );
-
-        QUI\ERP\Debug::getInstance()->log(
-            'Order:: Paid Status changed to '.$calculation['paidStatus']
-        );
-
 
         if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID) {
             $this->setSuccessfulStatus();
@@ -527,18 +563,7 @@ class Order extends AbstractOrder implements OrderInterface
             }
         }
 
-        // Payment Status has changed
-        if ($oldPaidStatus != $this->getAttribute('paid_status')) {
-            QUI::getEvents()->fireEvent(
-                'onQuiqqerOrderPaymentChanged',
-                [$this, $this->getAttribute('paid_status'), $oldPaidStatus]
-            );
-
-            QUI::getEvents()->fireEvent(
-                'onQuiqqerOrderPaidStatusChanged',
-                [$this, $this->getAttribute('paid_status'), $oldPaidStatus]
-            );
-        }
+        $this->setPaymentStatus($calculation['paidStatus']);
     }
 
     /**

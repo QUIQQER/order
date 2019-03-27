@@ -239,6 +239,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             case self::PAYMENT_STATUS_ERROR:
             case self::PAYMENT_STATUS_DEBIT:
             case self::PAYMENT_STATUS_CANCELED:
+            case self::PAYMENT_STATUS_PLAN:
                 break;
 
             default:
@@ -263,33 +264,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             [
-                'paid_data'   => $calculations['paidData'],
-                'paid_date'   => $calculations['paidDate'],
-                'paid_status' => $calculations['paidStatus']
+                'paid_data' => $calculations['paidData'],
+                'paid_date' => $calculations['paidDate']
             ],
             ['id' => $this->getId()]
         );
 
-        $Order = $this;
-
         // create order, if the payment status is paid and no order exists
         if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID && !$this->orderId) {
-            $Order = $this->createOrder();
+            $this->createOrder();
         }
 
-        // Payment Status has changed
-        if ($oldPaidStatus == $calculations['paidStatus']) {
-            return;
-        }
-
-        QUI::getEvents()->fireEvent(
-            'onQuiqqerOrderPaymentStatusChanged',
-            [$Order, $calculations['paidStatus'], $oldPaidStatus]
-        );
-
-        QUI\ERP\Debug::getInstance()->log(
-            'OrderInProcess:: Paid Status changed to '.$calculations['paidStatus']
-        );
+        $this->setPaymentStatus($calculations['paidStatus']);
     }
 
     /**
@@ -628,5 +614,52 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         parent::setSuccessfulStatus();
+    }
+
+    /**
+     * Set Order payment status (paid_status)
+     *
+     * @param int $status
+     * @return void
+     * @throws \QUI\Exception
+     */
+    public function setPaymentStatus(int $status)
+    {
+        if ($this->getOrderId()) {
+            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order->setPaymentStatus($status);
+            return;
+        }
+
+        $oldPaidStatus = $this->getAttribute('paid_status');
+
+        if ($oldPaidStatus == $status) {
+            return;
+        }
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->tableOrderProcess(),
+            [
+                'paid_status' => $status
+            ],
+            ['id' => $this->getId()]
+        );
+
+        QUI\ERP\Debug::getInstance()->log(
+            'OrderInProcess:: Paid Status changed to '.$status
+        );
+
+        // Payment Status has changed
+        if ($oldPaidStatus != $status) {
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaymentChanged',
+                [$this, $status, $oldPaidStatus]
+            );
+
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaidStatusChanged',
+                [$this, $status, $oldPaidStatus]
+            );
+        }
     }
 }

@@ -232,6 +232,10 @@
             <de><![CDATA[Lastschrift]]></de>
             <en><![CDATA[Debit]]></en>
         </locale>
+        <locale name="payment.status.12">
+            <de><![CDATA[Abonnement]]></de>
+            <en><![CDATA[Subscription plan]]></en>
+        </locale>
         <locale name="payment.status.paid.text">
             <de><![CDATA[Bezahlt am [date]]]></de>
             <en><![CDATA[Paid at [date]]]></en>

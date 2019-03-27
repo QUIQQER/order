@@ -25,12 +25,13 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN = 0;
-    const PAYMENT_STATUS_PAID = 1;
-    const PAYMENT_STATUS_PART = 2;
-    const PAYMENT_STATUS_ERROR = 4;
+    const PAYMENT_STATUS_OPEN     = 0;
+    const PAYMENT_STATUS_PAID     = 1;
+    const PAYMENT_STATUS_PART     = 2;
+    const PAYMENT_STATUS_ERROR    = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT = 11;
+    const PAYMENT_STATUS_DEBIT    = 11;
+    const PAYMENT_STATUS_PLAN     = 12;
 
     /**
      * Order is only created
@@ -933,6 +934,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->customerId = $this->Customer->getId();
         }
     }
+
+    /**
+     * Set Order payment status (paid_status)
+     *
+     * @param int $status
+     * @return void
+     * @throws \QUI\Exception
+     */
+    abstract public function setPaymentStatus(int $status);
 
     //endregion
 
