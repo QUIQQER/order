@@ -799,6 +799,14 @@
             <de><![CDATA[Zur Kasse]]></de>
             <en><![CDATA[Checkout]]></en>
         </locale>
+        <locale name="exception.order.already.exists">
+            <de><![CDATA[
+            Die Order existiert bereits, diese Aktion kann deswegen leider nicht durchgeführt werden.
+            ]]></de>
+            <en><![CDATA[
+            The order already exists, so unfortunately this action cannot be performed.
+            ]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

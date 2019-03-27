@@ -30,6 +30,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      *
      * @throws QUI\Erp\Order\Exception
      * @throws QUI\ERP\Exception
+     * @throws QUI\Database\Exception
      */
     public function __construct($orderId)
     {
@@ -52,9 +53,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      *
      * @throws Exception
      * @throws QUI\ERP\Exception
+     * @throws QUI\Database\Exception
      */
     public function refresh()
     {
+        if ($this->orderId) {
+            try {
+                $Order = Handler::getInstance()->get($this->orderId);
+                $Order->refresh();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         $this->setDataBaseData(
             Handler::getInstance()->getOrderProcessData($this->getId())
         );
@@ -76,6 +86,15 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     public function getPrefixedId()
     {
+        if ($this->orderId) {
+            try {
+                $Order = Handler::getInstance()->get($this->orderId);
+
+                return $Order->getHash();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         return $this->getHash();
     }
 
@@ -105,6 +124,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
                 QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
                 403
             );
+        }
+
+        if ($this->orderId) {
+            $Order = Handler::getInstance()->get($this->orderId);
+            $Order->update($PermissionUser);
+
+            return;
         }
 
         $data = $this->getDataForSaving();
@@ -164,10 +190,19 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * Add price factors to the order
      *
      * @param array $priceFactors
+     *
      * @throws QUI\Exception
+     * @throws Exception
      */
     public function addPriceFactors($priceFactors = [])
     {
+        if ($this->orderId) {
+            throw new Exception(
+                ['quiqqer/order', 'exception.order.already.exists'],
+                403
+            );
+        }
+
         $Basket = new QUI\ERP\Order\Basket\BasketOrder(
             $this->getHash(),
             $this->getCustomer()
@@ -283,7 +318,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * The user itself or a super can delete it
      *
      * @param null|QUI\Interfaces\Users\User $PermissionUser
+     *
      * @throws QUI\Permissions\Exception
+     * @throws QUI\Database\Exception
      */
     public function delete($PermissionUser = null)
     {
@@ -307,6 +344,16 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     public function isPosted()
     {
+        if ($this->orderId) {
+            try {
+                $Order = Handler::getInstance()->get($this->getOrderId());
+
+                return $Order->isPosted();
+            } catch (QUI\Exception $Exception) {
+                return false;
+            }
+        }
+
         return false;
     }
 
@@ -477,22 +524,16 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     {
         $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
-
         $deliveryAddress = '';
-        $customer        = '';
 
         if ($DeliveryAddress) {
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
         // customer
-        try {
-            $Customer = $this->getCustomer();
-            $customer = $Customer->getAttributes();
-            $customer = QUI\ERP\Utils\User::filterCustomerAttributes($Customer->getAttributes());
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-        }
+        $Customer = $this->getCustomer();
+        $customer = $Customer->getAttributes();
+        $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
         // status
         $status = 0;
@@ -549,6 +590,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     public function clear($PermissionUser = null)
     {
+        if ($this->orderId) {
+            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order->clear($PermissionUser);
+
+            return;
+        }
+
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
                 QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
@@ -576,19 +624,42 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Has the order an invoice?
+     *
      * @return bool
      */
     public function hasInvoice()
     {
+        if ($this->orderId) {
+            try {
+                $Order = Handler::getInstance()->get($this->getOrderId());
+
+                return $Order->hasInvoice();
+            } catch (QUI\Exception $Exception) {
+                return false;
+            }
+        }
+
         return false;
     }
 
     /**
+     * Return the invoice if an invoice exists for the order
+     *
      * @return QUI\ERP\Accounting\Invoice\Invoice|void
+     *
+     * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
     public function getInvoice()
     {
+        if ($this->orderId) {
+            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order->getInvoice();
+
+            return;
+        }
+
         throw new QUI\ERP\Accounting\Invoice\Exception(
             ['quiqqer/invoice', 'exception.invoice.not.found'],
             404
@@ -605,6 +676,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     public function setSuccessfulStatus()
     {
+        if ($this->orderId) {
+            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order->setSuccessfulStatus();
+
+            return;
+        }
+
         if ($this->successful === 1) {
             return;
         }
@@ -625,9 +703,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     public function setPaymentStatus(int $status)
     {
-        if ($this->getOrderId()) {
+        if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
             $Order->setPaymentStatus($status);
+
             return;
         }
 
