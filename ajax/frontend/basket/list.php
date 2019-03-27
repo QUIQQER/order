@@ -18,7 +18,7 @@ QUI::$Ajax->registerFunction(
         $Orders = QUI\ERP\Order\Handler::getInstance();
         $orders = $Orders->getOrdersInProcessFromUser($User);
 
-        return array_map(function ($Order) {
+        return \array_map(function ($Order) {
             /* @var $Order \QUI\ERP\Order\OrderInProcess */
             return $Order->toArray();
         }, $orders);

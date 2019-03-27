@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
         $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
-        $data  = json_decode($data, true);
+        $data  = \json_decode($data, true);
 
         // customer
         $Customer = null;

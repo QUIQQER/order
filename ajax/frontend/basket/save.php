@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
             QUI::getUserBySession()
         );
 
-        $Basket->import(json_decode($products, true));
+        $Basket->import(\json_decode($products, true));
         $Basket->save();
 
         return $Basket->toArray();

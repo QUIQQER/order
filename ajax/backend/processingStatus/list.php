@@ -18,12 +18,12 @@ QUI::$Ajax->registerFunction(
         $Handler = Handler::getInstance();
 
         $list   = $Handler->getProcessingStatusList();
-        $result = array_map(function ($Status) {
+        $result = \array_map(function ($Status) {
             /* @var $Status \QUI\ERP\Accounting\Invoice\ProcessingStatus\Status */
             return $Status->toArray(QUI::getLocale());
         }, $list);
 
-        usort($result, function ($a, $b) {
+        \usort($result, function ($a, $b) {
             if ($a['id'] == $b['id']) {
                 return 0;
             }
