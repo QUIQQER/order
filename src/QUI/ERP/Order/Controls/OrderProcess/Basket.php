@@ -93,11 +93,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function showNext()
     {
-        if (!$this->Basket->count()) {
-            return false;
-        }
-
-        return true;
+        return (bool)$this->Basket->count();
     }
 
     /**
@@ -107,6 +103,10 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getBody()
     {
+        if ($this->Basket instanceof QUI\ERP\Order\Basket\BasketOrder) {
+            $this->Basket->refresh();
+        }
+
         $Engine = QUI::getTemplateManager()->getEngine();
 
         if (!$this->Basket->count()) {

@@ -64,7 +64,7 @@ class Basket extends QUI\Control
             'products' => $View->getProducts()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Basket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
     }
 
     //region project
