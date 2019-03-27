@@ -48,7 +48,7 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'orderHash'    => $Order->getHash()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Finish.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Finish.html');
     }
 
     /**

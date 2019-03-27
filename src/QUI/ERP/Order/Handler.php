@@ -412,6 +412,7 @@ class Handler extends Singleton
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\ERP\Exception
+     * @throws  QUI\Database\Exception
      */
     public function getOrderInProcess($orderId)
     {

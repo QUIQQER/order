@@ -292,8 +292,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             )
         );
 
-        if (is_array($calculations['paidData'])) {
-            $calculations['paidData'] = json_encode($calculations['paidData']);
+        if (\is_array($calculations['paidData'])) {
+            $calculations['paidData'] = \json_encode($calculations['paidData']);
         }
 
         QUI::getDataBase()->update(
@@ -433,7 +433,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
                 $Order->save();
             }
         } catch (QUI\Exception $Exception) {
-            if (defined('QUIQQER_DEBUG')) {
+            if (\defined('QUIQQER_DEBUG')) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -558,15 +558,15 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         return [
             'customerId'      => $this->customerId,
-            'customer'        => json_encode($customer),
+            'customer'        => \json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
             'articles'      => $this->Articles->toJSON(),
             'comments'      => $this->Comments->toJSON(),
             'history'       => $this->History->toJSON(),
-            'data'          => json_encode($this->data),
-            'currency_data' => json_encode($this->getCurrency()->toArray()),
+            'data'          => \json_encode($this->data),
+            'currency_data' => \json_encode($this->getCurrency()->toArray()),
             'currency'      => $this->getCurrency()->getCode(),
             'status'        => $status,
             'successful'    => $this->successful,
@@ -575,7 +575,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
             'payment_data'    => QUI\Security\Encryption::encrypt(
-                json_encode($this->paymentData)
+                \json_encode($this->paymentData)
             ), // verschlüsselt
             'payment_address' => ''  // verschlüsselt
         ];
@@ -718,9 +718,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            [
-                'paid_status' => $status
-            ],
+            ['paid_status' => $status],
             ['id' => $this->getId()]
         );
 

@@ -45,7 +45,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
-        $this->addCSSFile(dirname(__FILE__).'/Basket.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Basket.css');
         $this->addCSSClass('quiqqer-order-step-basket');
         $this->setAttribute('nodeName', 'section');
     }
@@ -110,7 +110,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine = QUI::getTemplateManager()->getEngine();
 
         if (!$this->Basket->count()) {
-            return $Engine->fetch(dirname(__FILE__).'/BasketEmpty.html');
+            return $Engine->fetch(\dirname(__FILE__).'/BasketEmpty.html');
         }
 
         $BasketControl = new BasketControl();
@@ -121,7 +121,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'Basket'        => $this->Basket
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Basket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
     }
 
     /**

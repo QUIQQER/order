@@ -79,10 +79,10 @@ class UserOpenedOrders extends UserOrders
 //            }
 //        }
 
-        $count = count($orders);
+        $count = \count($orders);
 
         if ($count) {
-            $sheetsMax = ceil($count / $limit);
+            $sheetsMax = \ceil($count / $limit);
         }
 
         $Engine->assign([
@@ -97,6 +97,6 @@ class UserOpenedOrders extends UserOrders
             'sheetCount'   => $count
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/UserOrders.html');
+        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.html');
     }
 }

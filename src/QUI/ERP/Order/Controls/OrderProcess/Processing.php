@@ -44,7 +44,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $this->addCSSClass('quiqqer-order-step-processing');
         $this->addCSSClass('quiqqer-order-step-processing-gateway');
-        $this->addCSSFile(dirname(__FILE__).'/Processing.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Processing.css');
     }
 
     /**
@@ -82,7 +82,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'this'      => $this
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Processing.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Processing.html');
     }
 
     /**
@@ -93,7 +93,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getProcessingPayments()
     {
-        if (!class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
+        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
             return '';
         }
 
@@ -122,7 +122,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        return $Engine->fetch(dirname(__FILE__).'/ProcessingPayments.html');
+        return $Engine->fetch(\dirname(__FILE__).'/ProcessingPayments.html');
     }
 
     /**
@@ -176,7 +176,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function savePayment($payment)
     {
-        if (!class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
+        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
             return;
         }
 

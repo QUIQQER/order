@@ -37,7 +37,7 @@ class Order extends QUI\Control
 
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__).'/Order.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Order.css');
         $this->addCSSClass('quiqqer-order-control-order');
     }
 
@@ -95,13 +95,13 @@ class Order extends QUI\Control
 
         switch ($this->getAttribute('template')) {
             case 'Order':
-                $template = dirname(__FILE__).'/Order.html';
+                $template = \dirname(__FILE__).'/Order.html';
                 break;
 
             case 'OrderLikeBasket':
-                $template = dirname(__FILE__).'/OrderLikeBasket.html';
+                $template = \dirname(__FILE__).'/OrderLikeBasket.html';
 
-                $this->addCSSFile(dirname(__FILE__).'/OrderLikeBasket.css');
+                $this->addCSSFile(\dirname(__FILE__).'/OrderLikeBasket.css');
                 $this->addCSSClass('quiqqer-order-control-orderLikeBasket');
                 break;
 

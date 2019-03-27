@@ -37,7 +37,7 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(dirname(__FILE__) . '/ProductToBasket.css');
+        $this->addCSSFile(\dirname(__FILE__).'/ProductToBasket.css');
     }
 
     /**
@@ -47,7 +47,11 @@ class ProductToBasket extends QUI\Control
      */
     public function getBody()
     {
-        $Engine = QUI::getTemplateManager()->getEngine();
+        try {
+            $Engine = QUI::getTemplateManager()->getEngine();
+        } catch (QUI\Exception $Exception) {
+            return '';
+        }
 
         $addButtonTitle = QUI::getLocale()->get(
             'quiqqer/order',
@@ -84,6 +88,6 @@ class ProductToBasket extends QUI\Control
             'disableSpins'   => $disableSpins
         ]);
 
-        return $Engine->fetch(dirname(__FILE__) . '/ProductToBasket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/ProductToBasket.html');
     }
 }

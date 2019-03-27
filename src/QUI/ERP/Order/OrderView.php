@@ -123,7 +123,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function getCreateDate()
     {
         $createDate = $this->Order->getCreateDate();
-        $createDate = strtotime($createDate);
+        $createDate = \strtotime($createDate);
 
         $DateFormatter = QUI::getLocale()->getDateFormatter(
             \IntlDateFormatter::SHORT,

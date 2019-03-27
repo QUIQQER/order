@@ -30,7 +30,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__).'/Checkout.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Checkout.css');
     }
 
     /**
@@ -112,7 +112,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'text'            => $text
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Checkout.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Checkout.html');
     }
 
     /**

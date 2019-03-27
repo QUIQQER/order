@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Basket\Baseket
+ * This file contains QUI\ERP\Order\Basket\Basket
  */
 
 namespace QUI\ERP\Order\Basket;

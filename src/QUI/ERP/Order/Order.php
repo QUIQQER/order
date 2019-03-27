@@ -182,7 +182,7 @@ class Order extends AbstractOrder implements OrderInterface
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
                 'paid_status'  => $this->getAttribute('paid_status'),
-                'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData))
+                'payment_data' => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData))
             ],
             ['id' => $this->getId()]
         );
@@ -343,22 +343,22 @@ class Order extends AbstractOrder implements OrderInterface
             'successful'   => $this->successful,
 
             'customerId'      => $this->customerId,
-            'customer'        => json_encode($customer),
+            'customer'        => \json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
             'articles'      => $this->Articles->toJSON(),
             'comments'      => $this->Comments->toJSON(),
             'history'       => $this->History->toJSON(),
-            'data'          => json_encode($this->data),
-            'currency_data' => json_encode($this->getCurrency()->toArray()),
+            'data'          => \json_encode($this->data),
+            'currency_data' => \json_encode($this->getCurrency()->toArray()),
             'currency'      => $this->getCurrency()->getCode(),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
             'payment_data'    => QUI\Security\Encryption::encrypt(
-                json_encode($this->paymentData)
+                \json_encode($this->paymentData)
             ),
             'payment_address' => ''  // verschlüsselt
         ];
@@ -537,18 +537,18 @@ class Order extends AbstractOrder implements OrderInterface
 
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
 
-        if (!is_array($calculation['paidData'])) {
-            $calculation['paidData'] = json_decode($calculation['paidData'], true);
+        if (!\is_array($calculation['paidData'])) {
+            $calculation['paidData'] = \json_decode($calculation['paidData'], true);
         }
 
-        if (!is_array($calculation['paidData'])) {
+        if (!\is_array($calculation['paidData'])) {
             $calculation['paidData'] = [];
         }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             [
-                'paid_data'   => json_encode($calculation['paidData']),
+                'paid_data'   => \json_encode($calculation['paidData']),
                 'paid_date'   => $calculation['paidDate']
             ],
             ['id' => $this->getId()]
