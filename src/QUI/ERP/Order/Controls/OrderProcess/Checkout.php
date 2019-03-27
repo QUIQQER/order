@@ -85,7 +85,8 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Order->recalculate();
 
-        $Articles = $Order->getArticles()->toUniqueList();
+        $ArticleList = $Order->getArticles();
+        $Articles    = $ArticleList->toUniqueList();
         $Articles->hideHeader();
 
         $text = QUI::getLocale()->get(
@@ -234,7 +235,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $lang   = $Project->getLang();
-        $values = json_decode($values, true);
+        $values = \json_decode($values, true);
 
         if (!isset($values[$lang]) || empty($values[$lang])) {
             return '';

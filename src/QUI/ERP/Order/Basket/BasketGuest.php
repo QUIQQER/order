@@ -87,7 +87,7 @@ class BasketGuest
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 

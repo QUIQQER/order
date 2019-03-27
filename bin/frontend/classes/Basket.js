@@ -192,7 +192,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          */
         $loadData: function (data) {
             if (data === null || typeof data.products === 'undefined') {
-                return Promise.reject();
+                return Promise.reject('Data is null');
             }
 
             this.$basketId = data.id;
@@ -384,6 +384,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             return this.loadBasket().then(function () {
                 self.fireEvent('refresh', [self]);
+            }).catch(function (err) {
+                if (err !== 'Data is null') {
+                    console.error(err);
+                }
             });
         },
 

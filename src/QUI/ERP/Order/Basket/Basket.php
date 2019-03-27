@@ -67,8 +67,6 @@ class Basket
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
-        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
-
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
         } catch (QUI\Exception $Exception) {
@@ -96,6 +94,7 @@ class Basket
         $this->hash = $data['hash'];
 
         $this->import(\json_decode($data['products'], true));
+        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
     /**
@@ -273,13 +272,9 @@ class Basket
      */
     public function toArray()
     {
-        QUI\System\Log::writeRecursive('##########');
-        QUI\System\Log::writeRecursive($this->getProducts()->count());
-
         $Products = $this->getProducts();
         $products = $Products->getProducts();
         $result   = [];
-
 
         /* @var $Product Product */
         foreach ($products as $Product) {

@@ -69,7 +69,7 @@ class Small extends QUI\Controls\Control
             'checkoutUrl'  => $OrderProcessSite->getUrlRewritten()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Small.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Small.html');
     }
 
     //region project
