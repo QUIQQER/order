@@ -25,13 +25,13 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN     = 0;
-    const PAYMENT_STATUS_PAID     = 1;
-    const PAYMENT_STATUS_PART     = 2;
-    const PAYMENT_STATUS_ERROR    = 4;
+    const PAYMENT_STATUS_OPEN = 0;
+    const PAYMENT_STATUS_PAID = 1;
+    const PAYMENT_STATUS_PART = 2;
+    const PAYMENT_STATUS_ERROR = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT    = 11;
-    const PAYMENT_STATUS_PLAN     = 12;
+    const PAYMENT_STATUS_DEBIT = 11;
+    const PAYMENT_STATUS_PLAN = 12;
 
     /**
      * Order is only created
@@ -1113,7 +1113,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $User     = QUI::getUserBySession();
         $paidData = $this->getAttribute('paid_data');
-        $amount   = Price::validatePrice($Transaction->getAmount());
+        $amount   = floatval($Transaction->getAmount());
         $date     = $Transaction->getDate();
 
         QUI::getEvents()->fireEvent(
@@ -1154,7 +1154,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-
         $isValidTimeStamp = function ($timestamp) {
             return ((string)(int)$timestamp === $timestamp)
                    && ($timestamp <= PHP_INT_MAX)
@@ -1169,7 +1168,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             }
         }
 
-
         $this->setAttribute('paid_date', $date);
 
         // calculations
@@ -1177,13 +1175,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $listCalculations = $this->Articles->getCalculations();
 
         $this->setAttributes([
-            'currency_data' => json_encode($listCalculations['currencyData']),
+            'currency_data' => \json_encode($listCalculations['currencyData']),
             'nettosum'      => $listCalculations['nettoSum'],
             'subsum'        => $listCalculations['subSum'],
             'sum'           => $listCalculations['sum'],
-            'vat_array'     => json_encode($listCalculations['vatArray'])
+            'vat_array'     => \json_encode($listCalculations['vatArray'])
         ]);
-
 
         $this->addHistory(
             QUI::getLocale()->get(

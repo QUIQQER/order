@@ -449,22 +449,22 @@ class Order extends AbstractOrder implements OrderInterface
      * Set Order payment status (paid_status)
      *
      * @param int $status
+     * @param bool $force - default = false, if true, set payment status will be set in any case
+     *
      * @return void
      * @throws \QUI\Exception
      */
-    public function setPaymentStatus(int $status)
+    public function setPaymentStatus(int $status, $force = false)
     {
         $oldPaidStatus = $this->getAttribute('paid_status');
 
-        if ($oldPaidStatus == $status) {
+        if ($oldPaidStatus == $status && $force === false) {
             return;
         }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            [
-                'paid_status' => $status
-            ],
+            ['paid_status' => $status],
             ['id' => $this->getId()]
         );
 
@@ -484,6 +484,8 @@ class Order extends AbstractOrder implements OrderInterface
                 [$this, $status, $oldPaidStatus]
             );
         }
+
+        $this->setAttribute('paid_status', $status);
     }
 
     /**
@@ -548,8 +550,8 @@ class Order extends AbstractOrder implements OrderInterface
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             [
-                'paid_data'   => \json_encode($calculation['paidData']),
-                'paid_date'   => $calculation['paidDate']
+                'paid_data' => \json_encode($calculation['paidData']),
+                'paid_date' => $calculation['paidDate']
             ],
             ['id' => $this->getId()]
         );
@@ -563,7 +565,9 @@ class Order extends AbstractOrder implements OrderInterface
             }
         }
 
-        $this->setPaymentStatus($calculation['paidStatus']);
+        if ($oldPaidStatus !== $calculation['paidStatus']) {
+            $this->setPaymentStatus($calculation['paidStatus'], true);
+        }
     }
 
     /**

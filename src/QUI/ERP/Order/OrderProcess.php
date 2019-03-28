@@ -695,6 +695,8 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * Render the last step (finish step)
+     *
      * @return mixed
      * @throws Exception
      * @throws QUI\Exception
@@ -702,6 +704,9 @@ class OrderProcess extends QUI\Control
      */
     protected function renderFinish()
     {
+        // clear basket
+        $this->getBasket()->clear();
+
         $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 

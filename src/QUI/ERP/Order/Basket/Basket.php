@@ -113,33 +113,6 @@ class Basket
     public function clear()
     {
         $this->List->clear();
-
-
-        return;
-
-        // @todo überdenken
-        // if the order is successful, then create a new
-//        try {
-//            $Order = $this->getOrder();
-//        } catch (QUI\Exception $Exception) {
-//            try {
-//                $Order = $this->createNewOrder();
-//            } catch (QUi\Exception $Exception) {
-//                QUI\System\Log::writeException($Exception);
-//
-//                return;
-//            }
-//        }
-//
-//        if ($Order->isSuccessful()) {
-//            try {
-//                // create a new in process
-//                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
-//                $this->hash = $NewOrder->getHash();
-//            } catch (QUi\Exception $Exception) {
-//                QUI\System\Log::writeDebugException($Exception);
-//            }
-//        }
     }
 
     /**

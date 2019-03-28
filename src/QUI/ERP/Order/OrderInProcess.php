@@ -310,7 +310,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             $this->createOrder();
         }
 
-        $this->setPaymentStatus($calculations['paidStatus']);
+        if ($oldPaidStatus !== $calculations['paidStatus']) {
+            $this->setPaymentStatus($calculations['paidStatus'], true);
+        }
     }
 
     /**
@@ -698,10 +700,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * Set Order payment status (paid_status)
      *
      * @param int $status
+     * @param bool $force - default = false, if true, set payment status will be set in any case
+     *
      * @return void
      * @throws \QUI\Exception
      */
-    public function setPaymentStatus(int $status)
+    public function setPaymentStatus(int $status, $force = false)
     {
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
@@ -712,7 +716,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         $oldPaidStatus = $this->getAttribute('paid_status');
 
-        if ($oldPaidStatus == $status) {
+        if ($oldPaidStatus == $status && $force === false) {
             return;
         }
 
