@@ -41,6 +41,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     {
         $this->Order    = $Order;
         $this->Articles = $this->Order->getArticles();
+        $this->Articles->setCurrency($Order->getCurrency());
 
         $this->setAttributes($this->Order->getAttributes());
     }
@@ -123,7 +124,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function getCreateDate()
     {
         $createDate = $this->Order->getCreateDate();
-        $createDate = strtotime($createDate);
+        $createDate = \strtotime($createDate);
 
         $DateFormatter = QUI::getLocale()->getDateFormatter(
             \IntlDateFormatter::SHORT,

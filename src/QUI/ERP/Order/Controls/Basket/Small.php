@@ -46,9 +46,13 @@ class Small extends QUI\Controls\Control
      */
     protected function onCreate()
     {
-        $Engine   = QUI::getTemplateManager()->getEngine();
-        $Products = $this->Basket->getProducts()->getView();
-        $Project  = $this->getProject();
+        $Engine = QUI::getTemplateManager()->getEngine();
+
+        $Products = $this->Basket->getProducts();
+        $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
+
+        $ProductView = $Products->getView();
+        $Project     = $this->getProject();
 
         try {
             $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
@@ -57,15 +61,15 @@ class Small extends QUI\Controls\Control
         }
 
         $Engine->assign([
-            'data'         => $Products->toArray(),
+            'data'         => $ProductView->toArray(),
             'Basket'       => $this->Basket,
-            'Products'     => $Products,
-            'products'     => $Products->getProducts(),
+            'Products'     => $ProductView,
+            'products'     => $ProductView->getProducts(),
             'OrderProcess' => $OrderProcessSite,
             'checkoutUrl'  => $OrderProcessSite->getUrlRewritten()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Small.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Small.html');
     }
 
     //region project

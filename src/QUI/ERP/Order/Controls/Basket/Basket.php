@@ -50,6 +50,7 @@ class Basket extends QUI\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts();
 
+        $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
         $Products->setUser(QUI::getUserBySession());
         $Products->calc();
 
@@ -63,7 +64,7 @@ class Basket extends QUI\Control
             'products' => $View->getProducts()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Basket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
     }
 
     //region project

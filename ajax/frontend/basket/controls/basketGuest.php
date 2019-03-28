@@ -13,8 +13,8 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_basketGuest',
     function ($products) {
-        $products = json_decode($products, true);
-        $Basket   = new \QUI\ERP\Order\Basket\BasketGuest();
+        $products = \json_decode($products, true);
+        $Basket   = new QUI\ERP\Order\Basket\BasketGuest();
         $Basket->import($products);
 
         $Control = new QUI\ERP\Order\Controls\Basket\Small();

@@ -30,10 +30,12 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         ]);
 
         $this->addCSSClass('quiqqer-order-customerData-container');
-        $this->addCSSFile(dirname(__FILE__).'/CustomerData.css');
+        $this->addCSSFile(\dirname(__FILE__).'/CustomerData.css');
     }
 
     /**
+     * Return the body
+     *
      * @return string
      */
     public function getBody()
@@ -127,7 +129,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'commentCustomer' => $commentCustomer
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');
+        return $Engine->fetch(\dirname(__FILE__).'/CustomerData.html');
     }
 
     /**
@@ -181,8 +183,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $lastName  = $Address->getAttribute('lastname');
         $street_no = $Address->getAttribute('street_no');
 //        $zip       = $Address->getAttribute('zip');
-        $city      = $Address->getAttribute('city');
-        $country   = $Address->getAttribute('country');
+        $city    = $Address->getAttribute('city');
+        $country = $Address->getAttribute('country');
 
         /**
          * @param $field

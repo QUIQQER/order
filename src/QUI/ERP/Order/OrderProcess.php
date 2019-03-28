@@ -60,7 +60,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public function __construct($attributes = [])
     {
@@ -73,7 +72,7 @@ class OrderProcess extends QUI\Control
 
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__).'/Controls/OrderProcess.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Controls/OrderProcess.css');
 
         $this->Events = new QUI\Events\Event();
 
@@ -82,7 +81,7 @@ class OrderProcess extends QUI\Control
 
         // @todo guest ordering
         if ($isNobody) {
-            header('Location: '.$this->getProject()->firstChild()->getUrlRewritten(), false, 301);
+            \header('Location: '.$this->getProject()->firstChild()->getUrlRewritten(), false, 301);
             exit;
         }
 
@@ -110,9 +109,17 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('basketId', $Basket->getId());
         $this->setAttribute('orderHash', $Order->getHash());
 
+        // set order currency
+        $UserCurrency = QUI\ERP\Defaults::getUserCurrency();
+
+        if ($UserCurrency && $UserCurrency->getCode() !== $Order->getCurrency()->getCode()) {
+            $Order->setCurrency($UserCurrency);
+            $Order->save();
+        }
+
         // order is successfull, so no other step must be shown
         if ($Order && $Order->isSuccessful()) {
-            $LastStep = end($steps);
+            $LastStep = \end($steps);
 
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getHash());
@@ -146,8 +153,8 @@ class OrderProcess extends QUI\Control
         }
 
         if (!$step || !isset($steps[$step])) {
-            reset($steps);
-            $this->setAttribute('step', key($steps));
+            \reset($steps);
+            $this->setAttribute('step', \key($steps));
         }
     }
 
@@ -160,7 +167,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     protected function checkSubmission()
     {
@@ -314,7 +320,7 @@ class OrderProcess extends QUI\Control
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        if (method_exists($this->Basket, 'successful')) {
+        if (\method_exists($this->Basket, 'successful')) {
             $this->Basket->successful();
             $this->Basket->save();
         } else {
@@ -337,7 +343,7 @@ class OrderProcess extends QUI\Control
      */
     protected function executePayableStatus()
     {
-        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
+        $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
         try {
@@ -361,7 +367,7 @@ class OrderProcess extends QUI\Control
                 }
 
                 $Engine->assign([
-                    'listWidth'          => floor(100 / count($this->getSteps())),
+                    'listWidth'          => \floor(100 / \count($this->getSteps())),
                     'this'               => $this,
                     'error'              => false,
                     'next'               => false,
@@ -380,7 +386,7 @@ class OrderProcess extends QUI\Control
             }
 
             $Engine->assign([
-                'listWidth'          => floor(100 / count($this->getSteps())),
+                'listWidth'          => \floor(100 / \count($this->getSteps())),
                 'this'               => $this,
                 'error'              => false,
                 'next'               => false,
@@ -413,7 +419,7 @@ class OrderProcess extends QUI\Control
     {
         $this->Events->fireEvent('getBodyBegin', [$this]);
 
-        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
+        $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
         // check if processing step is needed
@@ -438,7 +444,7 @@ class OrderProcess extends QUI\Control
                 $Order = $Order->createOrder();
             }
 
-            $LastStep = end($steps);
+            $LastStep = \end($steps);
 
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getHash());
@@ -467,7 +473,7 @@ class OrderProcess extends QUI\Control
         $payableToOrder = false;
 
         /* @var $Checkout AbstractOrderingStep */
-        $Checkout = current(array_filter($this->getSteps(), function ($Step) {
+        $Checkout = \current(\array_filter($this->getSteps(), function ($Step) {
             /* @var $Step AbstractOrderingStep */
             return $Step->getType() === Controls\OrderProcess\Checkout::class;
         }));
@@ -493,10 +499,10 @@ class OrderProcess extends QUI\Control
         } catch (QUI\ERP\Order\Exception $Exception) {
             $error = $Exception->getMessage();
 
-            if (get_class($Current) === QUI\ERP\Order\Controls\OrderProcess\Finish::class) {
+            if (\get_class($Current) === QUI\ERP\Order\Controls\OrderProcess\Finish::class) {
                 $Current = $this->getPreviousStep();
 
-                if (method_exists($Current, 'forceSave')) {
+                if (\method_exists($Current, 'forceSave')) {
                     $Current->forceSave();
                 }
 
@@ -530,7 +536,7 @@ class OrderProcess extends QUI\Control
         }
 
         $Engine->assign([
-            'listWidth'          => floor(100 / count($this->getSteps())),
+            'listWidth'          => \floor(100 / \count($this->getSteps())),
             'this'               => $this,
             'error'              => $error,
             'next'               => $next,
@@ -555,7 +561,6 @@ class OrderProcess extends QUI\Control
      *
      * @return bool|string
      *
-     * @throws Basket\Exception
      * @throws Exception
      * @throws QUI\Exception
      */
@@ -582,12 +587,12 @@ class OrderProcess extends QUI\Control
 
         /* @var $Checkout AbstractOrderingStep */
         /* @var $Finish AbstractOrderingStep */
-        $Checkout = current(array_filter($this->getSteps(), function ($Step) {
+        $Checkout = \current(\array_filter($this->getSteps(), function ($Step) {
             /* @var $Step AbstractOrderingStep */
             return $Step->getType() === Controls\OrderProcess\Checkout::class;
         }));
 
-        $Finish = current(array_filter($this->getSteps(), function ($Step) {
+        $Finish = \current(\array_filter($this->getSteps(), function ($Step) {
             /* @var $Step AbstractOrderingStep */
             return $Step->getType() === Controls\OrderProcess\Finish::class;
         }));
@@ -663,7 +668,7 @@ class OrderProcess extends QUI\Control
             // if a payment transaction exists, maybe the transaction is in pending
             // as long as, the order is "successful"
             $transactions = $Order->getTransactions();
-            $isInPending  = array_filter($transactions, function ($Transaction) {
+            $isInPending  = \array_filter($transactions, function ($Transaction) {
                 /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
                 return $Transaction->isPending();
             });
@@ -690,19 +695,23 @@ class OrderProcess extends QUI\Control
     }
 
     /**
+     * Render the last step (finish step)
+     *
      * @return mixed
-     * @throws Basket\Exception
      * @throws Exception
      * @throws QUI\Exception
      * @throws QUI\ExceptionStack
      */
     protected function renderFinish()
     {
-        $template = dirname(__FILE__).'/Controls/OrderProcess.html';
+        // clear basket
+        $this->getBasket()->clear();
+
+        $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
         $Engine->assign([
-            'listWidth'          => floor(100 / count($this->getSteps())),
+            'listWidth'          => \floor(100 / \count($this->getSteps())),
             'this'               => $this,
             'error'              => false,
             'next'               => false,
@@ -729,7 +738,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public function getCurrentStep()
     {
@@ -756,24 +764,25 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public function getFirstStep()
     {
-        return array_values($this->getSteps())[0];
+        return \array_values($this->getSteps())[0];
     }
 
     /**
+     * Returns the last step of the order process
+     *
      * @return mixed
-     * @throws Basket\Exception
+     *
      * @throws Exception
      * @throws QUI\Exception
      */
     public function getLastStep()
     {
-        $steps = array_values($this->getSteps());
+        $steps = \array_values($this->getSteps());
 
-        return $steps[count($steps) - 1];
+        return $steps[\count($steps) - 1];
     }
 
     /**
@@ -784,7 +793,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public function getNextStep($StartStep = null)
     {
@@ -822,8 +830,8 @@ class OrderProcess extends QUI\Control
 
         $steps = $this->getSteps();
 
-        $keys = array_keys($steps);
-        $pos  = array_search($step, $keys);
+        $keys = \array_keys($steps);
+        $pos  = \array_search($step, $keys);
         $next = $pos + 1;
 
         if (!isset($keys[$next])) {
@@ -847,7 +855,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public function getPreviousStep($StartStep = null)
     {
@@ -872,8 +879,8 @@ class OrderProcess extends QUI\Control
             $Checkout = new Controls\OrderProcess\Checkout();
 
             // get previous previous step
-            $keys = array_keys($this->steps);
-            $pos  = array_search($Checkout->getName(), $keys);
+            $keys = \array_keys($this->steps);
+            $pos  = \array_search($Checkout->getName(), $keys);
             $prev = $pos - 1;
 
             if (isset($keys[$prev])) {
@@ -887,8 +894,8 @@ class OrderProcess extends QUI\Control
             return $this->getFirstStep();
         }
 
-        $keys = array_keys($steps);
-        $pos  = array_search($step, $keys);
+        $keys = \array_keys($steps);
+        $pos  = \array_search($step, $keys);
         $prev = $pos - 1;
 
         if (!isset($keys[$prev])) {
@@ -912,7 +919,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     protected function getStepByName($name)
     {
@@ -932,7 +938,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     protected function getCurrentStepName()
     {
@@ -960,7 +965,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     protected function getNextStepName($StartStep = null)
     {
@@ -981,7 +985,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     protected function getPreviousStepName($StartStep = null)
     {
@@ -1024,7 +1027,7 @@ class OrderProcess extends QUI\Control
             $url = $url.'/'.$this->Order->getHash();
         }
 
-        return trim($url);
+        return \trim($url);
     }
 
     /**
@@ -1170,7 +1173,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     public function getSteps()
     {
@@ -1193,7 +1195,7 @@ class OrderProcess extends QUI\Control
     protected function getProcessingStep()
     {
         try {
-            $Processing = current(array_filter($this->getSteps(), function ($Step) {
+            $Processing = \current(\array_filter($this->getSteps(), function ($Step) {
                 /* @var $Step AbstractOrderingStep */
                 return $Step->getType() === Controls\OrderProcess\Processing::class;
             }));
@@ -1219,7 +1221,6 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      * @throws QUI\Exception
-     * @throws Basket\Exception
      */
     protected function parseSteps()
     {

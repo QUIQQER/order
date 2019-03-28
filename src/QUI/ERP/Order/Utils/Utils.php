@@ -159,8 +159,8 @@ class Utils
 
         $ending = false;
 
-        if (strpos($url, '.html')) {
-            $url    = str_replace('.html', '', $url);
+        if (\strpos($url, '.html')) {
+            $url    = \str_replace('.html', '', $url);
             $ending = true;
         }
 
@@ -188,20 +188,20 @@ class Utils
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
-            return date('Y').'-';
+            return \date('Y').'-';
         }
 
         if ($setting === false) {
-            return date('Y').'-';
+            return \date('Y').'-';
         }
 
-        $prefix = strftime($setting);
+        $prefix = \strftime($setting);
 
-        if (mb_strlen($prefix) < 100) {
+        if (\mb_strlen($prefix) < 100) {
             return $prefix;
         }
 
-        return mb_substr($prefix, 0, 100);
+        return \mb_substr($prefix, 0, 100);
     }
 
     /**
@@ -228,7 +228,7 @@ class Utils
         QUI\ERP\Products\Product\ProductList $List,
         $products = []
     ) {
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 

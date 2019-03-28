@@ -23,9 +23,9 @@ QUI::$Ajax->registerFunction(
             return;
         }
 
-        $fields = json_decode($fields, true);
+        $fields = \json_decode($fields, true);
 
-        if (!is_array($fields)) {
+        if (!\is_array($fields)) {
             $fields = [];
         }
 

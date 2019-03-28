@@ -44,7 +44,7 @@ class Handler extends QUI\Utils\Singleton
             return [];
         }
 
-        if (!$result || !is_array($result)) {
+        if (!$result || !\is_array($result)) {
             $this->list = [];
 
             return $this->list;

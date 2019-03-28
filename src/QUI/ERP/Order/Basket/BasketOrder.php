@@ -86,6 +86,19 @@ class BasketOrder
     }
 
     /**
+     * refresh the basket
+     * - import the order stuff to the basket
+     */
+    public function refresh()
+    {
+        try {
+            $this->readOrder();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+    }
+
+    /**
      * imports the order data into the basket
      *
      * @throws Exception
@@ -96,12 +109,14 @@ class BasketOrder
     protected function readOrder()
     {
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
+        $this->Order->refresh();
 
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
 
         $this->List            = new ProductList($data);
         $this->List->duplicate = true;
+        $this->List->setCurrency($this->Order->getCurrency());
 
         $this->import($articles);
 
@@ -210,8 +225,6 @@ class BasketOrder
      * Import the products to the basket
      *
      * @param array $products
-     *
-     * @throws QUI\Exception
      */
     public function import($products = [])
     {

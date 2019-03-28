@@ -45,32 +45,32 @@ class EventHandling
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
-        if (defined('QUIQQER_AJAX')) {
+        if (\defined('QUIQQER_AJAX')) {
             return;
         }
 
         try {
             $Project      = $Rewrite->getProject();
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-            $path         = trim($CheckoutSite->getUrlRewritten(), '/');
+            $path         = \trim($CheckoutSite->getUrlRewritten(), '/');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
             return;
         }
 
-        if (strpos($requestedUrl, $path) === false) {
+        if (\strpos($requestedUrl, $path) === false) {
             return;
         }
 
-        if (strpos($requestedUrl, $path) !== 0) {
+        if (\strpos($requestedUrl, $path) !== 0) {
             return;
         }
 
         // order hash
-        $parts = explode('/', $requestedUrl);
+        $parts = \explode('/', $requestedUrl);
 
-        if (count($parts) > 2) {
+        if (\count($parts) > 2) {
             // load order
             $orderHash = $parts[2];
 
@@ -91,10 +91,10 @@ class EventHandling
 
             $Processing = new Controls\OrderProcess\Processing();
 
-            $steps   = array_keys($OrderProcess->getSteps());
+            $steps   = \array_keys($OrderProcess->getSteps());
             $steps[] = 'Order';
             $steps[] = $Processing->getName();
-            $steps   = array_flip($steps);
+            $steps   = \array_flip($steps);
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());

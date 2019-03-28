@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Basket\Baseket
+ * This file contains QUI\ERP\Order\Basket\Basket
  */
 
 namespace QUI\ERP\Order\Basket;
@@ -93,7 +93,8 @@ class Basket
         $this->User = $User;
         $this->hash = $data['hash'];
 
-        $this->import(json_decode($data['products'], true));
+        $this->import(\json_decode($data['products'], true));
+        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
     /**
@@ -112,29 +113,6 @@ class Basket
     public function clear()
     {
         $this->List->clear();
-
-        // if the order is successful, then create a new
-        try {
-            $Order = $this->getOrder();
-        } catch (QUI\Exception $Exception) {
-            try {
-                $Order = $this->createNewOrder();
-            } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-
-                return;
-            }
-        }
-
-        if ($Order->isSuccessful()) {
-            try {
-                // create a new in process
-                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
-                $this->hash = $NewOrder->getHash();
-            } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-            }
-        }
     }
 
     /**
@@ -197,7 +175,7 @@ class Basket
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 
@@ -243,17 +221,21 @@ class Basket
             $result[] = $productData;
         }
 
-        QUI::getDataBase()->update(
-            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            [
-                'products' => json_encode($result),
-                'hash'     => $this->hash
-            ],
-            [
-                'id'  => $this->getId(),
-                'uid' => $this->User->getId()
-            ]
-        );
+        try {
+            QUI::getDataBase()->update(
+                QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+                [
+                    'products' => \json_encode($result),
+                    'hash'     => $this->hash
+                ],
+                [
+                    'id'  => $this->getId(),
+                    'uid' => $this->User->getId()
+                ]
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 
     /**

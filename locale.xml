@@ -232,6 +232,10 @@
             <de><![CDATA[Lastschrift]]></de>
             <en><![CDATA[Debit]]></en>
         </locale>
+        <locale name="payment.status.12">
+            <de><![CDATA[Abonnement]]></de>
+            <en><![CDATA[Subscription plan]]></en>
+        </locale>
         <locale name="payment.status.paid.text">
             <de><![CDATA[Bezahlt am [date]]]></de>
             <en><![CDATA[Paid at [date]]]></en>
@@ -794,6 +798,14 @@
         <locale name="control.basket.small.buy.button">
             <de><![CDATA[Zur Kasse]]></de>
             <en><![CDATA[Checkout]]></en>
+        </locale>
+        <locale name="exception.order.already.exists">
+            <de><![CDATA[
+            Die Order existiert bereits, diese Aktion kann deswegen leider nicht durchgeführt werden.
+            ]]></de>
+            <en><![CDATA[
+            The order already exists, so unfortunately this action cannot be performed.
+            ]]></en>
         </locale>
     </groups>
 

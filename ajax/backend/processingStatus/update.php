@@ -15,7 +15,7 @@ QUI::$Ajax->registerFunction(
         Handler::getInstance()->updateProcessingStatus(
             $id,
             $color,
-            json_decode($title, true)
+            \json_decode($title, true)
         );
     },
     ['id', 'color', 'title'],

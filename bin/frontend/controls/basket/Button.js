@@ -259,7 +259,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             var SumElm = this.getElm().getElement(
                 '.quiqqer-order-basketButton-sum'
             );
-            
+
             if (SumElm) {
                 SumElm.set('text', Basket.getCalculations().sum);
             }

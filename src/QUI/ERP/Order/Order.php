@@ -156,6 +156,11 @@ class Order extends AbstractOrder implements OrderInterface
             'delivery_address_id' => $deliveryAddressId
         ]);
 
+        // pass data to the invoice
+        foreach ($this->data as $key => $value) {
+            $TemporaryInvoice->setData($key, $value);
+        }
+
         $articles = $this->getArticles()->getArticles();
 
         $TemporaryInvoice->getArticles()->setUser(
@@ -163,11 +168,7 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         foreach ($articles as $Article) {
-            try {
-                $TemporaryInvoice->getArticles()->addArticle($Article);
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-            }
+            $TemporaryInvoice->getArticles()->addArticle($Article);
         }
 
         $TemporaryInvoice->getArticles()->importPriceFactors(
@@ -181,7 +182,7 @@ class Order extends AbstractOrder implements OrderInterface
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
                 'paid_status'  => $this->getAttribute('paid_status'),
-                'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData))
+                'payment_data' => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData))
             ],
             ['id' => $this->getId()]
         );
@@ -288,22 +289,16 @@ class Order extends AbstractOrder implements OrderInterface
     {
         $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
-
         $deliveryAddress = '';
-        $customer        = '';
 
         if ($DeliveryAddress) {
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
         // customer
-        try {
-            $Customer = $this->getCustomer();
-            $customer = $Customer->getAttributes();
-            $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-        }
+        $Customer = $this->getCustomer();
+        $customer = $Customer->getAttributes();
+        $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
         //payment
         $idPrefix      = '';
@@ -332,6 +327,13 @@ class Order extends AbstractOrder implements OrderInterface
             $invoiceId = $this->getInvoice()->getCleanId();
         }
 
+        // currency exchange rate
+        $Currency = $this->getCurrency();
+
+        if (QUI\ERP\Defaults::getCurrency()->getCode() !== $Currency->getCode()) {
+            $this->setData('currency-exchange-rate', $Currency->getExchangeRate());
+        }
+
         return [
             'id_prefix'    => $idPrefix,
             'id_str'       => $idPrefix.$this->getId(),
@@ -341,24 +343,24 @@ class Order extends AbstractOrder implements OrderInterface
             'successful'   => $this->successful,
 
             'customerId'      => $this->customerId,
-            'customer'        => json_encode($customer),
+            'customer'        => \json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
             'articles'      => $this->Articles->toJSON(),
             'comments'      => $this->Comments->toJSON(),
             'history'       => $this->History->toJSON(),
-            'data'          => json_encode($this->data),
-            'currency_data' => json_encode($this->getCurrency()->toArray()),
+            'data'          => \json_encode($this->data),
+            'currency_data' => \json_encode($this->getCurrency()->toArray()),
+            'currency'      => $this->getCurrency()->getCode(),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
             'payment_data'    => QUI\Security\Encryption::encrypt(
-                json_encode($this->paymentData)
+                \json_encode($this->paymentData)
             ),
             'payment_address' => ''  // verschlüsselt
-
         ];
     }
 
@@ -444,6 +446,49 @@ class Order extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Set Order payment status (paid_status)
+     *
+     * @param int $status
+     * @param bool $force - default = false, if true, set payment status will be set in any case
+     *
+     * @return void
+     * @throws \QUI\Exception
+     */
+    public function setPaymentStatus(int $status, $force = false)
+    {
+        $oldPaidStatus = $this->getAttribute('paid_status');
+
+        if ($oldPaidStatus == $status && $force === false) {
+            return;
+        }
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            ['paid_status' => $status],
+            ['id' => $this->getId()]
+        );
+
+        QUI\ERP\Debug::getInstance()->log(
+            'Order:: Paid Status changed to '.$status
+        );
+
+        // Payment Status has changed
+        if ($oldPaidStatus != $status) {
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaymentChanged',
+                [$this, $status, $oldPaidStatus]
+            );
+
+            QUI::getEvents()->fireEvent(
+                'onQuiqqerOrderPaidStatusChanged',
+                [$this, $status, $oldPaidStatus]
+            );
+        }
+
+        $this->setAttribute('paid_status', $status);
+    }
+
+    /**
      * Calculates the payment for the order
      *
      * @throws QUI\Exception
@@ -474,6 +519,7 @@ class Order extends AbstractOrder implements OrderInterface
             case self::PAYMENT_STATUS_ERROR:
             case self::PAYMENT_STATUS_DEBIT:
             case self::PAYMENT_STATUS_CANCELED:
+            case self::PAYMENT_STATUS_PLAN:
                 break;
 
             default:
@@ -493,28 +539,22 @@ class Order extends AbstractOrder implements OrderInterface
 
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
 
-        if (!is_array($calculation['paidData'])) {
-            $calculation['paidData'] = json_decode($calculation['paidData'], true);
+        if (!\is_array($calculation['paidData'])) {
+            $calculation['paidData'] = \json_decode($calculation['paidData'], true);
         }
 
-        if (!is_array($calculation['paidData'])) {
+        if (!\is_array($calculation['paidData'])) {
             $calculation['paidData'] = [];
         }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             [
-                'paid_data'   => json_encode($calculation['paidData']),
-                'paid_date'   => $calculation['paidDate'],
-                'paid_status' => $calculation['paidStatus']
+                'paid_data' => \json_encode($calculation['paidData']),
+                'paid_date' => $calculation['paidDate']
             ],
             ['id' => $this->getId()]
         );
-
-        QUI\ERP\Debug::getInstance()->log(
-            'Order:: Paid Status changed to '.$calculation['paidStatus']
-        );
-
 
         if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID) {
             $this->setSuccessfulStatus();
@@ -525,17 +565,8 @@ class Order extends AbstractOrder implements OrderInterface
             }
         }
 
-        // Payment Status has changed
-        if ($oldPaidStatus != $this->getAttribute('paid_status')) {
-            QUI::getEvents()->fireEvent(
-                'onQuiqqerOrderPaymentChanged',
-                [$this, $this->getAttribute('paid_status'), $oldPaidStatus]
-            );
-
-            QUI::getEvents()->fireEvent(
-                'onQuiqqerOrderPaidStatusChanged',
-                [$this, $this->getAttribute('paid_status'), $oldPaidStatus]
-            );
+        if ($oldPaidStatus !== $calculation['paidStatus']) {
+            $this->setPaymentStatus($calculation['paidStatus'], true);
         }
     }
 
@@ -617,9 +648,7 @@ class Order extends AbstractOrder implements OrderInterface
             );
         }
 
-
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
-
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),

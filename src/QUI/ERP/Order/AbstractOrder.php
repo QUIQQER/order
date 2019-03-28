@@ -31,6 +31,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     const PAYMENT_STATUS_ERROR = 4;
     const PAYMENT_STATUS_CANCELED = 5;
     const PAYMENT_STATUS_DEBIT = 11;
+    const PAYMENT_STATUS_PLAN = 12;
 
     /**
      * Order is only created
@@ -216,9 +217,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->invoiceId = $data['invoice_id'];
 
         $this->idPrefix        = $data['id_prefix'];
-        $this->addressDelivery = json_decode($data['addressDelivery'], true);
-        $this->addressInvoice  = json_decode($data['addressInvoice'], true);
-        $this->data            = json_decode($data['data'], true);
+        $this->addressDelivery = \json_decode($data['addressDelivery'], true);
+        $this->addressInvoice  = \json_decode($data['addressInvoice'], true);
+        $this->data            = \json_decode($data['data'], true);
 
         if (isset($data['status'])) {
             $this->status = $data['status'];
@@ -228,7 +229,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->customerId = (int)$data['customerId'];
 
         if (isset($data['customer'])) {
-            $this->customer = json_decode($data['customer'], true);
+            $this->customer = \json_decode($data['customer'], true);
 
             if (!isset($this->customer['id'])) {
                 $this->customer['id'] = $this->customerId;
@@ -265,7 +266,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->Articles = new ArticleList();
 
         if (isset($data['articles'])) {
-            $articles = json_decode($data['articles'], true);
+            $articles = \json_decode($data['articles'], true);
 
             if ($articles) {
                 // clear vat for recalculation
@@ -306,24 +307,24 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->setAttributes([
             'paid_status'          => (int)$data['paid_status'],
-            'paid_data'            => json_decode($data['paid_data'], true),
+            'paid_data'            => \json_decode($data['paid_data'], true),
             'paid_date'            => $data['paid_date'],
             'temporary_invoice_id' => $data['temporary_invoice_id'],
         ]);
 
         if (isset($data['payment_data'])) {
             $paymentData = QUI\Security\Encryption::decrypt($data['payment_data']);
-            $paymentData = json_decode($paymentData, true);
+            $paymentData = \json_decode($paymentData, true);
 
             $this->paymentData = $paymentData;
         }
 
         // currency
         if (!empty($data['currency_data'])) {
-            $currency = json_decode($data['currency_data'], true);
+            $currency = \json_decode($data['currency_data'], true);
 
             if (is_string($currency)) {
-                $currency = json_decode($currency, true);
+                $currency = \json_decode($currency, true);
             }
 
             if ($currency && isset($currency['code'])) {
@@ -338,6 +339,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         if ($this->Currency === null) {
             $this->Currency = QUI\ERP\Defaults::getCurrency();
         }
+
+        $this->Articles->setCurrency($this->Currency);
     }
 
     /**
@@ -460,20 +463,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function toArray()
     {
-        $articles  = '';
         $status    = '';
         $paymentId = '';
 
-        $Payment = $this->getPayment();
+        $articles = $this->getArticles()->toArray();
+        $Payment  = $this->getPayment();
 
         if ($Payment) {
             $paymentId = $Payment->getId();
-        }
-
-        try {
-            $articles = $this->getArticles()->toArray();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
         }
 
         try {
@@ -756,7 +753,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        if (is_array($address)) {
+        if (\is_array($address)) {
             $this->addressDelivery = $this->parseAddressData($address);
         }
     }
@@ -784,7 +781,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        if (is_array($address)) {
+        if (\is_array($address)) {
             $this->addressInvoice = $this->parseAddressData($address);
         }
     }
@@ -830,6 +827,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * Set the currency of the order
+     *
+     * @param QUI\ERP\Currency\Currency $Currency
+     */
+    public function setCurrency(QUI\ERP\Currency\Currency $Currency)
+    {
+        $this->Currency = $Currency;
+        $this->Articles->setCurrency($Currency);
+    }
+
+    /**
      * Set an customer to the order
      *
      * @param array|QUI\ERP\User|QUI\Interfaces\Users\User $User
@@ -841,7 +849,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        if (is_array($User)) {
+        if (\is_array($User)) {
             $missing = QUI\ERP\User::getMissingAttributes($User);
 
             // if something is missing
@@ -927,6 +935,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
     }
 
+    /**
+     * Set Order payment status (paid_status)
+     *
+     * @param int $status
+     * @return void
+     * @throws \QUI\Exception
+     */
+    abstract public function setPaymentStatus(int $status);
+
     //endregion
 
     //region payments
@@ -950,7 +967,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
              * hierzu brauchen wir noch eine einstellung
              * quiqqer/package-currency#3
              */
-            if (round($calculations['sum'], 2) >= 0 && round($calculations['sum'], 2) <= 0) {
+            if (\round($calculations['sum'], 2) >= 0 && \round($calculations['sum'], 2) <= 0) {
                 return $Payments->getPayment(
                     QUI\ERP\Accounting\Payments\Methods\Free\Payment::ID
                 );
@@ -1096,7 +1113,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $User     = QUI::getUserBySession();
         $paidData = $this->getAttribute('paid_data');
-        $amount   = Price::validatePrice($Transaction->getAmount());
+        $amount   = floatval($Transaction->getAmount());
         $date     = $Transaction->getDate();
 
         QUI::getEvents()->fireEvent(
@@ -1109,11 +1126,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        if (!is_array($paidData)) {
-            $paidData = json_decode($paidData, true);
+        if (!\is_array($paidData)) {
+            $paidData = \json_decode($paidData, true);
         }
 
-        if (!is_array($paidData)) {
+        if (!\is_array($paidData)) {
             $paidData = [];
         }
 
@@ -1137,7 +1154,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-
         $isValidTimeStamp = function ($timestamp) {
             return ((string)(int)$timestamp === $timestamp)
                    && ($timestamp <= PHP_INT_MAX)
@@ -1145,13 +1161,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         };
 
         if ($isValidTimeStamp($date) === false) {
-            $date = strtotime($date);
+            $date = \strtotime($date);
 
             if ($isValidTimeStamp($date) === false) {
-                $date = time();
+                $date = \time();
             }
         }
-
 
         $this->setAttribute('paid_date', $date);
 
@@ -1160,13 +1175,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $listCalculations = $this->Articles->getCalculations();
 
         $this->setAttributes([
-            'currency_data' => json_encode($listCalculations['currencyData']),
+            'currency_data' => \json_encode($listCalculations['currencyData']),
             'nettosum'      => $listCalculations['nettoSum'],
             'subsum'        => $listCalculations['subSum'],
             'sum'           => $listCalculations['sum'],
-            'vat_array'     => json_encode($listCalculations['vatArray'])
+            'vat_array'     => \json_encode($listCalculations['vatArray'])
         ]);
-
 
         $this->addHistory(
             QUI::getLocale()->get(
