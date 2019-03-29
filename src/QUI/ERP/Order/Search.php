@@ -51,6 +51,13 @@ class Search extends Singleton
     protected $cache = [];
 
     /**
+     * currency of the searched orders
+     *
+     * @var string
+     */
+    protected $currency = '';
+
+    /**
      * Set a filter
      *
      * @param string $filter
@@ -60,6 +67,33 @@ class Search extends Singleton
     {
         if ($filter === 'search') {
             $this->search = $value;
+
+            return;
+        }
+
+        if ($filter === 'currency') {
+            if (empty($value)) {
+                $this->currency = QUI\ERP\Currency\Handler::getDefaultCurrency()->getCode();
+
+                return;
+            }
+
+            try {
+                $allowed = QUI\ERP\Currency\Handler::getAllowedCurrencies();
+            } catch (QUI\Exception $Exception) {
+                return;
+            }
+
+            $allowed = \array_map(function ($Currency) {
+                /* @var $Currency QUI\ERP\Currency\Currency */
+                return $Currency->getCode();
+            }, $allowed);
+
+            $allowed = \array_flip($allowed);
+
+            if (isset($allowed[$value])) {
+                $this->currency = $value;
+            }
 
             return;
         }
@@ -182,13 +216,23 @@ class Search extends Singleton
         $this->filter = $oldFiler;
         $this->limit  = $oldLimit;
 
+        // currency
+        $Currency = null;
+
+        if (!empty($this->currency)) {
+            try {
+                $Currency = QUI\ERP\Currency\Handler::getCurrency($this->currency);
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         // result
         $result = $this->parseListForGrid($orders);
         $Grid   = new QUI\Utils\Grid();
 
         return [
             'grid'  => $Grid->parseResult($result, $count),
-            'total' => QUI\ERP\Accounting\Calc::calculateTotal($calc)
+            'total' => QUI\ERP\Accounting\Calc::calculateTotal($calc, $Currency)
         ];
     }
 
@@ -231,10 +275,31 @@ class Search extends Singleton
             ];
         }
 
+        // filter start
         $where = [];
         $binds = [];
         $fc    = 0;
 
+        // currency
+        $DefaultCurrency = QUI\ERP\Currency\Handler::getDefaultCurrency();
+
+        if (empty($this->currency)) {
+            $this->currency = $DefaultCurrency->getCode();
+        }
+
+        // fallback for old orders
+        if ($DefaultCurrency->getCode() === $this->currency) {
+            $where[] = "(currency = :currency OR currency = '')";
+        } else {
+            $where[] = 'currency = :currency';
+        }
+
+        $binds[':currency'] = [
+            'value' => $this->currency,
+            'type'  => \PDO::PARAM_STR
+        ];
+
+        // filter
         foreach ($this->filter as $filter) {
             $bind = ':filter'.$fc;
 

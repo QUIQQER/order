@@ -163,9 +163,8 @@ class Order extends AbstractOrder implements OrderInterface
 
         $articles = $this->getArticles()->getArticles();
 
-        $TemporaryInvoice->getArticles()->setUser(
-            $this->getCustomer()
-        );
+        $TemporaryInvoice->getArticles()->setUser($this->getCustomer());
+        $TemporaryInvoice->getArticles()->setCurrency($this->getCurrency());
 
         foreach ($articles as $Article) {
             $TemporaryInvoice->getArticles()->addArticle($Article);
@@ -181,8 +180,10 @@ class Order extends AbstractOrder implements OrderInterface
         QUI::getDataBase()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
-                'paid_status'  => $this->getAttribute('paid_status'),
-                'payment_data' => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData))
+                'paid_status'   => $this->getAttribute('paid_status'),
+                'payment_data'  => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData)),
+                'currency_data' => \json_encode($this->getCurrency()->toArray()),
+                'currency'      => $this->getCurrency()->getCode()
             ],
             ['id' => $this->getId()]
         );
@@ -195,12 +196,13 @@ class Order extends AbstractOrder implements OrderInterface
             );
 
             $this->setAttribute('temporary_invoice_id', $TemporaryInvoice->getId());
+            $this->save();
+
             $TemporaryInvoice->validate();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
             throw $Exception;
         }
-
 
         // auto invoice post
         if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
