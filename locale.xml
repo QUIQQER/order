@@ -850,7 +850,7 @@
         </locale>
         <locale name="panel.btn.total">
             <de><![CDATA[Summe anzeigen]]></de>
-            <en><![CDATA[Show total]]></en>
+            <en><![CDATA[Show sum]]></en>
         </locale>
 
         <locale name="panel.order.button.buttonAdd">
