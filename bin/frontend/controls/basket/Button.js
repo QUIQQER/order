@@ -149,6 +149,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             ], function (Basket) {
                 Basket.addEvents({
                     onRefresh: function () {
+                        console.warn('refresh');
                         isLoaded();
                         self.updateDisplay(Basket);
                     },

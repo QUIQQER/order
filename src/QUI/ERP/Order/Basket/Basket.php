@@ -183,6 +183,12 @@ class Basket
             $this->List,
             $products
         );
+
+        try {
+            $this->List->recalculate();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**
