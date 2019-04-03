@@ -18,10 +18,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'qui/controls/Control',
     'Locale',
     'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
+    'package/quiqqer/order/bin/frontend/Orders',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
-], function (QUI, QUIControl, QUILocale, BasketWindow) {
+], function (QUI, QUIControl, QUILocale, BasketWindow, Orders) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -38,6 +39,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         ],
 
         options: {
+            open         : 2, // 0 = nothing, 1 = order window, 2 = order process
             text         : true,
             styles       : false,
             batchPosition: {
@@ -120,6 +122,17 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
             Elm.addEvent('click', function () {
+                if (self.getAttribute('open') === 0) {
+                    return;
+                }
+
+                if (self.getAttribute('open') === 2) {
+                    Orders.getOrderProcessUrl().then(function (url) {
+                        window.location = url;
+                    });
+                    return;
+                }
+
                 new BasketWindow().open();
             });
 
@@ -144,9 +157,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 this.getElm().set('disabled', false);
             }.bind(this);
 
-            require([
-                'package/quiqqer/order/bin/frontend/Basket'
-            ], function (Basket) {
+            require(['package/quiqqer/order/bin/frontend/Basket'], function (Basket) {
                 Basket.addEvents({
                     onRefresh: function () {
                         isLoaded();

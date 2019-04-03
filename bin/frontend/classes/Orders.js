@@ -76,6 +76,20 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
                 });
             });
         },
+        /**
+         * Return the url of the order process
+         *
+         * @returns {Promise}
+         */
+        getOrderProcessUrl: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getOrderProcessUrl', resolve, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
 
         /**
          * Create an in processing order
