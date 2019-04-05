@@ -157,6 +157,10 @@ class Order extends AbstractOrder implements OrderInterface
         ]);
 
         // pass data to the invoice
+        if (!is_array($this->data)) {
+            $this->data = [];
+        }
+
         foreach ($this->data as $key => $value) {
             $TemporaryInvoice->setData($key, $value);
         }
