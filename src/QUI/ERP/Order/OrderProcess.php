@@ -660,7 +660,7 @@ class OrderProcess extends QUI\Control
         $paymentIsSuccessful = false;
         $Payment             = $Order->getPayment();
 
-        if ($Payment->isSuccessful($Order->getHash())) {
+        if ($Payment && $Payment->isSuccessful($Order->getHash())) {
             $paymentIsSuccessful = true;
         }
 
