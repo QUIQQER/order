@@ -62,10 +62,14 @@
         <table class="quiqqer-order-control-order-information-orderData-table">
             <tr class="quiqqer-order-control-order-information-orderData-subSum">
                 <td class="quiqqer-order-control-order-information-orderData-subSum-title">
-                    {locale group="quiqqer/order" var="control.order.overview.subSum"}
+                    <span class="quiqqer-order-control-order-information-orderData-subSum-text">
+                        {locale group="quiqqer/order" var="control.order.overview.subSum"}
+                    </span>
                 </td>
                 <td class="quiqqer-order-control-order-information-orderData-subSum-sum">
-                    {$Calculation->getSubSum()->formatted()}
+                    <span class="quiqqer-order-control-order-information-orderData-subSum-value">
+                        {$Calculation->getSubSum()->formatted()}
+                    </span>
                 </td>
             </tr>
             {foreach $PriceFactors as $Factor}
@@ -95,10 +99,14 @@
             {/foreach}
             <tr>
                 <td class="quiqqer-order-control-order-information-orderData-sum-title">
-                    {locale group="quiqqer/order" var="control.order.overview.sum"}
+                    <span class="quiqqer-order-control-order-information-orderData-sum-text">
+                        {locale group="quiqqer/order" var="control.order.overview.sum"}
+                    </span>
                 </td>
                 <td class="quiqqer-order-control-order-information-orderData-sum">
-                    {$Calculation->getSum()->formatted()}
+                    <span class="quiqqer-order-control-order-information-orderData-value">
+                        {$Calculation->getSum()->formatted()}
+                    </span>
                 </td>
             </tr>
         </table>

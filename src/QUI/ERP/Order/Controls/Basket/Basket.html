@@ -93,10 +93,14 @@
 <table class="quiqqer-order-basket-total">
     <tr class="quiqqer-order-basket-total-subSum">
         <td class="quiqqer-order-basket-total-firstCell">
-            {locale group="quiqqer/products" var="product.list.products.subtotal"}
+            <span class="quiqqer-order-basket-total-subSum-text">
+                {locale group="quiqqer/products" var="product.list.products.subtotal"}
+            </span>
         </td>
         <td class="quiqqer-order-basket-total-secondCell">
-            {$data.subSum}
+            <span class="quiqqer-order-basket-total-subSum-value">
+                {$data.subSum}
+            </span>
         </td>
     </tr>
 
@@ -136,10 +140,14 @@
 
     <tr class="quiqqer-order-basket-total-sum">
         <td>
-            {locale group="quiqqer/products" var="product.list.products.sumtotal"}
+            <span class="quiqqer-order-basket-total-sum-text">
+                {locale group="quiqqer/products" var="product.list.products.sumtotal"}
+            </span>
         </td>
         <td>
-            {$data.sum}
+            <span class="quiqqer-order-basket-total-sum-value">
+                {$data.sum}
+            </span>
         </td>
     </tr>
 </table>
