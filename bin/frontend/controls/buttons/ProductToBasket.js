@@ -29,9 +29,12 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$Input = null;
-            this.$Text  = null; // Button
-            this.changeButtons = null; // buttons to change quantity -/+
+            this.$Input          = null;
+            this.$Button         = null; // add to basket button
+            this.$Label          = null; // add to basket button text
+            this.$Quantity       = null; // quantity input
+            this.addingInProcess = false;
+            this.changeButtons   = null; // buttons to change quantity -/+
 
             this.addEvents({
                 onImport: this.$onImport,
@@ -52,8 +55,10 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             this.setAttribute('productId', pid);
 
-            this.$Input = Elm.getElement('input');
-            this.$Text  = Elm.getElement('.text');
+            this.$Quantity     = Elm.getElement('.quiqqer-order-button-add-quantity');
+            this.$Input        = Elm.getElement('input');
+            this.$Button       = Elm.getElement('.add-to-basket');
+            this.$Label        = Elm.getElement('.add-to-basket-text');
             this.changeButtons = Elm.getElements(
                 '.quiqqer-order-button-add-quantity-decrease, .quiqqer-order-button-add-quantity-increase'
             );
@@ -61,6 +66,10 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             this.changeButtons.addEvent('click', function (event) {
                 event.stop();
                 var Target = event.target;
+
+                if (this.addingInProcess) {
+                    return;
+                }
 
                 this.changeValue(Target);
             }.bind(this));
@@ -78,7 +87,16 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 }
             });
 
-            this.$Text.addEvent('click', this.$addProductToBasket);
+            this.$Button.addEvent('click', function () {
+                if (this.addingInProcess) {
+                    return;
+                }
+
+                this.addingInProcess = true;
+                this.disableQuantityButton();
+
+                this.$addProductToBasket();
+            }.bind(this));
             Elm.removeClass('disabled');
         },
 
@@ -95,20 +113,11 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
         $addProductToBasket: function () {
             this.getElm().addClass('disabled');
 
-            this.$Text.setStyles({
-//                visibility: 'hidden'
-            });
-
             var self  = this,
                 count = 0,
                 size  = this.getElm().getSize();
 
             if (this.$Input) {
-                this.$Input.setStyles({
-//                    opacity   : 0,
-//                    visibility: 'hidden'
-                });
-
                 count = parseInt(this.$Input.value);
             }
 
@@ -116,10 +125,12 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 count = 0;
             }
 
+            this.$Label.setStyle('visibility', 'hidden');
+
             var Loader = new Element('div', {
-                'class' : 'quiqqer-order-button-add-loader',
-                html  : '<span class="fa fa-spinner fa-spin"></span>',
-                styles: {
+                'class': 'quiqqer-order-button-add-loader',
+                html   : '<span class="fa fa-spinner fa-spin"></span>',
+                styles : {
                     fontSize  : (size.y / 3).round(),
                     height    : '100%',
                     left      : 0,
@@ -127,16 +138,15 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                     position  : 'absolute',
                     textAlign : 'center',
                     top       : 0,
-                    width     : '100%',
-                    background: 'rgba(255,255,255,0.65)'
+                    width     : '100%'
                 }
-            }).inject(this.getElm());
+            }).inject(this.$Button);
 
             var Product = new BasketProduct({
                 id: this.getAttribute('productId')
             });
 
-            // is the button in a produkt?
+            // is the button in a product?
             var fields         = {},
                 ProductElm     = this.getElm().getParent('[data-productid]'),
                 ProductControl = QUI.Controls.getById(ProductElm.get('data-quiid'));
@@ -161,30 +171,20 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 Span.addClass('fa-check');
 
                 (function () {
+                    self.enableQuantityButton();
+                    self.$Label.setStyle('visibility', 'visible');
+
                     moofx(Loader).animate({
                         opacity: 0
                     }, {
                         duration: 300,
                         callback: function () {
+                            self.addingInProcess = false;
                             Loader.destroy();
                         }
                     });
 
                     self.getElm().removeClass('disabled');
-
-                    /*if (self.$Input) {
-                        self.$Input.setStyle('visibility', null);
-
-                        moofx(self.$Input).animate({
-                            opacity: 1
-                        });
-                    }*/
-
-//                    self.$Text.setStyle('visibility', null);
-
-                    /*moofx(self.$Text).animate({
-                        opacity: 1
-                    });*/
 
                 }).delay(1000);
             }.bind(this));
@@ -195,12 +195,12 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
          *
          * @param Button | DOM Object
          */
-        changeValue: function(Button) {
-            var type = Button.getProperty('data-button-type'),
+        changeValue: function (Button) {
+            var type  = Button.getProperty('data-button-type'),
                 value = parseInt(this.$Input.value);
 
             if (!value) {
-                value = 1;
+                value             = 1;
                 this.$Input.value = value;
             }
 
@@ -215,6 +215,22 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             // increase
             this.$Input.value = ++value;
+        },
+
+        /**
+         * Disable buttons to change quantity
+         */
+        disableQuantityButton: function () {
+            this.$Quantity.setStyle('opacity', 0.5);
+            this.$Input.setAttribute('disabled', true);
+        },
+
+        /**
+         * Enable buttons to change quantity
+         */
+        enableQuantityButton: function () {
+            this.$Quantity.setStyle('opacity', '1');
+            this.$Input.removeAttribute('disabled');
         }
     });
 });

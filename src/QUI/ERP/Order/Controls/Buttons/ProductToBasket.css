@@ -42,3 +42,11 @@
     margin: 0;
     -webkit-appearance: none;
 }
+
+.add-to-basket {
+    outline: none;
+}
+
+.add-to-basket-text {
+    cursor: pointer;
+}
