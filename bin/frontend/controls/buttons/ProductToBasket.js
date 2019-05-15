@@ -131,14 +131,14 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 'class': 'quiqqer-order-button-add-loader',
                 html   : '<span class="fa fa-spinner fa-spin"></span>',
                 styles : {
-                    fontSize  : (size.y / 3).round(),
-                    height    : '100%',
-                    left      : 0,
-                    lineHeight: size.y,
-                    position  : 'absolute',
-                    textAlign : 'center',
-                    top       : 0,
-                    width     : '100%'
+                    height        : '100%',
+                    left          : 0,
+                    position      : 'absolute',
+                    top           : 0,
+                    width         : '100%',
+                    display       : 'flex',
+                    alignItems    : 'center',
+                    justifyContent: 'center'
                 }
             }).inject(this.$Button);
 
