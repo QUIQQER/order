@@ -29,9 +29,10 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$Input = null;
-            this.$Text  = null; // Button
+            this.$Input        = null;
+            this.$Text         = null; // Button
             this.changeButtons = null; // buttons to change quantity -/+
+            this.$disabled     = false;
 
             this.addEvents({
                 onImport: this.$onImport,
@@ -52,8 +53,8 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             this.setAttribute('productId', pid);
 
-            this.$Input = Elm.getElement('input');
-            this.$Text  = Elm.getElement('.text');
+            this.$Input        = Elm.getElement('input');
+            this.$Text         = Elm.getElement('.text');
             this.changeButtons = Elm.getElements(
                 '.quiqqer-order-button-add-quantity-decrease, .quiqqer-order-button-add-quantity-increase'
             );
@@ -79,7 +80,26 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             });
 
             this.$Text.addEvent('click', this.$addProductToBasket);
-            Elm.removeClass('disabled');
+
+            if (Elm.get('data-qui-options-disabled')) {
+                this.disable();
+            }
+        },
+
+        /**
+         * Disable the button
+         */
+        disable: function () {
+            this.getElm().addClass('disabled');
+            this.$disabled = true;
+        },
+
+        /**
+         * Enable the button
+         */
+        enable: function () {
+            this.getElm().removeClass('disabled');
+            this.$disabled = false;
         },
 
         /**
@@ -93,6 +113,10 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
          * add the product to the basket
          */
         $addProductToBasket: function () {
+            if (this.$disabled) {
+                return;
+            }
+
             this.getElm().addClass('disabled');
 
             this.$Text.setStyles({
@@ -117,9 +141,9 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             }
 
             var Loader = new Element('div', {
-                'class' : 'quiqqer-order-button-add-loader',
-                html  : '<span class="fa fa-spinner fa-spin"></span>',
-                styles: {
+                'class': 'quiqqer-order-button-add-loader',
+                html   : '<span class="fa fa-spinner fa-spin"></span>',
+                styles : {
                     fontSize  : (size.y / 3).round(),
                     height    : '100%',
                     left      : 0,
@@ -195,12 +219,12 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
          *
          * @param Button | DOM Object
          */
-        changeValue: function(Button) {
-            var type = Button.getProperty('data-button-type'),
+        changeValue: function (Button) {
+            var type  = Button.getProperty('data-button-type'),
                 value = parseInt(this.$Input.value);
 
             if (!value) {
-                value = 1;
+                value             = 1;
                 this.$Input.value = value;
             }
 

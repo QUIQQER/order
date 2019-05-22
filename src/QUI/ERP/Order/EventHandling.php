@@ -24,16 +24,22 @@ class EventHandling
      *
      * @param QUI\ERP\Products\Interfaces\ProductInterface $Product
      * @param Collection $Collection
+     * @param $ProductControl
      */
     public static function onQuiqqerProductsProductViewButtons(
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
-        Collection &$Collection
+        Collection &$Collection,
+        $ProductControl
     ) {
-        $Collection = $Collection->append(
-            new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
-                'Product' => $Product
-            ])
-        );
+        $Button = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
+            'Product' => $Product
+        ]);
+
+        if ($ProductControl->getAttribute('data-qui-option-available') === false) {
+            $Button->setAttribute('disabled', true);
+        }
+
+        $Collection = $Collection->append($Button);
     }
 
     /**

@@ -28,7 +28,8 @@ class ProductToBasket extends QUI\Control
             'input'        => true,
             'Product'      => false,
             'showLabel'    => true,
-            'showControls' => true // show decrease and increase buttons -/+
+            'showControls' => true, // show decrease and increase buttons -/+
+            'disabled'     => false
         ]);
 
         parent::__construct($attributes);
@@ -74,8 +75,14 @@ class ProductToBasket extends QUI\Control
             );
         }
 
+        if ($this->getAttribute('disabled')) {
+            $this->setAttribute('data-qui-options-disabled', true);
+            $this->addCSSClass('disabled');
+        }
+
         // css class to manage the default browser spin (input from type "number")
         $disableSpins = '';
+
         if ($this->getAttribute('showControls')) {
             $disableSpins = 'disable-spins';
         }
