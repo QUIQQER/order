@@ -29,7 +29,7 @@ class ProductToBasket extends QUI\Control
             'Product'      => false,
             'showLabel'    => true,
             'showControls' => true, // show decrease and increase buttons -/+
-            'disabled'     => false
+            //'disabled'     => false
         ]);
 
         parent::__construct($attributes);

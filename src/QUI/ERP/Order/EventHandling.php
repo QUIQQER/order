@@ -35,7 +35,9 @@ class EventHandling
             'Product' => $Product
         ]);
 
-        if ($ProductControl && $ProductControl->getAttribute('data-qui-option-available') === false) {
+        if ($ProductControl
+            && $ProductControl->existsAttribute('data-qui-option-available')
+            && $ProductControl->getAttribute('data-qui-option-available') === false) {
             $Button->setAttribute('disabled', true);
         }
 
