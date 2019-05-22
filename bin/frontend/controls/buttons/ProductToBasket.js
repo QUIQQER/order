@@ -98,6 +98,8 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             if (Elm.get('data-qui-options-disabled')) {
                 this.disable();
+            } else {
+                this.enable();
             }
         },
 
