@@ -75,7 +75,7 @@ class ProductToBasket extends QUI\Control
             );
         }
 
-        if ($this->getAttribute('disabled')) {
+        if ($this->existsAttribute('disabled') && $this->getAttribute('disabled')) {
             $this->setAttribute('data-qui-options-disabled', true);
             $this->addCSSClass('disabled');
         }
