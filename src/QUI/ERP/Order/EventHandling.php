@@ -29,13 +29,13 @@ class EventHandling
     public static function onQuiqqerProductsProductViewButtons(
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
         Collection &$Collection,
-        $ProductControl
+        $ProductControl = null
     ) {
         $Button = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
             'Product' => $Product
         ]);
 
-        if ($ProductControl->getAttribute('data-qui-option-available') === false) {
+        if ($ProductControl && $ProductControl->getAttribute('data-qui-option-available') === false) {
             $Button->setAttribute('disabled', true);
         }
 
