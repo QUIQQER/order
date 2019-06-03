@@ -94,8 +94,6 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 }
             });
 
-            this.$Text.addEvent('click', this.$addProductToBasket);
-
             if (Elm.get('data-qui-options-disabled')) {
                 this.disable();
             } else {
@@ -146,6 +144,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             if (this.$disabled) {
                 return;
             }
+
 
             this.getElm().addClass('disabled');
 
