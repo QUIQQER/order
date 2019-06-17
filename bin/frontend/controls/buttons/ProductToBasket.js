@@ -81,18 +81,20 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 this.changeValue(Target);
             }.bind(this));
 
-            this.$Input.setStyles({
-                zIndex: 10
-            });
+            if (this.$Input) {
+                this.$Input.setStyles({
+                    zIndex: 10
+                });
 
-            // set number to input
-            this.$Input.addEvent('blur', function () {
-                var value = parseInt(this.value);
+                // set number to input
+                this.$Input.addEvent('blur', function () {
+                    var value = parseInt(this.value);
 
-                if (!value || value < 1) {
-                    this.value = 1;
-                }
-            });
+                    if (!value || value < 1) {
+                        this.value = 1;
+                    }
+                });
+            }
 
             if (Elm.get('data-qui-options-disabled')) {
                 this.disable();
@@ -256,16 +258,26 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
          * Disable buttons to change quantity
          */
         disableQuantityButton: function () {
-            this.$Quantity.setStyle('opacity', 0.5);
-            this.$Input.setAttribute('disabled', true);
+            if (this.$Quantity) {
+                this.$Quantity.setStyle('opacity', 0.5);
+            }
+
+            if (this.$Input) {
+                this.$Input.setAttribute('disabled', true);
+            }
         },
 
         /**
          * Enable buttons to change quantity
          */
         enableQuantityButton: function () {
-            this.$Quantity.setStyle('opacity', '1');
-            this.$Input.removeAttribute('disabled');
+            if (this.$Quantity) {
+                this.$Quantity.setStyle('opacity', '1');
+            }
+
+            if (this.$Input) {
+                this.$Input.removeAttribute('disabled');
+            }
         }
     });
 });
