@@ -178,6 +178,10 @@
             <de><![CDATA[Anzahl erhöhen]]></de>
             <en><![CDATA[Increase quantity]]></en>
         </locale>
+        <locale name="control.basket.buttonVariantAdd.text">
+            <de><![CDATA[Zur Auswahl]]></de>
+            <en><![CDATA[To the choice]]></en>
+        </locale>
 
         <locale name="ordering.btn.next">
             <de><![CDATA[Übernehmen und weiter]]></de>
