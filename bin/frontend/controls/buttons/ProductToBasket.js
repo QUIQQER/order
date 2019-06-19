@@ -151,15 +151,15 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             this.getElm().addClass('disabled');
 
             var self  = this,
-                count = 0,
+                count = null,
                 size  = this.getElm().getSize();
 
             if (this.$Input) {
                 count = parseInt(this.$Input.value);
             }
 
-            if (!count) {
-                count = 0;
+            if (count === null) {
+                count = 1;
             }
 
             this.$Label.setStyle('visibility', 'hidden');
