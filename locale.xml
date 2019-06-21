@@ -315,7 +315,7 @@
         </locale>
         <locale name="ordering.step.title.CustomerData">
             <de><![CDATA[Kundendaten]]></de>
-            <en><![CDATA[Customer information]]></en>
+            <en><![CDATA[Customer Information]]></en>
         </locale>
         <locale name="ordering.step.title.CustomerData.Comment">
             <de><![CDATA[Weitere Angaben]]></de>
@@ -334,8 +334,8 @@
             <en><![CDATA[Payment]]></en>
         </locale>
         <locale name="ordering.step.title.Checkout">
-            <de><![CDATA[Überprüfen & bestellen]]></de>
-            <en><![CDATA[Checkout & order]]></en>
+            <de><![CDATA[Überprüfen & Bestellen]]></de>
+            <en><![CDATA[Checkout & Order]]></en>
         </locale>
         <locale name="ordering.step.title.Processing">
             <de><![CDATA[Bezahlung dürchführen]]></de>
