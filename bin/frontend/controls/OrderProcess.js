@@ -2,8 +2,9 @@
  * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
  * @author www.pcsg.de (Henning Leutz)
  *
+ * @event QUI Event: onQuiqqerOrderProcessLoad  [this]
  * @event QUI Event: onQuiqqerOrderProcessOpenStep  [this, step]
- * @event QUI Event: quiqqerOrderProcessFinish  [orderHash]
+ * @event QUI Event: onQuiqqerOrderProcessFinish  [orderHash]
  */
 require.config({
     paths: {
@@ -157,6 +158,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.setAttribute('current', Current.get('data-step'));
             this.fireEvent('load', [this]);
+            QUI.fireEvent('quiqqerOrderProcessLoad', [this]);
 
             this.getElm().addClass('quiqqer-order-ordering');
         },
