@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
+use Quiqqer\Engine\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use QUI;
@@ -24,16 +25,24 @@ class EventHandling
      *
      * @param QUI\ERP\Products\Interfaces\ProductInterface $Product
      * @param Collection $Collection
+     * @param $ProductControl
      */
     public static function onQuiqqerProductsProductViewButtons(
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
-        Collection &$Collection
+        Collection &$Collection,
+        $ProductControl = null
     ) {
-        $Collection = $Collection->append(
-            new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
-                'Product' => $Product
-            ])
-        );
+        $Button = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
+            'Product' => $Product
+        ]);
+
+        if ($ProductControl
+            && $ProductControl->existsAttribute('data-qui-option-available')
+            && $ProductControl->getAttribute('data-qui-option-available') === false) {
+            $Button->setAttribute('disabled', true);
+        }
+
+        $Collection = $Collection->append($Button);
     }
 
     /**
@@ -303,5 +312,40 @@ class EventHandling
 
         // storniert
         $Factory->createProcessingStatus(5, '#adadad', $getLocaleTranslations('processing.status.default.5'));
+    }
+
+    /**
+     * @param Collector $Collection
+     * @param QUI\ERP\Products\Product\Types\Product $Product
+     */
+    public static function onDetailEquipmentButtons(
+        Collector $Collection,
+        QUI\ERP\Products\Product\Types\Product $Product
+    ) {
+        // add to basket -> only for complete products
+        // variant products cant be added directly
+        if ($Product instanceof QUI\ERP\Products\Product\Product
+            || $Product instanceof QUI\ERP\Products\Product\Types\VariantChild) {
+            /* @var $Product QUI\ERP\Products\Product\Product */
+            $AddToBasket = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
+                'Product' => $Product,
+                'input'   => false
+            ]);
+
+            $Collection->append(
+                $AddToBasket->create()
+            );
+
+            return;
+        }
+
+        try {
+            $url = $Product->getUrl();
+
+            $Collection->append(
+                '<a href="'.$url.'"><span class="fa fa-chevron-right"></span></a>'
+            );
+        } catch (QUI\Exception $Exception) {
+        }
     }
 }

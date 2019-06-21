@@ -27,4 +27,8 @@
     <event on="onTransactionStatusChange"
            fire="\QUI\ERP\Order\EventHandling::onTransactionStatusChange"
     />
+
+    <event on="onQuiqqer::products::product::detail::equipment::buttons"
+           fire="\QUI\ERP\Order\EventHandling::onDetailEquipmentButtons"
+    />
 </events>
