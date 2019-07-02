@@ -1134,8 +1134,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $paidData = [];
         }
 
-        function isTxAlreadyAdded($txid, $paidData)
-        {
+        $isTxAlreadyAdded = function ($txid, $paidData) {
             foreach ($paidData as $paidEntry) {
                 if (!isset($paidEntry['txid'])) {
                     continue;
@@ -1147,10 +1146,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             }
 
             return false;
-        }
+        };
 
         // already added
-        if (isTxAlreadyAdded($Transaction->getTxId(), $paidData)) {
+        if ($isTxAlreadyAdded($Transaction->getTxId(), $paidData)) {
             return;
         }
 
