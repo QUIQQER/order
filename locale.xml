@@ -935,7 +935,7 @@
         </locale>
         <locale name="grid.customerNo">
             <de><![CDATA[Kunden-Nr]]></de>
-            <en><![CDATA[Custome no]]></en>
+            <en><![CDATA[Customer no]]></en>
         </locale>
         <locale name="grid.status">
             <de><![CDATA[Zahlungsstatus]]></de>
