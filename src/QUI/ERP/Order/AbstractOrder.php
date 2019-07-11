@@ -9,7 +9,6 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
-use QUI\ERP\Money\Price;
 
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
@@ -174,6 +173,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @var QUI\ERP\Currency\Currency
      */
     protected $Currency = null;
+
+    //shipping
+
+    /**
+     * @var integer|null
+     */
+    protected $shippingId = null;
+
+    /**
+     * @var integer|null
+     */
+    protected $shippingRule = null;
 
     /**
      * Order constructor.
@@ -1230,6 +1241,39 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @return mixed
      */
     abstract protected function calculatePayments();
+
+    //endregion
+
+    //region shipping
+
+    /**
+     * @return QUI\ERP\Shipping\Api\ShippingInterface|null
+     */
+    public function getShipping()
+    {
+        if ($this->shippingId === null) {
+            return null;
+        }
+
+        $Shipping = QUI\ERP\Shipping\Shipping::getInstance();
+
+        try {
+            return $Shipping->getShippingEntry($this->shippingId);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param QUI\ERP\Shipping\Api\ShippingInterface $Shipping
+     */
+    public function addShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    {
+        $this->shippingId   = $Shipping->getId();
+        $this->shippingRule = $Shipping->getShippingRule()->getId();
+    }
 
     //endregion
 

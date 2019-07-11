@@ -558,6 +558,17 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         } catch (QUI\Exception $Exception) {
         }
 
+        //shipping
+        $shippingId   = null;
+        $shippingData = '';
+
+        $Shipping = $this->getShipping();
+
+        if ($Shipping) {
+            $shippingId   = $Shipping->getId();
+            $shippingData = $Shipping->toArray();
+        }
+
         return [
             'customerId'      => $this->customerId,
             'customer'        => \json_encode($customer),
@@ -579,7 +590,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'payment_data'    => QUI\Security\Encryption::encrypt(
                 \json_encode($this->paymentData)
             ), // verschlüsselt
-            'payment_address' => ''  // verschlüsselt
+            'payment_address' => '',  // verschlüsselt
+
+            'shipping_id'        => $shippingId,
+            'shipping_type_data' => \json_encode($shippingData)
         ];
     }
 

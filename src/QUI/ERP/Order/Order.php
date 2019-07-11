@@ -340,6 +340,18 @@ class Order extends AbstractOrder implements OrderInterface
             $this->setData('currency-exchange-rate', $Currency->getExchangeRate());
         }
 
+        //shipping
+        $shippingId   = null;
+        $shippingData = '';
+
+        $Shipping = $this->getShipping();
+
+        if ($Shipping) {
+            $shippingId   = $Shipping->getId();
+            $shippingData = $Shipping->toArray();
+        }
+
+
         return [
             'id_prefix'    => $idPrefix,
             'id_str'       => $idPrefix.$this->getId(),
@@ -366,7 +378,10 @@ class Order extends AbstractOrder implements OrderInterface
             'payment_data'    => QUI\Security\Encryption::encrypt(
                 \json_encode($this->paymentData)
             ),
-            'payment_address' => ''  // verschlüsselt
+            'payment_address' => '',  // verschlüsselt
+
+            'shipping_id'        => $shippingId,
+            'shipping_type_data' => \json_encode($shippingData)
         ];
     }
 
