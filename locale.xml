@@ -273,6 +273,12 @@
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
+        
+        <locale name="order.history.set_successful">
+            <de><![CDATA[Bestellung erfolgreich ausgeführt]]></de>
+            <en><![CDATA[Order successfully completed]]></en>
+        </locale>
+
         <locale name="admin.types.orderingProcess">
             <de><![CDATA[Bestellprozess]]></de>
             <en><![CDATA[Ordering process]]></en>

@@ -441,7 +441,8 @@ class OrderProcess extends QUI\Control
 
         if ($Order && $Order->isSuccessful()) {
             if ($Order instanceof OrderInProcess && !$Order->getOrderId()) {
-                $Order = $Order->createOrder();
+                $this->send();
+                $Order = $this->Order;
             }
 
             $LastStep = \end($steps);
