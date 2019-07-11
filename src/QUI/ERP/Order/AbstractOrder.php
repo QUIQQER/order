@@ -357,6 +357,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
 
+        $this->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'order.history.set_successful'
+            )
+        );
+
         $this->successful = 1;
         $this->update();
     }
