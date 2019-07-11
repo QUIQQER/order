@@ -330,6 +330,23 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->paymentData = $paymentData;
         }
 
+        // shipping
+        if (\is_numeric($data['shipping_id'])) {
+            $this->shippingId = (int)$data['shipping_id'];
+        }
+
+        $shippingTypeData = $data['shipping_type_data'];
+        $shippingTypeData = \json_decode($shippingTypeData, true);
+
+        if (!\is_array($shippingTypeData)) {
+            $shippingTypeData = [];
+        }
+
+        if (!empty($shippingTypeData)) {
+            $this->shippingRule = $shippingTypeData['shippingRule'];
+        }
+
+
         // currency
         if (!empty($data['currency_data'])) {
             $currency = \json_decode($data['currency_data'], true);
