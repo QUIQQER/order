@@ -182,11 +182,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     protected $shippingId = null;
 
     /**
-     * @var integer|null
-     */
-    protected $shippingRule = null;
-
-    /**
      * Order constructor.
      *
      * @param array $data
@@ -343,9 +338,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         if (!empty($shippingTypeData)) {
-            $this->shippingRule = $shippingTypeData['shippingRule'];
         }
-
 
         // currency
         if (!empty($data['currency_data'])) {
@@ -1295,8 +1288,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function addShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
     {
-        $this->shippingId   = $Shipping->getId();
-        $this->shippingRule = $Shipping->getShippingRule()->getId();
+        $this->shippingId = $Shipping->getId();
     }
 
     //endregion
