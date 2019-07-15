@@ -24,7 +24,6 @@ try {
     $Engine->assign([
         'Basket' => $BasketControl
     ]);
-
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);
 
