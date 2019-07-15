@@ -8,6 +8,13 @@
                 <locale group="quiqqer/order" var="admin.types.orderingProcess.desc"/>
             </desc>
         </type>
+
+        <type type="types/shoppingCart" icon="fa fa-shopping-cart">
+            <locale group="quiqqer/order" var="admin.types.shoppingCart"/>
+            <desc>
+                <locale group="quiqqer/order" var="admin.types.shoppingCart.desc"/>
+            </desc>
+        </type>
     </types>
 
 </site>

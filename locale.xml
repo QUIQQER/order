@@ -294,6 +294,21 @@
             ]]></en>
         </locale>
 
+        <locale name="admin.types.shoppingCart">
+            <de><![CDATA[Warenkorb]]></de>
+            <en><![CDATA[Basket]]></en>
+        </locale>
+        <locale name="admin.types.shoppingCart.desc">
+            <de><![CDATA[
+            Diese Seite zeigt Ihren Kunden die Produkte, die sie in den Warenkorb hinzugefügt haben.
+            Von hier aus kann man den Bestellprozess aufrufen oder zum Shop zurückzukehren.
+            ]]></de>
+            <en><![CDATA[
+            This page shows your customers the products they have added to the shopping cart.
+            From here you can access the ordering process or return to the shop.
+            ]]></en>
+        </locale>
+
         <locale name="ordering.step.title.Registration">
             <de><![CDATA[Login / Registrierung]]></de>
             <en><![CDATA[Login / Registration]]></en>
