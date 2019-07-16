@@ -49,6 +49,33 @@ class Utils
     }
 
     /**
+     * Return the shopping cart site object
+     *
+     * @param QUI\Projects\Project $Project
+     * @return QUI\Projects\Site
+     *
+     * @throws QUI\ERP\Order\Exception
+     */
+    public static function getShoppingCart(QUI\Projects\Project $Project)
+    {
+        $sites = $Project->getSites([
+            'where' => [
+                'type' => 'quiqqer/order:types/shoppingCart'
+            ],
+            'limit' => 1
+        ]);
+
+        if (isset($sites[0])) {
+            return $sites[0];
+        }
+
+        throw new QUI\ERP\Order\Exception([
+            'quiqqer/order',
+            'exception.order.process.not.found'
+        ]);
+    }
+
+    /**
      * @param QUI\Projects\Project $Project
      * @return QUI\Projects\Site
      *

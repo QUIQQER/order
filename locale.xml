@@ -820,6 +820,10 @@
             ]]></en>
         </locale>
 
+        <locale name="control.basket.small.shoppingCart.button">
+            <de><![CDATA[Warenkorb]]></de>
+            <en><![CDATA[Shopping cart]]></en>
+        </locale>
         <locale name="control.basket.small.buy.button">
             <de><![CDATA[Zur Kasse]]></de>
             <en><![CDATA[Checkout]]></en>

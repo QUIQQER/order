@@ -76,9 +76,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
             var render = function (result) {
                 self.getElm().set('html', result);
 
-                var ButtonCheckout = self.getElm().getElement('.to-the-checkout');
+                var ButtonCheckout     = self.getElm().getElement('.open-checkout'),
+                    ButtonShoppingCart = self.getElm().getElement('.open-shopping-cart');
 
                 ButtonCheckout.addEvent('mousedown', function (event) {
+                    event.stop();
+                });
+
+                ButtonShoppingCart.addEvent('mousedown', function (event) {
                     event.stop();
                 });
 

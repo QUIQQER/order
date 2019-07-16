@@ -60,16 +60,23 @@ class Small extends QUI\Controls\Control
             $OrderProcessSite = $Project->firstChild();
         }
 
+        try {
+            $ShoppingCart = QUI\ERP\Order\Utils\Utils::getShoppingCart($Project);
+        } catch (QUI\Exception $Exception) {
+            $ShoppingCart = $Project->firstChild();
+        }
+
         $Engine->assign([
-            'data'         => $ProductView->toArray(),
-            'Basket'       => $this->Basket,
-            'Products'     => $ProductView,
-            'products'     => $ProductView->getProducts(),
-            'OrderProcess' => $OrderProcessSite,
-            'checkoutUrl'  => $OrderProcessSite->getUrlRewritten()
+            'data'            => $ProductView->toArray(),
+            'Basket'          => $this->Basket,
+            'Products'        => $ProductView,
+            'products'        => $ProductView->getProducts(),
+            'OrderProcess'    => $OrderProcessSite,
+            'checkoutUrl'     => $OrderProcessSite->getUrlRewritten(),
+            'shoppingCartUrl' => $ShoppingCart->getUrlRewritten()
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/Small.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/Small.html');
     }
 
     //region project

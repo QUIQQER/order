@@ -21,8 +21,15 @@ try {
         'basketId' => $Basket->getId()
     ]);
 
+    try {
+        $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+    } catch (QUI\Exception $Exception) {
+        $OrderProcessSite = $Project->firstChild();
+    }
+
     $Engine->assign([
-        'Basket' => $BasketControl
+        'Basket'      => $BasketControl,
+        'checkoutUrl' => $OrderProcessSite->getUrlRewritten(),
     ]);
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);
