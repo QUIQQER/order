@@ -1,0 +1,8 @@
+.quiqqer-shoppingCart-buttons {
+    display: flex;
+    margin: 20px 0;
+}
+
+.quiqqer-shoppingCart-buttons-backToShop {
+    margin-right: auto;
+}

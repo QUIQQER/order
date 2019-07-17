@@ -836,6 +836,15 @@
             The order already exists, so unfortunately this action cannot be performed.
             ]]></en>
         </locale>
+
+        <locale name="control.button.backToShop">
+            <de><![CDATA[Zurück zum Shop]]></de>
+            <en><![CDATA[Back to the Shop]]></en>
+        </locale>
+        <locale name="control.button.toCheckout">
+            <de><![CDATA[Zur Kasse]]></de>
+            <en><![CDATA[Checkout]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

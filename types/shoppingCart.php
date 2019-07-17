@@ -4,14 +4,9 @@ try {
     $User = QUI::getUserBySession();
 
     if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-        $BasketControl = new QUI\ERP\Order\Basket\BasketGuest();
-
-        // @todo für Nobody muss das noch gemacht werden - es geht im Moment nicht.
-        $Engine->assign([
-            'Basket' => $BasketControl
-        ]);
-
-        return;
+        // @todo guest ordering
+        \header('Location: '.$Project->firstChild()->getUrlRewritten(), false, 301);
+        exit;
     }
 
     $Orders = QUI\ERP\Order\Handler::getInstance();
