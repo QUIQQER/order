@@ -112,7 +112,14 @@ class BasketGuest
 
                 $this->List->addProduct($Product);
             } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
             }
+        }
+
+        try {
+            $this->List->recalculation();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
     }
 
@@ -159,8 +166,23 @@ class BasketGuest
             ];
         }
 
+        // calc data
+        $calculations = [];
+
+        try {
+            $data = $Products->getFrontendView()->toArray();
+
+            unset($data['attributes']);
+            unset($data['products']);
+
+            $calculations = $data;
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
         return [
-            'products' => $result
+            'products'     => $result,
+            'calculations' => $calculations
         ];
     }
 

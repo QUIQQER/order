@@ -63,7 +63,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 });
             }
 
-            var products = [],
+            var self     = this,
+                products = [],
                 data     = QUI.Storage.get('quiqqer-basket-products');
 
             this.$basketId = String.uniqueID();
@@ -107,21 +108,21 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             }
 
             return Promise.all(proms).then(function () {
-                var self = this;
-
-                if (this.getAttribute('productsNotExists')) {
+                if (self.getAttribute('productsNotExists')) {
                     QUI.getMessageHandler().then(function (MH) {
                         MH.addError(
                             QUILocale.get(lg, 'message.products.removed')
                         );
+
                         self.getAttribute('productsNotExists', false);
                     });
                 }
 
-                this.$isLoaded = true;
-                this.fireEvent('refresh', [this]);
-                this.save();
-            }.bind(this));
+                self.$isLoaded = true;
+                self.save().then(function () {
+                    self.fireEvent('refresh', [self]);
+                });
+            });
         },
 
         /**
@@ -416,6 +417,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         save: function (force) {
+            if (!this.isLoaded()) {
+                return Promise.resolve();
+            }
+
             var self = this;
 
             force = force || false;
@@ -453,7 +458,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }, {
                         'package': 'quiqqer/order',
                         basketId : this.$basketId,
-                        // orderHash: this.$orderHash,
                         products : JSON.encode(products)
                     });
 
@@ -482,10 +486,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 QUI.Storage.set('quiqqer-basket-products', JSON.encode(data));
 
-                // @todo guest basket update calculations
-                // self.$calculations = result;
-
-                resolve();
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_calc', function (result) {
+                    self.$calculations = result;
+                    resolve(result);
+                }, {
+                    'package': 'quiqqer/order',
+                    products : JSON.encode(products)
+                });
             }.bind(this));
         },
 
