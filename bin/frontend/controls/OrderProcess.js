@@ -150,17 +150,44 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
 
-            var Current = this.$TimelineContainer.getFirst('ul li.current');
+            var self    = this,
+                Current = this.$TimelineContainer.getFirst('ul li.current'),
+                Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
+                Done    = Promise.resolve();
 
             if (!Current) {
                 Current = this.$TimelineContainer.getFirst('ul li');
             }
 
-            this.setAttribute('current', Current.get('data-step'));
-            this.fireEvent('load', [this]);
-            QUI.fireEvent('quiqqerOrderProcessLoad', [this]);
+            if (Current) {
+                this.setAttribute('current', Current.get('data-step'));
+            }
 
-            this.getElm().addClass('quiqqer-order-ordering');
+            if (Nobody) {
+                Done = QUI.parse(Nobody);
+            }
+
+            Done.then(function () {
+                if (Nobody) {
+                    // own login redirect
+                    Nobody.getElements(
+                        '[data-qui="package/quiqqer/frontend-users/bin/frontend/controls/login/Login"]'
+                    ).forEach(function (Node) {
+                        var Control = QUI.Controls.getById(Node.get('data-quiid'));
+
+                        if (Control) {
+                            Control.setAttribute('ownRedirectOnLogin', function () {
+                                window.location.reload();
+                            });
+                        }
+                    });
+                }
+
+                self.fireEvent('load', [self]);
+                QUI.fireEvent('quiqqerOrderProcessLoad', [self]);
+
+                self.getElm().addClass('quiqqer-order-ordering');
+            });
         },
 
         /**

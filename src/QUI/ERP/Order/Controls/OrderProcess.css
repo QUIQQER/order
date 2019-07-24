@@ -177,3 +177,49 @@
         top: calc(50% - 6px);
     }
 }
+
+/** nobody login / registration
+ ============================================*/
+
+.quiqqer-order-ordering-nobody {
+    display: flex;
+    width: 100%;
+}
+
+.quiqqer-order-ordering-nobody form {
+    height: initial;
+}
+
+.quiqqer-order-ordering-nobody-login,
+.quiqqer-order-ordering-nobody-registration {
+    display: flex;
+    width: 50%;
+}
+
+.quiqqer-order-ordering-nobody-login > div,
+.quiqqer-order-ordering-nobody-registration > div {
+    flex-grow: 1;
+}
+
+.quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp,
+.quiqqer-order-ordering-nobody .quiqqer-fu-login {
+    margin: 0;
+}
+
+.quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp-info,
+.quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp-registration {
+    padding: 0;
+}
+
+.quiqqer-order-ordering-nobody .quiqqer-fu-login .quiqqer-fu-login-social form {
+    height: 50px;
+}
+
+.quiqqer-fu-login-email-buttons button,
+.quiqqer-fu-registrationSignUp-email-buttons button {
+    padding: 0.75rem;
+}
+
+.quiqqer-order-ordering-nobody h2:after {
+    display: none;
+}

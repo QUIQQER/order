@@ -79,10 +79,8 @@ class OrderProcess extends QUI\Control
         $User     = QUI::getUserBySession();
         $isNobody = QUI::getUsers()->isNobodyUser($User);
 
-        // @todo guest ordering
         if ($isNobody) {
-            \header('Location: '.$this->getProject()->firstChild()->getUrlRewritten(), false, 301);
-            exit;
+            return;
         }
 
 
@@ -419,8 +417,21 @@ class OrderProcess extends QUI\Control
     {
         $this->Events->fireEvent('getBodyBegin', [$this]);
 
+        $User     = QUI::getUserBySession();
+        $isNobody = QUI::getUsers()->isNobodyUser($User);
         $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
+
+        if ($isNobody) {
+            $Engine->assign([
+                'Registration' => new Controls\Checkout\Registration(),
+                'Login'        => new Controls\Checkout\Login()
+            ]);
+
+            return $Engine->fetch(
+                \dirname(__FILE__).'/Controls/OrderProcess.Nobody.html'
+            );
+        }
 
         // check if processing step is needed
         $processing = $this->checkProcessing();
