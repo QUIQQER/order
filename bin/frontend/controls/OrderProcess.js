@@ -177,6 +177,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                         if (Control) {
                             Control.setAttribute('ownRedirectOnLogin', function () {
+                                if (self.getElm().getParent('.qui-window-popup')) {
+                                    window.location.hash = '#checkout';
+                                    window.location.reload();
+                                    return;
+                                }
+
                                 window.location.reload();
                             });
                         }
