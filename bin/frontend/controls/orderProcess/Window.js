@@ -244,6 +244,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             if (this.$Order) {
                 this.$Order.destroy();
             }
+
+            if (window.location.hash === '#checkout') {
+                window.location.hash = '';
+            }
         }
     });
 });

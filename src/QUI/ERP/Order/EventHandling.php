@@ -348,4 +348,22 @@ class EventHandling
         } catch (QUI\Exception $Exception) {
         }
     }
+
+    /**
+     * @param QUI\Template $Template
+     */
+    public static function onTemplateGetHeader(QUI\Template $Template)
+    {
+        $Template->extendFooter(
+            '<script>
+                (function() {
+                    if (window.location.hash === "#checkout") { 
+                        require(["package/quiqqer/order/bin/frontend/controls/orderProcess/Window"], function(Window) { 
+                            new Window().open();
+                        });
+                    }
+                })();
+            </script>'
+        );
+    }
 }
