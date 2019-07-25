@@ -26,6 +26,8 @@ class Registration extends QUI\Control
             return '';
         }
 
+        $this->addCSSFile(dirname(__FILE__) . '/Registration.css');
+
         $Registration = new QUI\FrontendUsers\Controls\RegistrationSignUp([
             'content' => false
         ]);

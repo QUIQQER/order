@@ -26,6 +26,8 @@ class Login extends QUI\Control
             return '';
         }
 
+        $this->addCSSFile(dirname(__FILE__) . '/Login.css');
+
         $Login = new QUI\FrontendUsers\Controls\Login([
             'passwordReset' => false
         ]);
