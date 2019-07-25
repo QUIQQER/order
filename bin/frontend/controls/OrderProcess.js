@@ -194,7 +194,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on import
          */
         $onInject: function () {
-            var self = this;
+            var self   = this;
+            var Nobody = this.getElm().getElement('.quiqqer-order-ordering-nobody');
 
             this.getElm().set('data-quiid', this.getId());
 
@@ -202,7 +203,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 resolve(self.getAttribute('orderHash'));
             });
 
-            if (!this.getAttribute('orderHash')) {
+            if (!this.getAttribute('orderHash') && !Nobody) {
                 Prom = Orders.getLastOrder().then(function (order) {
                     self.setAttribute('orderHash', order.hash);
                     return order.hash;
@@ -211,17 +212,23 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             Prom.then(function () {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function (html) {
-                    var Process = new Element('div', {
+                    var Ghost = new Element('div', {
                         html: html
-                    }).getElement(
+                    });
+
+                    var Process = Ghost.getElement(
                         '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
                     );
+
+                    var styles = Ghost.getElements('style');
 
                     self.getElm().set({
                         'data-qui': Process.get('data-qui'),
                         'data-url': Process.get('data-url'),
                         'html'    : Process.get('html')
                     });
+
+                    styles.inject(self.getElm());
 
                     self.$onImport();
                 }, {
