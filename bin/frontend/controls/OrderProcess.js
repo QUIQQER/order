@@ -164,6 +164,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             if (Nobody) {
+                this.$TimelineContainer.setStyle('display', 'none');
+
                 Done = QUI.parse(Nobody);
             }
 

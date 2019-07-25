@@ -204,6 +204,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 this.$Next.hide();
 
                 this.getContent().setStyle('overflow-x', 'hidden');
+                this.$Container.setStyle('overflow-x', 'hidden');
+
+                this.setAttribute('buttons', false);
+
+                this.getElm().getElement('.qui-window-popup-buttons').setStyle('display', 'none');
             }
 
             Content.getElement('.quiqqer-order-window-header-close').addEvent('click', function () {

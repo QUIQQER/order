@@ -186,6 +186,10 @@
     width: 100%;
 }
 
+.quiqqer-order-ordering-nobody h2 {
+    text-align: center;
+}
+
 .quiqqer-order-ordering-nobody form {
     height: initial;
 }
@@ -218,4 +222,23 @@
 .quiqqer-fu-login-email-buttons button,
 .quiqqer-fu-registrationSignUp-email-buttons button {
     padding: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .quiqqer-order-ordering-nobody {
+        flex-direction: column;
+    }
+
+    .quiqqer-order-ordering-nobody-login {
+        margin-bottom: 60px;
+    }
+
+    .quiqqer-order-ordering-nobody-login,
+    .quiqqer-order-ordering-nobody-registration {
+        width: 100%;
+    }
+
+    .qui-window-popup .quiqqer-order-ordering-nobody-registration {
+        margin-bottom: 40px;
+    }
 }
