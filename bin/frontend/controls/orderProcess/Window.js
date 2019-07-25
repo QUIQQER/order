@@ -117,7 +117,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                     return;
                 }
 
-                self.$Next.show();
+                if (QUIQQER_USER.id) {
+                    self.$Next.show();
+                }
+
                 self.$Submit.hide();
             };
 
@@ -195,6 +198,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 'float': 'left',
                 width  : 140
             });
+
+            if (!QUIQQER_USER.id) {
+                this.$Previous.hide();
+                this.$Next.hide();
+
+                this.getContent().setStyle('overflow-x', 'hidden');
+            }
 
             Content.getElement('.quiqqer-order-window-header-close').addEvent('click', function () {
                 self.close();
