@@ -10,8 +10,8 @@
 .quiqqer-order-ordering-error {
     background-color: rgb(255, 249, 242);
     border: 1px solid #D8D8D8;
-    color: rgb(211, 0, 0);
     clear: both;
+    color: rgb(211, 0, 0);
     display: block;
     margin-bottom: 20px;
     padding: 10px;
@@ -49,12 +49,12 @@
 }
 
 .quiqqer-order-ordering-timeline li .fa {
-    color: #bebebe;
     background: #fff;
+    color: #bebebe;
     font-size: 30px;
     left: calc(50% - 15px);
-    text-align: center;
     position: absolute;
+    text-align: center;
     top: calc(50% - 10px);
     width: 20px;
     z-index: 2;
@@ -180,10 +180,15 @@
 
 /** nobody login / registration
  ============================================*/
-
 .quiqqer-order-ordering-nobody {
     display: flex;
     width: 100%;
+}
+
+.quiqqer-fu-login-container,
+.quiqqer-order-ordering-nobody-registration {
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 .quiqqer-order-ordering-nobody form {
@@ -218,4 +223,25 @@
 .quiqqer-fu-login-email-buttons button,
 .quiqqer-fu-registrationSignUp-email-buttons button {
     padding: 0.75rem;
+}
+
+@media screen and (max-width: 767px) {
+    .quiqqer-order-ordering-nobody {
+        display: block;
+    }
+
+    .quiqqer-fu-login-container,
+    .quiqqer-order-ordering-nobody-registration {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .quiqqer-order-ordering-nobody-login,
+    .quiqqer-order-ordering-nobody-registration {
+        width: 100%;
+    }
+
+    .quiqqer-order-ordering-nobody-login {
+        margin-bottom: 4rem;
+    }
 }
