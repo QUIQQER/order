@@ -5,9 +5,13 @@
     }
 </style>
 
+{template_event name="quiqqer::order::mail::orderConfirmation::begin"}
+
 {$message}
 
 <br/>
 <br/>
 
 {$Articles->render()}
+
+{template_event name="quiqqer::order::mail::orderConfirmation::end"}
