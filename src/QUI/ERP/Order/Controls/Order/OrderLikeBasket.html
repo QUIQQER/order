@@ -80,7 +80,7 @@
     </header>
 
     {assign var=pos value=1}
-    {foreach $Articles as $Article}
+    {foreach $Articles->getArticles() as $Article}
     <article>
         <div class="quiqqer-order-profile-orders-order-articles-article-pos">
             {$pos}.

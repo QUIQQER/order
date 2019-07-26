@@ -622,9 +622,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
 
-        $hash = $this->getHash();
-
         $this->delete();
+
+        $hash     = $this->getHash();
         $NewOrder = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
 
         QUI::getDataBase()->update(
@@ -634,6 +634,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         $this->id = $NewOrder->getId();
+
         $this->refresh();
 
         QUI::getEvents()->fireEvent('quiqqerOrderClear', [$this]);

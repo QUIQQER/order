@@ -718,7 +718,26 @@ class Handler extends Singleton
             ]);
         }
 
-        return new Basket\Basket($data[0]['id'], $User);
+        $Basket = new Basket\Basket($data[0]['id'], $User);
+
+        // check if an active order exists
+//        if (!$Basket->getProducts()->count()) {
+//            try {
+//                $Order       = self::getLastOrderInProcessFromUser($User);
+//                $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder(
+//                    $Order->getHash(),
+//                    $User
+//                );
+//
+//                foreach ($BasketOrder->getProducts()->getProducts() as $Product) {
+//                    $Basket->addProduct($Product);
+//                }
+//            } catch (QUI\Exception $Exception) {
+//                QUI\System\Log::writeDebugException($Exception);
+//            }
+//        }
+
+        return $Basket;
     }
 
     /**

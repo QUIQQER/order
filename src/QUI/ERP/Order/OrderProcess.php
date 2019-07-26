@@ -1145,7 +1145,7 @@ class OrderProcess extends QUI\Control
     }
 
     /**
-     * @return Basket\Basket|Basket\BasketGuest
+     * @return Basket\Basket|Basket\BasketGuest|QUI\ERP\Order\Basket\BasketOrder
      */
     protected function getBasket()
     {
@@ -1161,6 +1161,17 @@ class OrderProcess extends QUI\Control
 
         if (QUI::getUsers()->isNobodyUser($SessionUser)) {
             return new Basket\BasketGuest();
+        }
+
+        try {
+            if ($this->Order && $this->getAttribute('step')) {
+                return new QUI\ERP\Order\Basket\BasketOrder(
+                    $this->Order->getHash(),
+                    $SessionUser
+                );
+            }
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
 
         try {

@@ -148,7 +148,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (this.$Form.get('data-order-hash') && this.$Form.get('data-order-hash') !== '') {
                 this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
             }
-
+console.log(this.getAttribute('orderHash'));
 
             var self    = this,
                 Current = this.$TimelineContainer.getFirst('ul li.current'),
@@ -168,7 +168,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 Done = QUI.parse(Nobody);
             }
-
+            
             Done.then(function () {
                 if (Nobody) {
                     // own login redirect

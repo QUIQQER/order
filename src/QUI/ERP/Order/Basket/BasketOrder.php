@@ -114,23 +114,11 @@ class BasketOrder
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
 
-        $this->List            = new ProductList($data);
+        $this->List            = new ProductList();
         $this->List->duplicate = true;
         $this->List->setCurrency($this->Order->getCurrency());
 
         $this->import($articles);
-
-        // PriceFactors
-        $factors = $this->Order->getArticles()->getPriceFactors()->toArray();
-
-        foreach ($factors as $factor) {
-            $this->List->getPriceFactors()->add(
-                new QUI\ERP\Products\Utils\PriceFactor($factor)
-            );
-        }
-
-        $this->List->recalculate();
-        $this->Order->recalculate($this);
     }
 
     /**
@@ -230,7 +218,7 @@ class BasketOrder
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 
@@ -238,6 +226,18 @@ class BasketOrder
             $this->List,
             $products
         );
+
+        try {
+            QUI::getEvents()->fireEvent(
+                'quiqqerOrderBasketToOrder',
+                [$this, $this->Order, $this->List]
+            );
+
+            $this->List->calc();
+            $this->save();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**
@@ -345,7 +345,35 @@ class BasketOrder
      */
     public function updateOrder()
     {
+        $this->Order->getArticles()->clear();
+        $products = $this->List->getProducts();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $this->Order->addArticle($Product->toArticle(null, false));
+            } catch (QUI\Users\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+
+        $PriceFactors = $this->List->getPriceFactors();
+
+        $this->Order->getArticles()->importPriceFactors(
+            $PriceFactors->toErpPriceFactorList()
+        );
+
+        $this->Order->getArticles()->calc();
         $this->Order->save();
+    }
+
+    /**
+     * @throws QUI\Exception
+     */
+    public function toOrder()
+    {
+        $this->updateOrder();
     }
 
     //endregion

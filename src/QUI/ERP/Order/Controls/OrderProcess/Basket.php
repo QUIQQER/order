@@ -129,5 +129,6 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function save()
     {
+        $this->Basket->save();
     }
 }
