@@ -1,6 +1,17 @@
+<style>
+    .articles-article-header-unitprice,
+    .articles-article-unitprice {
+        display: none;
+    }
+</style>
+
+{template_event name="quiqqer::order::mail::orderConfirmation::begin"}
+
 {$message}
 
-<br />
-<br />
+<br/>
+<br/>
 
 {$Articles->render()}
+
+{template_event name="quiqqer::order::mail::orderConfirmation::end"}
