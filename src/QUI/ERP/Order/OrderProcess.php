@@ -716,8 +716,12 @@ class OrderProcess extends QUI\Control
      */
     protected function renderFinish()
     {
+        $Basket = $this->getBasket();
+
         // clear basket
-        $this->getBasket()->clear();
+        if ($Basket instanceof Basket\Basket) {
+            $Basket->clear();
+        }
 
         $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();

@@ -344,7 +344,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         if (!empty($data['currency_data'])) {
             $currency = \json_decode($data['currency_data'], true);
 
-            if (is_string($currency)) {
+            if (\is_string($currency)) {
                 $currency = \json_decode($currency, true);
             }
 
