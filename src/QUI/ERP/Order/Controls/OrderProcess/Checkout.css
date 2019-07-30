@@ -26,8 +26,8 @@
 .quiqqer-order-step-checkout-shipping img,
 .quiqqer-order-step-checkout-payments-payment img {
     float: left;
+    max-height: 100px;
     max-width: 100%;
-    width: 200px;
 }
 
 .quiqqer-order-step-checkout-payments-payment span {
