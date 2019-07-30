@@ -107,6 +107,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment'         => $Order->getPayment(),
+            'Shipping'        => $Order->getShipping(),
             'Articles'        => $Articles,
             'Order'           => $Order,
             'text'            => $text

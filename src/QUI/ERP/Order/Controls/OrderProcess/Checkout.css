@@ -4,7 +4,6 @@
 }
 
 .quiqqer-order-step-checkout-invoiceAddress,
-.quiqqer-order-step-checkout-payments,
 .quiqqer-order-step-checkout-article {
     clear: both;
     display: inline-block;
@@ -17,6 +16,14 @@
     margin-top: 20px;
 }
 
+.quiqqer-order-step-checkout-shipping,
+.quiqqer-order-step-checkout-payments-payment {
+    display: block;
+    float: left;
+    width: 50%;
+}
+
+.quiqqer-order-step-checkout-shipping img,
 .quiqqer-order-step-checkout-payments-payment img {
     float: left;
     max-width: 100%;
@@ -27,8 +34,10 @@
     float: left;
 }
 
+.quiqqer-order-step-checkout-shipping-title,
 .quiqqer-order-step-checkout-payments-payment-title {
     clear: both;
+    float: left;
     font-weight: bold;
     margin-top: 10px;
 }
@@ -49,17 +58,23 @@
     width: 50%;
 }
 
+.quiqqer-order-step-checkout-notice a {
+    display: contents;
+}
+
 @media (max-width: 768px) {
     .articles-article-header-pos {
         width: 40px;
     }
 
     .quiqqer-order-step-checkout-invoiceAddress,
-    .quiqqer-order-step-checkout-payments {
+    .quiqqer-order-step-checkout-payments,
+    .quiqqer-order-step-checkout-shipping {
         clear: both;
         width: 100% !important;
     }
 
+    .quiqqer-order-step-checkout-shipping label,
     .quiqqer-order-step-checkout-notice label {
         font-size: 12px;
     }
