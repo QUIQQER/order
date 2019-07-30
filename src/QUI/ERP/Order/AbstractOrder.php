@@ -1264,7 +1264,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     //region shipping
 
     /**
-     * @return QUI\ERP\Shipping\Api\ShippingInterface|null
+     * @return QUI\ERP\Shipping\Types\ShippingEntry
      */
     public function getShipping()
     {
