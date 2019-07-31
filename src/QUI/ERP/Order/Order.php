@@ -157,7 +157,7 @@ class Order extends AbstractOrder implements OrderInterface
         ]);
 
         // pass data to the invoice
-        if (!is_array($this->data)) {
+        if (!\is_array($this->data)) {
             $this->data = [];
         }
 
@@ -184,14 +184,14 @@ class Order extends AbstractOrder implements OrderInterface
         QUI::getDataBase()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
+                'shipping_id'   => $this->shippingId,
                 'paid_status'   => $this->getAttribute('paid_status'),
                 'payment_data'  => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData)),
                 'currency_data' => \json_encode($this->getCurrency()->toArray()),
-                'currency'      => $this->getCurrency()->getCode()
+                'currency'      => $this->getCurrency()->getCode(),
             ],
             ['id' => $this->getId()]
         );
-
 
         // create the real invoice
         try {
@@ -348,7 +348,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($Shipping) {
             $shippingId   = $Shipping->getId();
-            $shippingData = $Shipping->toArray();
+            $shippingData = $Shipping->toJSON();
         }
 
 
@@ -380,8 +380,8 @@ class Order extends AbstractOrder implements OrderInterface
             ),
             'payment_address' => '',  // verschlüsselt
 
-            'shipping_id'        => $shippingId,
-            'shipping_type_data' => \json_encode($shippingData)
+            'shipping_id'   => $shippingId,
+            'shipping_data' => $shippingData
         ];
     }
 

@@ -330,16 +330,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->shippingId = (int)$data['shipping_id'];
         }
 
-        $shippingTypeData = $data['shipping_type_data'];
-        $shippingTypeData = \json_decode($shippingTypeData, true);
-
-        if (!\is_array($shippingTypeData)) {
-            $shippingTypeData = [];
-        }
-
-        if (!empty($shippingTypeData)) {
-        }
-
         // currency
         if (!empty($data['currency_data'])) {
             $currency = \json_decode($data['currency_data'], true);
@@ -1286,7 +1276,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     /**
      * @param QUI\ERP\Shipping\Api\ShippingInterface $Shipping
      */
-    public function addShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    public function setShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
     {
         $this->shippingId = $Shipping->getId();
     }
