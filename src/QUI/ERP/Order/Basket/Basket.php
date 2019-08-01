@@ -58,10 +58,7 @@ class Basket
         }
 
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-            throw new Exception([
-                'quiqqer/order',
-                'exception.basket.not.found'
-            ], 404);
+            return;
         }
 
         $this->List            = new ProductList();

@@ -273,7 +273,7 @@
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
-        
+
         <locale name="order.history.set_successful">
             <de><![CDATA[Bestellung erfolgreich ausgeführt]]></de>
             <en><![CDATA[Order successfully completed]]></en>
@@ -1249,6 +1249,36 @@
             Unlock the order and still edit it.
             ]]></en>
         </locale>
+
+        <locale name="basket.merge.button.cancel">
+            <de><![CDATA[Nicht zusammenführen]]></de>
+            <en><![CDATA[Do not merge]]></en>
+        </locale>
+        <locale name="basket.merge.button.merge">
+            <de><![CDATA[Warenkorb zusammenführen]]></de>
+            <en><![CDATA[Merge basket]]></en>
+        </locale>
+        <locale name="basket.merge.text" html="true">
+            <de><![CDATA[
+            Du hast als Gast bereits Produkte in Deinen Warenkorb gelegt,
+            es befinden sich jedoch bereits andere oder ältere Produkte in Deiner Bestellung.
+            <br />
+            <br />
+            Wie möchtest Du vorgehen?
+            ]]></de>
+            <en><![CDATA[
+            You have already placed products in your shopping cart as a guest,
+            but there are already other or older products in your order.
+            <br />
+            <br />
+            How would you like to proceed?
+            ]]></en>
+        </locale>
+        <locale name="basket.merge.title">
+            <de><![CDATA[Bestehende Produkte gefunden]]></de>
+            <en><![CDATA[Existing products found]]></en>
+        </locale>
+
     </groups>
 
 </locales>

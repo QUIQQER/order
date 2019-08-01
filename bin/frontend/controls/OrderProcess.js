@@ -119,8 +119,26 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on import
          */
         $onImport: function () {
+            var self = this;
+
             if (this.getAttribute('showLoader')) {
                 this.Loader.inject(this.getElm());
+            }
+
+            if (QUI.Storage.get('checkout-login')) {
+                QUI.Storage.remove('checkout-login');
+
+                if (!Basket.isLoaded()) {
+                    Basket.addEvent('onLoad', function () {
+                        self.$onImport().then(function () {
+                            return Basket.toOrder();
+                        }).then(function () {
+                            self.refreshCurrentStep();
+                        });
+                    });
+
+                    return;
+                }
             }
 
             url = this.getElm().get('data-url');
@@ -149,8 +167,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
             }
 
-            var self    = this,
-                Current = this.$TimelineContainer.getFirst('ul li.current'),
+            var Current = this.$TimelineContainer.getFirst('ul li.current'),
                 Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
                 Done    = Promise.resolve();
 
@@ -167,8 +184,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 Done = QUI.parse(Nobody);
             }
-            
-            Done.then(function () {
+
+            return Done.then(function () {
                 if (Nobody) {
                     // own login redirect
                     Nobody.getElements(
@@ -184,6 +201,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                                     return;
                                 }
 
+                                QUI.Storage.set('checkout-login', 1);
                                 window.location.reload();
                             });
                         }
