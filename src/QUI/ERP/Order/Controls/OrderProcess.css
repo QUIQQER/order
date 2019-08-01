@@ -185,15 +185,15 @@
     width: 100%;
 }
 
-<<<<<<< HEAD
+
 .quiqqer-fu-login-container,
 .quiqqer-order-ordering-nobody-registration {
     margin-left: 1rem;
     margin-right: 1rem;
-=======
+}
+
 .quiqqer-order-ordering-nobody h2 {
     text-align: center;
->>>>>>> de4653eb6275ddfe5c514a1c858d2c9948f3f098
 }
 
 .quiqqer-order-ordering-nobody form {
