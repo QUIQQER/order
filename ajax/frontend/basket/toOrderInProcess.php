@@ -28,7 +28,7 @@ QUI::$Ajax->registerFunction(
             try {
                 $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
             } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);;
+                QUI\System\Log::writeDebugException($Exception);
             }
         }
 
@@ -36,7 +36,7 @@ QUI::$Ajax->registerFunction(
             try {
                 $Order = $OrderHandler->getLastOrderInProcessFromUser($User);
             } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);;
+                QUI\System\Log::writeDebugException($Exception);
             }
         }
 
