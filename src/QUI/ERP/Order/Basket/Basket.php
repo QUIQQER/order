@@ -430,6 +430,11 @@ class Basket
 
         $Order->getArticles()->calc();
         $Order->save();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderEnd',
+            [$this, $Order, $Products]
+        );
     }
 
     /**

@@ -235,6 +235,11 @@ class BasketOrder
 
             $this->List->calc();
             $this->save();
+
+            QUI::getEvents()->fireEvent(
+                'quiqqerOrderBasketToOrderEnd',
+                [$this, $this->Order, $this->List]
+            );
         } catch (\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

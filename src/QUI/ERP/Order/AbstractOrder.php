@@ -434,6 +434,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->Articles = $ArticleList;
         $this->update();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderEnd',
+            [$Basket, $this, $Products]
+        );
     }
 
     /**
