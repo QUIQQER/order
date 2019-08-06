@@ -1286,6 +1286,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->shippingId = $Shipping->getId();
     }
 
+    /**
+     * Remove the shipping from the order
+     */
+    public function removeShipping()
+    {
+        $this->shippingId = null;
+    }
+
     //endregion
 
     //region removing / deletion
