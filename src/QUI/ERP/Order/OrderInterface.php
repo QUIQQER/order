@@ -174,6 +174,28 @@ interface OrderInterface
 
     //endregion
 
+    //region shipping
+
+    /**
+     * Return the shipping from the order
+     *
+     * @return \QUI\ERP\Shipping\Types\ShippingEntry|null
+     */
+    public function getShipping();
+
+    /**
+     * Set a shipping to the order
+     *
+     * @param \QUI\ERP\Shipping\Api\ShippingInterface $Shipping
+     */
+    public function setShipping(\QUI\ERP\Shipping\Api\ShippingInterface $Shipping);
+
+    /**
+     * Remove the shipping from the order
+     */
+    public function removeShipping();
+
+    //endregion
 
     //region comments
 
