@@ -662,32 +662,37 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $clickCreateOrder: function () {
             var self = this;
 
-            new QUIConfirm({
-                title      : QUILocale.get(lg, 'dialog.order.create.title'),
-                text       : QUILocale.get(lg, 'dialog.order.create.text'),
-                information: QUILocale.get(lg, 'dialog.order.create.information'),
-                icon       : 'fa fa-plus',
-                texticon   : 'fa fa-plus',
-                maxHeight  : 400,
-                maxWidth   : 600,
-                autoclose  : false,
-                ok_button  : {
-                    text     : QUILocale.get(lg, 'dialog.order.create.button'),
-                    textimage: 'fa fa-plus'
-                },
-                events     : {
-                    onSubmit: function (Win) {
-                        Win.Loader.show();
+            return new Promise(function (resolve) {
+                new QUIConfirm({
+                    title      : QUILocale.get(lg, 'dialog.order.create.title'),
+                    text       : QUILocale.get(lg, 'dialog.order.create.text'),
+                    information: QUILocale.get(lg, 'dialog.order.create.information'),
+                    icon       : 'fa fa-plus',
+                    texticon   : 'fa fa-plus',
+                    maxHeight  : 400,
+                    maxWidth   : 600,
+                    autoclose  : false,
+                    ok_button  : {
+                        text     : QUILocale.get(lg, 'dialog.order.create.button'),
+                        textimage: 'fa fa-plus'
+                    },
+                    events     : {
+                        onSubmit: function (Win) {
+                            Win.Loader.show();
+                            resolve();
 
-                        Orders.createOrder().then(function (orderId) {
-                            self.openOrder(orderId);
-                            Win.close();
-                        }).catch(function () {
-                            Win.Loader.hide();
-                        });
+                            Orders.createOrder().then(function (orderId) {
+                                self.openOrder(orderId);
+                                Win.close();
+                            }).catch(function () {
+                                Win.Loader.hide();
+                            });
+                        },
+
+                        onCancel: resolve
                     }
-                }
-            }).open();
+                }).open();
+            });
         },
 
         /**
