@@ -12,7 +12,7 @@
         </h1>
     </header>
 
-    {template_event name="quiqqer::order::orderProcessCustomerDataBegin" User=$User Address=$Address}
+    {template_event name="quiqqer::order::orderProcessCustomerDataBegin" User=$User Address=$Address Order=$Order}
 
     <div class="quiqqer-order-customerData-display">
         <div class="quiqqer-order-customerData-display-customerNo">
@@ -183,10 +183,10 @@
         >
     </div>
 
-    {template_event name="quiqqer::order::orderProcessCustomerDataEnd" User=$User Address=$Address}
+    {template_event name="quiqqer::order::orderProcessCustomerDataEnd" User=$User Address=$Address Order=$Order}
 </section>
 
-{template_event name="quiqqer::order::orderProcessCustomerData" User=$User Address=$Address}
+{template_event name="quiqqer::order::orderProcessCustomerData" User=$User Address=$Address Order=$Order}
 
 <section class="quiqqer-order-customerData-comment">
     <header>
@@ -212,4 +212,4 @@
     </label>
 </section>
 
-{template_event name="quiqqer::order::orderProcessCustomerEnd" User=$User Address=$Address}
+{template_event name="quiqqer::order::orderProcessCustomerEnd" User=$User Address=$Address Order=$Order}
