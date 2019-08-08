@@ -592,8 +592,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             ), // verschlüsselt
             'payment_address' => '',  // verschlüsselt
 
-            'shipping_id'        => $shippingId,
-            'shipping_type_data' => \json_encode($shippingData)
+            'shipping_id'   => $shippingId,
+            'shipping_data' => \json_encode($shippingData)
         ];
     }
 
