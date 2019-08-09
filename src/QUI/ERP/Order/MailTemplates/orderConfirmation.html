@@ -5,7 +5,7 @@
     }
 </style>
 
-{template_event name="quiqqer::order::mail::orderConfirmation::begin"}
+{template_event name="quiqqer::order::mail::orderConfirmation::begin" Order=$Order Articles=$Articles}
 
 {$message}
 
@@ -14,4 +14,4 @@
 
 {$Articles->render()}
 
-{template_event name="quiqqer::order::mail::orderConfirmation::end"}
+{template_event name="quiqqer::order::mail::orderConfirmation::end" Order=$Order Articles=$Articles}
