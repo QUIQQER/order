@@ -141,6 +141,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
 
+                    if (data.addressDelivery) {
+                        self.setAttribute('hasDeliveryAddress', true);
+                    }
+
                     self.setAttribute('cDate', data.cDate);
                     self.setAttribute('cUser', data.cUser);
                     self.setAttribute('cUsername', data.cUsername);

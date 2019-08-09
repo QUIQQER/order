@@ -301,6 +301,15 @@ class Order extends AbstractOrder implements OrderInterface
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
+        if ($this->getShipping()) {
+            $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
+            $Shipping        = $ShippingHandler->getShippingByObject($this);
+            $Address         = $Shipping->getAddress();
+
+            $deliveryAddress = $Address->toJSON();
+        }
+
+
         // customer
         $Customer = $this->getCustomer();
         $customer = $Customer->getAttributes();
