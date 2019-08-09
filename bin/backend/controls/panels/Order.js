@@ -155,6 +155,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     if (data.articles) {
                         self.$serializedList = data.articles;
+
+                        if (typeof self.$serializedList.articles !== 'undefined') {
+                            self.setAttribute('articles', self.$serializedList.articles);
+                        }
                     }
 
                     resolve();
