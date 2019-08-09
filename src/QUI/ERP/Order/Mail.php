@@ -56,8 +56,7 @@ class Mail
         $Mailer = QUI::getMailManager()->getMailer();
         $Mailer->addRecipient($email);
 
-        if (Settings::getInstance()->get('order', 'sendOrderConfirmationToAdmin')
-            && QUI::conf('mail', 'admin_mail')) {
+        if (Settings::getInstance()->get('order', 'sendOrderConfirmationToAdmin') && QUI::conf('mail', 'admin_mail')) {
             $Mailer->addBCC(
                 QUI::conf('mail', 'admin_mail')
             );

@@ -610,8 +610,14 @@
             <en><![CDATA[Confirmation of order (Administrator)]]></en>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin.description">
-            <de><![CDATA[Kopie der Bestellbestätigung an den Administrator senden.]]></de>
-            <en><![CDATA[Send order confirmation copy to the admin.]]></en>
+            <de><![CDATA[
+            Kopie der Bestellbestätigung an den Administrator senden.
+            Der Administrator wird hier als BCC E-Mail eingetragen, falls eine Bestellbestätigung versendet wurde.
+            ]]></de>
+            <en><![CDATA[
+            Send order confirmation copy to the admin.
+            The administrator is entered here as a BCC e-mail if an order confirmation has been sent.
+            ]]></en>
         </locale>
 
         <locale name="order.settings.autoInvoicePost">
