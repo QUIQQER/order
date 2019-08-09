@@ -12,6 +12,8 @@ use QUI;
  * Class CustomerData
  *
  * @package QUI\ERP\Order\Controls\OrderProcess
+ *
+ * @event quiqqerOrderCustomerDataSave [ self ]
  */
 class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
@@ -256,6 +258,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if (!isset($_REQUEST['addressId'])) {
             return;
         }
+
+        QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSave', [$this]);
 
         $Address = $this->getAddressById((int)$_REQUEST['addressId']);
 
