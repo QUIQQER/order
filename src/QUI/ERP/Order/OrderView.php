@@ -273,4 +273,30 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     //endregion
+
+    //region shipping
+
+    /**
+     * do nothing, its a view
+     */
+    public function setShipping(\QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    {
+    }
+
+    /**
+     * @return QUI\ERP\Shipping\Types\ShippingEntry|null
+     */
+    public function getShipping()
+    {
+        return $this->Order->getShipping();
+    }
+
+    /**
+     * do nothing, its a view
+     */
+    public function removeShipping()
+    {
+    }
+
+    //endregion
 }
