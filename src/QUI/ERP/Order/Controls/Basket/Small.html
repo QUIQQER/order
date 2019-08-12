@@ -5,7 +5,12 @@
     {foreach $products as $product}
     <div class="quiqqer-order-basket-small-articles-article" data-pos="{$pos}">
         <span>{$product.quantity} x</span>
-        <h2>{$product.title}</h2>
+        <h2 class="quiqqer-order-basket-small-articles-article-content-header">
+            <a href="{QUI\ERP\Products\Handler\Products::getProduct($product.id)}"
+               class="quiqqer-order-basket-small-articles-article-content-header-url">
+                {$product.title}
+            </a>
+        </h2>
         <div class="quiqqer-order-basket-small-articles-article-description">
             {$product.description}
         </div>
