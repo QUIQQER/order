@@ -12,6 +12,6 @@
 <br/>
 <br/>
 
-{$Articles->render()}
+{$Articles->renderForMail()}
 
 {template_event name="quiqqer::order::mail::orderConfirmation::end" Order=$Order Articles=$Articles}
