@@ -93,7 +93,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getProcessingPayments()
     {
-        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Shipping')) {
+        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
             return '';
         }
 
@@ -108,7 +108,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $Engine = QUI::getTemplateManager()->getEngine();
 
-            $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Shipping([
+            $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
                 'Order' => $this->getOrder()
             ]);
 
