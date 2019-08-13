@@ -851,6 +851,27 @@
             <de><![CDATA[Zur Kasse]]></de>
             <en><![CDATA[Checkout]]></en>
         </locale>
+
+        <locale name="mail.order.confirmation.delivery.title">
+            <de><![CDATA[Lieferadresse]]></de>
+            <en><![CDATA[Delivery address]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.shipping.title">
+            <de><![CDATA[Versand]]></de>
+            <en><![CDATA[Shipping]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.payment.title">
+            <de><![CDATA[Zahlungsart]]></de>
+            <en><![CDATA[Payment]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.invoice.title">
+            <de><![CDATA[Rechnungsadresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.details" html="true">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

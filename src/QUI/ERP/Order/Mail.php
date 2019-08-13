@@ -43,9 +43,11 @@ class Mail
             'template'  => 'OrderLikeBasket'
         ]);
 
+        $Address  = null;
         $Customer = $Order->getCustomer();
-        $user     = $Customer->getName();
-        $user     = \trim($user);
+
+        $user = $Customer->getName();
+        $user = \trim($user);
 
         if (empty($user)) {
             $Address = $Customer->getAddress();
@@ -74,10 +76,25 @@ class Mail
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
 
+        $Shipping        = null;
+        $DeliveryAddress = null;
+
+        if ($Order->getShipping()) {
+            $Shipping        = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
+            $DeliveryAddress = $Shipping->getAddress();
+        }
+
         $Engine->assign([
+            'Shipping'        => $Shipping,
+            'DeliveryAddress' => $DeliveryAddress,
+            'InvoiceAddress'  => $Order->getInvoiceAddress(),
+            'Payment'         => $Order->getPayment(),
+
             'Order'    => $Order,
             'Articles' => $Articles,
-            'message'  => QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
+            'Address'  => $Address,
+
+            'message' => QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
                 'orderId'  => $Order->getPrefixedId(),
                 'user'     => $user,
                 'username' => $Customer->getUsername(),
