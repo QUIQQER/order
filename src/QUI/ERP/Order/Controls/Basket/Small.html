@@ -5,7 +5,12 @@
     {foreach $products as $product}
     <div class="quiqqer-order-basket-small-articles-article" data-pos="{$pos}">
         <span>{$product.quantity} x</span>
-        <h2>{$product.title}</h2>
+        <h2 class="quiqqer-order-basket-small-articles-article-content-header">
+            <a href="{QUI\ERP\Products\Handler\Products::getProduct($product.id)->getUrl()}"
+               class="quiqqer-order-basket-small-articles-article-content-header-url">
+                {$product.title}
+            </a>
+        </h2>
         <div class="quiqqer-order-basket-small-articles-article-description">
             {$product.description}
         </div>
@@ -92,6 +97,10 @@
 {template_event name="quiqqer::order::basketSmall::beforeCheckoutButton" Basket=$Basket}
 
 <div class="quiqqer-order-basket-small-buttons">
+    <a href="{$shoppingCartUrl}" class="to-the-checkout button">
+        {locale group="quiqqer/order" var="control.basket.small.shoppingCart.button"}
+    </a>
+
     <a href="{$checkoutUrl}" class="to-the-checkout button">
         {locale group="quiqqer/order" var="control.basket.small.buy.button"}
     </a>

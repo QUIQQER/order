@@ -119,8 +119,26 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on import
          */
         $onImport: function () {
+            var self = this;
+
             if (this.getAttribute('showLoader')) {
                 this.Loader.inject(this.getElm());
+            }
+
+            if (QUI.Storage.get('checkout-login')) {
+                QUI.Storage.remove('checkout-login');
+
+                if (!Basket.isLoaded()) {
+                    Basket.addEvent('onLoad', function () {
+                        self.$onImport().then(function () {
+                            return Basket.toOrder();
+                        }).then(function () {
+                            self.refreshCurrentStep();
+                        });
+                    });
+
+                    return;
+                }
             }
 
             url = this.getElm().get('data-url');
@@ -149,25 +167,60 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
             }
 
-
-            var Current = this.$TimelineContainer.getFirst('ul li.current');
+            var Current = this.$TimelineContainer.getFirst('ul li.current'),
+                Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
+                Done    = Promise.resolve();
 
             if (!Current) {
                 Current = this.$TimelineContainer.getFirst('ul li');
             }
 
-            this.setAttribute('current', Current.get('data-step'));
-            this.fireEvent('load', [this]);
-            QUI.fireEvent('quiqqerOrderProcessLoad', [this]);
+            if (Current) {
+                this.setAttribute('current', Current.get('data-step'));
+            }
 
-            this.getElm().addClass('quiqqer-order-ordering');
+            if (Nobody) {
+                this.$TimelineContainer.setStyle('display', 'none');
+
+                Done = QUI.parse(Nobody);
+            }
+
+            return Done.then(function () {
+                if (Nobody) {
+                    // own login redirect
+                    Nobody.getElements(
+                        '[data-qui="package/quiqqer/frontend-users/bin/frontend/controls/login/Login"]'
+                    ).forEach(function (Node) {
+                        var Control = QUI.Controls.getById(Node.get('data-quiid'));
+
+                        if (Control) {
+                            Control.setAttribute('ownRedirectOnLogin', function () {
+                                if (self.getElm().getParent('.qui-window-popup')) {
+                                    window.location.hash = '#checkout';
+                                    window.location.reload();
+                                    return;
+                                }
+
+                                QUI.Storage.set('checkout-login', 1);
+                                window.location.reload();
+                            });
+                        }
+                    });
+                }
+
+                self.fireEvent('load', [self]);
+                QUI.fireEvent('quiqqerOrderProcessLoad', [self]);
+
+                self.getElm().addClass('quiqqer-order-ordering');
+            });
         },
 
         /**
          * event: on import
          */
         $onInject: function () {
-            var self = this;
+            var self   = this;
+            var Nobody = this.getElm().getElement('.quiqqer-order-ordering-nobody');
 
             this.getElm().set('data-quiid', this.getId());
 
@@ -175,7 +228,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 resolve(self.getAttribute('orderHash'));
             });
 
-            if (!this.getAttribute('orderHash')) {
+            if (!this.getAttribute('orderHash') && !Nobody) {
                 Prom = Orders.getLastOrder().then(function (order) {
                     self.setAttribute('orderHash', order.hash);
                     return order.hash;
@@ -184,17 +237,23 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             Prom.then(function () {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function (html) {
-                    var Process = new Element('div', {
+                    var Ghost = new Element('div', {
                         html: html
-                    }).getElement(
+                    });
+
+                    var Process = Ghost.getElement(
                         '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
                     );
+
+                    var styles = Ghost.getElements('style');
 
                     self.getElm().set({
                         'data-qui': Process.get('data-qui'),
                         'data-url': Process.get('data-url'),
                         'html'    : Process.get('html')
                     });
+
+                    styles.inject(self.getElm());
 
                     self.$onImport();
                 }, {

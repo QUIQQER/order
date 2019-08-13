@@ -9,7 +9,6 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
-use QUI\ERP\Money\Price;
 
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
@@ -175,6 +174,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     protected $Currency = null;
 
+    //shipping
+
+    /**
+     * @var integer|null
+     */
+    protected $shippingId = null;
+
     /**
      * Order constructor.
      *
@@ -319,11 +325,16 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->paymentData = $paymentData;
         }
 
+        // shipping
+        if (\is_numeric($data['shipping_id'])) {
+            $this->shippingId = (int)$data['shipping_id'];
+        }
+
         // currency
         if (!empty($data['currency_data'])) {
             $currency = \json_decode($data['currency_data'], true);
 
-            if (is_string($currency)) {
+            if (\is_string($currency)) {
                 $currency = \json_decode($currency, true);
             }
 
@@ -356,6 +367,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
+
+        $this->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'order.history.set_successful'
+            )
+        );
 
         $this->successful = 1;
         $this->update();
@@ -416,6 +434,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->Articles = $ArticleList;
         $this->update();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderEnd',
+            [$Basket, $this, $Products]
+        );
     }
 
     /**
@@ -1230,6 +1253,50 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @return mixed
      */
     abstract protected function calculatePayments();
+
+    //endregion
+
+    //region shipping
+
+    /**
+     * Return the shipping from the order
+     *
+     * @return QUI\ERP\Shipping\Types\ShippingEntry|null
+     */
+    public function getShipping()
+    {
+        if ($this->shippingId === null) {
+            return null;
+        }
+
+        $Shipping = QUI\ERP\Shipping\Shipping::getInstance();
+
+        try {
+            return $Shipping->getShippingEntry($this->shippingId);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        return null;
+    }
+
+    /**
+     * Set a shipping to the order
+     *
+     * @param QUI\ERP\Shipping\Api\ShippingInterface $Shipping
+     */
+    public function setShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    {
+        $this->shippingId = $Shipping->getId();
+    }
+
+    /**
+     * Remove the shipping from the order
+     */
+    public function removeShipping()
+    {
+        $this->shippingId = null;
+    }
 
     //endregion
 

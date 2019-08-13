@@ -28,6 +28,10 @@
            fire="\QUI\ERP\Order\EventHandling::onTransactionStatusChange"
     />
 
+    <event on="onTemplateGetHeader"
+           fire="\QUI\ERP\Order\EventHandling::onTemplateGetHeader"
+    />
+
     <event on="onQuiqqer::products::product::detail::equipment::buttons"
            fire="\QUI\ERP\Order\EventHandling::onDetailEquipmentButtons"
     />

@@ -1,5 +1,7 @@
 <?php
 
+$Site->setAttribute('nocache', true);
+
 try {
     $OrderProcess = new QUI\ERP\Order\OrderProcess([
         'step'      => $Site->getAttribute('order::step'),
@@ -14,11 +16,11 @@ try {
 
     QUI\System\Log::writeException($Exception);
 
-    $Engine->assign(array(
+    $Engine->assign([
         'Exception' => $ExceptionReplacement
-    ));
+    ]);
 } catch (Exception $Exception) {
-    $Engine->assign(array(
+    $Engine->assign([
         'Exception' => $Exception
-    ));
+    ]);
 }

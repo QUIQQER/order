@@ -117,7 +117,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                     return;
                 }
 
-                self.$Next.show();
+                if (QUIQQER_USER.id) {
+                    self.$Next.show();
+                }
+
                 self.$Submit.hide();
             };
 
@@ -196,6 +199,18 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 width  : 140
             });
 
+            if (!QUIQQER_USER.id) {
+                this.$Previous.hide();
+                this.$Next.hide();
+
+                this.getContent().setStyle('overflow-x', 'hidden');
+                this.$Container.setStyle('overflow-x', 'hidden');
+
+                this.setAttribute('buttons', false);
+
+                this.getElm().getElement('.qui-window-popup-buttons').setStyle('display', 'none');
+            }
+
             Content.getElement('.quiqqer-order-window-header-close').addEvent('click', function () {
                 self.close();
             });
@@ -243,6 +258,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
         $onClose: function () {
             if (this.$Order) {
                 this.$Order.destroy();
+            }
+
+            if (window.location.hash === '#checkout') {
+                window.location.hash = '';
             }
         }
     });

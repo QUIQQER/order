@@ -23,7 +23,10 @@ Order=$Order
     <div class="quiqqer-order-step-checkout-payments">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.payment.shipping"}</h2>
         <div class="quiqqer-order-step-checkout-payments-payment">
-            <img src="{$Payment->getPaymentType()->getIcon()}"/>
+            <img src="{$Payment->getPaymentType()->getIcon()}"
+                 title="{$Payment->getTitle()}"
+                 alt="{$Payment->getTitle()}"
+            />
             <span class="quiqqer-order-step-checkout-payments-payment-title">
                 {$Payment->getTitle()}
             </span>
@@ -31,6 +34,18 @@ Order=$Order
                 {$Payment->getDescription()}
             </span>
         </div>
+
+        {if isset($Shipping) && $Shipping}
+        <div class="quiqqer-order-step-checkout-shipping">
+            <img src="{$Shipping->getIcon()}"
+                 title="{$Shipping->getTitle()}"
+                 alt="{$Shipping->getTitle()}"
+            />
+            <span class="quiqqer-order-step-checkout-shipping-title">
+                {$Shipping->getTitle()}
+            </span>
+        </div>
+        {/if}
     </div>
 
     <div class="quiqqer-order-step-checkout-article">

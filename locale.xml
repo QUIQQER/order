@@ -273,6 +273,12 @@
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
+
+        <locale name="order.history.set_successful">
+            <de><![CDATA[Bestellung erfolgreich ausgeführt]]></de>
+            <en><![CDATA[Order successfully completed]]></en>
+        </locale>
+
         <locale name="admin.types.orderingProcess">
             <de><![CDATA[Bestellprozess]]></de>
             <en><![CDATA[Ordering process]]></en>
@@ -285,6 +291,21 @@
             <en><![CDATA[
             Specify the address at which the order process can be called.
             At this address, your customer will also find his shopping cart
+            ]]></en>
+        </locale>
+
+        <locale name="admin.types.shoppingCart">
+            <de><![CDATA[Warenkorb]]></de>
+            <en><![CDATA[Basket]]></en>
+        </locale>
+        <locale name="admin.types.shoppingCart.desc">
+            <de><![CDATA[
+            Diese Seite zeigt Ihren Kunden die Produkte, die sie in den Warenkorb hinzugefügt haben.
+            Von hier aus kann man den Bestellprozess aufrufen oder zum Shop zurückzukehren.
+            ]]></de>
+            <en><![CDATA[
+            This page shows your customers the products they have added to the shopping cart.
+            From here you can access the ordering process or return to the shop.
             ]]></en>
         </locale>
 
@@ -589,8 +610,14 @@
             <en><![CDATA[Confirmation of order (Administrator)]]></en>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin.description">
-            <de><![CDATA[Kopie der Bestellbestätigung an den Administrator senden.]]></de>
-            <en><![CDATA[Send order confirmation copy to the admin.]]></en>
+            <de><![CDATA[
+            Kopie der Bestellbestätigung an den Administrator senden.
+            Der Administrator wird hier als BCC E-Mail eingetragen, falls eine Bestellbestätigung versendet wurde.
+            ]]></de>
+            <en><![CDATA[
+            Send order confirmation copy to the admin.
+            The administrator is entered here as a BCC e-mail if an order confirmation has been sent.
+            ]]></en>
         </locale>
 
         <locale name="order.settings.autoInvoicePost">
@@ -799,6 +826,10 @@
             ]]></en>
         </locale>
 
+        <locale name="control.basket.small.shoppingCart.button">
+            <de><![CDATA[Warenkorb]]></de>
+            <en><![CDATA[Shopping cart]]></en>
+        </locale>
         <locale name="control.basket.small.buy.button">
             <de><![CDATA[Zur Kasse]]></de>
             <en><![CDATA[Checkout]]></en>
@@ -810,6 +841,36 @@
             <en><![CDATA[
             The order already exists, so unfortunately this action cannot be performed.
             ]]></en>
+        </locale>
+
+        <locale name="control.button.backToShop">
+            <de><![CDATA[Zurück zum Shop]]></de>
+            <en><![CDATA[Back to the Shop]]></en>
+        </locale>
+        <locale name="control.button.toCheckout">
+            <de><![CDATA[Zur Kasse]]></de>
+            <en><![CDATA[Checkout]]></en>
+        </locale>
+
+        <locale name="mail.order.confirmation.delivery.title">
+            <de><![CDATA[Lieferadresse]]></de>
+            <en><![CDATA[Delivery address]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.shipping.title">
+            <de><![CDATA[Versand]]></de>
+            <en><![CDATA[Shipping]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.payment.title">
+            <de><![CDATA[Zahlungsart]]></de>
+            <en><![CDATA[Payment]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.invoice.title">
+            <de><![CDATA[Rechnungsadresse]]></de>
+            <en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.details" html="true">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
         </locale>
     </groups>
 
@@ -935,7 +996,7 @@
         </locale>
         <locale name="grid.customerNo">
             <de><![CDATA[Kunden-Nr]]></de>
-            <en><![CDATA[Custome no]]></en>
+            <en><![CDATA[Customer no]]></en>
         </locale>
         <locale name="grid.status">
             <de><![CDATA[Zahlungsstatus]]></de>
@@ -1215,6 +1276,36 @@
             Unlock the order and still edit it.
             ]]></en>
         </locale>
+
+        <locale name="basket.merge.button.cancel">
+            <de><![CDATA[Nicht zusammenführen]]></de>
+            <en><![CDATA[Do not merge]]></en>
+        </locale>
+        <locale name="basket.merge.button.merge">
+            <de><![CDATA[Warenkorb zusammenführen]]></de>
+            <en><![CDATA[Merge basket]]></en>
+        </locale>
+        <locale name="basket.merge.text" html="true">
+            <de><![CDATA[
+            Du hast als Gast bereits Produkte in Deinen Warenkorb gelegt,
+            es befinden sich jedoch bereits andere oder ältere Produkte in Deiner Bestellung.
+            <br />
+            <br />
+            Wie möchtest Du vorgehen?
+            ]]></de>
+            <en><![CDATA[
+            You have already placed products in your shopping cart as a guest,
+            but there are already other or older products in your order.
+            <br />
+            <br />
+            How would you like to proceed?
+            ]]></en>
+        </locale>
+        <locale name="basket.merge.title">
+            <de><![CDATA[Bestehende Produkte gefunden]]></de>
+            <en><![CDATA[Existing products found]]></en>
+        </locale>
+
     </groups>
 
 </locales>

@@ -160,6 +160,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             require(['package/quiqqer/order/bin/frontend/Basket'], function (Basket) {
                 Basket.addEvents({
                     onRefresh: function () {
+                        if (!Basket.isLoaded()) {
+                            return;
+                        }
+
                         isLoaded();
                         self.updateDisplay(Basket);
                     },

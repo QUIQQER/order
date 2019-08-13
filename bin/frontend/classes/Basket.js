@@ -2,6 +2,7 @@
  * @module package/quiqqer/order/bin/frontend/classes/Basket
  * @author www.pcsg.de (Henning Leutz)
  *
+ * @event onLoad [self]
  * @event onRemoveBegin [self]
  * @event onRemove [self]
  *
@@ -13,7 +14,6 @@
  *
  * @event onRefreshBegin [self]
  * @event onRefresh [self]
- *
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -26,7 +26,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 ], function (QUI, QUIDOM, Orders, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'quiqqer/order';
+    var lg          = 'quiqqer/order';
+    var STORAGE_KEY = 'quiqqer-basket-products';
 
     return new Class({
 
@@ -37,16 +38,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             '$onProductChange'
         ],
 
+        options: {
+            mergeLocalStorage: true
+        },
+
         initialize: function (options) {
             this.parent(options);
 
             this.$products = [];
             this.$basketId = null;
 
-            this.$isLoaded  = false;
-            this.$saveDelay = null;
+            this.$isLoaded       = false;
+            this.$mergeIsRunning = false;
+            this.$saveDelay      = null;
 
             this.$calculations = {};
+
         },
 
         /**
@@ -55,16 +62,18 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         load: function () {
             // basket from user
             if (QUIQQER_USER && QUIQQER_USER.id) {
-                return this.loadBasket().then(function () {
+                return this.$checkLocalBasketLoading().then(function () {
                     this.$isLoaded = true;
                     this.fireEvent('refresh', [this]);
+                    this.fireEvent('load', [this]);
                 }.bind(this)).catch(function (err) {
                     console.error(err);
                 });
             }
 
-            var products = [],
-                data     = QUI.Storage.get('quiqqer-basket-products');
+            var self     = this,
+                products = [],
+                data     = QUI.Storage.get(STORAGE_KEY);
 
             this.$basketId = String.uniqueID();
 
@@ -107,21 +116,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             }
 
             return Promise.all(proms).then(function () {
-                var self = this;
-
-                if (this.getAttribute('productsNotExists')) {
+                if (self.getAttribute('productsNotExists')) {
                     QUI.getMessageHandler().then(function (MH) {
                         MH.addError(
                             QUILocale.get(lg, 'message.products.removed')
                         );
+
                         self.getAttribute('productsNotExists', false);
                     });
                 }
 
-                this.$isLoaded = true;
-                this.fireEvent('refresh', [this]);
-                this.save();
-            }.bind(this));
+                self.$isLoaded = true;
+                self.save().then(function () {
+                    self.fireEvent('refresh', [self]);
+                    self.fireEvent('load', [self]);
+                });
+            });
         },
 
         /**
@@ -218,6 +228,78 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }
 
                     resolve();
+                });
+            });
+        },
+
+        /**
+         * check if the locale storage has to be considered and integrated into the basket
+         */
+        $checkLocalBasketLoading: function () {
+            var self            = this;
+            var storageProducts = [];
+
+            try {
+                var storageData = JSON.decode(
+                    QUI.Storage.get(STORAGE_KEY)
+                );
+
+                var currentList = storageData.currentList;
+
+                if (typeof storageData.products !== 'undefined' &&
+                    typeof storageData.products[currentList] !== 'undefined') {
+                    storageProducts = storageData.products[currentList];
+                }
+            } catch (e) {
+                // nothing
+            }
+
+            return this.getBasket().then(function (basket) {
+                if (!storageProducts.length) {
+                    self.$calculations = basket;
+
+                    return self.$loadData(basket);
+                }
+
+                /**
+                 * consider local storage
+                 */
+
+                self.$basketId = basket.id;
+                self.$products = [];
+
+                var addStorageProducts = function () {
+                    var proms = [];
+
+                    for (var i = 0, len = storageProducts.length; i < len; i++) {
+                        proms.push(
+                            self.addProduct(
+                                storageProducts[i].id,
+                                storageProducts[i].quantity,
+                                storageProducts[i].fields
+                            )
+                        );
+                    }
+
+                    return Promise.all(proms);
+                };
+
+
+                // clear the storage, otherwise the next time we have a double basket.
+                QUI.Storage.set(STORAGE_KEY, JSON.encode({}));
+
+                // use local storage and overwrite the current basket
+                if (!self.getAttribute('mergeLocalStorage')) {
+                    return addStorageProducts();
+                }
+
+                // merge both
+                self.$mergeIsRunning = true;
+
+                return self.$loadData(basket).then(function () {
+                    return addStorageProducts();
+                }).then(function () {
+                    self.$mergeIsRunning = false;
                 });
             });
         },
@@ -416,6 +498,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         save: function (force) {
+            if (!this.isLoaded() && this.$mergeIsRunning === false) {
+                return Promise.resolve();
+            }
+
             var self = this;
 
             force = force || false;
@@ -453,7 +539,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }, {
                         'package': 'quiqqer/order',
                         basketId : this.$basketId,
-                        // orderHash: this.$orderHash,
                         products : JSON.encode(products)
                     });
 
@@ -461,7 +546,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 }
 
                 // locale storage
-                var data = QUI.Storage.get('quiqqer-basket-products');
+                var data = QUI.Storage.get(STORAGE_KEY);
 
                 if (!data) {
                     data = {};
@@ -480,12 +565,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 data.currentList              = this.$basketId;
                 data.products[this.$basketId] = products;
 
-                QUI.Storage.set('quiqqer-basket-products', JSON.encode(data));
+                QUI.Storage.set(STORAGE_KEY, JSON.encode(data));
 
-                // @todo guest basket update calculations
-                // self.$calculations = result;
-
-                resolve();
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_calc', function (result) {
+                    self.$calculations = result;
+                    resolve(result);
+                }, {
+                    'package': 'quiqqer/order',
+                    products : JSON.encode(products)
+                });
             }.bind(this));
         },
 
@@ -514,6 +602,28 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             this.save().then(function () {
                 this.fireEvent('refresh', [this]);
             }.bind(this));
+        },
+
+        /**
+         *
+         * @param {String} [orderHash]
+         * @return {Promise}
+         */
+        toOrder: function (orderHash) {
+            var self = this;
+
+            if (typeof orderHash === 'undefined') {
+                orderHash = '';
+            }
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_toOrderInProcess', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: orderHash,
+                    basketId : self.$basketId,
+                    onError  : reject
+                });
+            });
         }
     });
 });

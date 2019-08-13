@@ -157,7 +157,7 @@ class Order extends AbstractOrder implements OrderInterface
         ]);
 
         // pass data to the invoice
-        if (!is_array($this->data)) {
+        if (!\is_array($this->data)) {
             $this->data = [];
         }
 
@@ -184,14 +184,14 @@ class Order extends AbstractOrder implements OrderInterface
         QUI::getDataBase()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
+                'shipping_id'   => $this->shippingId,
                 'paid_status'   => $this->getAttribute('paid_status'),
                 'payment_data'  => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData)),
                 'currency_data' => \json_encode($this->getCurrency()->toArray()),
-                'currency'      => $this->getCurrency()->getCode()
+                'currency'      => $this->getCurrency()->getCode(),
             ],
             ['id' => $this->getId()]
         );
-
 
         // create the real invoice
         try {
@@ -301,6 +301,15 @@ class Order extends AbstractOrder implements OrderInterface
             $deliveryAddress = $DeliveryAddress->toJSON();
         }
 
+        if ($this->getShipping()) {
+            $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
+            $Shipping        = $ShippingHandler->getShippingByObject($this);
+            $Address         = $Shipping->getAddress();
+
+            $deliveryAddress = $Address->toJSON();
+        }
+
+
         // customer
         $Customer = $this->getCustomer();
         $customer = $Customer->getAttributes();
@@ -340,6 +349,18 @@ class Order extends AbstractOrder implements OrderInterface
             $this->setData('currency-exchange-rate', $Currency->getExchangeRate());
         }
 
+        //shipping
+        $shippingId   = null;
+        $shippingData = '';
+
+        $Shipping = $this->getShipping();
+
+        if ($Shipping) {
+            $shippingId   = $Shipping->getId();
+            $shippingData = $Shipping->toJSON();
+        }
+
+
         return [
             'id_prefix'    => $idPrefix,
             'id_str'       => $idPrefix.$this->getId(),
@@ -366,7 +387,10 @@ class Order extends AbstractOrder implements OrderInterface
             'payment_data'    => QUI\Security\Encryption::encrypt(
                 \json_encode($this->paymentData)
             ),
-            'payment_address' => ''  // verschlüsselt
+            'payment_address' => '',  // verschlüsselt
+
+            'shipping_id'   => $shippingId,
+            'shipping_data' => $shippingData
         ];
     }
 

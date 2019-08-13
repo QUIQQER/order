@@ -15,6 +15,10 @@ QUI::$Ajax->registerFunction(
         $User   = QUI::getUserBySession();
         $Orders = QUI\ERP\Order\Handler::getInstance();
 
+        if (QUI::getUsers()->isNobodyUser($User)) {
+            return [];
+        }
+
         try {
             $Order = $Orders->getLastOrderInProcessFromUser($User);
         } catch (QUI\Exception $Exception) {
