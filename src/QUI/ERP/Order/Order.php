@@ -60,6 +60,13 @@ class Order extends AbstractOrder implements OrderInterface
      */
     public function getInvoice()
     {
+        if (!Settings::getInstance()->isInvoiceInstalled()) {
+            throw new QUI\Exception([
+                'quiqqer/order',
+                'exception.invoice.is.not.installed'
+            ]);
+        }
+
         try {
             return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
         } catch (QUI\Exception $Exception) {
