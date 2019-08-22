@@ -421,6 +421,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         // get the order with new data
+        $Order->recalculate();
         $Order->refresh();
 
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order created');

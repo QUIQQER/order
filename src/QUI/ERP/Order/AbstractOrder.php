@@ -815,7 +815,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     protected function parseAddressData(array $address)
     {
-        $fields = array_flip([
+        $fields = \array_flip([
             'id',
             'salutation',
             'firstname',
