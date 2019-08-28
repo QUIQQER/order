@@ -10,6 +10,7 @@ use QUI;
 use QUI\ERP\Order\Controls;
 use QUI\ERP\Order\Controls\AbstractOrderingStep;
 use QUI\ERP\Order\Utils\OrderProcessSteps;
+use QUI\ERP\Order\OrderProcess\OrderProcessMessageHandlerInterface;
 
 /**
  * Class OrderingProcess
@@ -26,6 +27,8 @@ use QUI\ERP\Order\Utils\OrderProcessSteps;
  */
 class OrderProcess extends QUI\Control
 {
+    const MESSAGES_SESSION_KEY = 'quiqqer_order_orderprocess_messages';
+
     /**
      * @var QUI\ERP\Order\OrderInProcess
      */
@@ -559,7 +562,8 @@ class OrderProcess extends QUI\Control
             'currentStepContent' => QUI\ControlUtils::parse($Current),
             'Site'               => $this->getSite(),
             'Order'              => $this->getOrder(),
-            'hash'               => $this->getStepHash()
+            'hash'               => $this->getStepHash(),
+            'messages'           => $this->getStepMessages(\get_class($Current))
         ]);
 
         $this->Events->fireEvent('getBody', [$this]);
@@ -1352,5 +1356,96 @@ class OrderProcess extends QUI\Control
 
             return ($p1 < $p2) ? -1 : 1;
         });
+    }
+
+    /**
+     * Add a OrderProcessMessage (by ID) that is displayed the next time
+     * a specific OrderStep is loaded.
+     *
+     * @param int $id
+     * @param string $messageHandler - Must implement OrderProcessMessageHandlerInterface
+     * @param string $orderStep - Class of the OrderStep the message is shown in
+     * (must implement QUI\ERP\Order\Controls\AbstractOrderingStep)
+     * @return void
+     */
+    public function addStepMessage(
+        int $id,
+        string $messageHandler,
+        string $orderStep
+    ) {
+        if (!\is_a($orderStep, AbstractOrderingStep::class, true)) {
+            return;
+        }
+
+        if (!\is_a($messageHandler, OrderProcessMessageHandlerInterface::class, true)) {
+            return;
+        }
+
+        $Session  = QUI::getSession();
+        $messages = $Session->get(self::MESSAGES_SESSION_KEY);
+
+        if (empty($messages)) {
+            $messages = [];
+        } else {
+            $messages = \json_decode($messages, true);
+        }
+
+        if (!isset($messages[$orderStep])) {
+            $messages[$orderStep] = [];
+        }
+
+        $messages[$orderStep][] = [
+            'id'             => $id,
+            'messageHandler' => $messageHandler
+        ];
+
+        $Session->set(self::MESSAGES_SESSION_KEY, \json_encode($messages));
+    }
+
+    /**
+     * Clears all step messages
+     *
+     * @return void
+     */
+    public function clearStepMessages()
+    {
+        QUI::getSession()->set(self::MESSAGES_SESSION_KEY, null);
+    }
+
+    /**
+     * Get all messages for an order step
+     *
+     * @param string $orderStep - Class of the OrderStep the message is shown in
+     * (must implement QUI\ERP\Order\Controls\AbstractOrderingStep)
+     * @return QUI\ERP\Order\OrderProcess\OrderProcessMessage[]
+     */
+    protected function getStepMessages(string $orderStep)
+    {
+        $messages      = [];
+        $Session       = QUI::getSession();
+        $savedMessages = $Session->get(self::MESSAGES_SESSION_KEY);
+
+        if (empty($savedMessages)) {
+            return $messages;
+        } else {
+            $savedMessages = \json_decode($savedMessages, true);
+        }
+
+        if (empty($savedMessages[$orderStep])) {
+            return $messages;
+        }
+
+        foreach ($savedMessages[$orderStep] as $k => $messageData) {
+            $Message = \call_user_func([$messageData['messageHandler'], 'getMessage'], $messageData['id']);
+
+            if ($Message) {
+                $messages[] = $Message;
+                unset($savedMessages[$orderStep][$k]);
+            }
+        }
+
+        $Session->set(self::MESSAGES_SESSION_KEY, \json_encode($savedMessages));
+
+        return $messages;
     }
 }
