@@ -48,7 +48,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$onOrderChange',
             '$onClickOrderDetails',
             '$clickCreateInvoice',
-            '$onSearchKeyUp'
+            '$onSearchKeyUp',
+            '$onAddPaymentButtonClick'
         ],
 
         initialize: function (options) {
@@ -265,6 +266,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 menuCorner: 'topRight',
                 styles    : {
                     'float': 'right'
+                }
+            });
+
+            Actions.appendChild({
+                name  : 'addPayment',
+                text  : QUILocale.get(lg, 'panel.btn.paymentBook'),
+                icon  : 'fa fa-money',
+                events: {
+                    onClick: this.$onAddPaymentButtonClick
                 }
             });
 
@@ -983,6 +993,78 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             if (event.key === 'enter') {
                 this.refresh();
             }
+        },
+
+        /**
+         * event : on payment add button click
+         */
+        $onAddPaymentButtonClick: function (Button) {
+            var self         = this,
+                selectedData = this.$Grid.getSelectedData();
+
+            if (!selectedData.length) {
+                return;
+            }
+
+            Button.setAttribute('textimage', 'fa fa-spinner fa-spin');
+
+            var hash          = selectedData[0].hash;
+            var paymentMethod = selectedData[0].payment_method;
+
+            require([
+                'package/quiqqer/order/bin/backend/controls/panels/payments/AddPaymentWindow'
+            ], function (AddPaymentWindow) {
+                new AddPaymentWindow({
+                    hash         : hash,
+                    paymentMethod: paymentMethod,
+                    events       : {
+                        onSubmit: function (Win, data) {
+                            self.addPayment(
+                                hash,
+                                data.amount,
+                                data.payment_method,
+                                data.date
+                            ).then(function () {
+                                Button.setAttribute('textimage', 'fa fa-money');
+                                self.refresh();
+                            });
+                        },
+
+                        onClose: function () {
+                            Button.setAttribute('textimage', 'fa fa-money');
+                        }
+                    }
+                }).open();
+            });
+        },
+
+        /**
+         * Add a payment to an order
+         *
+         * @param {String|Number} hash
+         * @param {String|Number} amount
+         * @param {String} paymentMethod
+         * @param {String|Number} date
+         *
+         * @return {Promise}
+         */
+        addPayment: function (hash, amount, paymentMethod, date) {
+            var self = this;
+
+            this.Loader.show();
+
+            return Orders.addPaymentToOrder(
+                hash,
+                amount,
+                paymentMethod,
+                date
+            ).then(function () {
+                return self.refresh();
+            }).then(function () {
+                self.Loader.hide();
+            }).catch(function (err) {
+                console.error(err);
+            });
         }
     });
 });

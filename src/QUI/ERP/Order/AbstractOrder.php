@@ -486,8 +486,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function toArray()
     {
-        $status    = '';
-        $paymentId = '';
+        $status     = '';
+        $paymentId  = '';
+        $paidStatus = [];
 
         $articles = $this->getArticles()->toArray();
         $Payment  = $this->getPayment();
@@ -499,6 +500,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         try {
             $ProcessingStatus = $this->getProcessingStatus();
             $status           = $ProcessingStatus->getId();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        try {
+            $paidStatus = $this->getPaidStatusInformation();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -521,7 +528,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'addressDelivery'    => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'     => $this->getInvoiceAddress()->getAttributes(),
             'paymentId'          => $paymentId,
-            'status'             => $status
+            'status'             => $status,
+            'paidStatus'         => $paidStatus
         ];
     }
 
