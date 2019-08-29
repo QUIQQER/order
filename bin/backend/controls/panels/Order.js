@@ -44,6 +44,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openCommunication',
             'openArticles',
             'openDeleteDialog',
+            'openPayments',
             'openCopyDialog',
             'openPostDialog',
             'toggleSort',
@@ -138,6 +139,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('customerId', data.customerId);
                     self.setAttribute('customer', data.customer);
                     self.setAttribute('data', data.data);
+                    self.setAttribute('hash', data.hash);
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
 
@@ -356,6 +358,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 text  : QUILocale.get(lg, 'panel.order.category.articles'),
                 events: {
                     onClick: this.openArticles
+                }
+            });
+
+            this.addCategory({
+                icon  : 'fa fa-money',
+                name  : 'payments',
+                title : QUILocale.get(lg, 'panel.order.category.payment'),
+                text  : QUILocale.get(lg, 'panel.order.category.payment'),
+                events: {
+                    onClick: this.openPayments
                 }
             });
 
@@ -765,6 +777,37 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     StatusSelect.disabled = false;
                     StatusSelect.value    = self.getAttribute('status');
                     StatusSelect.fireEvent('change');
+                });
+            }).then(function () {
+                return self.$openCategory();
+            }).then(function () {
+                self.Loader.hide();
+            });
+        },
+
+        /**
+         * Open payments list
+         */
+        openPayments: function () {
+            var self = this;
+
+            this.Loader.show();
+            this.getCategory('payments').setActive();
+
+            return this.$closeCategory().then(function (Container) {
+                return new Promise(function (resolve) {
+                    require([
+                        'package/quiqqer/order/bin/backend/controls/panels/order/Payments'
+                    ], function (Payments) {
+                        new Payments({
+                            Panel   : self,
+                            hash    : self.getAttribute('hash'),
+                            disabled: self.$locked,
+                            events  : {
+                                onLoad: resolve
+                            }
+                        }).inject(Container);
+                    });
                 });
             }).then(function () {
                 return self.$openCategory();

@@ -1387,6 +1387,23 @@
             <de><![CDATA[Datum]]></de>
             <en><![CDATA[Date]]></en>
         </locale>
+
+        <locale name="panel.payments.date">
+            <de><![CDATA[Datum]]></de>
+            <en><![CDATA[Date]]></en>
+        </locale>
+        <locale name="panel.payments.amount">
+            <de><![CDATA[Betrag]]></de>
+            <en><![CDATA[Amount]]></en>
+        </locale>
+        <locale name="panel.payments.paymentMethod">
+            <de><![CDATA[Bezahlmethode]]></de>
+            <en><![CDATA[Payment method]]></en>
+        </locale>
+        <locale name="panel.payments.txid">
+            <de><![CDATA[TX-ID]]></de>
+            <en><![CDATA[TX ID]]></en>
+        </locale>
     </groups>
 
 </locales>
