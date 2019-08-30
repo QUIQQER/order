@@ -52,7 +52,7 @@ class Basket extends QUI\Control
 
         $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
         $Products->setUser(QUI::getUserBySession());
-        $Products->calc();
+        $Products->recalculate();
 
         $View = $Products->getView(QUI::getLocale());
 
