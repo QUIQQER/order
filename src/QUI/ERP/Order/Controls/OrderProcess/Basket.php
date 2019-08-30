@@ -118,7 +118,8 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Engine->assign([
             'BasketControl' => $BasketControl,
-            'Basket'        => $this->Basket
+            'Basket'        => $this->Basket,
+            'this'          => $this
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/Basket.html');

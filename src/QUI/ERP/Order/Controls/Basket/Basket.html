@@ -52,7 +52,7 @@
                 {foreach $product.attributes as $attribute}
                 <li class="quiqqer-order-basket-articles-article-fields-field">
                     <span>{$attribute.title}:</span>
-                    <span>{$attribute.valueText} {$attribute.value}</span>
+                    <span>{$this->getValueText($attribute.valueText)} {$attribute.value}</span>
                 </li>
                 {/foreach}
             </ul>
@@ -66,7 +66,7 @@
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.unitprice'}"
         >
             {if !isset($product.displayPrice) || $product.displayPrice}
-                {$product.price}
+            {$product.price}
             {/if}
         </td>
         <td class="quiqqer-order-basket-articles-article-sum"

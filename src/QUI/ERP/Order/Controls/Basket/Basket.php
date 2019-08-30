@@ -61,10 +61,30 @@ class Basket extends QUI\Control
             'Basket'   => $this->Basket,
             'Project'  => $this->Project,
             'Products' => $View,
-            'products' => $View->getProducts()
+            'products' => $View->getProducts(),
+            'this'     => $this
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
+    }
+
+    /**
+     * @param $fieldValueText
+     * @return mixed|string
+     */
+    public function getValueText($fieldValueText)
+    {
+        $current = QUI::getLocale()->getCurrent();
+
+        if (!\is_array($fieldValueText)) {
+            return $fieldValueText;
+        }
+
+        if (isset($fieldValueText[$current])) {
+            return $fieldValueText[$current];
+        }
+
+        return '';
     }
 
     //region project

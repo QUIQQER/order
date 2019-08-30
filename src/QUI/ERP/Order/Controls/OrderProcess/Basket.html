@@ -2,11 +2,16 @@
     <h1>{locale group="quiqqer/order" var="ordering.step.title.Basket"}</h1>
 </header>
 
+{if $this->getAttribute('Order')}
 {template_event name="quiqqer::order::orderProcessBasketBegin" Basket=$Basket}
+{/if}
 
 {$BasketControl->create()}
 
+{if $this->getAttribute('Order')}
 {template_event name="quiqqer::order::orderProcessBasketEnd" Basket=$Basket assign=content}
+{/if}
+
 {if !empty($content)}
 <div class="quiqqer-order-basket-end">
     {$content}
