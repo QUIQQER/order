@@ -176,7 +176,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function savePayment($payment)
     {
-        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Shipping')) {
+        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
             return;
         }
 
@@ -188,7 +188,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return;
         }
 
-        $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Shipping([
+        $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
             'Order'   => $this->getOrder(),
             'payment' => $payment
         ]);
