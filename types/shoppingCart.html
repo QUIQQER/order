@@ -25,26 +25,8 @@
 {/if}
 
 <div class="content-template">
-    {* <!--Guest--> *}
-    {if $Login || $Registration}
-    <div class="quiqqer-order-shoppingCart-nobody">
-        {if $Login}
-        <div class="quiqqer-order-shoppingCart-nobody-login">
-           {$Login->create()}
-        </div>
-        {/if}
-
-        {if $Registration}
-        <div class="quiqqer-order-shoppingCart-nobody-registration">
-            {$Registration->create()}
-        </div>
-        {/if}
-    </div>
-
-    {* <!--User is logged in--> *}
-    {else}
     <section class="content-template grid-100 mobile-grid-100 grid-parent">
-        {$Basket->create()}
+        {$BasketControl->create()}
     </section>
 
     <div class="quiqqer-shoppingCart-buttons grid-100 mobile-grid-100 grid-parent">
@@ -56,5 +38,4 @@
             {locale group="quiqqer/order" var="control.button.toCheckout"}
         </a>
     </div>
-    {/if}
 </div>

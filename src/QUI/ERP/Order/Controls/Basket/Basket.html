@@ -26,6 +26,7 @@
         </th>
         <th class="quiqqer-order-basket-articles-header-price"
             title="{locale group='quiqqer/erp' var='article.list.articles.header.price'}"
+            colspan="2"
         >
             {locale group="quiqqer/erp" var="article.list.articles.header.price"}
         </th>
@@ -34,7 +35,7 @@
     <tbody>
     {assign var=pos value=1}
     {foreach $products as $product}
-    <tr class="quiqqer-order-basket-articles-article">
+    <tr class="quiqqer-order-basket-articles-article" data-pos="{$pos}">
         <td class="quiqqer-order-basket-articles-article-pos"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.pos'}"
         >
@@ -60,7 +61,9 @@
         <td class="quiqqer-order-basket-articles-article-quantity"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"
         >
-            {$product.quantity}
+            <label>
+                <input type="number" name="quantity" value="{$product.quantity}"/>
+            </label>
         </td>
         <td class="quiqqer-order-basket-articles-article-price"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.unitprice'}"
@@ -81,6 +84,11 @@
                 {$product.originalPrice}
             </span>
             {/if}
+        </td>
+        <td class="quiqqer-order-basket-articles-article-remove">
+            <button>
+                <span class="fa fa-trash"></span>
+            </button>
         </td>
     </tr>
     {assign var=pos value=$pos+1}
@@ -152,6 +160,10 @@
     </tr>
 </table>
 
+{elseif $this->isGuest() && $this->isLoading()}
+<div class="quiqqer-order-basket-isLoading">
+    <span class="fa fa-spinner fa-spin"></span>
+</div>
 {else}
 <div class="quiqqer-order-basket-isEmpty">
     {locale group="quiqqer/order" var="message.basket.is.empty"}

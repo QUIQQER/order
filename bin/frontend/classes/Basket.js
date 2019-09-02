@@ -474,6 +474,28 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         },
 
         /**
+         * set quantity for
+         *
+         * @param pos
+         * @param quantity
+         * @return {*}
+         */
+        setQuantity: function (pos, quantity) {
+            pos = pos - 1;
+
+            if (typeof this.$products[pos] === 'undefined') {
+                return Promise.resolve();
+            }
+
+            var self    = this,
+                Product = this.$products[pos];
+
+            return Product.setQuantity(quantity).then(function () {
+                return self.save();
+            });
+        },
+
+        /**
          * Return the basket products
          *
          * @return {Array}

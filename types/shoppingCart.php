@@ -1,6 +1,6 @@
 <?php
 
-use QUI\ERP\Order\Controls;
+use QUI\ERP\Order\Basket\BasketGuest;
 
 try {
     $BasketControl = null;
@@ -8,35 +8,34 @@ try {
     $Registration  = null;
     $Login         = null;
 
-    $User = QUI::getUserBySession();
+    $User   = QUI::getUserBySession();
+    $Orders = QUI\ERP\Order\Handler::getInstance();
 
-    // guest
-    if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-        $Registration = new Controls\Checkout\Registration();
-        $Login        = new Controls\Checkout\Login();
+    if (QUI::getUsers()->isNobodyUser($User)) {
+        $Basket = new BasketGuest();
     } else {
-        // user is logged
-        $Orders = QUI\ERP\Order\Handler::getInstance();
         $Basket = $Orders->getBasketFromUser($User);
-
-        $BasketControl = new QUI\ERP\Order\Controls\OrderProcess\Basket([
-            'basketId' => $Basket->getId()
-        ]);
-
-        try {
-            $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-        } catch (QUI\Exception $Exception) {
-            $OrderProcessSite = $Project->firstChild();
-        }
-
-        $checkoutUrl = $OrderProcessSite->getUrlRewritten();
     }
 
+    $BasketControl = new QUI\ERP\Order\Controls\Basket\Basket();
+    $BasketControl->setAttribute('isLoading', true);
+    $BasketControl->setBasket($Basket);
+
+    try {
+        $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+    } catch (QUI\Exception $Exception) {
+        $OrderProcessSite = $Project->firstChild();
+    }
+
+    $checkoutUrl = $OrderProcessSite->getUrlRewritten([], [
+        'checkout' => '1'
+    ]);
+
     $Engine->assign([
-        'Basket'       => $BasketControl,
-        'checkoutUrl'  => $checkoutUrl,
-        'Registration' => $Registration,
-        'Login'        => $Login
+        'BasketControl' => $BasketControl,
+        'checkoutUrl'   => $checkoutUrl,
+        'Registration'  => $Registration,
+        'Login'         => $Login
     ]);
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);

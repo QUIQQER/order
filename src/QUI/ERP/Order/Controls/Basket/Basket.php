@@ -29,6 +29,25 @@ class Basket extends QUI\Control
     protected $Project;
 
     /**
+     * Basket constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct($attributes = [])
+    {
+        $this->setAttributes([
+            'buttons'   => true,
+            'isLoading' => false
+        ]);
+
+        parent::__construct($attributes);
+
+        $this->setAttributes([
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/basket/Basket'
+        ]);
+    }
+
+    /**
      * @param QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest $Basket
      */
     public function setBasket($Basket)
@@ -85,6 +104,22 @@ class Basket extends QUI\Control
         }
 
         return '';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGuest()
+    {
+        return QUI::getUsers()->isNobodyUser(QUI::getUserBySession());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoading()
+    {
+        return $this->getAttribute('isLoading');
     }
 
     //region project

@@ -7,10 +7,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/loader/Loader',
     'Ajax',
     'package/quiqqer/order/bin/frontend/Basket'
 
-], function (QUI, QUIControl, QUIAjax, Basket) {
+], function (QUI, QUIControl, QUILoader, QUIAjax, Basket) {
     "use strict";
 
     return new Class({
@@ -19,6 +20,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
         Type   : 'package/quiqqer/order/bin/frontend/controls/basket/Basket',
 
         Binds: [
+            '$render',
             '$onImport',
             '$onInject'
         ],
@@ -32,8 +34,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 this.getAttribute('basketId', Basket.getId());
             }
 
+            this.$Loader = new QUILoader();
+
             this.addEvents({
                 onInject : this.$onInject,
+                onImport : this.$onImport,
                 onDestroy: function () {
                     Basket.removeEvent('onRefresh', self.$onBasketRefresh);
                 }
@@ -45,9 +50,21 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
         },
 
         /**
-         * event: on import
+         * event: on inject
          */
         $onInject: function () {
+            this.refresh();
+        },
+
+        /**
+         * event: on import
+         */
+        $onImport: function () {
+            // user need no import
+            if (!this.isGuest()) {
+                return;
+            }
+
             this.refresh();
         },
 
@@ -58,44 +75,104 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             var self     = this,
                 basketId = this.getAttribute('basketId');
 
-            if (basketId === false) {
-                self.getElm().set('html', '');
+            if (basketId === false && !this.isGuest()) {
+                this.getElm().set('html', '');
+                this.$Loader.inject(this.getElm());
+                this.$Loader.hide();
+
                 return Promise.resolve();
             }
 
-            // render the result - set events etc
-            var render = function (result) {
-                self.getElm().set('html', result);
-
-                self.getElm().getElements('.fa-trash').addEvent('click', function () {
-                    Basket.removeProductPos(
-                        this.getParent('.quiqqer-order-basket-small-articles-article').get('data-pos')
-                    );
-                });
-            };
-
             // guest
             if (this.isGuest()) {
-                var products       = [];
-                var basketProducts = Basket.getProducts();
+                var Loaded = Promise.resolve();
 
-                for (var i = 0, len = basketProducts.length; i < len; i++) {
-                    products.push(basketProducts[i].getAttributes());
+                if (!Basket.isLoaded()) {
+                    Loaded = new Promise(function (resolve) {
+                        Basket.addEvent('load', resolve);
+                    });
                 }
 
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basketGuest', render, {
-                    'package': 'quiqqer/order',
-                    products : JSON.encode(products)
+                Loaded.then(function () {
+                    var products       = [];
+                    var basketProducts = Basket.getProducts();
+
+                    for (var i = 0, len = basketProducts.length; i < len; i++) {
+                        products.push(basketProducts[i].getAttributes());
+                    }
+
+                    QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basketGuest', self.$render, {
+                        'package': 'quiqqer/order',
+                        products : JSON.encode(products),
+                        options  : JSON.encode({
+                            buttons: false
+                        })
+                    });
                 });
 
                 return;
             }
 
             // user
-            QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basket', render, {
+            QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basket', this.$render, {
                 'package': 'quiqqer/order',
                 basketId : parseInt(this.getAttribute('basketId'))
             });
+        },
+
+
+        /**
+         * render the result - set events etc
+         */
+        $render: function (result) {
+            var self = this;
+
+            this.getElm().set('html', result);
+            this.$Loader.inject(this.getElm());
+
+            // remove
+            this.getElm().getElements('.fa-trash').addEvent('click', function () {
+                self.$Loader.show();
+
+                var Article = this.getParent('.quiqqer-order-basket-small-articles-article');
+
+                // big basket
+                if (!Article) {
+                    var Node = this;
+                    Article  = Node.getParent('.quiqqer-order-basket-articles-article');
+
+                    if (Node.nodeName !== 'BUTTON') {
+                        Node = Node.getParent('button');
+                    }
+
+                    Node.set('html', '<span class="fa fa-spinner fa-spin"></span>');
+                }
+
+                Basket.removeProductPos(Article.get('data-pos')).then(function () {
+                    self.refresh();
+                });
+            });
+
+            //change quantity
+            this.getElm().getElements('[name="quantity"]').addEvent('blur', function () {
+                self.$Loader.show();
+
+                var Article  = this.getParent('.quiqqer-order-basket-small-articles-article');
+                var quantity = this.value;
+
+                // big basket
+                if (!Article) {
+                    Article = this.getParent('.quiqqer-order-basket-articles-article');
+                }
+
+                var pos = Article.get('data-pos');
+
+                Basket.setQuantity(pos, quantity).then(function () {
+                    self.refresh();
+                });
+            });
+
+            this.$Loader.hide();
         },
 
         /**

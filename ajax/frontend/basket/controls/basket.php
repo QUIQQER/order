@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
         $User   = QUI::getUserBySession();
         $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
 
-        $Control = new QUI\ERP\Order\Controls\Basket\Small();
+        $Control = new QUI\ERP\Order\Controls\Basket\Basket();
         $Control->setBasket($Basket);
 
         return $Control->create();
