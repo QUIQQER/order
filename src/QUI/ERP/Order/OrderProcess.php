@@ -143,6 +143,14 @@ class OrderProcess extends QUI\Control
             $this->setAttribute('step', $step);
         }
 
+        if (isset($_GET['checkout']) && $_GET['checkout'] == 1) {
+            $step = $this->getAttribute('step');
+            $keys = \array_keys($steps);
+
+            $this->setAttribute('step', $keys[1]);
+            $step = $keys[1];
+        }
+
         // consider processing step
         // processing step is ok
         $Processing = $this->getProcessingStep();
