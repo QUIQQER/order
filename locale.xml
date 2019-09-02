@@ -1343,8 +1343,12 @@
         </locale>
 
         <locale name="basket.merge.button.cancel">
-            <de><![CDATA[Nicht zusammenführen]]></de>
-            <en><![CDATA[Do not merge]]></en>
+            <de><![CDATA[Alten Warenkorb behalten]]></de>
+            <en><![CDATA[Keep old basket]]></en>
+        </locale>
+        <locale name="basket.merge.button.use.new">
+            <de><![CDATA[Neuen Warenkorb verwenden]]></de>
+            <en><![CDATA[Use new basket]]></en>
         </locale>
         <locale name="basket.merge.button.merge">
             <de><![CDATA[Warenkorb zusammenführen]]></de>

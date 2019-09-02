@@ -5,11 +5,12 @@
 define('package/quiqqer/order/bin/frontend/Basket', [
 
     'qui/QUI',
+    'qui/controls/buttons/Button',
     'package/quiqqer/order/bin/frontend/classes/Basket',
     'Locale',
     'Ajax'
 
-], function (QUI, Basket, QUILocale, QUIAjax) {
+], function (QUI, QUIButton, Basket, QUILocale, QUIAjax) {
     "use strict";
 
     // storage test
@@ -42,24 +43,59 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                     title        : QUILocale.get(lg, 'basket.merge.title'),
                     information  : QUILocale.get(lg, 'basket.merge.text'),
                     maxHeight    : 400,
-                    maxWidth     : 600,
+                    maxWidth     : 800,
+                    autoclose    : false,
                     cancel_button: {
-                        text     : QUILocale.get(lg, 'basket.merge.button.cancel'),
-                        textimage: 'fa fa-remove'
+                        text: QUILocale.get(lg, 'basket.merge.button.cancel')
                     },
                     ok_button    : {
-                        text     : QUILocale.get(lg, 'basket.merge.button.merge'),
-                        textimage: 'fa fa-check'
+                        text: QUILocale.get(lg, 'basket.merge.button.merge')
                     },
                     events       : {
-                        onSubmit: function () {
-                            GlobalBasket.setAttribute('mergeLocalStorage', true);
-                            GlobalBasket.load();
+                        onOpen: function (Win) {
+                            var Buttons = this.getElm().getElement('.qui-window-popup-buttons');
+                            var Submit  = Buttons.getElement('[name="submit"]');
+                            var Merge   = Buttons.getElement('[name="cancel"]');
+
+                            Submit.addClass('qui-button-cancel');
+                            Submit.addClass('btn-light');
+
+                            Submit.removeClass('qui-button-success');
+                            Submit.removeClass('btn-success');
+
+                            Merge.addClass('qui-button-cancel');
+                            Merge.addClass('btn-light');
+                            Merge.name = 'merge';
+
+                            new QUIButton({
+                                'class': 'qui-button-success btn-success',
+                                text   : QUILocale.get(lg, 'basket.merge.button.use.new'),
+                                events : {
+                                    onClick: function () {
+                                        Win.Loader.show();
+                                        GlobalBasket.setAttribute('mergeLocalStorage', 2);
+                                        GlobalBasket.load().then(function () {
+                                            Win.close();
+                                        });
+                                    }
+                                }
+                            }).inject(Buttons);
                         },
 
-                        onCancel: function () {
-                            GlobalBasket.setAttribute('mergeLocalStorage', false);
-                            GlobalBasket.load();
+                        onSubmit: function (Win) {
+                            Win.Loader.show();
+                            GlobalBasket.setAttribute('mergeLocalStorage', 0);
+                            GlobalBasket.load().then(function () {
+                                Win.close();
+                            });
+                        },
+
+                        onCancel: function (Win) {
+                            Win.Loader.show();
+                            GlobalBasket.setAttribute('mergeLocalStorage', 1);
+                            GlobalBasket.load().then(function () {
+                                Win.close();
+                            });
                         }
                     }
                 }).open();
@@ -71,7 +107,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
 
             // if there are no products yet, merge without query
             if (!products.length) {
-                GlobalBasket.setAttribute('mergeLocalStorage', true);
+                GlobalBasket.setAttribute('mergeLocalStorage', 1);
                 GlobalBasket.load();
                 return;
             }
