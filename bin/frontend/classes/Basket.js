@@ -45,8 +45,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$products = [];
-            this.$basketId = null;
+            this.$products  = [];
+            this.$basketId  = null;
+            this.$orderHash = null;
 
             this.$isLoaded       = false;
             this.$mergeIsRunning = false;
@@ -499,6 +500,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 Product = this.$products[pos];
 
             return Product.setQuantity(quantity).then(function () {
+                self.$products[pos] = Product;
                 return self.save();
             });
         },

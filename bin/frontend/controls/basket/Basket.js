@@ -34,7 +34,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 this.getAttribute('basketId', Basket.getId());
             }
 
-            this.$Loader = new QUILoader();
+            this.$Loader    = new QUILoader();
+            this.$isInOrder = null;
 
             this.addEvents({
                 onInject : this.$onInject,
@@ -62,6 +63,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
         $onImport: function () {
             // user need no import
             if (!this.isGuest()) {
+                this.$setEvents();
+                this.$Loader.inject(this.getElm());
                 return;
             }
 
@@ -75,12 +78,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             var self     = this,
                 basketId = this.getAttribute('basketId');
 
-            if (basketId === false && !this.isGuest()) {
-                this.getElm().set('html', '');
-                this.$Loader.inject(this.getElm());
-                this.$Loader.hide();
-
-                return Promise.resolve();
+            if (basketId === false) {
+                basketId = Basket.getId();
             }
 
             // guest
@@ -116,19 +115,26 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             // user
             QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basket', this.$render, {
                 'package': 'quiqqer/order',
-                basketId : parseInt(this.getAttribute('basketId'))
+                basketId : basketId
             });
         },
-
 
         /**
          * render the result - set events etc
          */
         $render: function (result) {
-            var self = this;
-
             this.getElm().set('html', result);
             this.$Loader.inject(this.getElm());
+            this.$setEvents();
+            this.$Loader.hide();
+        },
+
+        /**
+         * set the basket events
+         * - article changing
+         */
+        $setEvents: function () {
+            var self = this;
 
             // remove
             this.getElm().getElements('.fa-trash').addEvent('click', function () {
@@ -149,16 +155,31 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 }
 
                 Basket.removeProductPos(Article.get('data-pos')).then(function () {
+                    if (self.isInOrder()) {
+                        return Basket.toOrder(self.getOrderHash()).then(function () {
+                            self.refresh();
+                        });
+                    }
+
                     self.refresh();
                 });
             });
 
             //change quantity
+            this.getElm().getElements('[name="quantity"]').addEvent('focus', function () {
+                this.set('data-quantity', parseInt(this.value));
+            });
+
             this.getElm().getElements('[name="quantity"]').addEvent('blur', function () {
                 self.$Loader.show();
 
-                var Article  = this.getParent('.quiqqer-order-basket-small-articles-article');
-                var quantity = this.value;
+                var Article     = this.getParent('.quiqqer-order-basket-small-articles-article');
+                var quantity    = this.value;
+                var oldQuantity = this.get('data-quantity');
+
+                if (oldQuantity && quantity === oldQuantity) {
+                    return;
+                }
 
                 // big basket
                 if (!Article) {
@@ -166,13 +187,18 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 }
 
                 var pos = Article.get('data-pos');
+                this.set('data-quantity', quantity);
 
                 Basket.setQuantity(pos, quantity).then(function () {
+                    if (self.isInOrder()) {
+                        return Basket.toOrder(self.getOrderHash()).then(function () {
+                            self.refresh();
+                        });
+                    }
+
                     self.refresh();
                 });
             });
-
-            this.$Loader.hide();
         },
 
         /**
@@ -182,6 +208,36 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          */
         isGuest: function () {
             return !(QUIQQER_USER && QUIQQER_USER.id);
+        },
+
+        /**
+         * Is the basket in an order process
+         *
+         * @return {boolean}
+         */
+        isInOrder: function () {
+            if (this.$isInOrder !== null) {
+                return this.$isInOrder;
+            }
+
+            this.$isInOrder = !!this.getElm().getParent(
+                '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+            );
+
+            return this.$isInOrder;
+        },
+
+        /**
+         * Return the order hash if the basket is in the order process
+         *
+         * @return {String}
+         */
+        getOrderHash: function () {
+            var Node = this.getElm().getParent(
+                '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+            );
+
+            return QUI.Controls.getById(Node.get('data-quiid')).getAttribute('orderHash');
         },
 
         /**
