@@ -22,7 +22,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
         Binds: [
             '$render',
             '$onImport',
-            '$onInject'
+            '$onInject',
+            '$onBasketRefresh'
         ],
 
         initialize: function (options) {
