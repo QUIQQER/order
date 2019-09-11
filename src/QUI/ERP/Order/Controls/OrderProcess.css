@@ -137,6 +137,18 @@
     width: 100%;
 }
 
+.quiqqer-order-ordering-timeline.disabled,
+.quiqqer-order-ordering-timeline.disabled li,
+.quiqqer-order-ordering-timeline.disabled a {
+    cursor: not-allowed;
+    color: #ababab;
+}
+
+.quiqqer-order-ordering-timeline.disabled li:after,
+.quiqqer-order-ordering-timeline.disabled span.fa {
+    opacity: 0.75;
+}
+
 /** current step
  ============================================*/
 

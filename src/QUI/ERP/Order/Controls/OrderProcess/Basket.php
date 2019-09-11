@@ -86,6 +86,8 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 'exception.basket.has.no.articles'
             ]);
         }
+
+        // clean up 0 articles
     }
 
     /**

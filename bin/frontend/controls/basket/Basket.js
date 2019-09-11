@@ -37,6 +37,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
 
             this.$Loader    = new QUILoader();
             this.$isInOrder = null;
+            this.$Order     = null;
 
             this.addEvents({
                 onInject : this.$onInject,
@@ -135,7 +136,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          * - article changing
          */
         $setEvents: function () {
-            var self = this;
+            var self  = this,
+                Order = this.getOrder();
 
             // remove
             this.getElm().getElements('.fa-trash').addEvent('click', function () {
@@ -169,6 +171,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             //change quantity
             this.getElm().getElements('[name="quantity"]').addEvent('focus', function () {
                 this.set('data-quantity', parseInt(this.value));
+
+                if (Order) {
+                    Order.disable();
+                }
             });
 
             this.getElm().getElements('[name="quantity"]').addEvent('blur', function () {
@@ -177,9 +183,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 var oldQuantity = this.get('data-quantity');
 
                 if (oldQuantity && quantity === oldQuantity) {
+                    if (Order) {
+                        Order.enable();
+                    }
+
                     return;
                 }
-                
+
                 self.$Loader.show();
 
                 // big basket
@@ -193,6 +203,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 Basket.setQuantity(pos, quantity).then(function () {
                     if (self.isInOrder()) {
                         return Basket.toOrder(self.getOrderHash()).then(function () {
+                            if (Order) {
+                                Order.disable();
+                            }
+
                             self.refresh();
                         });
                     }
@@ -229,16 +243,37 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
         },
 
         /**
+         * Return the order process
+         * if the basket is in an order process
+         *
+         * @return {false|Object}
+         */
+        getOrder: function () {
+            if (this.$Order !== null) {
+                return this.$Order;
+            }
+
+            var Node = this.getElm().getParent(
+                '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+            );
+
+            if (!Node) {
+                this.$Order = false;
+                return false;
+            }
+
+            this.$Order = QUI.Controls.getById(Node.get('data-quiid'));
+
+            return this.$Order;
+        },
+
+        /**
          * Return the order hash if the basket is in the order process
          *
          * @return {String}
          */
         getOrderHash: function () {
-            var Node = this.getElm().getParent(
-                '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
-            );
-
-            return QUI.Controls.getById(Node.get('data-quiid')).getAttribute('orderHash');
+            return this.getOrder().getAttribute('orderHash');
         },
 
         /**

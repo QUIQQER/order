@@ -67,6 +67,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Timeline         = null;
             this.$runningAnimation = false;
             this.$isResizing       = false;
+            this.$enabled          = true;
 
             this.$Buttons  = null;
             this.$Next     = null;
@@ -256,6 +257,48 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
         },
 
+        /**
+         * Enables the buttons and timeline
+         * -> look at disable
+         */
+        enable: function () {
+            this.$enabled = true;
+
+            if (this.$Next) {
+                this.$Next.set('disabled', false);
+            }
+
+            if (this.$Previous) {
+                this.$Previous.set('disabled', false);
+            }
+
+            if (this.$Timeline) {
+                this.$Timeline.removeClass('disabled');
+            }
+        },
+
+        /**
+         * Disables the buttons and timeline
+         *
+         * so the ordering process itself can not be continued.
+         * this method is intended to stop the ordering process until everything is filled in correctly.
+         */
+        disable: function () {
+            this.$enabled = false;
+
+            if (this.$Next) {
+                this.$Next.set('disabled', true);
+            }
+
+            if (this.$Previous) {
+                this.$Previous.set('disabled', true);
+            }
+
+            if (this.$Timeline) {
+                this.$Timeline.addClass('disabled');
+            }
+        },
+
         //region products
 
         /**
@@ -426,6 +469,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         next: function () {
+            if (this.$enabled === false) {
+                return Promise.resolve();
+            }
+
             if (this.$runningAnimation) {
                 return Promise.resolve();
             }
@@ -469,6 +516,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         previous: function () {
+            if (this.$enabled === false) {
+                return Promise.resolve();
+            }
+
             if (this.$runningAnimation) {
                 return Promise.resolve();
             }
@@ -540,6 +591,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Send the ordering process
          */
         send: function () {
+            if (this.$enabled === false) {
+                return Promise.resolve();
+            }
+
             if (this.$runningAnimation) {
                 return Promise.resolve();
             }
@@ -585,6 +640,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         openStep: function (step) {
+            if (this.$enabled === false) {
+                return Promise.resolve();
+            }
+
             if (this.$runningAnimation) {
                 return Promise.resolve();
             }
@@ -684,6 +743,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         openFirstStep: function () {
+            if (this.$enabled === false) {
+                return Promise.resolve();
+            }
+
             if (this.$runningAnimation) {
                 return Promise.resolve();
             }
@@ -1321,9 +1384,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             });
         },
 
+        /**
+         * login redirect behaviour
+         */
         $onLoginRedirect: function () {
-            var self = this;
-
             require(['package/quiqqer/order/bin/frontend/Basket'], function (GlobalBasket) {
                 GlobalBasket.getBasket().then(function (basket) {
                     var products = basket.products;
