@@ -727,11 +727,11 @@
         <locale name="processing.status.notification.template" html="true">
             <de><![CDATA[
 <p>Hallo [customerName],</p>
-<p>Der Status Ihrer Bestellung <b>[orderNo]</b> vom <b>[orderDate]</b> hat sich geändert. Die Bestellung ist nun <b>[orderStatus]</b>.
+<p>der Status Ihrer Bestellung <b>[orderNo]</b> vom <b>[orderDate]</b> hat sich geändert. Die Bestellung ist nun <b>[orderStatus]</b>.
 ]]></de>
             <en><![CDATA[
 <p>Hello [customerName],</p>
-<p>The status of your order <b>[orderNo]</b> from <b>[orderDate]</b> changed. The order is now <b>[orderStatus]</b>.
+<p>the status of your order <b>[orderNo]</b> from <b>[orderDate]</b> changed. The order is now <b>[orderStatus]</b>.
 ]]></en>
         </locale>
         <locale name="processing.status.default.1">
