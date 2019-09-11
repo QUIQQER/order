@@ -21,7 +21,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'Mustache',
     'Users',
 
-    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
+    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html',
+    'css!package/quiqqer/order/bin/backend/controls/panels/Order.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
              Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
@@ -97,6 +98,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$SortSeparator = null;
 
             this.$serializedList = {};
+            this.$initialStatus  = false;
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -196,9 +198,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             };
 
             return new Promise(function (resolve) {
-                Orders.updateOrder(orderId, data).then(function () {
-                    resolve();
-                    self.Loader.hide();
+                self.$dialogStatusChangeNotification(data.status).then(function (notificationText) {
+                    data.notification = notificationText;
+
+                    Orders.updateOrder(orderId, data).then(function () {
+                        resolve();
+                        self.Loader.hide();
+                    });
                 });
             });
         },
@@ -698,8 +704,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                                  .getElements('.closable')
-                                  .setStyle('display', null);
+                        .getElements('.closable')
+                        .setStyle('display', null);
                 }
 
                 if (self.getAttribute('cDate')) {
@@ -777,6 +783,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     StatusSelect.disabled = false;
                     StatusSelect.value    = self.getAttribute('status');
                     StatusSelect.fireEvent('change');
+
+                    if (self.$initialStatus === false) {
+                        self.$initialStatus = self.getAttribute('status');
+                    }
                 });
             }).then(function () {
                 return self.$openCategory();
@@ -1307,6 +1317,105 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     self.$AddProduct.setAttribute('textimage', 'fa fa-plus');
                 });
+            });
+        },
+
+        /**
+         * Prompt for a customer notification if the order status is changed
+         *
+         * @param {Number} statusId
+         * @return {Promise}
+         */
+        $dialogStatusChangeNotification: function (statusId) {
+            if (this.$initialStatus === statusId || !statusId) {
+                return Promise.resolve(false);
+            }
+
+            var NotifyTextEditor;
+            var self                      = this;
+            var notificationConfirmOpened = false;
+
+            return new Promise(function (resolve) {
+                var onNotifyConfirmSubmit = function (Win) {
+                    if (notificationConfirmOpened) {
+                        resolve(NotifyTextEditor.getContent());
+                        Win.close();
+                        return;
+                    }
+
+                    notificationConfirmOpened = true;
+
+                    Win.Loader.show();
+
+                    var SubmitBtn = Win.getButton('submit');
+                    SubmitBtn.disable();
+
+                    ProcessingStatus.getNotificationText(statusId, self.getAttribute('orderId')).then(
+                        function (notificationText) {
+                            require([
+                                'Editors'
+                            ], function (Editors) {
+                                Editors.getEditor().then(function (Editor) {
+                                    Win.Loader.hide();
+
+                                    Win.setAttribute('maxHeight', 600);
+                                    Win.resize();
+                                    SubmitBtn.setAttributes({
+                                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
+                                        textimage: 'fa fa-check'
+                                    });
+
+                                    SubmitBtn.enable();
+
+                                    var NotificationElm = new Element('div', {
+                                        'class': 'order-notification',
+                                        html   : '<span>' + QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') + '</span>'
+                                    }).inject(Win.getContent());
+
+                                    Editor.inject(NotificationElm);
+                                    Editor.setContent(notificationText);
+
+                                    NotifyTextEditor = Editor;
+                                })
+                            });
+                        }
+                    );
+                };
+
+                new QUIConfirm({
+                    title        : QUILocale.get(lg, 'dialog.statusChangeNotification.title'),
+                    text         : QUILocale.get(lg, 'dialog.statusChangeNotification.text'),
+                    information  : '',
+                    icon         : 'fa fa-envelope',
+                    texticon     : 'fa fa-envelope',
+                    maxHeight    : 275,
+                    maxWidth     : 600,
+                    autoclose    : false,
+                    ok_button    : {
+                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm'),
+                        textimage: 'fa fa-envelope'
+                    },
+                    cancel_button: {
+                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.cancel'),
+                        textimage: 'fa fa-close'
+                    },
+                    events       : {
+                        onOpen  : function (Win) {
+                            // get current status title
+                            var statusTitle = self.$Elm.getElement(
+                                'select[name="status"] option[value="' + statusId + '"]'
+                            ).innerHTML;
+
+                            Win.setAttribute('information', QUILocale.get(lg, 'dialog.statusChangeNotification.information', {
+                                statusTitle: statusTitle
+                            }));
+                        },
+                        onSubmit: onNotifyConfirmSubmit,
+                        onCancel: function () {
+                            return resolve(false);
+                        }
+                    }
+                }).open();
             });
         }
     });

@@ -58,6 +58,7 @@ class Factory extends QUI\Utils\Singleton
             }
         }
 
+        // ProcessingSatus title
         $data['package']  = 'quiqqer/order';
         $data['datatype'] = 'php,js';
         $data['html']     = 1;
@@ -69,6 +70,9 @@ class Factory extends QUI\Utils\Singleton
         );
 
         QUI\Translator::publish('quiqqer/order');
+
+        // Create translations for auto-notification
+        Handler::getInstance()->createNotificationTranslations($id);
     }
 
     /**
