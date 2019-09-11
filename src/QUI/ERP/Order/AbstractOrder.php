@@ -24,13 +24,13 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN = 0;
-    const PAYMENT_STATUS_PAID = 1;
-    const PAYMENT_STATUS_PART = 2;
-    const PAYMENT_STATUS_ERROR = 4;
+    const PAYMENT_STATUS_OPEN     = 0;
+    const PAYMENT_STATUS_PAID     = 1;
+    const PAYMENT_STATUS_PART     = 2;
+    const PAYMENT_STATUS_ERROR    = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT = 11;
-    const PAYMENT_STATUS_PLAN = 12;
+    const PAYMENT_STATUS_DEBIT    = 11;
+    const PAYMENT_STATUS_PLAN     = 12;
 
     /**
      * Order is only created
@@ -146,6 +146,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @var QUI\ERP\Comments
      */
     protected $History = null;
+
+    /**
+     * @var QUI\ERP\Comments
+     */
+    protected $StatusMails = null;
 
     /**
      * @var null|QUI\ERP\User
@@ -305,6 +310,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         if (isset($data['history'])) {
             $this->History = QUI\ERP\Comments::unserialize($data['history']);
+        }
+
+        // status mail
+        $this->StatusMails = new QUI\ERP\Comments();
+
+        if (isset($data['status_mails'])) {
+            $this->StatusMails = QUI\ERP\Comments::unserialize($data['status_mails']);
         }
 
         // payment
@@ -522,7 +534,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'customerId' => $this->customerId,
             'customer'   => $this->getCustomer()->getAttributes(),
 
-            'comments'           => $this->getComments()->toArray(),
+            'comments'    => $this->getComments()->toArray(),
+            'statusMails' => $this->getStatusMails()->toArray(),
+
             'articles'           => $articles,
             'hasDeliveryAddress' => $this->hasDeliveryAddress(),
             'addressDelivery'    => $this->getDeliveryAddress()->getAttributes(),
@@ -1438,6 +1452,33 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function getHistory()
     {
         return $this->History;
+    }
+
+    //endregion
+
+    //region status mails
+
+    /**
+     * Add a status mail
+     *
+     * @param string $message
+     */
+    public function addStatusMail($message)
+    {
+        $message = preg_replace('#<br\s*/?>#i', "\n", $message);
+        $message = strip_tags($message);
+
+        $this->StatusMails->addComment($message);
+    }
+
+    /**
+     * Return the status mails
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getStatusMails()
+    {
+        return $this->StatusMails;
     }
 
     //endregion

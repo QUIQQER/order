@@ -383,6 +383,7 @@ class Order extends AbstractOrder implements OrderInterface
 
             'articles'      => $this->Articles->toJSON(),
             'comments'      => $this->Comments->toJSON(),
+            'status_mails'  => $this->StatusMails->toJSON(),
             'history'       => $this->History->toJSON(),
             'data'          => \json_encode($this->data),
             'currency_data' => \json_encode($this->getCurrency()->toArray()),

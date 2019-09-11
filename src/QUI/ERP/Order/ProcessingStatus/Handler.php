@@ -277,6 +277,7 @@ class Handler extends QUI\Utils\Singleton
 
         try {
             $Mailer->send();
+            $Order->addStatusMail($message);
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
