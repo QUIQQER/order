@@ -31,6 +31,10 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function __construct($attributes = [])
     {
+        $this->setAttributes([
+            'editable' => true
+        ]);
+
         parent::__construct($attributes);
 
         if ($this->getAttribute('Order')) {
@@ -145,7 +149,10 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return $Engine->fetch(\dirname(__FILE__).'/BasketEmpty.html');
         }
 
-        $BasketControl = new BasketControl();
+        $BasketControl = new BasketControl([
+            'editable' => $this->getAttribute('editable')
+        ]);
+
         $BasketControl->setBasket($this->Basket);
 
         $Engine->assign([

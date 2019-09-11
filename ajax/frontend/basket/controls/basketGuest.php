@@ -13,7 +13,7 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_basketGuest',
-    function ($products, $options = '') {
+    function ($products, $options = '', $editable = true) {
         if (isset($options) && !\is_array($options)) {
             $options = \json_decode($options, true);
 
@@ -26,11 +26,13 @@ QUI::$Ajax->registerFunction(
         $Basket   = new QUI\ERP\Order\Basket\BasketGuest();
         $Basket->import($products);
 
-        $Control = new QUI\ERP\Order\Controls\Basket\Basket();
+        $Control = new QUI\ERP\Order\Controls\Basket\Basket([
+            'editable' => $editable
+        ]);
         $Control->setAttributes($options);
         $Control->setBasket($Basket);
 
         return $Control->create();
     },
-    ['products', 'options']
+    ['products', 'options', 'editable']
 );

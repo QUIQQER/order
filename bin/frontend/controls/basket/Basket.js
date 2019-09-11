@@ -115,9 +115,16 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             }
 
             // user
+            var editable = true;
+
+            if (this.isInOrderProcess()) {
+                editable = this.getOrderProcess().getAttribute('basketEditable');
+            }
+
             QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basket', this.$render, {
                 'package': 'quiqqer/order',
-                basketId : basketId
+                basketId : basketId,
+                editable : editable ? 1 : 0
             });
         },
 
@@ -137,7 +144,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          */
         $setEvents: function () {
             var self  = this,
-                Order = this.getOrder();
+                Order = this.getOrderProcess();
 
             // remove
             this.getElm().getElements('.fa-trash').addEvent('click', function () {
@@ -158,7 +165,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 }
 
                 Basket.removeProductPos(Article.get('data-pos')).then(function () {
-                    if (self.isInOrder()) {
+                    if (self.isInOrderProcess()) {
                         return Basket.toOrder(self.getOrderHash()).then(function () {
                             self.refresh();
                         });
@@ -201,7 +208,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 this.set('data-quantity', quantity);
 
                 Basket.setQuantity(pos, quantity).then(function () {
-                    if (self.isInOrder()) {
+                    if (self.isInOrderProcess()) {
                         return Basket.toOrder(self.getOrderHash()).then(function () {
                             if (Order) {
                                 Order.enable();
@@ -231,7 +238,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          *
          * @return {boolean}
          */
-        isInOrder: function () {
+        isInOrderProcess: function () {
             if (this.$isInOrder !== null) {
                 return this.$isInOrder;
             }
@@ -249,7 +256,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          *
          * @return {false|Object}
          */
-        getOrder: function () {
+        getOrderProcess: function () {
             if (this.$Order !== null) {
                 return this.$Order;
             }
@@ -274,7 +281,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          * @return {String}
          */
         getOrderHash: function () {
-            return this.getOrder().getAttribute('orderHash');
+            return this.getOrderProcess().getAttribute('orderHash');
         },
 
         /**

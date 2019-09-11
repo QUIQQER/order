@@ -67,10 +67,11 @@ class OrderProcess extends QUI\Control
     public function __construct($attributes = [])
     {
         $this->setAttributes([
-            'Site'      => false,
-            'data-qui'  => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
-            'orderHash' => false,
-            'basket'    => true // import basket articles to the order, use the basket
+            'Site'           => false,
+            'data-qui'       => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
+            'orderHash'      => false,
+            'basket'         => true, // import basket articles to the order, use the basket
+            'basketEditable' => true
         ]);
 
         parent::__construct($attributes);
@@ -427,6 +428,11 @@ class OrderProcess extends QUI\Control
     public function getBody()
     {
         $this->Events->fireEvent('getBodyBegin', [$this]);
+
+        $this->setAttribute(
+            'data-qui-option-basketeditable',
+            $this->getAttribute('basketEditable') ? 1 : 0
+        );
 
         $User     = QUI::getUserBySession();
         $isNobody = QUI::getUsers()->isNobodyUser($User);
@@ -1282,7 +1288,8 @@ class OrderProcess extends QUI\Control
         $Basket = new Controls\OrderProcess\Basket([
             'Basket'   => $Basket,
             'Order'    => $Order,
-            'priority' => 10
+            'priority' => 10,
+            'editable' => $this->getAttribute('basketEditable')
         ]);
 
         $CustomerData = new Controls\OrderProcess\CustomerData([

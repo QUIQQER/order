@@ -53,10 +53,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         ],
 
         options: {
-            orderHash : false,
-            basket    : true, // use the basket for the loading
-            buttons   : true,
-            showLoader: true
+            orderHash     : false,
+            basket        : true, // use the basket for the loading
+            basketEditable: true,
+            buttons       : true,
+            showLoader    : true
         },
 
         initialize: function (options) {
@@ -169,6 +170,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
             }
 
+            if (this.getElm().get('data-qui-option-basketeditable')) {
+                this.setAttribute('basketEditable', !!+this.getElm().get('data-qui-option-basketeditable'));
+            }
+
             var Current = this.$TimelineContainer.getFirst('ul li.current'),
                 Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
                 Done    = Promise.resolve();
@@ -250,9 +255,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                     self.$onImport();
                 }, {
-                    'package': 'quiqqer/order',
-                    orderHash: self.getAttribute('orderHash'),
-                    basket   : self.getAttribute('basket')
+                    'package'     : 'quiqqer/order',
+                    orderHash     : self.getAttribute('orderHash'),
+                    basket        : self.getAttribute('basket'),
+                    basketEditable: self.getAttribute('basketEditable') ? 1 : 0
                 });
             });
         },
@@ -501,10 +507,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                             Router.navigate(result.url);
                         }
                     }, {
-                        'package': 'quiqqer/order',
-                        orderHash: self.getAttribute('orderHash'),
-                        current  : self.getAttribute('current'),
-                        onError  : reject
+                        'package'     : 'quiqqer/order',
+                        orderHash     : self.getAttribute('orderHash'),
+                        current       : self.getAttribute('current'),
+                        basketEditable: self.getAttribute('$basketEditable') ? 1 : 0,
+                        onError       : reject,
                     });
                 });
             });
@@ -544,9 +551,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                             Router.navigate(result.url);
                         }
                     }, {
-                        'package': 'quiqqer/order',
-                        orderHash: self.getAttribute('orderHash'),
-                        current  : self.getAttribute('current')
+                        'package'     : 'quiqqer/order',
+                        orderHash     : self.getAttribute('orderHash'),
+                        current       : self.getAttribute('current'),
+                        basketEditable: self.getAttribute('$basketEditable') ? 1 : 0
                     });
                 });
             });

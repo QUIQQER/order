@@ -37,7 +37,8 @@ class Basket extends QUI\Control
     {
         $this->setAttributes([
             'buttons'   => true,
-            'isLoading' => false
+            'isLoading' => false,
+            'editable'  => true
         ]);
 
         parent::__construct($attributes);

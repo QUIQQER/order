@@ -29,7 +29,9 @@
         >
             {locale group="quiqqer/erp" var="article.list.articles.header.price"}
         </th>
+        {if $this->getAttribute('editable')}
         <th class="quiqqer-order-basket-articles-header-action"></th>
+        {/if}
     </tr>
     </thead>
     <tbody>
@@ -61,9 +63,13 @@
         <td class="quiqqer-order-basket-articles-article-quantity"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"
         >
+            {if $this->getAttribute('editable')}
             <label>
                 <input type="number" name="quantity" value="{$product.quantity}"/>
             </label>
+            {else}
+            {$product.quantity}
+            {/if}
         </td>
         <td class="quiqqer-order-basket-articles-article-price"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.unitprice'}"
@@ -85,11 +91,13 @@
             </span>
             {/if}
         </td>
+        {if $this->getAttribute('editable')}
         <td class="quiqqer-order-basket-articles-article-remove">
             <button>
                 <span class="fa fa-trash"></span>
             </button>
         </td>
+        {/if}
     </tr>
     {assign var=pos value=$pos+1}
     {/foreach}
