@@ -4,118 +4,123 @@
  */
 define('package/quiqqer/order/bin/frontend/Basket', [
 
-    'qui/QUI',
-    'qui/controls/buttons/Button',
-    'package/quiqqer/order/bin/frontend/classes/Basket',
-    'Locale'
+        'qui/QUI',
+        'qui/controls/buttons/Button',
+        'package/quiqqer/order/bin/frontend/classes/Basket',
+        'Locale'
 
-], function (QUI, QUIButton, Basket, QUILocale) {
-    "use strict";
+    ], function (QUI, QUIButton, Basket, QUILocale) {
+        "use strict";
 
-    // storage test
-    var storageData     = QUI.Storage.get('quiqqer-basket-products');
-    var storageProducts = [];
+        // storage test
+        var storageData     = QUI.Storage.get('quiqqer-basket-products');
+        var storageProducts = [];
 
-    try {
-        storageData     = JSON.decode(storageData);
-        var currentList = storageData.currentList;
+        try {
+            storageData     = JSON.decode(storageData);
+            var currentList = storageData.currentList;
 
-        if (typeof storageData.products !== 'undefined' &&
-            typeof storageData.products[currentList] !== 'undefined') {
-            storageProducts = storageData.products[currentList];
+            if (typeof storageData.products !== 'undefined' &&
+                typeof storageData.products[currentList] !== 'undefined') {
+                storageProducts = storageData.products[currentList];
+            }
+        } catch (e) {
+            // nothing
         }
-    } catch (e) {
-        // nothing
-    }
 
-    var lg           = 'quiqqer/order';
-    var GlobalBasket = new Basket();
+        var lg           = 'quiqqer/order';
+        var GlobalBasket = new Basket();
 
-    if (QUIQQER_USER && QUIQQER_USER.id && storageProducts.length) {
-        var showWindow = function () {
-            // ask user to merge
-            require(['qui/controls/windows/Confirm'], function (QUIConfirm) {
-                new QUIConfirm({
-                    icon         : 'fa fa-file-text-o',
-                    texticon     : 'fa fa-file-text',
-                    text         : QUILocale.get(lg, 'basket.merge.title'),
-                    title        : QUILocale.get(lg, 'basket.merge.title'),
-                    information  : QUILocale.get(lg, 'basket.merge.text'),
-                    maxHeight    : 400,
-                    maxWidth     : 800,
-                    autoclose    : false,
-                    cancel_button: {
-                        text: QUILocale.get(lg, 'basket.merge.button.cancel')
-                    },
-                    ok_button    : {
-                        text: QUILocale.get(lg, 'basket.merge.button.merge')
-                    },
-                    events       : {
-                        onOpen: function (Win) {
-                            var Buttons = this.getElm().getElement('.qui-window-popup-buttons');
-                            var Submit  = Buttons.getElement('[name="submit"]');
-                            var Merge   = Buttons.getElement('[name="cancel"]');
+        // ask user to merge
+        GlobalBasket.showMergeWindow = function () {
+            return new Promise(function (resolve) {
+                require(['qui/controls/windows/Confirm'], function (QUIConfirm) {
+                    new QUIConfirm({
+                        icon         : 'fa fa-file-text-o',
+                        texticon     : 'fa fa-file-text',
+                        text         : QUILocale.get(lg, 'basket.merge.title'),
+                        title        : QUILocale.get(lg, 'basket.merge.title'),
+                        information  : QUILocale.get(lg, 'basket.merge.text'),
+                        maxHeight    : 400,
+                        maxWidth     : 800,
+                        autoclose    : false,
+                        cancel_button: {
+                            text: QUILocale.get(lg, 'basket.merge.button.cancel')
+                        },
+                        ok_button    : {
+                            text: QUILocale.get(lg, 'basket.merge.button.merge')
+                        },
+                        events       : {
+                            onOpen: function (Win) {
+                                var Buttons = this.getElm().getElement('.qui-window-popup-buttons');
+                                var Submit  = Buttons.getElement('[name="submit"]');
+                                var Merge   = Buttons.getElement('[name="cancel"]');
 
-                            Submit.addClass('qui-button-cancel');
-                            Submit.addClass('btn-light');
+                                Submit.addClass('qui-button-cancel');
+                                Submit.addClass('btn-light');
 
-                            Submit.removeClass('qui-button-success');
-                            Submit.removeClass('btn-success');
+                                Submit.removeClass('qui-button-success');
+                                Submit.removeClass('btn-success');
 
-                            Merge.addClass('qui-button-cancel');
-                            Merge.addClass('btn-light');
-                            Merge.name = 'merge';
+                                Merge.addClass('qui-button-cancel');
+                                Merge.addClass('btn-light');
+                                Merge.name = 'merge';
 
-                            new QUIButton({
-                                'class': 'qui-button-success btn-success',
-                                text   : QUILocale.get(lg, 'basket.merge.button.use.new'),
-                                events : {
-                                    onClick: function () {
-                                        Win.Loader.show();
-                                        GlobalBasket.setAttribute('mergeLocalStorage', 2);
-                                        GlobalBasket.load().then(function () {
-                                            Win.close();
-                                        });
+                                new QUIButton({
+                                    'class': 'qui-button-success btn-success',
+                                    text   : QUILocale.get(lg, 'basket.merge.button.use.new'),
+                                    events : {
+                                        onClick: function () {
+                                            Win.Loader.show();
+                                            GlobalBasket.setAttribute('mergeLocalStorage', 2);
+                                            GlobalBasket.load().then(function () {
+                                                Win.close();
+                                            });
+                                        }
                                     }
-                                }
-                            }).inject(Buttons);
-                        },
+                                }).inject(Buttons);
+                            },
 
-                        onSubmit: function (Win) {
-                            Win.Loader.show();
-                            GlobalBasket.setAttribute('mergeLocalStorage', 0);
-                            GlobalBasket.load().then(function () {
-                                Win.close();
-                            });
-                        },
+                            onSubmit: function (Win) {
+                                Win.Loader.show();
+                                GlobalBasket.setAttribute('mergeLocalStorage', 1);
+                                GlobalBasket.load().then(function () {
+                                    Win.close();
+                                });
+                            },
 
-                        onCancel: function (Win) {
-                            Win.Loader.show();
-                            GlobalBasket.setAttribute('mergeLocalStorage', 1);
-                            GlobalBasket.load().then(function () {
-                                Win.close();
-                            });
+                            onCancel: function (Win) {
+                                Win.Loader.show();
+                                GlobalBasket.setAttribute('mergeLocalStorage', 0);
+                                GlobalBasket.load().then(function () {
+                                    Win.close();
+                                });
+                            },
+
+                            onClose: resolve
                         }
-                    }
-                }).open();
+                    }).open();
+                });
             });
         };
 
-        GlobalBasket.getBasket().then(function (basket) {
-            var products = basket.products;
+        if (QUIQQER_USER && QUIQQER_USER.id && storageProducts.length) {
+            GlobalBasket.getBasket().then(function (basket) {
+                var products = basket.products;
 
-            // if there are no products yet, merge without query
-            if (!products.length) {
-                GlobalBasket.setAttribute('mergeLocalStorage', 1);
-                GlobalBasket.load();
-                return;
-            }
+                // if there are no products yet, merge without query
+                if (!products.length) {
+                    GlobalBasket.setAttribute('mergeLocalStorage', 1);
+                    GlobalBasket.load();
+                    return;
+                }
 
-            showWindow();
-        });
-    } else {
-        GlobalBasket.load();
+                GlobalBasket.showMergeWindow();
+            });
+        } else {
+            GlobalBasket.load();
+        }
+
+        return GlobalBasket;
     }
-
-    return GlobalBasket;
-});
+);

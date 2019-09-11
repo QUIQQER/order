@@ -48,7 +48,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             '$refreshButtonEvents',
             '$beginResultRendering',
             '$endResultRendering',
-            '$onProcessingError'
+            '$onProcessingError',
+            '$onLoginRedirect'
         ],
 
         options: {
@@ -194,16 +195,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         var Control = QUI.Controls.getById(Node.get('data-quiid'));
 
                         if (Control) {
-                            Control.setAttribute('ownRedirectOnLogin', function () {
-                                if (self.getElm().getParent('.qui-window-popup')) {
-                                    window.location.hash = '#checkout';
-                                    window.location.reload();
-                                    return;
-                                }
-
-                                QUI.Storage.set('checkout-login', 1);
-                                window.location.reload();
-                            });
+                            Control.setAttribute('ownRedirectOnLogin', self.$onLoginRedirect);
                         }
                     });
                 }
@@ -1324,6 +1316,29 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         return self.send();
                     }).then(function () {
                         self.Loader.hide();
+                    });
+                });
+            });
+        },
+
+        $onLoginRedirect: function () {
+            var self = this;
+
+            require(['package/quiqqer/order/bin/frontend/Basket'], function (GlobalBasket) {
+                GlobalBasket.getBasket().then(function (basket) {
+                    var products = basket.products;
+
+                    // if there are no products yet, merge without query
+                    if (!products.length) {
+                        GlobalBasket.setAttribute('mergeLocalStorage', 1);
+                        GlobalBasket.load().then(function () {
+                            window.location.reload();
+                        });
+                        return;
+                    }
+
+                    GlobalBasket.showMergeWindow().then(function () {
+                        window.location.reload();
                     });
                 });
             });
