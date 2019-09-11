@@ -87,7 +87,37 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             ]);
         }
 
+        /* @var $OrderProcess QUI\ERP\Order\OrderProcess */
+        $OrderProcess = $this->getAttribute('OrderProcess');
+
         // clean up 0 articles
+        try {
+            if ($OrderProcess) {
+                $Current = $OrderProcess->getCurrentStep();
+
+                // if current step is basket, we need no cleanup ... only later
+                if ($Current instanceof QUI\ERP\Order\Controls\Basket\Basket) {
+                    return;
+                }
+            }
+
+            $Articles = $this->Basket->getOrder()->getArticles();
+            $empty    = [];
+
+            foreach ($Articles as $key => $Article) {
+                if (!$Article->getQuantity()) {
+                    $empty[] = $key;
+                }
+            }
+
+            foreach ($empty as $pos) {
+                $this->Basket->getOrder()->removeArticle($pos);
+            }
+
+            $this->Basket->getOrder()->save();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**

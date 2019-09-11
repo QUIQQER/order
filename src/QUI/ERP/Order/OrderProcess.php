@@ -1291,8 +1291,6 @@ class OrderProcess extends QUI\Control
             'priority' => 20
         ]);
 
-//        $Delivery = new Controls\Delivery($params);
-
         $Checkout = new Controls\OrderProcess\Checkout([
             'Order'    => $Order,
             'priority' => 40
@@ -1319,6 +1317,10 @@ class OrderProcess extends QUI\Control
 
         $Steps->append($Checkout);
         $Steps->append($Finish);
+
+        foreach ($Steps as $Step) {
+            $Step->setAttribute('OrderProcess', $this);
+        }
 
         $this->sortSteps($Steps);
 

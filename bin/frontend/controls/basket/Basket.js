@@ -204,7 +204,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                     if (self.isInOrder()) {
                         return Basket.toOrder(self.getOrderHash()).then(function () {
                             if (Order) {
-                                Order.disable();
+                                Order.enable();
                             }
 
                             self.refresh();
@@ -212,6 +212,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                     }
 
                     self.refresh();
+                    Order.enable();
                 });
             });
         },
