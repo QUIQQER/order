@@ -172,8 +172,6 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             });
 
             this.getElm().getElements('[name="quantity"]').addEvent('blur', function () {
-                self.$Loader.show();
-
                 var Article     = this.getParent('.quiqqer-order-basket-small-articles-article');
                 var quantity    = this.value;
                 var oldQuantity = this.get('data-quantity');
@@ -181,6 +179,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 if (oldQuantity && quantity === oldQuantity) {
                     return;
                 }
+                
+                self.$Loader.show();
 
                 // big basket
                 if (!Article) {
