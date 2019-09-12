@@ -98,6 +98,29 @@ class Factory extends QUI\Utils\Singleton
             $PermissionUser
         );
 
+        $orderId = $this->createOrderInProcessDataBaseEntry($PermissionUser);
+
+        return Handler::getInstance()->getOrderInProcess($orderId);
+    }
+
+    /**
+     * Create a new OrderInProcess database entry
+     *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @return int - OrderInProcess ID
+     * @throws QUI\Database\Exception
+     */
+    public function createOrderInProcessDataBaseEntry($PermissionUser = null)
+    {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.edit',
+            $PermissionUser
+        );
+
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->tableOrderProcess();
@@ -117,7 +140,7 @@ class Factory extends QUI\Utils\Singleton
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
 
-        return $Orders->getOrderInProcess($orderId);
+        return $orderId;
     }
 
     /**

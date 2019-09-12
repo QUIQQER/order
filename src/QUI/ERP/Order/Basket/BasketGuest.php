@@ -107,6 +107,16 @@ class BasketGuest
                 }
 
                 if (isset($productData['quantity'])) {
+                    if (!\is_numeric($productData['quantity'])) {
+                        $productData['quantity'] = 1;
+                    }
+
+                    $productData['quantity'] = \floatval($productData['quantity']);
+
+                    if ($productData['quantity'] < 0) {
+                        $productData['quantity'] = 1;
+                    }
+
                     $Product->setQuantity($productData['quantity']);
                 }
 
