@@ -65,7 +65,7 @@
         >
             {if $this->getAttribute('editable')}
             <label>
-                <input type="number" name="quantity" value="{$product.quantity}"/>
+                <input type="number" name="quantity" min="0" value="{$product.quantity}"/>
             </label>
             {else}
             {$product.quantity}
