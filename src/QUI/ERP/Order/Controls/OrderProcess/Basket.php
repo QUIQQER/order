@@ -163,6 +163,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine->assign([
             'BasketControl' => $BasketControl,
             'Basket'        => $this->Basket,
+            'Order'         => $this->getAttribute('Order'),
             'this'          => $this
         ]);
 
