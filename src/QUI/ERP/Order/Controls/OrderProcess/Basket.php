@@ -105,7 +105,8 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 }
             }
 
-            $Articles = $this->Basket->getOrder()->getArticles();
+            $Order    = $this->Basket->getOrder();
+            $Articles = $Order->getArticles();
             $empty    = [];
 
             foreach ($Articles as $key => $Article) {
@@ -115,10 +116,14 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
 
             foreach ($empty as $pos) {
-                $this->Basket->getOrder()->removeArticle($pos);
+                $Order->removeArticle($pos);
             }
 
-            $this->Basket->getOrder()->save();
+            $Order->save();
+
+            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
+            $products    = $BasketOrder->getProducts()->toArray();
+            $this->Basket->import($products['products']);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

@@ -69,6 +69,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$runningAnimation = false;
             this.$isResizing       = false;
             this.$enabled          = true;
+            this.$loaded           = false;
 
             this.$Buttons  = null;
             this.$Next     = null;
@@ -86,7 +87,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.addEvents({
                 onImport: this.$onImport,
-                onInject: this.$onInject
+                onInject: this.$onInject,
+                onLoad  : function () {
+                    this.$loaded = true;
+                }.bind(this)
             });
 
             window.addEventListener('changestate', this.$onChangeState, false);
@@ -116,6 +120,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (current.step !== parts[1]) {
                 this.openStep(parts[1]);
             }
+        },
+
+        /**
+         * is process loaded
+         *
+         * @return {boolean}
+         */
+        isLoaded: function () {
+            return this.$loaded;
         },
 
         /**

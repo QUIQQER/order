@@ -38,6 +38,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             this.$Loader    = new QUILoader();
             this.$isInOrder = null;
             this.$Order     = null;
+            this.$isLoaded  = false;
 
             this.addEvents({
                 onInject : this.$onInject,
@@ -57,6 +58,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          */
         $onInject: function () {
             this.refresh();
+            this.$isLoaded = true;
         },
 
         /**
@@ -66,11 +68,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             // user need no import
             if (!this.isGuest()) {
                 this.$setEvents();
+
                 this.$Loader.inject(this.getElm());
+                this.$isLoaded = true;
                 return;
             }
 
             this.refresh();
+            this.$isLoaded = true;
         },
 
         /**
@@ -111,6 +116,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                     });
                 });
 
+                return;
+            }
+
+            if (!this.$isLoaded) {
                 return;
             }
 
@@ -288,7 +297,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          * event: on basket refresh
          */
         $onBasketRefresh: function () {
-            this.refresh();
+            if (!this.isInOrderProcess()) {
+                this.refresh();
+            }
         }
     });
 });
