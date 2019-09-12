@@ -31,7 +31,7 @@ QUI::$Ajax->registerFunction(
         $Basket->import($products);
 
         $Control = new QUI\ERP\Order\Controls\Basket\Basket([
-            'editable' => $editable
+            'editable' => \boolval($editable)
         ]);
         $Control->setAttributes($options);
         $Control->setBasket($Basket);

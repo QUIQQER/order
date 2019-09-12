@@ -523,8 +523,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         'package'     : 'quiqqer/order',
                         orderHash     : self.getAttribute('orderHash'),
                         current       : self.getAttribute('current'),
-                        basketEditable: self.getAttribute('$basketEditable') ? 1 : 0,
-                        onError       : reject,
+                        basketEditable: self.getAttribute('basketEditable') ? 1 : 0,
+                        onError       : reject
                     });
                 });
             });
@@ -567,7 +567,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         'package'     : 'quiqqer/order',
                         orderHash     : self.getAttribute('orderHash'),
                         current       : self.getAttribute('current'),
-                        basketEditable: self.getAttribute('$basketEditable') ? 1 : 0
+                        basketEditable: self.getAttribute('basketEditable') ? 1 : 0
                     });
                 });
             });
