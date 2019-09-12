@@ -228,7 +228,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                     }
 
                     self.refresh();
-                    Order.enable();
+
+                    if (Order) {
+                        Order.enable();
+                    }
                 });
             });
         },
