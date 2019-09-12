@@ -1,0 +1,36 @@
+{$message}
+
+{if $InvoiceAddress}
+<div class="">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.invoice.title"}</h4>
+    {$InvoiceAddress->render()}
+</div>
+{/if}
+
+{if $DeliveryAddress}
+<div class="">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    {$DeliveryAddress->render()}
+</div>
+{/if}
+
+<br/>
+<br/>
+
+{$Articles->renderForMail()}
+
+<div style="clear: both; width: 100%"></div>
+
+{if $Shipping}
+<div style="clear: both;">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.shipping.title"}</h4>
+    {$Shipping->getTitle()}
+</div>
+{/if}
+
+{if $Payment}
+<div class="">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.payment.title"}</h4>
+    {$Payment->getTitle()}
+</div>
+{/if}

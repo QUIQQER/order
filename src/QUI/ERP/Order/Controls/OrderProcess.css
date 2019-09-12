@@ -7,6 +7,29 @@
     height: 100%;
 }
 
+.quiqqer-order-ordering-message {
+    border: 1px solid #D8D8D8;
+    color: #606975;
+    clear: both;
+    display: block;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+}
+
+.quiqqer-order-ordering-message-error {
+    background-color: rgb(255, 249, 242);
+    color: rgb(211, 0, 0);
+}
+
+.quiqqer-order-ordering-message-success {
+    background-color: #D9E6C3;
+}
+
+.quiqqer-order-ordering-message-info {
+    background-color: #CEE6F2;
+}
+
 .quiqqer-order-ordering-error {
     background-color: rgb(255, 249, 242);
     border: 1px solid #D8D8D8;
@@ -112,6 +135,18 @@
 
 .quiqqer-order-ordering-timeline {
     width: 100%;
+}
+
+.quiqqer-order-ordering-timeline.disabled,
+.quiqqer-order-ordering-timeline.disabled li,
+.quiqqer-order-ordering-timeline.disabled a {
+    cursor: not-allowed;
+    color: #ababab;
+}
+
+.quiqqer-order-ordering-timeline.disabled li:after,
+.quiqqer-order-ordering-timeline.disabled span.fa {
+    opacity: 0.75;
 }
 
 /** current step

@@ -24,13 +24,13 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN = 0;
-    const PAYMENT_STATUS_PAID = 1;
-    const PAYMENT_STATUS_PART = 2;
-    const PAYMENT_STATUS_ERROR = 4;
+    const PAYMENT_STATUS_OPEN     = 0;
+    const PAYMENT_STATUS_PAID     = 1;
+    const PAYMENT_STATUS_PART     = 2;
+    const PAYMENT_STATUS_ERROR    = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT = 11;
-    const PAYMENT_STATUS_PLAN = 12;
+    const PAYMENT_STATUS_DEBIT    = 11;
+    const PAYMENT_STATUS_PLAN     = 12;
 
     /**
      * Order is only created
@@ -146,6 +146,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @var QUI\ERP\Comments
      */
     protected $History = null;
+
+    /**
+     * @var QUI\ERP\Comments
+     */
+    protected $StatusMails = null;
 
     /**
      * @var null|QUI\ERP\User
@@ -307,6 +312,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->History = QUI\ERP\Comments::unserialize($data['history']);
         }
 
+        // status mail
+        $this->StatusMails = new QUI\ERP\Comments();
+
+        if (isset($data['status_mails'])) {
+            $this->StatusMails = QUI\ERP\Comments::unserialize($data['status_mails']);
+        }
+
         // payment
         $this->paymentId  = $data['payment_id'];
         $this->successful = (int)$data['successful'];
@@ -426,6 +438,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             [$Basket, $this, $Products]
         );
 
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderEnd',
+            [$Basket, $this, $Products]
+        );
+
         $ArticleList->importPriceFactors(
             $Products->getPriceFactors()->toErpPriceFactorList()
         );
@@ -434,11 +451,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->Articles = $ArticleList;
         $this->update();
-
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderBasketToOrderEnd',
-            [$Basket, $this, $Products]
-        );
     }
 
     /**
@@ -486,8 +498,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function toArray()
     {
-        $status    = '';
-        $paymentId = '';
+        $status     = '';
+        $paymentId  = '';
+        $paidStatus = [];
 
         $articles = $this->getArticles()->toArray();
         $Payment  = $this->getPayment();
@@ -499,6 +512,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         try {
             $ProcessingStatus = $this->getProcessingStatus();
             $status           = $ProcessingStatus->getId();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        try {
+            $paidStatus = $this->getPaidStatusInformation();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -515,13 +534,16 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'customerId' => $this->customerId,
             'customer'   => $this->getCustomer()->getAttributes(),
 
-            'comments'           => $this->getComments()->toArray(),
+            'comments'    => $this->getComments()->toArray(),
+            'statusMails' => $this->getStatusMails()->toArray(),
+
             'articles'           => $articles,
             'hasDeliveryAddress' => $this->hasDeliveryAddress(),
             'addressDelivery'    => $this->getDeliveryAddress()->getAttributes(),
             'addressInvoice'     => $this->getInvoiceAddress()->getAttributes(),
             'paymentId'          => $paymentId,
-            'status'             => $status
+            'status'             => $status,
+            'paidStatus'         => $paidStatus
         ];
     }
 
@@ -815,7 +837,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     protected function parseAddressData(array $address)
     {
-        $fields = array_flip([
+        $fields = \array_flip([
             'id',
             'salutation',
             'firstname',
@@ -1430,6 +1452,33 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function getHistory()
     {
         return $this->History;
+    }
+
+    //endregion
+
+    //region status mails
+
+    /**
+     * Add a status mail
+     *
+     * @param string $message
+     */
+    public function addStatusMail($message)
+    {
+        $message = preg_replace('#<br\s*/?>#i', "\n", $message);
+        $message = strip_tags($message);
+
+        $this->StatusMails->addComment($message);
+    }
+
+    /**
+     * Return the status mails
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getStatusMails()
+    {
+        return $this->StatusMails;
     }
 
     //endregion

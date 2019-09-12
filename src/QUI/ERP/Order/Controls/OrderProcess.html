@@ -61,6 +61,16 @@
     {/if}
 
     <div class="quiqqer-order-ordering-step">
+        {if !empty($messages)}
+        <div class="quiqqer-order-ordering-messages">
+            {foreach $messages as $Message}
+            <div class="quiqqer-order-ordering-message quiqqer-order-ordering-message-{$Message->getType()}">
+                {$Message->getMsg()}
+            </div>
+            {/foreach}
+        </div>
+        {/if}
+
         {$currentStepContent}
     </div>
 

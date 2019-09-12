@@ -13,10 +13,15 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getNext',
-    function ($current, $orderHash) {
+    function ($current, $orderHash, $basketEditable) {
+        if (!isset($basketEditable)) {
+            $basketEditable = true;
+        }
+
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderHash' => $orderHash,
-            'step'      => $current
+            'orderHash'      => $orderHash,
+            'step'           => $current,
+            'basketEditable' => \boolval($basketEditable)
         ]);
 
         $Next = $OrderProcess->getNextStep();
@@ -38,5 +43,5 @@ QUI::$Ajax->registerFunction(
             'hash' => $OrderProcess->getStepHash()
         ];
     },
-    ['current', 'orderHash']
+    ['current', 'orderHash', 'basketEditable']
 );

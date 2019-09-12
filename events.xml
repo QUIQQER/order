@@ -20,6 +20,10 @@
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerOrderCreated"
     />
 
+    <event on="onQuiqqerOrderProcessStatusChange"
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerOrderProcessStatusChange"
+    />
+
     <event on="onQuiqqerInvoiceTemporaryInvoicePostEnd"
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerInvoiceTemporaryInvoicePostEnd"
     />

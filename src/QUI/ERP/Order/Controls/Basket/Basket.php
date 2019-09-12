@@ -29,6 +29,26 @@ class Basket extends QUI\Control
     protected $Project;
 
     /**
+     * Basket constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct($attributes = [])
+    {
+        $this->setAttributes([
+            'buttons'   => true,
+            'isLoading' => false,
+            'editable'  => true
+        ]);
+
+        parent::__construct($attributes);
+
+        $this->setAttributes([
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/basket/Basket'
+        ]);
+    }
+
+    /**
      * @param QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest $Basket
      */
     public function setBasket($Basket)
@@ -61,10 +81,46 @@ class Basket extends QUI\Control
             'Basket'   => $this->Basket,
             'Project'  => $this->Project,
             'Products' => $View,
-            'products' => $View->getProducts()
+            'products' => $View->getProducts(),
+            'this'     => $this
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
+    }
+
+    /**
+     * @param $fieldValueText
+     * @return mixed|string
+     */
+    public function getValueText($fieldValueText)
+    {
+        $current = QUI::getLocale()->getCurrent();
+
+        if (!\is_array($fieldValueText)) {
+            return $fieldValueText;
+        }
+
+        if (isset($fieldValueText[$current])) {
+            return $fieldValueText[$current];
+        }
+
+        return '';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGuest()
+    {
+        return QUI::getUsers()->isNobodyUser(QUI::getUserBySession());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoading()
+    {
+        return $this->getAttribute('isLoading');
     }
 
     //region project

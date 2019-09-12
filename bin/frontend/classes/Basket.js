@@ -39,14 +39,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         ],
 
         options: {
-            mergeLocalStorage: true
+            mergeLocalStorage: 1 // 0 = use old basket, 1 = merge both, 2 = use new one
         },
 
         initialize: function (options) {
             this.parent(options);
 
-            this.$products = [];
-            this.$basketId = null;
+            this.$products  = [];
+            this.$basketId  = null;
+            this.$orderHash = null;
 
             this.$isLoaded       = false;
             this.$mergeIsRunning = false;
@@ -288,14 +289,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 // clear the storage, otherwise the next time we have a double basket.
                 QUI.Storage.set(STORAGE_KEY, JSON.encode({}));
 
-                // use local storage and overwrite the current basket
-                if (!self.getAttribute('mergeLocalStorage')) {
-                    return addStorageProducts();
+                // 0 = use old basket
+                if (self.getAttribute('mergeLocalStorage') === 0) {
+                    return Promise.resolve();
                 }
 
-                // merge both
+                // load old one
                 self.$mergeIsRunning = true;
 
+                // 2 = use new one
+                if (self.getAttribute('mergeLocalStorage') === 2) {
+                    return addStorageProducts().then(function () {
+                        self.$mergeIsRunning = false;
+                    });
+                }
+
+                // 1 = merge both
                 return self.$loadData(basket).then(function () {
                     return addStorageProducts();
                 }).then(function () {
@@ -470,6 +479,29 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 if (err !== 'Data is null') {
                     console.error(err);
                 }
+            });
+        },
+
+        /**
+         * set quantity for
+         *
+         * @param pos
+         * @param quantity
+         * @return {*}
+         */
+        setQuantity: function (pos, quantity) {
+            pos = pos - 1;
+
+            if (typeof this.$products[pos] === 'undefined') {
+                return Promise.resolve();
+            }
+
+            var self    = this,
+                Product = this.$products[pos];
+
+            return Product.setQuantity(quantity).then(function () {
+                self.$products[pos] = Product;
+                return self.save();
             });
         },
 

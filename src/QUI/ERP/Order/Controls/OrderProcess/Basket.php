@@ -31,6 +31,10 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function __construct($attributes = [])
     {
+        $this->setAttributes([
+            'editable' => true
+        ]);
+
         parent::__construct($attributes);
 
         if ($this->getAttribute('Order')) {
@@ -86,6 +90,43 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 'exception.basket.has.no.articles'
             ]);
         }
+
+        /* @var $OrderProcess QUI\ERP\Order\OrderProcess */
+        $OrderProcess = $this->getAttribute('OrderProcess');
+
+        // clean up 0 articles
+        try {
+            if ($OrderProcess) {
+                $Current = $OrderProcess->getCurrentStep();
+
+                // if current step is basket, we need no cleanup ... only later
+                if ($Current instanceof QUI\ERP\Order\Controls\Basket\Basket) {
+                    return;
+                }
+            }
+
+            $Order    = $this->Basket->getOrder();
+            $Articles = $Order->getArticles();
+            $empty    = [];
+
+            foreach ($Articles as $key => $Article) {
+                if (!$Article->getQuantity()) {
+                    $empty[] = $key;
+                }
+            }
+
+            foreach ($empty as $pos) {
+                $Order->removeArticle($pos);
+            }
+
+            $Order->save();
+
+            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
+            $products    = $BasketOrder->getProducts()->toArray();
+            $this->Basket->import($products['products']);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**
@@ -113,12 +154,17 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return $Engine->fetch(\dirname(__FILE__).'/BasketEmpty.html');
         }
 
-        $BasketControl = new BasketControl();
+        $BasketControl = new BasketControl([
+            'editable' => $this->getAttribute('editable')
+        ]);
+
         $BasketControl->setBasket($this->Basket);
 
         $Engine->assign([
             'BasketControl' => $BasketControl,
-            'Basket'        => $this->Basket
+            'Basket'        => $this->Basket,
+            'Order'         => $this->getAttribute('Order'),
+            'this'          => $this
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/Basket.html');

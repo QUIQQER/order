@@ -12,14 +12,20 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_basket',
-    function ($basketId) {
-        $User   = QUI::getUserBySession();
-        $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
+    function ($basketId, $editable) {
+        if (!isset($editable)) {
+            $editable = true;
+        }
 
-        $Control = new QUI\ERP\Order\Controls\Basket\Small();
+        $User    = QUI::getUserBySession();
+        $Basket  = new QUI\ERP\Order\Basket\Basket($basketId, $User);
+        $Control = new QUI\ERP\Order\Controls\Basket\Basket([
+            'editable' => \boolval($editable)
+        ]);
+
         $Control->setBasket($Basket);
 
         return $Control->create();
     },
-    ['basketId']
+    ['basketId', 'editable']
 );

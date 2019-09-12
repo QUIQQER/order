@@ -2,11 +2,12 @@
     <h1>{locale group="quiqqer/order" var="ordering.step.title.Basket"}</h1>
 </header>
 
-{template_event name="quiqqer::order::orderProcessBasketBegin" Basket=$Basket}
+{template_event name="quiqqer::order::orderProcessBasketBegin" Basket=$Basket Order=$Order}
 
 {$BasketControl->create()}
 
-{template_event name="quiqqer::order::orderProcessBasketEnd" Basket=$Basket assign=content}
+{template_event name="quiqqer::order::orderProcessBasketEnd" Basket=$Basket Order=$Order assign=content}
+
 {if !empty($content)}
 <div class="quiqqer-order-basket-end">
     {$content}

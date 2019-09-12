@@ -421,6 +421,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         // get the order with new data
+        $Order->recalculate();
         $Order->refresh();
 
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order created');
@@ -577,6 +578,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
             'articles'      => $this->Articles->toJSON(),
             'comments'      => $this->Comments->toJSON(),
+            'status_mails'  => $this->StatusMails->toJSON(),
             'history'       => $this->History->toJSON(),
             'data'          => \json_encode($this->data),
             'currency_data' => \json_encode($this->getCurrency()->toArray()),

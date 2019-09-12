@@ -261,7 +261,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 return true;
             }
 
-            return window.QUIQQER_SITE.type !== 'quiqqer/order:types/orderingProcess';
+            return !(window.QUIQQER_SITE.type === 'quiqqer/order:types/orderingProcess' ||
+                window.QUIQQER_SITE.type === 'quiqqer/order:types/shoppingCart');
         },
 
         /**

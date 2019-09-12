@@ -261,6 +261,10 @@ class EventHandling
      */
     public static function onQuiqqerOrderCreated(Order $Order)
     {
+        if (Settings::getInstance()->get('order', 'sendAdminOrderConfirmation')) {
+            Mail::sendAdminOrderConfirmationMail($Order);
+        }
+
         if (Settings::getInstance()->get('order', 'sendOrderConfirmation')) {
             Mail::sendOrderConfirmationMail($Order);
         }
@@ -276,10 +280,15 @@ class EventHandling
             return;
         }
 
-        // create invoice payment status
+        // create order status
         $Handler = ProcessingStatus\Handler::getInstance();
         $Factory = ProcessingStatus\Factory::getInstance();
         $list    = $Handler->getList();
+
+        // (Re-)create translations for status change notification
+        foreach ([1, 2, 3, 4, 5] as $statusId) {
+            $Handler->createNotificationTranslations($statusId);
+        }
 
         if (!empty($list)) {
             return;
@@ -365,5 +374,34 @@ class EventHandling
                 })();
             </script>'
         );
+    }
+
+    /**
+     * quiqqer/order: onQuiqqerOrderProcessStatusChange
+     *
+     * Sends notifications if an order status is changed (automatically)
+     *
+     * @param AbstractOrder $Order
+     * @param ProcessingStatus\Status $Status
+     */
+    public static function onQuiqqerOrderProcessStatusChange(AbstractOrder $Order, ProcessingStatus\Status $Status)
+    {
+        // Do not send auto-notification if the Order was manually saved (backend)
+        if ($Order->getAttribute('userSave')) {
+            return;
+        }
+
+        if (!$Status->isAutoNotification()) {
+            return;
+        }
+
+        try {
+            QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->sendStatusChangeNotification(
+                $Order,
+                $Status->getId()
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 }

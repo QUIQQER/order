@@ -1,20 +1,25 @@
 <?php
 
-try {
-    $User = QUI::getUserBySession();
+use QUI\ERP\Order\Basket\BasketGuest;
 
-    if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-        // @todo guest ordering
-        \header('Location: '.$Project->firstChild()->getUrlRewritten(), false, 301);
-        exit;
+try {
+    $BasketControl = null;
+    $checkoutUrl   = false;
+    $Registration  = null;
+    $Login         = null;
+
+    $User   = QUI::getUserBySession();
+    $Orders = QUI\ERP\Order\Handler::getInstance();
+
+    if (QUI::getUsers()->isNobodyUser($User)) {
+        $Basket = new BasketGuest();
+    } else {
+        $Basket = $Orders->getBasketFromUser($User);
     }
 
-    $Orders = QUI\ERP\Order\Handler::getInstance();
-    $Basket = $Orders->getBasketFromUser($User);
-
-    $BasketControl = new QUI\ERP\Order\Controls\OrderProcess\Basket([
-        'basketId' => $Basket->getId()
-    ]);
+    $BasketControl = new QUI\ERP\Order\Controls\Basket\Basket();
+    $BasketControl->setAttribute('isLoading', true);
+    $BasketControl->setBasket($Basket);
 
     try {
         $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
@@ -22,9 +27,15 @@ try {
         $OrderProcessSite = $Project->firstChild();
     }
 
+    $checkoutUrl = $OrderProcessSite->getUrlRewritten([], [
+        'checkout' => '1'
+    ]);
+
     $Engine->assign([
-        'Basket'      => $BasketControl,
-        'checkoutUrl' => $OrderProcessSite->getUrlRewritten(),
+        'BasketControl' => $BasketControl,
+        'checkoutUrl'   => $checkoutUrl,
+        'Registration'  => $Registration,
+        'Login'         => $Login
     ]);
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);

@@ -14,7 +14,12 @@ use QUI\ERP\Order\Handler;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_get',
     function ($orderId) {
-        return Handler::getInstance()->get($orderId)->toArray();
+        try {
+            return Handler::getInstance()->get($orderId)->toArray();
+        } catch (QUi\Exception $Exception) {
+        }
+
+        return Handler::getInstance()->getOrderByHash($orderId)->toArray();
     },
     ['orderId'],
     'Permission::checkAdminUser'

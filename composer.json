@@ -25,7 +25,6 @@
     "quiqqer/countries": "*",
     "quiqqer/areas": "*",
     "quiqqer/products": "*",
-    "quiqqer/invoice": "*",
     "quiqqer/payments": "*",
     "quiqqer/tax": "*",
     "quiqqer/payment-transactions": "*",
