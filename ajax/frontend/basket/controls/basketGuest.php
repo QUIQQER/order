@@ -22,6 +22,10 @@ QUI::$Ajax->registerFunction(
             }
         }
 
+        if ($editable === '') {
+            $editable = true;
+        }
+
         $products = \json_decode($products, true);
         $Basket   = new QUI\ERP\Order\Basket\BasketGuest();
         $Basket->import($products);
