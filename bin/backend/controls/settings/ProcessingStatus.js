@@ -63,6 +63,12 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
                             backgroundColor: result.data[i].color
                         }
                     });
+
+                    result.data[i].notificationStatus = new Element('span', {
+                        html: result.data[i].notification ?
+                            '<span class="fa fa-check"></span>' :
+                            '<span class="fa fa-close"></span>'
+                    });
                 }
 
                 self.$Grid.setData(result);
@@ -141,6 +147,11 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
                     dataIndex: 'title',
                     dataType : 'integer',
                     width    : 200
+                }, {
+                    header   : QUILocale.get(lg, 'processingStatus.grid.notification'),
+                    dataIndex: 'notificationStatus',
+                    dataType : 'node',
+                    width    : 150
                 }]
             });
 
@@ -190,7 +201,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
             new QUIConfirm({
                 icon     : 'fa fa-plus',
                 title    : QUILocale.get(lg, 'dialog.processingStatus.create.title'),
-                maxHeight: 400,
+                maxHeight: 470,
                 maxWidth : 600,
                 autoclose: false,
                 events   : {
@@ -199,8 +210,16 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
 
                         Win.Loader.show();
 
+                        var lgPrefix = 'dialog.processingStatus.template.';
+
                         Content.addClass('quiqqer-order-processing-status-window');
-                        Content.set('html', Mustache.render(template));
+                        Content.set('html', Mustache.render(template, {
+                            labelTitle       : QUILocale.get(lg, lgPrefix + 'labelTitle'),
+                            labelStatusNo    : QUILocale.get(lg, lgPrefix + 'labelStatusNo'),
+                            labelColor       : QUILocale.get(lg, lgPrefix + 'labelColor'),
+                            labelNotification: QUILocale.get(lg, lgPrefix + 'labelNotification'),
+                            descNotification : QUILocale.get(lg, lgPrefix + 'descNotification')
+                        }));
 
                         var Form = Content.getElement('form');
 
@@ -233,7 +252,8 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
                             ProcessingStatus.createProcessingStatus(
                                 data.id,
                                 data.color,
-                                title
+                                title,
+                                data.notification.checked
                             ).then(function () {
                                 return Win.close();
                             }).then(function () {
@@ -265,7 +285,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
             new QUIConfirm({
                 icon     : 'fa fa-edit',
                 title    : QUILocale.get(lg, 'dialog.processingStatus.edit.title'),
-                maxHeight: 400,
+                maxHeight: 470,
                 maxWidth : 600,
                 autoclose: false,
                 ok_button: {
@@ -278,15 +298,24 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
 
                         Win.Loader.show();
 
+                        var lgPrefix = 'dialog.processingStatus.template.';
+
                         Content.addClass('quiqqer-order-processing-status-window');
-                        Content.set('html', Mustache.render(template));
+                        Content.set('html', Mustache.render(template, {
+                            labelTitle       : QUILocale.get(lg, lgPrefix + 'labelTitle'),
+                            labelStatusNo    : QUILocale.get(lg, lgPrefix + 'labelStatusNo'),
+                            labelColor       : QUILocale.get(lg, lgPrefix + 'labelColor'),
+                            labelNotification: QUILocale.get(lg, lgPrefix + 'labelNotification'),
+                            descNotification : QUILocale.get(lg, lgPrefix + 'descNotification')
+                        }));
 
                         var Form = Content.getElement('form');
 
                         ProcessingStatus.getProcessingStatus(data.id).then(function (details) {
-                            Form.elements.id.value    = details.id;
-                            Form.elements.color.value = details.color;
-                            Form.elements.title.value = JSON.encode(details.title);
+                            Form.elements.id.value             = details.id;
+                            Form.elements.color.value          = details.color;
+                            Form.elements.title.value          = JSON.encode(details.title);
+                            Form.elements.notification.checked = details.notification;
 
                             return QUI.parse(Content);
                         }).then(function () {
@@ -311,11 +340,11 @@ define('package/quiqqer/order/bin/backend/controls/settings/ProcessingStatus', [
                             } catch (e) {
                             }
 
-
                             ProcessingStatus.updateProcessingStatus(
                                 data.id,
                                 data.color,
-                                title
+                                title,
+                                data.notification
                             ).then(function () {
                                 return Win.close();
                             }).then(function () {

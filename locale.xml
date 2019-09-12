@@ -278,6 +278,11 @@
 
     <groups name="quiqqer/order" datatype="php">
 
+        <locale name="message.backend.update.success">
+            <de><![CDATA[Bestellung #[oderId] wurde erfolgreich gespeichert.]]></de>
+            <en><![CDATA[Order #[orderId] was successfully saved.]]></en>
+        </locale>
+
         <locale name="order.history.set_successful">
             <de><![CDATA[Bestellung erfolgreich ausgeführt]]></de>
             <en><![CDATA[Order successfully completed]]></en>
@@ -715,7 +720,20 @@
             <en><![CDATA[Payment status]]></en>
         </locale>
 
-
+        <locale name="processing.status.notification.subject">
+            <de><![CDATA[Änderung Ihrer Bestellung [orderNo]]]></de>
+            <en><![CDATA[Change of your order [orderNo]]]></en>
+        </locale>
+        <locale name="processing.status.notification.template" html="true">
+            <de><![CDATA[
+<p>Hallo [customerName],</p>
+<p>der Status Ihrer Bestellung <b>[orderNo]</b> vom <b>[orderDate]</b> hat sich geändert. Die Bestellung ist nun <b>[orderStatus]</b>.
+]]></de>
+            <en><![CDATA[
+<p>Hello [customerName],</p>
+<p>the status of your order <b>[orderNo]</b> from <b>[orderDate]</b> changed. The order is now <b>[orderStatus]</b>.
+]]></en>
+        </locale>
         <locale name="processing.status.default.1">
             <de><![CDATA[offen]]></de>
             <en><![CDATA[open]]></en>
@@ -1148,6 +1166,10 @@
             <de><![CDATA[Farbe]]></de>
             <en><![CDATA[Color]]></en>
         </locale>
+        <locale name="processingStatus.grid.notification">
+            <de><![CDATA[Autom. Benachrichtigung]]></de>
+            <en><![CDATA[Auto notification]]></en>
+        </locale>
 
         <locale name="order.address.confirm.title">
             <de><![CDATA[Bitte wählen Sie eine Adresse aus]]></de>
@@ -1274,6 +1296,26 @@
             <br /><br />
             The order status is not recoverable.
             ]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelTitle">
+            <de><![CDATA[Titel]]></de>
+            <en><![CDATA[Title]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelStatusNo">
+            <de><![CDATA[Status Nr.]]></de>
+            <en><![CDATA[Status no.]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelColor">
+            <de><![CDATA[Farbe]]></de>
+            <en><![CDATA[Color]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelNotification">
+            <de><![CDATA[Kunden benachrichtigen]]></de>
+            <en><![CDATA[Notify customer]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.descNotification" html="true">
+            <de><![CDATA[Kunden sollen automatisch per E-Mail benachrichtigt werden, wenn der Status einer Bestellung <b>automatisch</b> auf diesen Status geändert wird. Bei einer <b>manuellen Statusänderung</b> wird vorher nochmal nachgefragt, ob eine Benachrichtigung erfolgen soll.]]></de>
+            <en><![CDATA[Customers should be automatically notified by e-mail when the status of an order <b>automatically</b> is changed to this status. In case of a <b>manual status change</b> you will be asked if you want to send a notification.]]></en>
         </locale>
 
         <locale name="dialog.order.createInvoice.title">
@@ -1408,6 +1450,36 @@
             <de><![CDATA[TX-ID]]></de>
             <en><![CDATA[TX ID]]></en>
         </locale>
+        
+        <locale name="dialog.statusChangeNotification.title">
+            <de><![CDATA[Bestellstatus wurde geändert]]></de>
+            <en><![CDATA[Order status has changed]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.text">
+            <de><![CDATA[Bestellstatus wurde geändert]]></de>
+            <en><![CDATA[Order status has changed]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.information" html="true">
+            <de><![CDATA[Der Status der Bestellung wurde auf <b>[statusTitle]</b> geändert. Soll dem Kunden eine Benachrichtigung über diese Änderung per E-Mail gesendet werden?]]></de>
+            <en><![CDATA[The status of the order was changed to <b>[statusTitle]</b>. Should a notification of this change be sent to the customer by e-mail?]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.notification.label">
+            <de><![CDATA[Bitte legen Sie die Nachricht an den Benutzer fest:]]></de>
+            <en><![CDATA[Please specify the message to the user:]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.btn.confirm">
+            <de><![CDATA[Kunden benachrichtigen]]></de>
+            <en><![CDATA[Notify customer]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.btn.cancel">
+            <de><![CDATA[Keine Nachricht senden]]></de>
+            <en><![CDATA[Do not send notification]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.btn.confirm_message">
+            <de><![CDATA[Nachricht bestätigen]]></de>
+            <en><![CDATA[Confirm message]]></en>
+        </locale>
+
     </groups>
 
 </locales>

@@ -1,0 +1,16 @@
+.order-data-status-field-select {
+    width: 100%;
+}
+
+/** Order notification
+ ================================================= */
+.order-notification {
+    margin-top: 20px;
+    float: left;
+    width: 100%;
+}
+
+.order-notification > span {
+    display: inline-block;
+    margin-bottom: 10px;
+}

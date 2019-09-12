@@ -39,6 +39,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
         initialize: function (options) {
             this.parent(options);
 
+            this.$Comments    = null;
+            this.$StatusMails = null;
+
             this.addEvents({
                 onInject: this.$onInject
             });
@@ -59,6 +62,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
                 comments: []
             }).inject(Elm.getElement('.quiqqer-order-comments'));
 
+            this.$StatusMails = new Comments({
+                comments: []
+            }).inject(Elm.getElement('.quiqqer-order-statusmails'));
+
             new QUIButton({
                 textimage: 'fa fa-plus',
                 text     : QUILocale.get(lg, 'dialog.add.comment.title'),
@@ -78,6 +85,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
 
             Orders.get(this.getAttribute('orderId')).then(function (data) {
                 self.$Comments.unserialize(data.comments);
+                self.$StatusMails.unserialize(data.statusMails);
+
                 self.fireEvent('load', [self]);
             });
         },

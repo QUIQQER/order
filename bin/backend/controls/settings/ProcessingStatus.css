@@ -21,3 +21,7 @@
     position: relative;
     width: calc(100% + 5px);
 }
+
+.quiqqer-order-processing-status-window input[name="notification"] {
+    flex: 0;
+}
