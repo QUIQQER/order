@@ -626,16 +626,16 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         $this->delete();
 
-        $hash     = $this->getHash();
-        $NewOrder = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+        $hash       = $this->getHash();
+        $newOrderId = QUI\ERP\Order\Factory::getInstance()->createOrderInProcessDataBaseEntry();
 
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             ['hash' => $hash],
-            ['id' => $NewOrder->getId()]
+            ['id' => $newOrderId]
         );
 
-        $this->id = $NewOrder->getId();
+        $this->id = $newOrderId;
 
         $this->refresh();
 
