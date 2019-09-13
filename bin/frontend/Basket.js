@@ -7,7 +7,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
         'qui/QUI',
         'qui/controls/buttons/Button',
         'package/quiqqer/order/bin/frontend/classes/Basket',
-        'Locale'
+        'Locale',
 
     ], function (QUI, QUIButton, Basket, QUILocale) {
         "use strict";
@@ -34,15 +34,26 @@ define('package/quiqqer/order/bin/frontend/Basket', [
         // ask user to merge
         GlobalBasket.showMergeWindow = function () {
             return new Promise(function (resolve) {
-                require(['qui/controls/windows/Confirm'], function (QUIConfirm) {
+                require([
+                    'qui/controls/windows/Confirm',
+                    'css!package/quiqqer/order/bin/frontend/Basket.css'
+                ], function (QUIConfirm) {
+                    var height = 400,
+                        width  = 800;
+
+                    if (QUI.getWindowSize().x < 800) {
+                        height = QUI.getWindowSize().y;
+                        width  = QUI.getWindowSize().x;
+                    }
+
                     new QUIConfirm({
                         icon         : 'fa fa-file-text-o',
                         texticon     : 'fa fa-file-text',
                         text         : QUILocale.get(lg, 'basket.merge.title'),
                         title        : QUILocale.get(lg, 'basket.merge.title'),
                         information  : QUILocale.get(lg, 'basket.merge.text'),
-                        maxHeight    : 400,
-                        maxWidth     : 800,
+                        maxHeight    : height,
+                        maxWidth     : width,
                         autoclose    : false,
                         cancel_button: {
                             text: QUILocale.get(lg, 'basket.merge.button.cancel')
@@ -55,6 +66,8 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                                 var Buttons = this.getElm().getElement('.qui-window-popup-buttons');
                                 var Submit  = Buttons.getElement('[name="submit"]');
                                 var Merge   = Buttons.getElement('[name="cancel"]');
+
+                                Win.getElm().addClass('window-basket-merge');
 
                                 Submit.addClass('qui-button-cancel');
                                 Submit.addClass('btn-light');
