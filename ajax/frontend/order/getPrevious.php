@@ -14,7 +14,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getPrevious',
     function ($orderId, $current, $orderHash, $basketEditable) {
-        if (!isset($basketEditable)) {
+        if (!isset($basketEditable) || $basketEditable === '') {
             $basketEditable = true;
         }
 

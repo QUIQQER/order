@@ -454,6 +454,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             QUI\System\Log::writeException($Exception);
         }
 
+        $this->delete();
 
         // create invoice?
         /**
