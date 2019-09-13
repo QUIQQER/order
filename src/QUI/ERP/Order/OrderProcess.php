@@ -603,7 +603,7 @@ class OrderProcess extends QUI\Control
             return false;
         }
 
-        if(!$Order->getPayment()) {
+        if (!$Order->getPayment()) {
             return false;
         }
 
