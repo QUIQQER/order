@@ -706,9 +706,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                             Router.navigate(result.url);
                         }
                     }, {
-                        'package': 'quiqqer/order',
-                        orderHash: self.getAttribute('orderHash'),
-                        step     : step
+                        'package'     : 'quiqqer/order',
+                        orderHash     : self.getAttribute('orderHash'),
+                        basketEditable: self.getAttribute('basketEditable') ? 1 : 0,
+                        step          : step
                     });
                 });
             });

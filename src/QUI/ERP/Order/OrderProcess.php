@@ -603,6 +603,10 @@ class OrderProcess extends QUI\Control
             return false;
         }
 
+        if (!$Order->getPayment()) {
+            return false;
+        }
+
         $checkedTermsAndConditions = QUI::getSession()->get(
             'termsAndConditions-'.$Order->getHash()
         );
