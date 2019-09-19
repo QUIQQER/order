@@ -1097,14 +1097,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $endResultRendering: function () {
             this.$TimelineContainer.getElements('style').destroy();
 
-            var CurrentStep = this.getCurrentStepData();
+            //var CurrentStep = this.getCurrentStepData();
 
-            if (CurrentStep.step === 'Processing') {
-                new Fx.Scroll(window).start(
-                    0,
-                    this.$TimelineContainer.getPosition().y - 100
-                );
-            }
+            //if (CurrentStep.step === 'Processing') {
+            new Fx.Scroll(window).start(
+                0,
+                this.$TimelineContainer.getPosition().y - 100
+            );
+            //}
 
             this.$runningAnimation = false;
             this.fireEvent('stepLoaded', [this]);
