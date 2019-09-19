@@ -186,6 +186,8 @@ class Basket
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
+
+        $this->save();
     }
 
     /**
@@ -373,6 +375,7 @@ class Basket
         } catch (QUI\Exception $Exception) {
             if ($Exception->getCode() !== QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND) {
                 QUI\System\Log::writeDebugException($Exception);
+
                 return;
             }
 
