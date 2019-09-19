@@ -59,6 +59,12 @@
                 </li>
                 {/foreach}
             </ul>
+
+            {if $showArticleNumber}
+            <div class="quiqqer-order-basket-articles-article-productno">
+                {locale group="quiqqer/order" var="basket.articles.articleNo"} {$product.productNo}
+            </div>
+            {/if}
         </td>
         <td class="quiqqer-order-basket-articles-article-quantity"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"

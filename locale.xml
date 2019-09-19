@@ -545,6 +545,10 @@
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
         </locale>
+        <locale name="order.process.settings.title">
+            <de><![CDATA[Bestellprozess]]></de>
+            <en><![CDATA[Orderprocess]]></en>
+        </locale>
         <locale name="order.settings.failedPaymentProcedure">
             <de><![CDATA[Vorgehen bei gescheiterter Zahlung]]></de>
             <en><![CDATA[Procedure for failed payment]]></en>
@@ -652,6 +656,10 @@
             <en><![CDATA[
             The invoice is posted automatically when the invoice is created
             ]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.showArticleNumberInBasket">
+            <de><![CDATA[Artikelnummer im Warenkorb anzeigen]]></de>
+            <en><![CDATA[Show article number in shopping cart]]></en>
         </locale>
 
         <locale name="exception.order.process.not.found">
@@ -954,6 +962,11 @@
             Unfortunately an error occurred when sending an order confirmation for the administrator.
             Order: [orderId]; Error: [message]
             ]]></en>
+        </locale>
+
+        <locale name="basket.articles.articleNo">
+            <de><![CDATA[Artikel Nr.:]]></de>
+            <en><![CDATA[Article No.:]]></en>
         </locale>
     </groups>
 
@@ -1314,8 +1327,10 @@
             <en><![CDATA[Notify customer]]></en>
         </locale>
         <locale name="dialog.processingStatus.template.descNotification" html="true">
-            <de><![CDATA[Kunden sollen automatisch per E-Mail benachrichtigt werden, wenn der Status einer Bestellung <b>automatisch</b> auf diesen Status geändert wird. Bei einer <b>manuellen Statusänderung</b> wird vorher nochmal nachgefragt, ob eine Benachrichtigung erfolgen soll.]]></de>
-            <en><![CDATA[Customers should be automatically notified by e-mail when the status of an order <b>automatically</b> is changed to this status. In case of a <b>manual status change</b> you will be asked if you want to send a notification.]]></en>
+            <de>
+                <![CDATA[Kunden sollen automatisch per E-Mail benachrichtigt werden, wenn der Status einer Bestellung <b>automatisch</b> auf diesen Status geändert wird. Bei einer <b>manuellen Statusänderung</b> wird vorher nochmal nachgefragt, ob eine Benachrichtigung erfolgen soll.]]></de>
+            <en>
+                <![CDATA[Customers should be automatically notified by e-mail when the status of an order <b>automatically</b> is changed to this status. In case of a <b>manual status change</b> you will be asked if you want to send a notification.]]></en>
         </locale>
 
         <locale name="dialog.order.createInvoice.title">
@@ -1450,7 +1465,7 @@
             <de><![CDATA[TX-ID]]></de>
             <en><![CDATA[TX ID]]></en>
         </locale>
-        
+
         <locale name="dialog.statusChangeNotification.title">
             <de><![CDATA[Bestellstatus wurde geändert]]></de>
             <en><![CDATA[Order status has changed]]></en>
@@ -1460,8 +1475,10 @@
             <en><![CDATA[Order status has changed]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.information" html="true">
-            <de><![CDATA[Der Status der Bestellung wurde auf <b>[statusTitle]</b> geändert. Soll dem Kunden eine Benachrichtigung über diese Änderung per E-Mail gesendet werden?]]></de>
-            <en><![CDATA[The status of the order was changed to <b>[statusTitle]</b>. Should a notification of this change be sent to the customer by e-mail?]]></en>
+            <de>
+                <![CDATA[Der Status der Bestellung wurde auf <b>[statusTitle]</b> geändert. Soll dem Kunden eine Benachrichtigung über diese Änderung per E-Mail gesendet werden?]]></de>
+            <en>
+                <![CDATA[The status of the order was changed to <b>[statusTitle]</b>. Should a notification of this change be sent to the customer by e-mail?]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.notification.label">
             <de><![CDATA[Bitte legen Sie die Nachricht an den Benutzer fest:]]></de>

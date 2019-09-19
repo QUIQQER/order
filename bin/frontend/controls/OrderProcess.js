@@ -199,6 +199,16 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.setAttribute('current', Current.get('data-step'));
             }
 
+            if (this.getAttribute('current') === 'Basket' && !this.$Next) {
+                if (!Basket.isLoaded()) {
+                    Basket.addEvent('onLoad', function () {
+                        if (Basket.getProducts().length) {
+                            self.refreshCurrentStep();
+                        }
+                    });
+                }
+            }
+
             if (Nobody) {
                 this.$TimelineContainer.setStyle('display', 'none');
 

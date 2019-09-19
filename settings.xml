@@ -34,6 +34,13 @@
                 </conf>
             </section>
 
+            <section name="orderProcess">
+                <conf name="showArticleNumberInBasket">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
+            </section>
+
             <section name="paymentsChangeable"/>
         </config>
 
@@ -138,6 +145,18 @@
                         </input>
                     </settings>
 
+                    <settings title="orderProcess" name="orderProcess">
+                        <title>
+                            <locale group="quiqqer/order" var="order.process.settings.title"/>
+                        </title>
+
+                        <input type="checkbox" conf="orderProcess.showArticleNumberInBasket">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.orderProcess.showArticleNumberInBasket"/>
+                            </text>
+                        </input>
+                    </settings>
+
                     <settings title="order" name="order">
                         <title>
                             <locale group="quiqqer/order" var="order.settings.paymentsChangeable.title"/>
@@ -148,7 +167,6 @@
                                label="false"
                         />
                     </settings>
-
 
                     <settings>
                         <title>

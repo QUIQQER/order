@@ -101,7 +101,6 @@ class BasketOrder
     /**
      * imports the order data into the basket
      *
-     * @throws Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
@@ -292,11 +291,27 @@ class BasketOrder
             $result[] = $attributes;
         }
 
+        // calc data
+        $calculations = [];
+
+        try {
+            $data = $Products->getFrontendView()->toArray();
+
+            unset($data['attributes']);
+            unset($data['products']);
+
+            $calculations = $data;
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+
         return [
             'id'           => $this->getId(),
             'orderHash'    => $this->getOrder()->getHash(),
             'products'     => $result,
-            'priceFactors' => $Products->getPriceFactors()->toArray()
+            'priceFactors' => $Products->getPriceFactors()->toArray(),
+            'calculations' => $calculations
         ];
     }
 
