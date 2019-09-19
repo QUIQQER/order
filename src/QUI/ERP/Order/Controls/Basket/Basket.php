@@ -74,15 +74,17 @@ class Basket extends QUI\Control
         $Products->setUser(QUI::getUserBySession());
         $Products->recalculate();
 
-        $View = $Products->getView(QUI::getLocale());
+        $View              = $Products->getView(QUI::getLocale());
+        $showArticleNumber = QUI\ERP\Order\Settings::getInstance()->get('orderProcess', 'showArticleNumberInBasket');
 
         $Engine->assign([
-            'data'     => $View->toArray(),
-            'Basket'   => $this->Basket,
-            'Project'  => $this->Project,
-            'Products' => $View,
-            'products' => $View->getProducts(),
-            'this'     => $this
+            'data'              => $View->toArray(),
+            'Basket'            => $this->Basket,
+            'Project'           => $this->Project,
+            'Products'          => $View,
+            'products'          => $View->getProducts(),
+            'this'              => $this,
+            'showArticleNumber' => $showArticleNumber
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
