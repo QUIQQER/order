@@ -19,10 +19,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'Locale',
     'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
     'package/quiqqer/order/bin/frontend/Orders',
+    'package/quiqqer/order/bin/frontend/Basket',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
-], function (QUI, QUIControl, QUILocale, BasketWindow, Orders) {
+], function (QUI, QUIControl, QUILocale, BasketWindow, Orders, Basket) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -35,7 +36,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         Binds: [
             '$onImport',
             '$onInject',
-            'showSmallBasket'
+            'showSmallBasket',
+            '$showAddInformation'
         ],
 
         options: {
@@ -61,6 +63,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.addEvents({
                 onImport: this.$onImport,
                 onInject: this.$onInject
+            });
+
+            Basket.addEvents({
+                onAdd: this.$showAddInformation
             });
         },
 
@@ -378,6 +384,37 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 top  : top,
                 right: right
             };
+        },
+
+        /**
+         * Show product info at Basket add
+         *
+         * @param Basket
+         * @param Product
+         */
+        $showAddInformation: function (Basket, Product) {
+            if (this.mayBeDisplayed() === false) {
+                return;
+            }
+
+            var Info = new Element('div', {
+                'class': 'quiqqer-order-basketButton-infoBubble',
+                html   : QUILocale.get(lg, 'basket.add.information')
+            }).inject(this.getElm());
+
+            var size = this.getElm().getSize();
+
+            Info.setStyles({
+                top: size.y
+            });
+
+            Info.addClass('bounceInDown');
+
+            (function () {
+                Info.destroy();
+            }).delay(2000);
+
+            //this.showSmallBasket();
         }
     });
 });

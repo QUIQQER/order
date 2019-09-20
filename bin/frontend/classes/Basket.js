@@ -7,7 +7,7 @@
  * @event onRemove [self]
  *
  * @event onAddBegin [self]
- * @event onAdd [self]
+ * @event onAdd [self, Product]
  *
  * @event onClearBegin [self]
  * @event onClear [self]
@@ -408,7 +408,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }).then(function () {
                             resolve();
                             self.fireEvent('refresh', [self]);
-                            self.fireEvent('add', [self]);
+                            self.fireEvent('add', [self, Product]);
                         });
                     });
                 });
