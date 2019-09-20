@@ -218,6 +218,9 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                         callback: function () {
                             self.addingInProcess = false;
                             Loader.destroy();
+
+                            // go to checkout
+
                         }
                     });
 

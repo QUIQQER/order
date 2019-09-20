@@ -26,7 +26,17 @@
 
 <div class="content-template">
     <section class="content-template grid-100 mobile-grid-100 grid-parent">
+        {template_event name="quiqqer::order::orderShoppingCardBasketBegin" Basket=$Basket Order=false}
+
         {$BasketControl->create()}
+
+        {template_event name="quiqqer::order::orderShoppingCardBasketEnd" Basket=$Basket Order=false assign=content}
+
+        {if !empty($content)}
+        <div class="quiqqer-shoppingCart-basket-end">
+            {$content}
+        </div>
+        {/if}
     </section>
 
     <div class="quiqqer-shoppingCart-buttons grid-100 mobile-grid-100 grid-parent">

@@ -166,6 +166,8 @@ class OrderProcess extends QUI\Control
             \reset($steps);
             $this->setAttribute('step', \key($steps));
         }
+
+        QUI::getEvents()->fireEvent('orderProcess', [$this]);
     }
 
     /**
