@@ -255,6 +255,19 @@ class BasketOrder
     }
 
     /**
+     * @throws Exception
+     * @throws ExceptionBasketNotFound
+     * @throws QUI\Database\Exception
+     */
+    public function saveToSessionBasket()
+    {
+        $data = $this->toArray();
+
+        $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketFromUser($this->User);
+        $Basket->import($data['products']);
+    }
+
+    /**
      * Return the basket as array
      *
      * @return array

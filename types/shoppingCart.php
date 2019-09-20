@@ -1,6 +1,8 @@
 <?php
 
 use QUI\ERP\Order\Basket\BasketGuest;
+use QUI\ERP\Order\Handler;
+use QUI\System\Log;
 
 try {
     $BasketControl = null;
@@ -35,7 +37,8 @@ try {
         'BasketControl' => $BasketControl,
         'checkoutUrl'   => $checkoutUrl,
         'Registration'  => $Registration,
-        'Login'         => $Login
+        'Login'         => $Login,
+        'Basket'        => $Basket
     ]);
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);

@@ -237,7 +237,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         $Products->recalculation();
-
+        
         // recalculate price factors
         $ArticleList->importPriceFactors(
             $Products->getPriceFactors()->toErpPriceFactorList()

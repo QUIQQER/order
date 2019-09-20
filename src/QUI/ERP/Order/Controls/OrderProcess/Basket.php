@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
+use QUI\ERP\Coupons\Handler;
 use QUI\ERP\Order\Controls\Basket\Basket as BasketControl;
 
 /**
@@ -123,6 +124,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
             $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
             $products    = $BasketOrder->getProducts()->toArray();
+
             $this->Basket->import($products['products']);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);

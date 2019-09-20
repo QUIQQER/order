@@ -60,7 +60,7 @@
                 {/foreach}
             </ul>
 
-            {if $showArticleNumber}
+            {if $showArticleNumber && !empty($product.productNo)}
             <div class="quiqqer-order-basket-articles-article-productno">
                 {locale group="quiqqer/order" var="basket.articles.articleNo"} {$product.productNo}
             </div>

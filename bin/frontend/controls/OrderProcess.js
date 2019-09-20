@@ -1110,10 +1110,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             //var CurrentStep = this.getCurrentStepData();
 
             //if (CurrentStep.step === 'Processing') {
-            new Fx.Scroll(window).start(
-                0,
-                this.$TimelineContainer.getPosition().y - 100
-            );
+            new Fx.Scroll(window).toTop();
             //}
 
             this.$runningAnimation = false;
