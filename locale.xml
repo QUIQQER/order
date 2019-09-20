@@ -1496,6 +1496,10 @@
             <de><![CDATA[Nachricht bestätigen]]></de>
             <en><![CDATA[Confirm message]]></en>
         </locale>
+        <locale name="basket.add.information">
+            <de><![CDATA[Produkt wurde hinzugefügt]]></de>
+            <en><![CDATA[Product was added]]></en>
+        </locale>
 
     </groups>
 
