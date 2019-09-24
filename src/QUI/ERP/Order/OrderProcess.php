@@ -243,7 +243,7 @@ class OrderProcess extends QUI\Control
         // is one invalid, go to them
         foreach ($steps as $name => $Step) {
             /* @var $Step AbstractOrderingStep */
-            if ($Step->getName() === 'checkout' || $Step->getName() === 'finish') {
+            if ($Step->getName() === 'Checkout' || $Step->getName() === 'Finish') {
                 continue;
             }
 
@@ -293,9 +293,8 @@ class OrderProcess extends QUI\Control
         }
 
         $this->setAttribute('orderHash', $this->Order->getHash());
-
-        $this->setAttribute('current', 'finish');
-        $this->setAttribute('step', 'finish');
+        $this->setAttribute('current', 'Finish');
+        $this->setAttribute('step', 'Finish');
 
         // set all to successful
         $this->cleanup();
@@ -460,8 +459,8 @@ class OrderProcess extends QUI\Control
         }
 
         // standard procedure
-        $steps   = $this->getSteps();
-        $Current = $this->getCurrentStep();
+        $steps    = $this->getSteps();
+        $LastStep = \end($steps);
 
         $this->checkSubmission();
         $this->checkSuccessfulStatus();
@@ -475,13 +474,13 @@ class OrderProcess extends QUI\Control
                 $Order = $this->Order;
             }
 
-            $LastStep = \end($steps);
-
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getHash());
 
             return $this->renderFinish();
         }
+
+        $Current = $this->getCurrentStep();
 
         // check all previous steps
         // is one invalid, go to them
