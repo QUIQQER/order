@@ -37,6 +37,7 @@
 <div class="">
     <h4>{locale group="quiqqer/order" var="mail.order.confirmation.payment.title"}</h4>
     {$Payment->getTitle()}
+    {$Payment->getOrderInformationText($Order)}
 </div>
 {/if}
 
