@@ -16,6 +16,20 @@ use QUI;
 class Registration extends QUI\Control
 {
     /**
+     * Registration constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct($attributes = [])
+    {
+        $this->setAttributes([
+            'autofill' => true
+        ]);
+
+        parent::__construct($attributes);
+    }
+
+    /**
      * @return string
      */
     public function getBody()
@@ -26,10 +40,11 @@ class Registration extends QUI\Control
             return '';
         }
 
-        $this->addCSSFile(dirname(__FILE__) . '/Registration.css');
+        $this->addCSSFile(dirname(__FILE__).'/Registration.css');
 
         $Registration = new QUI\FrontendUsers\Controls\RegistrationSignUp([
-            'content' => false
+            'content'  => false,
+            'autofill' => $this->getAttribute('autofill')
         ]);
 
         $Engine->assign([

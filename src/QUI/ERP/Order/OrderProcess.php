@@ -442,7 +442,9 @@ class OrderProcess extends QUI\Control
 
         if ($isNobody) {
             $Engine->assign([
-                'Registration' => new Controls\Checkout\Registration(),
+                'Registration' => new Controls\Checkout\Registration([
+                    'autofill' => false
+                ]),
                 'Login'        => new Controls\Checkout\Login()
             ]);
 
