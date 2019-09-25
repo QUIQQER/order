@@ -448,11 +448,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             [$Basket, $this, $Products]
         );
 
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderBasketToOrderEnd',
-            [$Basket, $this, $Products]
-        );
-
         $ArticleList->importPriceFactors(
             $Products->getPriceFactors()->toErpPriceFactorList()
         );
@@ -461,6 +456,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->Articles = $ArticleList;
         $this->update();
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderEnd',
+            [$Basket, $this, $Products]
+        );
     }
 
     /**
