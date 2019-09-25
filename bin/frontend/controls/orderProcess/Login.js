@@ -72,8 +72,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 var EmailRegister = Signup.getElm().getElement(
                     '.quiqqer-fu-registrationSignUp-registration-email [name="email"]'
                 );
-                console.warn('######');
-                console.warn(EmailRegister);
+                
                 if (!EmailRegister) {
                     return Promise.resolve(false);
                 }
