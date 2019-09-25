@@ -1304,7 +1304,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $Shipping = QUI\ERP\Shipping\Shipping::getInstance();
 
         try {
-            return $Shipping->getShippingEntry($this->shippingId);
+            $ShippingEntry = $Shipping->getShippingEntry($this->shippingId);
+            $ShippingEntry->setOrder($this);
+
+            return $ShippingEntry;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
