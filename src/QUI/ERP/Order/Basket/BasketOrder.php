@@ -227,6 +227,9 @@ class BasketOrder
         );
 
         try {
+            $this->List->calc();
+            $this->save();
+
             QUI::getEvents()->fireEvent(
                 'quiqqerOrderBasketToOrder',
                 [$this, $this->Order, $this->List]
