@@ -133,7 +133,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_controls_basket', this.$render, {
                 'package': 'quiqqer/order',
                 basketId : basketId,
-                editable : editable ? 1 : 0
+                editable : editable ? 1 : 0,
+                orderHash: this.getOrderHash()
             });
         },
 

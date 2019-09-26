@@ -419,6 +419,8 @@ class Basket
             }
         }
 
+        $Order->save();
+
         QUI::getEvents()->fireEvent(
             'quiqqerOrderBasketToOrder',
             [$this, $Order, $Products]

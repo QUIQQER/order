@@ -24,13 +24,13 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN     = 0;
-    const PAYMENT_STATUS_PAID     = 1;
-    const PAYMENT_STATUS_PART     = 2;
-    const PAYMENT_STATUS_ERROR    = 4;
+    const PAYMENT_STATUS_OPEN = 0;
+    const PAYMENT_STATUS_PAID = 1;
+    const PAYMENT_STATUS_PART = 2;
+    const PAYMENT_STATUS_ERROR = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT    = 11;
-    const PAYMENT_STATUS_PLAN     = 12;
+    const PAYMENT_STATUS_DEBIT = 11;
+    const PAYMENT_STATUS_PLAN = 12;
 
     /**
      * Order is only created
@@ -337,11 +337,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->paymentData = $paymentData;
         }
 
-        // shipping
-        if (\is_numeric($data['shipping_id'])) {
-            $this->shippingId = (int)$data['shipping_id'];
-        }
-
         // currency
         if (!empty($data['currency_data'])) {
             $currency = \json_decode($data['currency_data'], true);
@@ -364,6 +359,21 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         $this->Articles->setCurrency($this->Currency);
+
+        // shipping
+        if (\is_numeric($data['shipping_id']) && $this->Articles->count()) {
+            $this->shippingId = (int)$data['shipping_id'];
+
+            // validate shipping
+            $Shipping = $this->getShipping();
+            $Shipping->setOrder($this);
+
+            if (!$Shipping->isValid()
+                || !$Shipping->canUsedInOrder($this)
+                || !$Shipping->canUsedBy($this->getCustomer())) {
+                $this->shippingId = false;
+            }
+        }
     }
 
     /**
@@ -404,20 +414,20 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function recalculate($Basket = null)
     {
+        $Customer = $this->getCustomer();
+
         if ($Basket === null) {
-            $Basket = new QUI\ERP\Order\Basket\BasketOrder(
-                $this->getHash(),
-                $this->getCustomer()
-            );
+            $Basket = new QUI\ERP\Order\Basket\BasketOrder($this->getHash(), $Customer);
         }
 
         $ArticleList = new ArticleList();
-        $ArticleList->setUser($this->getCustomer());
+        $ArticleList->setUser($Customer);
 
         $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
-        $ProductCalc->setUser($this->getCustomer());
+        $ProductCalc->setUser($Customer);
 
         $Products = $Basket->getProducts();
+        $Products->setUser($Customer);
         $Products->calc($ProductCalc);
 
         $products = $Products->getProducts();
@@ -1294,7 +1304,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $Shipping = QUI\ERP\Shipping\Shipping::getInstance();
 
         try {
-            return $Shipping->getShippingEntry($this->shippingId);
+            $ShippingEntry = $Shipping->getShippingEntry($this->shippingId);
+            $ShippingEntry->setOrder($this);
+
+            return $ShippingEntry;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

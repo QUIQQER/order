@@ -47,6 +47,15 @@
     font-family: monospace, monospace;
 }
 
+.omnigrid .articles-sum td {
+    font-size: 12px;
+}
+
+.omnigrid .articles-article-unitprice,
+.omnigrid .articles-article-price {
+    text-align: right;
+}
+
 /** Order details
  ================================================= */
 

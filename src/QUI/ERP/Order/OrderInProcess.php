@@ -237,7 +237,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         $Products->recalculation();
-        
+
         // recalculate price factors
         $ArticleList->importPriceFactors(
             $Products->getPriceFactors()->toErpPriceFactorList()
@@ -385,8 +385,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         $SystemUser = QUI::getUsers()->getSystemUser();
-
-        $this->save($SystemUser);
+        $this->recalculate();
 
         $Order = Factory::getInstance()->create($SystemUser, $this->getHash());
 
@@ -421,8 +420,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         // get the order with new data
-        $Order->recalculate();
         $Order->refresh();
+        $Order->recalculate();
 
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order created');
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Order calculatePayments');
