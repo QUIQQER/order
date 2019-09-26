@@ -414,20 +414,20 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function recalculate($Basket = null)
     {
+        $Customer = $this->getCustomer();
+
         if ($Basket === null) {
-            $Basket = new QUI\ERP\Order\Basket\BasketOrder(
-                $this->getHash(),
-                $this->getCustomer()
-            );
+            $Basket = new QUI\ERP\Order\Basket\BasketOrder($this->getHash(), $Customer);
         }
 
         $ArticleList = new ArticleList();
-        $ArticleList->setUser($this->getCustomer());
+        $ArticleList->setUser($Customer);
 
         $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
-        $ProductCalc->setUser($this->getCustomer());
+        $ProductCalc->setUser($Customer);
 
         $Products = $Basket->getProducts();
+        $Products->setUser($Customer);
         $Products->calc($ProductCalc);
 
         $products = $Products->getProducts();
