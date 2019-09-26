@@ -42,7 +42,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
         $this->Order    = $Order;
         $this->Articles = $this->Order->getArticles();
         $this->Articles->setCurrency($Order->getCurrency());
-        
+
         $this->setAttributes($this->Order->getAttributes());
     }
 
