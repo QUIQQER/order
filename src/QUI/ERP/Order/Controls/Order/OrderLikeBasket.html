@@ -106,13 +106,15 @@
             <div class="quiqqer-order-profile-orders-order-articles-article-description">
                 {$Article->getDescription()}
 
-                {assign var=customFields value=$Article->getCustomFields()}
+                {assign var=customFields value=$Article->getView()->getCustomFields()}
                 {if count($customFields)}
                 <ul class="quiqqer-order-profile-orders-order-articles-article-description-customFields">
                     {foreach $customFields as $field}
                     <li class="quiqqer-order-profile-orders-order-articles-article-description-customFields-field">
                         <span>{$field.title}:</span>
+                        {if isset($field.custom_calc) && isset($field.custom_calc.valueText)}
                         <span>{$field.custom_calc.valueText}</span>
+                        {/if}
                     </li>
                     {/foreach}
                 </ul>
