@@ -137,6 +137,12 @@ class Order extends QUI\Control
             return $this->Order;
         }
 
+        if ($this->getAttribute('Order')) {
+            $this->Order = $this->getAttribute('Order');
+
+            return $this->Order;
+        }
+
         $Handler     = QUI\ERP\Order\Handler::getInstance();
         $this->Order = $Handler->getOrderByHash($this->getAttribute('orderHash'));
 
