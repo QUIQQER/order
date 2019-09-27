@@ -397,6 +397,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 return;
             }
 
+            if (!Basket.isLoaded()) {
+                return;
+            }
+
             var Info = new Element('div', {
                 'class': 'quiqqer-order-basketButton-infoBubble',
                 html   : QUILocale.get(lg, 'basket.add.information')

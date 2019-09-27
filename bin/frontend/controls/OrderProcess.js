@@ -1165,6 +1165,22 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
 
+            // mobile, next button before
+            var EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
+
+            if (QUI.getWindowSize().x < 768) {
+                if (EndContainer) {
+                    this.$Next.inject(
+                        this.getElm().getElement('.quiqqer-order-basket-end'),
+                        'before'
+                    );
+                } else if (this.$Previous.length) {
+                    this.$Next.inject(this.$Previous[0], 'before');
+                }
+
+                this.$Next.addClass('quiqqer-order-next-mobile');
+            }
+
             this.$Next.removeEvents('click');
             this.$Previous.removeEvents('click');
 
@@ -1225,8 +1241,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return true;
             }
 
-            this.next().catch(function () {
+            new Fx.Scroll(window).toTop();
+
+            this.next().catch(function (e) {
                 // nothing
+                console.error(e);
             });
 
             return true;
@@ -1238,7 +1257,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $onPreviousClick: function (event) {
             event.stop();
-            this.previous();
+            new Fx.Scroll(window).toTop();
+
+            this.previous().catch(function (e) {
+                // nothing
+                console.error(e);
+            });
         },
 
         /**
