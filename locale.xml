@@ -645,6 +645,23 @@
             ]]></en>
         </locale>
 
+        <locale name="order.status.settings.title">
+            <de><![CDATA[Status Einstellungen]]></de>
+            <en><![CDATA[Status settings]]></en>
+        </locale>
+        <locale name="order.settings.order.defaultOrderStatus">
+            <de><![CDATA[Standard Bestellstatus]]></de>
+            <en><![CDATA[Default Order status]]></en>
+        </locale>
+        <locale name="order.settings.order.defaultOrderStatus.description">
+            <de><![CDATA[
+                Legt den standard Bestellstatus fest, welche eine Bestellung direkt beim Anlegen erhalten soll.
+            ]]></de>
+            <en><![CDATA[
+                Defines the standard order status, which a purchase order should receive directly when it is created.
+            ]]></en>
+        </locale>
+
         <locale name="order.settings.autoInvoicePost">
             <de><![CDATA[Rechnung automatisch buchen]]></de>
             <en><![CDATA[Posting Invoices automatically]]></en>

@@ -34,6 +34,13 @@
                 </conf>
             </section>
 
+            <section name="orderStatus">
+                <conf name="standard">
+                    <type><![CDATA[integer]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
+            </section>
+
             <section name="orderProcess">
                 <conf name="showArticleNumberInBasket">
                     <type><![CDATA[bool]]></type>
@@ -145,6 +152,23 @@
                         </input>
                     </settings>
 
+                    <settings title="orderStatusSettings" name="orderStatusSettings">
+                        <title>
+                            <locale group="quiqqer/order" var="order.status.settings.title"/>
+                        </title>
+
+                        <input conf="orderStatus.standard">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.defaultOrderStatus"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.defaultOrderStatus.description"
+                                />
+                            </description>
+                        </input>
+                    </settings>
+
                     <settings title="orderProcess" name="orderProcess">
                         <title>
                             <locale group="quiqqer/order" var="order.process.settings.title"/>
@@ -152,7 +176,8 @@
 
                         <input type="checkbox" conf="orderProcess.showArticleNumberInBasket">
                             <text>
-                                <locale group="quiqqer/order" var="order.settings.orderProcess.showArticleNumberInBasket"/>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.showArticleNumberInBasket"/>
                             </text>
                         </input>
                     </settings>
