@@ -44,7 +44,7 @@
 {if $Address->getAttribute('company') && $Countries->existsCountryCode($Address->getAttribute('company'))}
 {assign var=Country value=$Address->getCountry()}
 {if $Country->getCountry()}
-{assign var=country value="-`$Country->getName()`"}
+{assign var=country value=$Country->getName()}
 {/if}
 {/if}
 
@@ -60,8 +60,12 @@
 
         <div class="street-address">{$street_no}</div>
         <div class="locality">
-            <span>{$country}</span>
-            <span class="postal-code">{$zip}</span>
+            <span class="postal-code">
+                {if $country !== ''}
+                <span class="postal-country">{$country}-</span>
+                {/if}
+                {$zip}
+            </span>
             <span>{$city}</span>
         </div>
     </div>
