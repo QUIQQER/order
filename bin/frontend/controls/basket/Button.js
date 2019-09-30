@@ -85,11 +85,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             var text = QUILocale.get(lg, 'control.basket.button.text');
 
             this.$Elm = new Element('button', {
-                'class' : 'quiqqer-order-basketButton button--callToAction',
-                'html'  : '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
+                'class'   : 'quiqqer-order-basketButton button--callToAction',
+                'html'    : '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
                     '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
                     '<span class="quiqqer-order-basketButton-batch">0</span>',
-                disabled: true
+                disabled  : true,
+                'data-qui': 'package/quiqqer/order/bin/frontend/controls/basket/Button'
             });
 
             if (this.getAttribute('styles')) {
@@ -128,6 +129,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
             Elm.addEvent('click', function () {
+                if (QUI.getWindowSize().x <= 768) {
+                    new BasketWindow().open();
+                    return;
+                }
+
                 if (self.getAttribute('open') === 0) {
                     return;
                 }
@@ -142,7 +148,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 new BasketWindow().open();
             });
 
-            Elm.addEvent('mouseenter', this.showSmallBasket);
+            Elm.addEvent('mouseenter', function () {
+                if (QUI.getWindowSize().x <= 768) {
+                    return;
+                }
+
+                self.showSmallBasket();
+            });
 
             if (this.$Batch) {
                 this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
