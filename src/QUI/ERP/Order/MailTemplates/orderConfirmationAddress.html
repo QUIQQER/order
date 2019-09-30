@@ -1,0 +1,68 @@
+{assign var=salutation value=$Address->getAttribute('salutation')}
+{assign var=firstname value=$Address->getAttribute('firstname')}
+{assign var=lastname value=$Address->getAttribute('lastname')}
+
+{assign var=street_no value=$Address->getAttribute('street_no')}
+{assign var=zip value=$Address->getAttribute('zip')}
+{assign var=city value=$Address->getAttribute('city')}
+{assign var=country value=$Address->getAttribute('country')}
+
+{if empty($firstname) && isset($User)}
+{assign var=firstname value=$User->getAttribute('firstname')}
+{/if}
+
+{if !$firstname}
+{assign var=firstname value=""}
+{/if}
+
+
+{if empty($lastname) && isset($User)}
+{assign var=lastname value=$User->getAttribute('lastname')}
+{/if}
+
+{if !$lastname}
+{assign var=lastname value=""}
+{/if}
+
+
+{if !$street_no}
+{assign var=street_no value=""}
+{/if}
+
+{if !$zip}
+{assign var=zip value=""}
+{/if}
+
+{if !$city}
+{assign var=city value=""}
+{/if}
+
+{if !$country}
+{assign var=country value=""}
+{/if}
+
+{if $Address->getAttribute('company') && $Countries->existsCountryCode($Address->getAttribute('company'))}
+{assign var=Country value=$Address->getCountry()}
+{if $Country->getCountry()}
+{assign var=country value="-`$Country->getName()`"}
+{/if}
+{/if}
+
+<address class="vcard">
+    <div class="adr">
+        {if $Address->getAttribute('company')}
+        <div class="company">
+            {$Address->getAttribute('company')}
+        </div>
+        {/if}
+
+        <div class="salutation">{$salutation} {$firstname} {$lastname}</div>
+
+        <div class="street-address">{$street_no}</div>
+        <div class="locality">
+            <span>{$country}</span>
+            <span class="postal-code">{$zip}</span>
+            <span>{$city}</span>
+        </div>
+    </div>
+</address>
