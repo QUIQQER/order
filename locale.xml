@@ -1172,7 +1172,7 @@
             <en><![CDATA[Dunning level]]></en>
         </locale>
         <locale name="grid.processingStatus">
-            <de><![CDATA[Rechnungsstatus]]></de>
+            <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Processing status]]></en>
         </locale>
         <locale name="grid.comments">
@@ -1297,21 +1297,21 @@
         </locale>
 
         <locale name="dialog.processingStatus.create.title">
-            <de><![CDATA[Rechnungsstatus hinzufügen]]></de>
-            <en><![CDATA[Create invoice status]]></en>
+            <de><![CDATA[Bestellstatus hinzufügen]]></de>
+            <en><![CDATA[Create order status]]></en>
         </locale>
         <locale name="dialog.processingStatus.edit.title">
-            <de><![CDATA[Rechnungsstatus bearbeiten]]></de>
-            <en><![CDATA[Edit invoice status]]></en>
+            <de><![CDATA[Bestellstatus bearbeiten]]></de>
+            <en><![CDATA[Edit order status]]></en>
         </locale>
 
         <locale name="dialog.processingStatus.delete.title">
-            <de><![CDATA[Rechnungsstatus entfernen]]></de>
-            <en><![CDATA[Remove invoice status]]></en>
+            <de><![CDATA[Bestellstatus entfernen]]></de>
+            <en><![CDATA[Remove order status]]></en>
         </locale>
         <locale name="dialog.processingStatus.delete.text">
-            <de><![CDATA[Rechnungsstatus wirklich entfernen?]]></de>
-            <en><![CDATA[Really remove invoice status?]]></en>
+            <de><![CDATA[Bestellstatus wirklich entfernen?]]></de>
+            <en><![CDATA[Really remove order status?]]></en>
         </locale>
         <locale name="dialog.processingStatus.delete.information" html="true">
             <de><![CDATA[
