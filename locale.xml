@@ -898,6 +898,10 @@
             <de><![CDATA[Lieferadresse]]></de>
             <en><![CDATA[Delivery address]]></en>
         </locale>
+        <locale name="mail.order.confirmation.delivery.same.as.invoice">
+            <de><![CDATA[Gleich wie Rechnungsadresse]]></de>
+            <en><![CDATA[Same as billing address]]></en>
+        </locale>
         <locale name="mail.order.confirmation.shipping.title">
             <de><![CDATA[Versand]]></de>
             <en><![CDATA[Shipping]]></en>

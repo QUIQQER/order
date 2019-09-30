@@ -1,14 +1,19 @@
 {$message}
 
 {if $InvoiceAddress}
-<div class="">
+<div class="quiqqer-order-confirmation-mail-invoice-address">
     <h4>{locale group="quiqqer/order" var="mail.order.confirmation.invoice.title"}</h4>
     {$InvoiceAddress->render()}
 </div>
 {/if}
 
-{if $DeliveryAddress}
-<div class="">
+{if $DeliveryAddress && $DeliveryAddress->getId() === $InvoiceAddress->getId()}
+<div class="quiqqer-order-confirmation-mail-delivery-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+</div>
+{else}
+<div class="quiqqer-order-confirmation-mail-delivery-address">
     <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
     {$DeliveryAddress->render()}
 </div>
