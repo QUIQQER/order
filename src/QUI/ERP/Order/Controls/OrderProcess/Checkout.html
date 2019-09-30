@@ -20,6 +20,18 @@ Order=$Order
         {$InvoiceAddress->render(['tel' => false, 'mail' => false])}
     </div>
 
+    {if $DeliveryAddress && $DeliveryAddress->getId() === $InvoiceAddress->getId()}
+    <div class="quiqqer-order-step-checkout-deliveryAddress">
+        <h2>{locale group="quiqqer/order" var="ordering.step.checkout.delivery.address"}</h2>
+        <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+    </div>
+    {elseif $DeliveryAddress}
+    <div class="quiqqer-order-step-checkout-deliveryAddress">
+        <h2>{locale group="quiqqer/order" var="ordering.step.checkout.delivery.address"}</h2>
+        {$DeliveryAddress->render(['tel' => false, 'mail' => false])}
+    </div>
+    {/if}
+
     <div class="quiqqer-order-step-checkout-payments">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.payment.shipping"}</h2>
         <div class="quiqqer-order-step-checkout-payments-payment">

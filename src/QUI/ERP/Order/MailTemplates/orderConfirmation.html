@@ -14,7 +14,7 @@
     <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
     <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
 </div>
-{else}
+{elseif $DeliveryAddress}
 <div class="quiqqer-order-confirmation-mail-delivery-address">
     <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
     {$DeliveryAddress->render()}

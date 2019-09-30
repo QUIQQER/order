@@ -807,6 +807,14 @@
             <de><![CDATA[Zahlungsart]]></de>
             <en><![CDATA[Payment method]]></en>
         </locale>
+        <locale name="control.order.deliveryAddress.title">
+            <de><![CDATA[Lieferadresse]]></de>
+            <en><![CDATA[Delivery address]]></en>
+        </locale>
+        <locale name="control.order.shipping.title">
+            <de><![CDATA[Versand]]></de>
+            <en><![CDATA[Shipping]]></en>
+        </locale>
 
         <locale name="message.address.saved.successfully">
             <de><![CDATA[Die Adresse wurde erfolgreich gespeichert.]]></de>
@@ -898,6 +906,11 @@
             <de><![CDATA[Lieferadresse]]></de>
             <en><![CDATA[Delivery address]]></en>
         </locale>
+        <locale name="ordering.step.checkout.delivery.address">
+            <de><![CDATA[Lieferadresse]]></de>
+            <en><![CDATA[Delivery address]]></en>
+        </locale>
+
         <locale name="mail.order.confirmation.delivery.same.as.invoice">
             <de><![CDATA[Gleich wie Rechnungsadresse]]></de>
             <en><![CDATA[Same as billing address]]></en>

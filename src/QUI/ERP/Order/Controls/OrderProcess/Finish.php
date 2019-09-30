@@ -25,6 +25,7 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         parent::__construct($attributes);
 
         $this->addCSSClass('quiqqer-order-step-finish');
+        $this->addCSSFile(\dirname(__FILE__).'/Finish.css');
     }
 
     /**
