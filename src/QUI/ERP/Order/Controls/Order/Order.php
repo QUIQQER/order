@@ -111,13 +111,15 @@ class Order extends QUI\Control
 
         // template
         $Engine->assign([
-            'Order'        => $View,
-            'Articles'     => $View->getArticles(),
-            'Invoice'      => $Invoice,
-            'Calculation'  => $View->getPriceCalculation(),
-            'Vats'         => $View->getPriceCalculation()->getVat(),
-            'PriceFactors' => $View->getArticles()->getPriceFactors(),
-            'Payment'      => $View->getPayment()
+            'Order'           => $View,
+            'Articles'        => $View->getArticles(),
+            'Invoice'         => $Invoice,
+            'Calculation'     => $View->getPriceCalculation(),
+            'Vats'            => $View->getPriceCalculation()->getVat(),
+            'PriceFactors'    => $View->getArticles()->getPriceFactors(),
+            'Payment'         => $View->getPayment(),
+            'DeliveryAddress' => $Order->getDeliveryAddress(),
+            'Shipping'        => $Order->getShipping()
         ]);
 
         return $Engine->fetch($template);

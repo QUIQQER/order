@@ -60,14 +60,54 @@
             </h2>
         </header>
 
-        <img src="{$Payment->getIcon()}" class="quiqqer-order-control-order-information-payment-icon"/>
+        <img src="{$Payment->getIcon()}"
+             class="quiqqer-order-control-order-information-payment-icon"
+             alt="{$Payment->getTitle()}"
+        />
+
         <div class="quiqqer-order-control-order-information-payment-title">
             {$Payment->getTitle()}
         </div>
         <div class="quiqqer-order-control-order-information-payment-description">
             {$Payment->getDescription()}
         </div>
+    </section>
+    {/if}
+</div>
 
+<div class="quiqqer-order-control-order-information-delivery">
+    {if $DeliveryAddress}
+    <section class="quiqqer-order-control-order-information-delivery-address">
+        <header>
+            <h2>
+                {locale group="quiqqer/order" var="control.order.deliveryAddress.title"}
+            </h2>
+        </header>
+
+        {if $DeliveryAddress->getId() === $Address->getId()}
+        <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+        {elseif $DeliveryAddress}
+        {$DeliveryAddress->render(['tel' => false, 'mail' => false])}
+        {/if}
+    </section>
+    {/if}
+
+    {if $Shipping}
+    <section class="quiqqer-order-control-order-information-shipping">
+        <header>
+            <h2>
+                {locale group="quiqqer/order" var="control.order.shipping.title"}
+            </h2>
+        </header>
+
+        <p>
+            {$Shipping->getTitle()}
+        </p>
+
+        <img src="{$Shipping->getIcon()}"
+             alt="{$Shipping->getTitle()}"
+             class="quiqqer-order-control-order-information-shipping-icon"
+        />
     </section>
     {/if}
 </div>
