@@ -1523,7 +1523,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         try {
             $this->Status = $Handler->getProcessingStatus($this->status);
         } catch (QUI\Exception $Exception) {
-            $this->Status = $Handler->getProcessingStatus(0);
+        }
+
+        // use default status
+        if ($this->Status === null) {
+            try {
+                $this->Status = $Handler->getProcessingStatus(
+                    Settings::getInstance()->get('orderStatus', 'standard')
+                );
+            } catch (QUI\Exception $Exception) {
+                $this->Status = $Handler->getProcessingStatus(0);
+            }
         }
 
         return $this->Status;
