@@ -274,6 +274,10 @@
             <de><![CDATA[Zum Warenkorb]]></de>
             <en><![CDATA[To the Basket]]></en>
         </locale>
+        <locale name="processing.status.unknown">
+            <de><![CDATA[---]]></de>
+            <en><![CDATA[---]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -727,6 +731,10 @@
         <locale name="control.profile.orders.order.orderNo">
             <de><![CDATA[Bestell-Nr.]]></de>
             <en><![CDATA[Order No.]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.orderStatus">
+            <de><![CDATA[Bestellstatus]]></de>
+            <en><![CDATA[Order status]]></en>
         </locale>
         <locale name="control.profile.orders.order.invoice">
             <de><![CDATA[Rechnung]]></de>

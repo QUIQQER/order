@@ -63,7 +63,7 @@ class UserOrders extends Control implements ControlInterface
         $count = $Orders->countOrdersByUser($User);
 
         if ($count) {
-            $sheetsMax = ceil($count / $limit);
+            $sheetsMax = \ceil($count / $limit);
         }
 
         $orders = [];
@@ -157,6 +157,21 @@ class UserOrders extends Control implements ControlInterface
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
         }
 
+        $PSHandler  = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
+        $statusList = $PSHandler->getProcessingStatusList();
+
+        $OrderStatus   = $Order->getProcessingStatus();
+        $orderStatusId = 0;
+        $orderStatus   = $PSHandler->getProcessingStatus(0)->getTitle();
+
+        foreach ($statusList as $Status) {
+            if ($Status->getId() === $OrderStatus->getId()) {
+                $orderStatusId = $Status->getId();
+                $orderStatus   = $Status->getTitle();
+                break;
+            }
+        }
+
         $Engine->assign([
             'this'          => $this,
             'Project'       => $this->getProject(),
@@ -167,6 +182,8 @@ class UserOrders extends Control implements ControlInterface
             'articles'      => $Articles->getArticles(),
             'order'         => $Articles->toArray(),
             'paymentStatus' => $paymentStatus,
+            'orderStatusId' => $orderStatusId,
+            'orderStatus'   => $orderStatus,
             'Utils'         => new QUI\ERP\Order\Utils\Utils(),
             'orderUrl'      => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
                 $this->getProject(),

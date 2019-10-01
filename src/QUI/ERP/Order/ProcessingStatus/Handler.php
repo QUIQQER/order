@@ -59,7 +59,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Return the complete processing status objects
      *
-     * @return array
+     * @return Status[]
      */
     public function getProcessingStatusList()
     {
@@ -80,12 +80,16 @@ class Handler extends QUI\Utils\Singleton
      * Return a processing status
      *
      * @param $id
-     * @return Status
+     * @return Status|StatusUnknown
      *
      * @throws Exception
      */
     public function getProcessingStatus($id)
     {
+        if ($id === 0) {
+            return new StatusUnknown();
+        }
+
         return new Status($id);
     }
 

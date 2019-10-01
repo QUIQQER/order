@@ -71,6 +71,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @return ProcessingStatus\Status
+     * @throws ProcessingStatus\Exception
+     */
+    public function getProcessingStatus()
+    {
+        return $this->Order->getProcessingStatus();
+    }
+
+    /**
      * @return int
      */
     public function getCleanedId()
