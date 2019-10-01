@@ -595,6 +595,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     return;
                 }
 
+                self.$Currency.appendChild(
+                    new QUIContextMenuItem({
+                        name : '',
+                        value: '',
+                        text : '---'
+                    })
+                );
+
                 for (i = 0, len = currencies.length; i < len; i++) {
                     entry = currencies[i];
 

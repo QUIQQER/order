@@ -274,6 +274,10 @@
             <de><![CDATA[Zum Warenkorb]]></de>
             <en><![CDATA[To the Basket]]></en>
         </locale>
+        <locale name="processing.status.unknown">
+            <de><![CDATA[---]]></de>
+            <en><![CDATA[---]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -645,6 +649,23 @@
             ]]></en>
         </locale>
 
+        <locale name="order.status.settings.title">
+            <de><![CDATA[Status Einstellungen]]></de>
+            <en><![CDATA[Status settings]]></en>
+        </locale>
+        <locale name="order.settings.order.defaultOrderStatus">
+            <de><![CDATA[Standard Bestellstatus]]></de>
+            <en><![CDATA[Default Order status]]></en>
+        </locale>
+        <locale name="order.settings.order.defaultOrderStatus.description">
+            <de><![CDATA[
+                Legt den standard Bestellstatus fest, welche eine Bestellung direkt beim Anlegen erhalten soll.
+            ]]></de>
+            <en><![CDATA[
+                Defines the standard order status, which a purchase order should receive directly when it is created.
+            ]]></en>
+        </locale>
+
         <locale name="order.settings.autoInvoicePost">
             <de><![CDATA[Rechnung automatisch buchen]]></de>
             <en><![CDATA[Posting Invoices automatically]]></en>
@@ -710,6 +731,10 @@
         <locale name="control.profile.orders.order.orderNo">
             <de><![CDATA[Bestell-Nr.]]></de>
             <en><![CDATA[Order No.]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.orderStatus">
+            <de><![CDATA[Bestellstatus]]></de>
+            <en><![CDATA[Order status]]></en>
         </locale>
         <locale name="control.profile.orders.order.invoice">
             <de><![CDATA[Rechnung]]></de>
@@ -1172,7 +1197,7 @@
             <en><![CDATA[Dunning level]]></en>
         </locale>
         <locale name="grid.processingStatus">
-            <de><![CDATA[Rechnungsstatus]]></de>
+            <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Processing status]]></en>
         </locale>
         <locale name="grid.comments">
@@ -1297,21 +1322,21 @@
         </locale>
 
         <locale name="dialog.processingStatus.create.title">
-            <de><![CDATA[Rechnungsstatus hinzufügen]]></de>
-            <en><![CDATA[Create invoice status]]></en>
+            <de><![CDATA[Bestellstatus hinzufügen]]></de>
+            <en><![CDATA[Create order status]]></en>
         </locale>
         <locale name="dialog.processingStatus.edit.title">
-            <de><![CDATA[Rechnungsstatus bearbeiten]]></de>
-            <en><![CDATA[Edit invoice status]]></en>
+            <de><![CDATA[Bestellstatus bearbeiten]]></de>
+            <en><![CDATA[Edit order status]]></en>
         </locale>
 
         <locale name="dialog.processingStatus.delete.title">
-            <de><![CDATA[Rechnungsstatus entfernen]]></de>
-            <en><![CDATA[Remove invoice status]]></en>
+            <de><![CDATA[Bestellstatus entfernen]]></de>
+            <en><![CDATA[Remove order status]]></en>
         </locale>
         <locale name="dialog.processingStatus.delete.text">
-            <de><![CDATA[Rechnungsstatus wirklich entfernen?]]></de>
-            <en><![CDATA[Really remove invoice status?]]></en>
+            <de><![CDATA[Bestellstatus wirklich entfernen?]]></de>
+            <en><![CDATA[Really remove order status?]]></en>
         </locale>
         <locale name="dialog.processingStatus.delete.information" html="true">
             <de><![CDATA[

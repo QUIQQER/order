@@ -70,6 +70,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     protected $status = 0;
 
     /**
+     * @var null
+     */
+    protected $Status = null;
+
+    /**
      * @var int
      */
     protected $successful;
@@ -1509,9 +1514,19 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getProcessingStatus()
     {
+        if ($this->Status !== null) {
+            return $this->Status;
+        }
+
         $Handler = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
 
-        return $Handler->getProcessingStatus($this->status);
+        try {
+            $this->Status = $Handler->getProcessingStatus($this->status);
+        } catch (QUI\Exception $Exception) {
+            $this->Status = $Handler->getProcessingStatus(0);
+        }
+
+        return $this->Status;
     }
 
     /**
@@ -1535,6 +1550,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         $this->status        = $Status->getId();
+        $this->Status        = null;
         $this->statusChanged = true;
     }
 

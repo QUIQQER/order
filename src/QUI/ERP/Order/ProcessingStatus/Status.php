@@ -61,7 +61,7 @@ class Status
         }
 
         if (!empty($result[$id])) {
-            $this->notification = boolval($result[$id]);
+            $this->notification = \boolval($result[$id]);
         }
     }
 
