@@ -22,8 +22,8 @@
 </div>
 {/if}
 
-<button class="add-to-basket btn btn-primary" title="{$addButtonTitle}">
+<button class="add-to-basket {$this->getAttribute('btnClass')}" title="{$addButtonTitle}">
     <label class="add-to-basket-text">
-        {locale group='quiqqer/order' var='control.basket.buttonAdd.text'}
+        {$btnText}
     </label>
 </button>
