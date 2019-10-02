@@ -956,6 +956,10 @@
             <de><![CDATA[]]></de>
             <en><![CDATA[]]></en>
         </locale>
+        <locale name="mail.order.confirmation.comments.title">
+            <de><![CDATA[Kommentar]]></de>
+            <en><![CDATA[Comment]]></en>
+        </locale>
         <locale name="message.order.missing.customer.mail">
             <de><![CDATA[
                 Der Kunde [customerId] hat keine E-Mail hinterlegt.

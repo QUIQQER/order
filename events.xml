@@ -28,6 +28,10 @@
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerInvoiceTemporaryInvoicePostEnd"
     />
 
+    <event on="onQuiqqerOrderSuccessful"
+           fire="\QUI\ERP\Order\Controls\OrderProcess\CustomerData::onQuiqqerOrderSuccessful"
+    />
+
     <event on="onTransactionStatusChange"
            fire="\QUI\ERP\Order\EventHandling::onTransactionStatusChange"
     />

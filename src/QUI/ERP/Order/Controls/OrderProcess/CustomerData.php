@@ -416,9 +416,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     }
 
     /**
-     * event on execute payable status
+     * event on order is successful
+     *
+     * @param QUI\ERP\Order\AbstractOrder $Order
      */
-    public function onExecutePayableStatus()
+    public static function onQuiqqerOrderSuccessful(QUI\ERP\Order\AbstractOrder $Order)
     {
         $message = '';
 
@@ -430,13 +432,13 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $message .= QUI::getSession()->get('comment-message');
         }
 
-        $message = trim($message);
+        $message = \trim($message);
 
         if (empty($message)) {
             return;
         }
 
-        $Comments = $this->getOrder()->getComments();
+        $Comments = $Order->getComments();
         $comments = $Comments->toArray();
 
         // look if the same comment already exists
@@ -449,7 +451,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Comments->addComment($message);
 
         try {
-            $this->getOrder()->save(QUI::getUsers()->getSystemUser());
+            $Order->save(QUI::getUsers()->getSystemUser());
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
