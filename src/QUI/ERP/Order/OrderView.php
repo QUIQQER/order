@@ -137,7 +137,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         $DateFormatter = QUI::getLocale()->getDateFormatter(
             \IntlDateFormatter::SHORT,
-            \IntlDateFormatter::SHORT
+            \IntlDateFormatter::NONE
         );
 
         return $DateFormatter->format($createDate);

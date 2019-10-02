@@ -8,14 +8,16 @@
         <span>{$Order->getCreateDate()}</span>
     </div>
 
+    {if !($Order instanceof QUI\ERP\Order\OrderInProcess)}
     <span class="quiqqer-order-control-order-header-placer">|</span>
 
     <div class="quiqqer-order-control-order-header-id">
         <span>{locale group="quiqqer/order" var="control.order.details.orderNo"}</span>
         <span>{$Order->getId()}</span>
     </div>
+    {/if}
 
-    {if $Order->getAttribute('downloadLink') || $Order->isSuccessful() === false}
+    {if $Order->isPosted() && $Order->getAttribute('downloadLink') || $Order->isSuccessful() === false}
     <span class="quiqqer-order-control-order-header-placer">|</span>
     {/if}
 
@@ -60,14 +62,15 @@
             </h2>
         </header>
 
+        <div class="quiqqer-order-control-order-information-payment-title">
+            {$Payment->getTitle()}
+        </div>
+
         <img src="{$Payment->getIcon()}"
              class="quiqqer-order-control-order-information-payment-icon"
              alt="{$Payment->getTitle()}"
         />
 
-        <div class="quiqqer-order-control-order-information-payment-title">
-            {$Payment->getTitle()}
-        </div>
         <div class="quiqqer-order-control-order-information-payment-description">
             {$Payment->getDescription()}
         </div>
