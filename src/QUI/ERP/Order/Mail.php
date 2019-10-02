@@ -94,11 +94,26 @@ class Mail
         $InvoiceAddress = $Order->getInvoiceAddress();
         $InvoiceAddress->setAttribute('template', \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html');
 
+        // comment
+        $comment = '';
+
+        if (QUI::getSession()->get('comment-customer')) {
+            $comment .= QUI::getSession()->get('comment-customer')."\n";
+        }
+
+        if (QUI::getSession()->get('comment-message')) {
+            $comment .= QUI::getSession()->get('comment-message');
+        }
+
+        $comment = \trim($comment);
+
+
         $Engine->assign([
             'Shipping'        => $Shipping,
             'DeliveryAddress' => $DeliveryAddress,
             'InvoiceAddress'  => $InvoiceAddress,
             'Payment'         => $Order->getPayment(),
+            'comment'         => $comment,
 
             'Order'    => $Order,
             'Articles' => $Articles,
@@ -143,6 +158,7 @@ class Mail
 
         $Address  = null;
         $Customer = $Order->getCustomer();
+        $comments = $Order->getComments()->toArray();
 
         $user = $Customer->getName();
         $user = \trim($user);
@@ -203,6 +219,7 @@ class Mail
             'DeliveryAddress' => $DeliveryAddress,
             'InvoiceAddress'  => $InvoiceAddress,
             'Payment'         => $Order->getPayment(),
+            'comments'        => $comments,
 
             'Order'    => $Order,
             'Articles' => $Articles,
