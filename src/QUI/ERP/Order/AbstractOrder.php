@@ -651,7 +651,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getDeliveryAddress()
     {
-        if (empty($this->addressDelivery)) {
+        $delivery = $this->addressDelivery;
+
+        if (isset($delivery['id'])) {
+            unset($delivery['id']);
+        }
+
+        if (empty($delivery)) {
             return $this->getInvoiceAddress();
         }
 

@@ -186,12 +186,22 @@ class Mail
         if ($Order->getShipping()) {
             $Shipping        = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
             $DeliveryAddress = $Shipping->getAddress();
+            $DeliveryAddress->setAttribute(
+                'template',
+                \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+            );
         }
+
+        $InvoiceAddress = $Order->getInvoiceAddress();
+        $InvoiceAddress->setAttribute(
+            'template',
+            \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+        );
 
         $Engine->assign([
             'Shipping'        => $Shipping,
             'DeliveryAddress' => $DeliveryAddress,
-            'InvoiceAddress'  => $Order->getInvoiceAddress(),
+            'InvoiceAddress'  => $InvoiceAddress,
             'Payment'         => $Order->getPayment(),
 
             'Order'    => $Order,
