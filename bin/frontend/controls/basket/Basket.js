@@ -157,7 +157,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 Order = this.getOrderProcess();
 
             // remove
-            this.getElm().getElements('.fa-trash').addEvent('click', function () {
+            this.getElm().getElements('.fa-trash').getParent('button').addEvent('click', function () {
                 self.$Loader.show();
 
                 var Article = this.getParent('.quiqqer-order-basket-small-articles-article');
