@@ -233,6 +233,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 QUI.fireEvent('quiqqerOrderProcessLoad', [self]);
 
                 self.getElm().addClass('quiqqer-order-ordering');
+
+                // add processing events
+                QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
+                    console.log('add processing error', Control);
+
+                    Control.addEvent('onProcessingError', self.$onProcessingError);
+                });
             });
         },
 
@@ -485,7 +492,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     height: innerHeight
                 }, {
                     duration: 250,
-                    callback: finish
+                    callback: function () {
+                        self.$StepContainer.setStyle('height', null);
+                        finish();
+                    }
                 });
 
                 finish.delay(300);
@@ -991,7 +1001,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             // events & animation
             this.$refreshSteps();
             this.$refreshButtonEvents();
-
+            console.log('render result');
             return QUI.parse(this.$StepContainer).then(function () {
                 var Prom1 = self.$animate(Next, {
                     left   : 0,
@@ -1011,6 +1021,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 // add processing events
                 QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
+                    console.log('add processing error', Control);
+
                     Control.addEvent('onProcessingError', self.$onProcessingError);
                 });
 
@@ -1309,6 +1321,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $onProcessingError: function () {
+            console.log('-> $onProcessingError');
+            console.log(this.getAttribute('current'));
+
             if (this.getAttribute('current') !== 'Processing') {
                 return Promise.resolve();
             }
@@ -1416,6 +1431,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             if (!Payments) {
                 return Promise.resolve();
+            }
+
+            var PaymentChange     = Payments.getElement('[name="change-payment"]');
+            var MainPaymentChange = this.$Buttons.getElement('[name="changePayment"]');
+
+            if (PaymentChange && MainPaymentChange) {
+                MainPaymentChange.setStyle('display', 'none');
+            } else {
+                MainPaymentChange.setStyle('display', null);
             }
 
             return QUI.parse(Payments).then(function () {
