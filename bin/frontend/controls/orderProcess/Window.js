@@ -147,6 +147,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
 
             // buttons
             this.$Previous = new QUIButton({
+                'class' : 'btn-light',
                 text     : QUILocale.get(lg, 'ordering.btn.previous'),
                 textimage: 'fa fa-angle-left',
                 events   : {
@@ -159,6 +160,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             });
 
             this.$Next = new QUIButton({
+                'class' : 'btn-success',
                 text     : QUILocale.get(lg, 'ordering.btn.next'),
                 textimage: 'fa fa-angle-right',
                 events   : {
@@ -196,7 +198,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
 
             this.$Previous.getElm().setStyles({
                 'float': 'left',
-                width  : 140
+                minWidth  : 140
             });
 
             if (!QUIQQER_USER.id) {
