@@ -57,6 +57,10 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 return;
             }
 
+            Elm.addEvent('click', function (event) {
+                event.stop();
+            });
+
             this.setAttribute('productId', pid);
 
             this.$Input = Elm.getElement('input');
@@ -188,7 +192,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 ProductElm     = this.getElm().getParent('[data-productid]'),
                 ProductControl = QUI.Controls.getById(ProductElm.get('data-quiid'));
 
-            if ("getFieldControls" in ProductControl) {
+            if (ProductControl && "getFieldControls" in ProductControl) {
                 ProductControl.getFieldControls().each(function (Field) {
                     fields[Field.getFieldId()] = Field.getValue();
                 });

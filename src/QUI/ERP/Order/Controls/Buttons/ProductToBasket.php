@@ -27,6 +27,8 @@ class ProductToBasket extends QUI\Control
             'data-qui'     => 'package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket',
             'input'        => true,
             'Product'      => false,
+            'btnClass'     => 'btn btn-primary',
+            'btnText'      => false,
             'showLabel'    => true,
             'showControls' => true, // show decrease and increase buttons -/+
             //'disabled'     => false
@@ -38,7 +40,7 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(\dirname(__FILE__).'/ProductToBasket.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/ProductToBasket.css');
     }
 
     /**
@@ -53,6 +55,8 @@ class ProductToBasket extends QUI\Control
         } catch (QUI\Exception $Exception) {
             return '';
         }
+
+        $Locale = QUI::getLocale();
 
         $addButtonTitle = QUI::getLocale()->get(
             'quiqqer/order',
@@ -87,14 +91,22 @@ class ProductToBasket extends QUI\Control
             $disableSpins = 'disable-spins';
         }
 
+        // btn text
+        $btnText = $Locale->get('quiqqer/order', 'control.basket.buttonAdd.text');
+
+        if ($this->getAttribute('btnText')) {
+            $btnText = $this->getAttribute('btnText');
+        }
+
         $Engine->assign([
             'this'           => $this,
             'addButtonTitle' => $addButtonTitle,
             'showLabel'      => $this->getAttribute('showLabel'),
             'showControls'   => $this->getAttribute('showControls'),
+            'btnText'        => $btnText,
             'disableSpins'   => $disableSpins
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/ProductToBasket.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/ProductToBasket.html');
     }
 }

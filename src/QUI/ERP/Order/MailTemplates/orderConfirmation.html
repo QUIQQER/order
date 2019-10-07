@@ -45,6 +45,11 @@
 </div>
 {/if}
 
+{if !empty($comment)}
+<h4>{locale group="quiqqer/order" var="mail.order.confirmation.comments.title"}</h4>
+{$comment}
+{/if}
+
 {template_event name="quiqqer::order::mail::orderConfirmation::end" Order=$Order Articles=$Articles}
 
 {locale group="quiqqer/order" var="mail.order.confirmation.details"}
