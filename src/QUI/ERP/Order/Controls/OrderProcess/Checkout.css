@@ -16,6 +16,10 @@
     margin-top: 20px;
 }
 
+.quiqqer-order-step-checkout-shipping {
+    margin-top: 30px;
+}
+
 .quiqqer-order-step-checkout-shipping,
 .quiqqer-order-step-checkout-payments-payment {
     display: block;
@@ -25,7 +29,6 @@
 
 .quiqqer-order-step-checkout-shipping img,
 .quiqqer-order-step-checkout-payments-payment img {
-    float: left;
     max-height: 100px;
     max-width: 100%;
 }
@@ -69,6 +72,7 @@
 
     .quiqqer-order-step-checkout-invoiceAddress,
     .quiqqer-order-step-checkout-payments,
+    .quiqqer-order-step-checkout-payments-payment,
     .quiqqer-order-step-checkout-shipping {
         clear: both;
         width: 100% !important;
