@@ -1177,6 +1177,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
 
+            if (this.$Next.getParent('.qui-window-popup').length) {
+                this.$Next.setStyle('display', 'none');
+                return;
+            }
+
             // mobile, next button before
             var EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
 
