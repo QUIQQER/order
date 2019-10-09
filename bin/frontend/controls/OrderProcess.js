@@ -236,8 +236,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 // add processing events
                 QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
-                    console.log('add processing error', Control);
-
                     Control.addEvent('onProcessingError', self.$onProcessingError);
                 });
             });
@@ -1001,7 +999,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             // events & animation
             this.$refreshSteps();
             this.$refreshButtonEvents();
-            console.log('render result');
+
             return QUI.parse(this.$StepContainer).then(function () {
                 var Prom1 = self.$animate(Next, {
                     left   : 0,
@@ -1021,8 +1019,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 // add processing events
                 QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
-                    console.log('add processing error', Control);
-
                     Control.addEvent('onProcessingError', self.$onProcessingError);
                 });
 
@@ -1176,6 +1172,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
+
+            // double - do not show next button if checkout process is in popup
+            if (this.$Next.getParent('.qui-window-popup').length &&
+                this.$Next.getParent('.qui-window-popup')[0]) {
+                this.$Next.setStyle('display', 'none');
+                return;
+            }
 
             // mobile, next button before
             var EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');

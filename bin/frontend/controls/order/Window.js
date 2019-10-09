@@ -47,9 +47,7 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
 
             Content.set('html', '');
 
-            require([
-                'package/quiqqer/order/bin/frontend/controls/order/Order'
-            ], function (Order) {
+            require(['package/quiqqer/order/bin/frontend/controls/order/Order'], function (Order) {
                 new Order({
                     hash  : self.getAttribute('hash'),
                     events: {
