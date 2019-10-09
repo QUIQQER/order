@@ -82,6 +82,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             var self    = this,
                 Content = this.getContent();
 
+            self.getElm().addClass('quiqqer-order-window');
+
             Content.set({
                 html  : Mustache.render(template, {
                     title: QUILocale.get(lg, 'ordering.title')
@@ -111,8 +113,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                     QUI.parse(BasketEnd);
                 }
 
-                if (step === 'checkout') {
+                if (step === 'Checkout') {
                     self.$Next.hide();
+                    self.$Next.getElm().setAttribute('style', 'display: none !important');
+
                     self.$Submit.show();
                     return;
                 }
@@ -122,6 +126,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 }
 
                 self.$Submit.hide();
+                self.$Submit.getElm().setAttribute('style', 'display: none !important');
             };
 
             this.$Order = new Ordering({
@@ -147,7 +152,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
 
             // buttons
             this.$Previous = new QUIButton({
-                'class' : 'btn-light',
+                'class'  : 'btn-light',
                 text     : QUILocale.get(lg, 'ordering.btn.previous'),
                 textimage: 'fa fa-angle-left',
                 events   : {
@@ -160,7 +165,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             });
 
             this.$Next = new QUIButton({
-                'class' : 'btn-success',
+                'class'  : 'btn-success',
                 text     : QUILocale.get(lg, 'ordering.btn.next'),
                 textimage: 'fa fa-angle-right',
                 events   : {
@@ -192,13 +197,14 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             this.addButton(this.$Submit);
 
             this.$Submit.hide();
+            this.$Submit.getElm().setAttribute('style', 'display: none !important');
 
             this.$Next.getElm().setStyle('float', 'right');
             this.$Submit.getElm().setStyle('float', 'right');
 
             this.$Previous.getElm().setStyles({
-                'float': 'left',
-                minWidth  : 140
+                'float' : 'left',
+                minWidth: 140
             });
 
             if (!QUIQQER_USER.id) {

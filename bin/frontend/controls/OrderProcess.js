@@ -236,8 +236,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 // add processing events
                 QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
-                    console.log('add processing error', Control);
-
                     Control.addEvent('onProcessingError', self.$onProcessingError);
                 });
             });
@@ -1001,7 +999,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             // events & animation
             this.$refreshSteps();
             this.$refreshButtonEvents();
-            console.log('render result');
+
             return QUI.parse(this.$StepContainer).then(function () {
                 var Prom1 = self.$animate(Next, {
                     left   : 0,
@@ -1021,8 +1019,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 // add processing events
                 QUI.Controls.getControlsInElement(self.$StepContainer).each(function (Control) {
-                    console.log('add processing error', Control);
-
                     Control.addEvent('onProcessingError', self.$onProcessingError);
                 });
 
