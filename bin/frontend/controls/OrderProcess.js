@@ -1173,35 +1173,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Next     = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
 
-            // double - do not show next button if checkout process is in popup
-            if (this.$Next.getParent('.qui-window-popup').length &&
-                this.$Next.getParent('.qui-window-popup')[0]) {
-                this.$Next.setStyle('display', 'none');
-                return;
-            }
-
-            // mobile, next button before
-            var EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
-
-            if (QUI.getWindowSize().x < 768) {
-                if (EndContainer) {
-                    this.$Next.inject(
-                        this.getElm().getElement('.quiqqer-order-basket-end'),
-                        'before'
-                    );
-                } else if (this.$Previous.length) {
-                    this.$Next.inject(this.$Previous[0], 'before');
-                }
-
-                this.$Next.addClass('quiqqer-order-next-mobile');
-            }
-
-            this.$Next.removeEvents('click');
-            this.$Previous.removeEvents('click');
-
-            this.$Next.addEvent('click', this.$onNextClick);
-            this.$Previous.addEvent('click', this.$onPreviousClick);
-
             var self = this,
                 list = this.$TimelineContainer.getElements('li');
 
@@ -1227,10 +1198,40 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 self.openStep(Target.get('data-step'));
             });
 
+            this.$Next.removeEvents('click');
+            this.$Previous.removeEvents('click');
+
+            this.$Next.addEvent('click', this.$onNextClick);
+            this.$Previous.addEvent('click', this.$onPreviousClick);
+
             self.$Buttons.getElements('[name="changePayment"]').addEvent('click', function (event) {
                 event.stop();
                 self.showProcessingPaymentChange();
             });
+
+
+            // double - do not show next button if checkout process is in popup
+            if (this.$Next.getParent('.qui-window-popup').length &&
+                this.$Next.getParent('.qui-window-popup')[0]) {
+                this.$Next.setStyle('display', 'none');
+                return;
+            }
+
+            // mobile, next button before
+            var EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
+
+            if (QUI.getWindowSize().x < 768) {
+                if (EndContainer) {
+                    this.$Next.inject(
+                        this.getElm().getElement('.quiqqer-order-basket-end'),
+                        'before'
+                    );
+                } else if (this.$Previous.length) {
+                    this.$Next.inject(this.$Previous[0], 'before');
+                }
+
+                this.$Next.addClass('quiqqer-order-next-mobile');
+            }
         },
 
         /**
