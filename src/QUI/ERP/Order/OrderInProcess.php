@@ -413,6 +413,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             $data['paid_date'] = null;
         }
 
+        if (\is_array($data['paid_data'])) {
+            $data['paid_data'] = \json_encode($data['paid_data']);
+        }
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
