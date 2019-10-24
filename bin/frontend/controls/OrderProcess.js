@@ -49,7 +49,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             '$beginResultRendering',
             '$endResultRendering',
             '$onProcessingError',
-            '$onLoginRedirect'
+            '$onLoginRedirect',
+            '$parseProcessingPaymentChange'
         ],
 
         options: {
@@ -1325,9 +1326,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $onProcessingError: function () {
-            console.log('-> $onProcessingError');
-            console.log(this.getAttribute('current'));
-
             if (this.getAttribute('current') !== 'Processing') {
                 return Promise.resolve();
             }
@@ -1338,15 +1336,21 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 Container = this.getElm().getElement('.quiqqer-order-step-processing'),
                 Payments  = Container.getElement('.quiqqer-order-processing-payments');
 
-            if (!Payments) {
-                Payments = new Element('div', {
-                    'class': 'quiqqer-order-processing-payments'
-                }).inject(Container);
-            }
-
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_processing_getPayments', function (result) {
-                    Payments.set('html', result);
+                    if (result !== '') {
+                        if (!Payments) {
+                            Payments = new Element('div', {
+                                'class': 'quiqqer-order-processing-payments'
+                            }).inject(Container);
+                        }
+
+                        Payments.set('html', result);
+                    } else {
+                        if (Payments) {
+                            Payments.destroy();
+                        }
+                    }
 
                     self.$parseProcessingPaymentChange().then(function () {
                         self.resize();
@@ -1442,7 +1446,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             if (PaymentChange && MainPaymentChange) {
                 MainPaymentChange.setStyle('display', 'none');
-            } else {
+            } else if (MainPaymentChange) {
                 MainPaymentChange.setStyle('display', null);
             }
 
