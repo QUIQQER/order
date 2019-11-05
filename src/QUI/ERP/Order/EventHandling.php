@@ -404,4 +404,20 @@ class EventHandling
             QUI\System\Log::writeException($Exception);
         }
     }
+
+    /**
+     * @param QUI\Users\User $User
+     * @param QUI\ERP\Comments $Comments
+     */
+    public static function onQuiqqerErpGetCommentsByUser(
+        QUI\Users\User $User,
+        QUI\ERP\Comments $Comments
+    ) {
+        $Handler = Handler::getInstance();
+        $orders  = $Handler->getOrdersByUser($User);
+
+        foreach ($orders as $Order) {
+            $Comments->import($Order->getComments());
+        }
+    }
 }

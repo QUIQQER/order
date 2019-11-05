@@ -40,6 +40,10 @@
            fire="\QUI\ERP\Order\EventHandling::onTemplateGetHeader"
     />
 
+    <event on="onQuiqqerErpGetCommentsByUser"
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerErpGetCommentsByUser"
+    />
+
     <event on="onQuiqqer::products::product::detail::equipment::buttons"
            fire="\QUI\ERP\Order\EventHandling::onDetailEquipmentButtons"
     />

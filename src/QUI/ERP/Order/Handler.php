@@ -314,9 +314,8 @@ class Handler extends Singleton
     /**
      * @param QUI\Interfaces\Users\User $User
      * @param array $params
-     * @return array
      *
-     * @throws QUI\Database\Exception
+     * @return Order[]
      */
     public function getOrdersByUser(QUI\Interfaces\Users\User $User, $params = [])
     {
@@ -350,7 +349,12 @@ class Handler extends Singleton
             $query['limit'] = $params['limit'];
         }
 
-        $data   = QUI::getDataBase()->fetch($query);
+        try {
+            $data = QUI::getDataBase()->fetch($query);
+        } catch (QUI\Exception $Exception) {
+            return [];
+        }
+
         $result = [];
 
         foreach ($data as $entry) {
