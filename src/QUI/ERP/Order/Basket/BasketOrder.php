@@ -400,7 +400,7 @@ class BasketOrder
             $PriceFactors->toErpPriceFactorList()
         );
 
-        $this->Order->getArticles()->calc();
+        $this->Order->getArticles()->recalculate();
         $this->Order->save();
     }
 
