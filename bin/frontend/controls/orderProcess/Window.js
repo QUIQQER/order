@@ -101,6 +101,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             this.$OrderTitle = this.$Header.getElement('.quiqqer-order-window-header-text-title');
 
             var onOrderChange = function (OrderProcess) {
+                new window.Fx.Scroll(self.$Container).toTop();
+
                 var step = OrderProcess.getAttribute('current');
                 var data = OrderProcess.getCurrentStepData();
 
@@ -118,6 +120,35 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                     self.$Next.getElm().setAttribute('style', 'display: none !important');
 
                     self.$Submit.show();
+                    return;
+                }
+
+                if (step === 'Finish') {
+                    var Parent = null;
+
+                    if (self.$Next && self.$Next.getElm()) {
+                        Parent = self.$Next.getElm().getParent();
+                    }
+
+                    if (Parent) {
+                        Parent.getElements('button').destroy();
+
+                        if (!Parent.getElement('.quiqqer-order-basket-end-finish')) {
+                            Parent.getElements('button').setStyle('display', 'none');
+
+                            new QUIButton({
+                                'class': 'btn-success quiqqer-order-basket-end-finish',
+                                text   : QUILocale.get(lg, 'ordering.btn.backToShop'),
+                                events : {
+                                    onClick: function () {
+                                        self.close();
+                                        window.location.reload();
+                                    }
+                                }
+                            }).inject(Parent);
+                        }
+                    }
+
                     return;
                 }
 
@@ -184,7 +215,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 events   : {
                     onClick: function () {
                         if (this.$Order) {
-                            this.$Order.next();
+                            this.$Order.next().catch(function (err) {
+                                console.log(err);
+                            });
                         }
                     }.bind(this)
                 }
