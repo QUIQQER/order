@@ -78,6 +78,7 @@
     {/if}
 </div>
 
+{if $DeliveryAddress || $Shipping}
 <div class="quiqqer-order-control-order-information-delivery">
     {if $DeliveryAddress}
     <section class="quiqqer-order-control-order-information-delivery-address">
@@ -114,6 +115,7 @@
     </section>
     {/if}
 </div>
+{/if}
 
 <section class="quiqqer-order-control-order-articles">
     <header>
