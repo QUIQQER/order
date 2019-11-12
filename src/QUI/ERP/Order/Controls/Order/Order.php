@@ -109,6 +109,13 @@ class Order extends QUI\Control
                 $template = $this->getAttribute('template');
         }
 
+        $DeliveryAddress = $Order->getDeliveryAddress();
+
+        if ($DeliveryAddress->getId() === $Order->getInvoiceAddress()->getId()) {
+            $DeliveryAddress = null;
+        }
+
+
         // template
         $Engine->assign([
             'Order'           => $View,
@@ -118,7 +125,7 @@ class Order extends QUI\Control
             'Vats'            => $View->getPriceCalculation()->getVat(),
             'PriceFactors'    => $View->getArticles()->getPriceFactors(),
             'Payment'         => $View->getPayment(),
-            'DeliveryAddress' => $Order->getDeliveryAddress(),
+            'DeliveryAddress' => $DeliveryAddress,
             'Shipping'        => $Order->getShipping()
         ]);
 
