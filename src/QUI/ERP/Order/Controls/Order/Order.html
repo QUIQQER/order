@@ -19,6 +19,7 @@
     <span class="quiqqer-order-control-order-header-placer">|</span>
     {/if}
 
+    {if $shippingIsInstalled}
     <div class="quiqqer-order-control-order-header-id">
         {if $Order->isPosted() && $Order->getAttribute('downloadLink')}
         <a href="{$Order->getAttribute('downloadLink')}" target="_blank">
@@ -32,6 +33,7 @@
         </a>
         {/if}
     </div>
+    {/if}
 </header>
 
 <div class="quiqqer-order-control-order-information">

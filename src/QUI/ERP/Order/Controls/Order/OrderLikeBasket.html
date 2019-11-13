@@ -78,7 +78,7 @@
     {/if}
 </div>
 
-{if $DeliveryAddress || $Shipping}
+{if $shippingIsInstalled && ($DeliveryAddress || $Shipping)}
 <div class="quiqqer-order-control-order-information-delivery">
     {if $DeliveryAddress}
     <section class="quiqqer-order-control-order-information-delivery-address">

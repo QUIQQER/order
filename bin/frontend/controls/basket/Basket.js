@@ -294,6 +294,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          * @return {String}
          */
         getOrderHash: function () {
+            if (!this.getOrderProcess()) {
+                return '';
+            }
+
             return this.getOrderProcess().getAttribute('orderHash');
         },
 

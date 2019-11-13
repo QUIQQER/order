@@ -115,18 +115,18 @@ class Order extends QUI\Control
             $DeliveryAddress = null;
         }
 
-
         // template
         $Engine->assign([
-            'Order'           => $View,
-            'Articles'        => $View->getArticles(),
-            'Invoice'         => $Invoice,
-            'Calculation'     => $View->getPriceCalculation(),
-            'Vats'            => $View->getPriceCalculation()->getVat(),
-            'PriceFactors'    => $View->getArticles()->getPriceFactors(),
-            'Payment'         => $View->getPayment(),
-            'DeliveryAddress' => $DeliveryAddress,
-            'Shipping'        => $Order->getShipping()
+            'Order'               => $View,
+            'Articles'            => $View->getArticles(),
+            'Invoice'             => $Invoice,
+            'Calculation'         => $View->getPriceCalculation(),
+            'Vats'                => $View->getPriceCalculation()->getVat(),
+            'PriceFactors'        => $View->getArticles()->getPriceFactors(),
+            'Payment'             => $View->getPayment(),
+            'DeliveryAddress'     => $DeliveryAddress,
+            'shippingIsInstalled' => QUI\ERP\Utils\Shop::isShippingInstalled(),
+            'Shipping'            => $Order->getShipping()
         ]);
 
         return $Engine->fetch($template);
