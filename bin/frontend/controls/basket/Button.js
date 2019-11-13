@@ -148,12 +148,21 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 new BasketWindow().open();
             });
 
-            Elm.addEvent('mouseenter', function () {
-                if (QUI.getWindowSize().x <= 768) {
-                    return;
-                }
+            var delay = null;
 
-                self.showSmallBasket();
+            Elm.addEvents({
+                mouseenter: function () {
+                    delay = setTimeout(function () {
+                        if (QUI.getWindowSize().x <= 768) {
+                            return;
+                        }
+
+                        self.showSmallBasket();
+                    }, 250);
+                },
+                mouseleave: function () {
+                    clearTimeout(delay);
+                }
             });
 
             if (this.$Batch) {
