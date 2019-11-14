@@ -20,11 +20,31 @@
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerOrderCreated"
     />
 
+    <event on="onQuiqqerOrderProcessStatusChange"
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerOrderProcessStatusChange"
+    />
+
     <event on="onQuiqqerInvoiceTemporaryInvoicePostEnd"
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerInvoiceTemporaryInvoicePostEnd"
     />
 
+    <event on="onQuiqqerOrderSuccessful"
+           fire="\QUI\ERP\Order\Controls\OrderProcess\CustomerData::onQuiqqerOrderSuccessful"
+    />
+
     <event on="onTransactionStatusChange"
            fire="\QUI\ERP\Order\EventHandling::onTransactionStatusChange"
+    />
+
+    <event on="onTemplateGetHeader"
+           fire="\QUI\ERP\Order\EventHandling::onTemplateGetHeader"
+    />
+
+    <event on="onQuiqqerErpGetCommentsByUser"
+           fire="\QUI\ERP\Order\EventHandling::onQuiqqerErpGetCommentsByUser"
+    />
+
+    <event on="onQuiqqer::products::product::detail::equipment::buttons"
+           fire="\QUI\ERP\Order\EventHandling::onDetailEquipmentButtons"
     />
 </events>

@@ -25,7 +25,7 @@ class UserOrders extends Control implements ControlInterface
     public function __construct(array $attributes = [])
     {
         $this->addCSSClass('quiqqer-order-profile-orders');
-        $this->addCSSFile(dirname(__FILE__).'/UserOrders.css');
+        $this->addCSSFile(\dirname(__FILE__).'/UserOrders.css');
 
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/frontendusers/Orders',
@@ -63,7 +63,7 @@ class UserOrders extends Control implements ControlInterface
         $count = $Orders->countOrdersByUser($User);
 
         if ($count) {
-            $sheetsMax = ceil($count / $limit);
+            $sheetsMax = \ceil($count / $limit);
         }
 
         $orders = [];
@@ -100,7 +100,7 @@ class UserOrders extends Control implements ControlInterface
             'sheetCount'   => $count
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/UserOrders.html');
+        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.html');
     }
 
     /**
@@ -145,12 +145,31 @@ class UserOrders extends Control implements ControlInterface
                 ]);
                 break;
 
+            case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PLAN:
+                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.12');
+                break;
+
             default:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_PART:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_ERROR:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_CANCELED:
             case QUI\ERP\Order\AbstractOrder::PAYMENT_STATUS_DEBIT:
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
+        }
+
+        $PSHandler  = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
+        $statusList = $PSHandler->getProcessingStatusList();
+
+        $OrderStatus   = $Order->getProcessingStatus();
+        $orderStatusId = 0;
+        $orderStatus   = $PSHandler->getProcessingStatus(0)->getTitle();
+
+        foreach ($statusList as $Status) {
+            if ($Status->getId() === $OrderStatus->getId()) {
+                $orderStatusId = $Status->getId();
+                $orderStatus   = $Status->getTitle();
+                break;
+            }
         }
 
         $Engine->assign([
@@ -163,6 +182,8 @@ class UserOrders extends Control implements ControlInterface
             'articles'      => $Articles->getArticles(),
             'order'         => $Articles->toArray(),
             'paymentStatus' => $paymentStatus,
+            'orderStatusId' => $orderStatusId,
+            'orderStatus'   => $orderStatus,
             'Utils'         => new QUI\ERP\Order\Utils\Utils(),
             'orderUrl'      => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
                 $this->getProject(),
@@ -170,7 +191,7 @@ class UserOrders extends Control implements ControlInterface
             )
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/UserOrders.Order.html');
+        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.Order.html');
     }
 
     /**
@@ -210,7 +231,7 @@ class UserOrders extends Control implements ControlInterface
             'Project' => QUI::getProjectManager()->get()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/UserOrders.Article.html');
+        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.Article.html');
     }
 
     /**

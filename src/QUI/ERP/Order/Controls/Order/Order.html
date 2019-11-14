@@ -19,6 +19,7 @@
     <span class="quiqqer-order-control-order-header-placer">|</span>
     {/if}
 
+    {if $shippingIsInstalled}
     <div class="quiqqer-order-control-order-header-id">
         {if $Order->isPosted() && $Order->getAttribute('downloadLink')}
         <a href="{$Order->getAttribute('downloadLink')}" target="_blank">
@@ -32,6 +33,7 @@
         </a>
         {/if}
     </div>
+    {/if}
 </header>
 
 <div class="quiqqer-order-control-order-information">
@@ -62,10 +64,14 @@
         <table class="quiqqer-order-control-order-information-orderData-table">
             <tr class="quiqqer-order-control-order-information-orderData-subSum">
                 <td class="quiqqer-order-control-order-information-orderData-subSum-title">
-                    {locale group="quiqqer/order" var="control.order.overview.subSum"}
+                    <span class="quiqqer-order-control-order-information-orderData-subSum-text">
+                        {locale group="quiqqer/order" var="control.order.overview.subSum"}
+                    </span>
                 </td>
                 <td class="quiqqer-order-control-order-information-orderData-subSum-sum">
-                    {$Calculation->getSubSum()->formatted()}
+                    <span class="quiqqer-order-control-order-information-orderData-subSum-value">
+                        {$Calculation->getSubSum()->formatted()}
+                    </span>
                 </td>
             </tr>
             {foreach $PriceFactors as $Factor}
@@ -95,10 +101,14 @@
             {/foreach}
             <tr>
                 <td class="quiqqer-order-control-order-information-orderData-sum-title">
-                    {locale group="quiqqer/order" var="control.order.overview.sum"}
+                    <span class="quiqqer-order-control-order-information-orderData-sum-text">
+                        {locale group="quiqqer/order" var="control.order.overview.sum"}
+                    </span>
                 </td>
                 <td class="quiqqer-order-control-order-information-orderData-sum">
-                    {$Calculation->getSum()->formatted()}
+                    <span class="quiqqer-order-control-order-information-orderData-value">
+                        {$Calculation->getSum()->formatted()}
+                    </span>
                 </td>
             </tr>
         </table>
@@ -155,6 +165,7 @@
             <div class="quiqqer-order-profile-orders-order-articles-article-description">
                 {$Article->getDescription()}
 
+                {assign var=customFields value=$Article->getCustomFields()}
                 {if count($customFields)}
                 <ul class="quiqqer-order-profile-orders-order-articles-article-description-customFields">
                     {foreach $customFields as $field}

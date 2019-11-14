@@ -12,9 +12,19 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getControl',
-    function ($orderId) {
+    function ($orderHash, $basket, $basketEditable) {
+        if (!isset($basket)) {
+            $basket = true;
+        }
+
+        if (!isset($basketEditable)) {
+            $basketEditable = true;
+        }
+
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId' => (int)$orderId
+            'orderHash'      => $orderHash,
+            'basket'         => $basket,
+            'basketEditable' => $basketEditable
         ]);
 
         $Output = new QUI\Output();
@@ -23,5 +33,5 @@ QUI::$Ajax->registerFunction(
 
         return $Output->parse($css.$result);
     },
-    ['orderId']
+    ['orderHash', 'basket', 'basketEditable']
 );

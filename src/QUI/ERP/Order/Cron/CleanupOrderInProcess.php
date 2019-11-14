@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\Cron;
 
 use QUI;
-use QUI\ERP\Order\Handler;
 
 /**
  * Class CleanupOrderInProcess
@@ -24,6 +23,7 @@ class CleanupOrderInProcess
      * Execute the cron
      *
      * @param array $params - cron parameter
+     * @throws QUI\Exception
      */
     public static function run($params = [])
     {
@@ -38,8 +38,8 @@ class CleanupOrderInProcess
         }
 
         $days   = $days * -1;
-        $c_date = strtotime($days.' day');
-        $c_date = date('Y-m-d H:i:s', $c_date);
+        $c_date = \strtotime($days.' day');
+        $c_date = \date('Y-m-d H:i:s', $c_date);
 
         $Handler = QUI\ERP\Order\Handler::getInstance();
         $table   = $Handler->tableOrderProcess();

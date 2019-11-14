@@ -4,6 +4,8 @@
  * This file contains package_quiqqer_order_ajax_backend_update
  */
 
+use QUI\ERP\Order\ProcessingStatus\Handler;
+
 /**
  * Update an order
  *
@@ -15,8 +17,8 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
-        $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
-        $data  = json_decode($data, true);
+        $Order = QUI\ERP\Order\Handler::getInstance()->get((int)$orderId);
+        $data  = \json_decode($data, true);
 
         // customer
         $Customer = null;
@@ -121,7 +123,35 @@ QUI::$Ajax->registerFunction(
             }
         }
 
+        if (isset($data['status']) && $data['status'] !== false) {
+            try {
+                $Order->setProcessingStatus($data['status']);
+
+                // Send status notification
+                if (!empty($data['notification'])) {
+                    Handler::getInstance()->sendStatusChangeNotification(
+                        $Order,
+                        (int)$data['status'],
+                        $data['notification']
+                    );
+                }
+            } catch (QUI\ERP\Order\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+            }
+        }
+
+        $Order->setAttribute('userSave', true);
         $Order->update();
+
+        QUI::getMessagesHandler()->addSuccess(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'message.backend.update.success',
+                [
+                    'oderId' => $Order->getId()
+                ]
+            )
+        );
     },
     ['orderId', 'data'],
     'Permission::checkAdminUser'

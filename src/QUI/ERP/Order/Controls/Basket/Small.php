@@ -46,24 +46,37 @@ class Small extends QUI\Controls\Control
      */
     protected function onCreate()
     {
-        $Engine   = QUI::getTemplateManager()->getEngine();
-        $Products = $this->Basket->getProducts()->getView();
-        $Project  = $this->getProject();
-        $Order    = $this->Basket->getOrder();
+        $Engine = QUI::getTemplateManager()->getEngine();
+
+        $Products = $this->Basket->getProducts();
+        $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
+
+        $ProductView = $Products->getView();
+        $Project     = $this->getProject();
+
+        try {
+            $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+        } catch (QUI\Exception $Exception) {
+            $OrderProcessSite = $Project->firstChild();
+        }
+
+        try {
+            $ShoppingCart = QUI\ERP\Order\Utils\Utils::getShoppingCart($Project);
+        } catch (QUI\Exception $Exception) {
+            $ShoppingCart = $Project->firstChild();
+        }
 
         $Engine->assign([
-            'data'         => $Products->toArray(),
-            'Basket'       => $this->Basket,
-            'Products'     => $Products,
-            'products'     => $Products->getProducts(),
-            'OrderProcess' => QUI\ERP\Order\Utils\Utils::getOrderProcess($Project),
-            'checkoutUrl'  => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
-                $Project,
-                $Order->getHash()
-            )
+            'data'            => $ProductView->toArray(),
+            'Basket'          => $this->Basket,
+            'Products'        => $ProductView,
+            'products'        => $ProductView->getProducts(),
+            'OrderProcess'    => $OrderProcessSite,
+            'checkoutUrl'     => $OrderProcessSite->getUrlRewritten(),
+            'shoppingCartUrl' => $ShoppingCart->getUrlRewritten()
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Small.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/Small.html');
     }
 
     //region project

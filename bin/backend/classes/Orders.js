@@ -1,9 +1,6 @@
 /**
  * @module package/quiqqer/order/bin/backend/classes/Orders
- *
- * @require qui/QUI
- * @require qui/classes/DOM
- * @require Ajax
+ * @author www.pcsg.de (Henning Leutz)
  *
  * @event onOrderCreate [self, newId]
  * @event onOrderDelete [self, orderId]
@@ -260,7 +257,6 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
             });
         },
 
-
         /**
          * Create a new temporary invoice from the order
          *
@@ -278,6 +274,35 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
                     onError  : reject,
                     orderId  : orderId,
                     showError: false
+                });
+            });
+        },
+
+        /**
+         * Add a payment to an order
+         *
+         * @param {Number|String} orderId - id or hash
+         * @param {Number} amount
+         * @param {String} paymentMethod
+         * @param {Number|String} [date]
+         */
+        addPaymentToOrder: function (orderId, amount, paymentMethod, date) {
+            var self = this;
+
+            date = date || false;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_addPayment', function (id) {
+                    self.fireEvent('addPaymentToOrder', [self, orderId, id]);
+                    resolve(id);
+                }, {
+                    'package'    : 'quiqqer/order',
+                    orderId      : orderId,
+                    amount       : amount,
+                    paymentMethod: paymentMethod,
+                    date         : date,
+                    onError      : reject,
+                    showError    : false
                 });
             });
         }

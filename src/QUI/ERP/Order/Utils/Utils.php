@@ -49,6 +49,33 @@ class Utils
     }
 
     /**
+     * Return the shopping cart site object
+     *
+     * @param QUI\Projects\Project $Project
+     * @return QUI\Projects\Site
+     *
+     * @throws QUI\ERP\Order\Exception
+     */
+    public static function getShoppingCart(QUI\Projects\Project $Project)
+    {
+        $sites = $Project->getSites([
+            'where' => [
+                'type' => 'quiqqer/order:types/shoppingCart'
+            ],
+            'limit' => 1
+        ]);
+
+        if (isset($sites[0])) {
+            return $sites[0];
+        }
+
+        throw new QUI\ERP\Order\Exception([
+            'quiqqer/order',
+            'exception.order.process.not.found'
+        ]);
+    }
+
+    /**
      * @param QUI\Projects\Project $Project
      * @return QUI\Projects\Site
      *
@@ -159,8 +186,8 @@ class Utils
 
         $ending = false;
 
-        if (strpos($url, '.html')) {
-            $url    = str_replace('.html', '', $url);
+        if (\strpos($url, '.html')) {
+            $url    = \str_replace('.html', '', $url);
             $ending = true;
         }
 
@@ -188,30 +215,31 @@ class Utils
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
-            return date('Y').'-';
+            return \date('Y').'-';
         }
 
         if ($setting === false) {
-            return date('Y').'-';
+            return \date('Y').'-';
         }
 
-        $prefix = strftime($setting);
+        $prefix = \strftime($setting);
 
-        if (mb_strlen($prefix) < 100) {
+        if (\mb_strlen($prefix) < 100) {
             return $prefix;
         }
 
-        return mb_substr($prefix, 0, 100);
+        return \mb_substr($prefix, 0, 100);
     }
 
     /**
      * Can another payment method be chosen if the payment method does not work in an order?
      *
-     * @param QUI\ERP\Accounting\Payments\Types\Payment $Payment
+     * @param QUI\ERP\Accounting\Payments\Types\PaymentInterface $Payment
      * @return bool
      */
-    public static function isPaymentChangeable(QUI\ERP\Accounting\Payments\Types\Payment $Payment)
-    {
+    public static function isPaymentChangeable(
+        QUI\ERP\Accounting\Payments\Types\PaymentInterface $Payment
+    ) {
         $Settings = QUI\ERP\Order\Settings::getInstance();
 
         return (bool)$Settings->get('paymentChangeable', $Payment->getId());
@@ -227,7 +255,7 @@ class Utils
         QUI\ERP\Products\Product\ProductList $List,
         $products = []
     ) {
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 

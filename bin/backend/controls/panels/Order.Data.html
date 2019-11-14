@@ -137,7 +137,7 @@
             <td>
                 <label class="field-container">
                     <input type="checkbox" name="differentDeliveryAddress"/>
-                    <span>Der Lieferadresse weicht von der Rechnungsadresse ab</span>
+                    <span>{{messageDifferentDeliveryAddress}}</span>
                 </label>
             </td>
         </tr>
@@ -241,6 +241,19 @@
                            value="{{ordered_by}}"
                            disabled
                     />
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textStatus}}">
+                        {{textStatus}}
+                    </span>
+                    <span class="field-container-field field-container-field-no-padding order-data-status-field">
+                        <span class="order-data-status-field-colorPreview"></span>
+                        <select name="status" class="order-data-status-field-select" disabled></select>
+                    </span>
                 </label>
             </td>
         </tr>

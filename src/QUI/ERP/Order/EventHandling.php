@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
+use Quiqqer\Engine\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use QUI;
@@ -24,16 +25,24 @@ class EventHandling
      *
      * @param QUI\ERP\Products\Interfaces\ProductInterface $Product
      * @param Collection $Collection
+     * @param $ProductControl
      */
     public static function onQuiqqerProductsProductViewButtons(
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
-        Collection &$Collection
+        Collection &$Collection,
+        $ProductControl = null
     ) {
-        $Collection = $Collection->append(
-            new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
-                'Product' => $Product
-            ])
-        );
+        $Button = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
+            'Product' => $Product
+        ]);
+
+        if ($ProductControl
+            && $ProductControl->existsAttribute('data-qui-option-available')
+            && $ProductControl->getAttribute('data-qui-option-available') === false) {
+            $Button->setAttribute('disabled', true);
+        }
+
+        $Collection = $Collection->append($Button);
     }
 
     /**
@@ -45,28 +54,32 @@ class EventHandling
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
+        if (\defined('QUIQQER_AJAX')) {
+            return;
+        }
+
         try {
             $Project      = $Rewrite->getProject();
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-            $path         = trim($CheckoutSite->getUrlRewritten(), '/');
+            $path         = \trim($CheckoutSite->getUrlRewritten(), '/');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
             return;
         }
 
-        if (strpos($requestedUrl, $path) === false) {
+        if (\strpos($requestedUrl, $path) === false) {
             return;
         }
 
-        if (strpos($requestedUrl, $path) !== 0) {
+        if (\strpos($requestedUrl, $path) !== 0) {
             return;
         }
 
         // order hash
-        $parts = explode('/', $requestedUrl);
+        $parts = \explode('/', $requestedUrl);
 
-        if (count($parts) > 2) {
+        if (\count($parts) > 2) {
             // load order
             $orderHash = $parts[2];
 
@@ -87,10 +100,10 @@ class EventHandling
 
             $Processing = new Controls\OrderProcess\Processing();
 
-            $steps   = array_keys($OrderProcess->getSteps());
+            $steps   = \array_keys($OrderProcess->getSteps());
             $steps[] = 'Order';
             $steps[] = $Processing->getName();
-            $steps   = array_flip($steps);
+            $steps   = \array_flip($steps);
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
@@ -248,6 +261,10 @@ class EventHandling
      */
     public static function onQuiqqerOrderCreated(Order $Order)
     {
+        if (Settings::getInstance()->get('order', 'sendAdminOrderConfirmation')) {
+            Mail::sendAdminOrderConfirmationMail($Order);
+        }
+
         if (Settings::getInstance()->get('order', 'sendOrderConfirmation')) {
             Mail::sendOrderConfirmationMail($Order);
         }
@@ -263,10 +280,15 @@ class EventHandling
             return;
         }
 
-        // create invoice payment status
+        // create order status
         $Handler = ProcessingStatus\Handler::getInstance();
         $Factory = ProcessingStatus\Factory::getInstance();
         $list    = $Handler->getList();
+
+        // (Re-)create translations for status change notification
+        foreach ([1, 2, 3, 4, 5] as $statusId) {
+            $Handler->createNotificationTranslations($statusId);
+        }
 
         if (!empty($list)) {
             return;
@@ -299,5 +321,103 @@ class EventHandling
 
         // storniert
         $Factory->createProcessingStatus(5, '#adadad', $getLocaleTranslations('processing.status.default.5'));
+    }
+
+    /**
+     * @param Collector $Collection
+     * @param QUI\ERP\Products\Product\Types\Product $Product
+     */
+    public static function onDetailEquipmentButtons(
+        Collector $Collection,
+        QUI\ERP\Products\Product\Types\Product $Product
+    ) {
+        // add to basket -> only for complete products
+        // variant products cant be added directly
+        if ($Product instanceof QUI\ERP\Products\Product\Product
+            || $Product instanceof QUI\ERP\Products\Product\Types\VariantChild) {
+            /* @var $Product QUI\ERP\Products\Product\Product */
+            $AddToBasket = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
+                'Product' => $Product,
+                'input'   => false
+            ]);
+
+            $Collection->append(
+                $AddToBasket->create()
+            );
+
+            return;
+        }
+
+        try {
+            $url = $Product->getUrl();
+
+            $Collection->append(
+                '<a href="'.$url.'"><span class="fa fa-chevron-right"></span></a>'
+            );
+        } catch (QUI\Exception $Exception) {
+        }
+    }
+
+    /**
+     * @param QUI\Template $Template
+     */
+    public static function onTemplateGetHeader(QUI\Template $Template)
+    {
+        $Template->extendFooter(
+            '<script>
+                (function() {
+                    if (window.location.hash === "#checkout") { 
+                        require(["package/quiqqer/order/bin/frontend/controls/orderProcess/Window"], function(Window) { 
+                            new Window().open();
+                        });
+                    }
+                })();
+            </script>'
+        );
+    }
+
+    /**
+     * quiqqer/order: onQuiqqerOrderProcessStatusChange
+     *
+     * Sends notifications if an order status is changed (automatically)
+     *
+     * @param AbstractOrder $Order
+     * @param ProcessingStatus\Status $Status
+     */
+    public static function onQuiqqerOrderProcessStatusChange(AbstractOrder $Order, ProcessingStatus\Status $Status)
+    {
+        // Do not send auto-notification if the Order was manually saved (backend)
+        if ($Order->getAttribute('userSave')) {
+            return;
+        }
+
+        if (!$Status->isAutoNotification()) {
+            return;
+        }
+
+        try {
+            QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->sendStatusChangeNotification(
+                $Order,
+                $Status->getId()
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+    }
+
+    /**
+     * @param QUI\Users\User $User
+     * @param QUI\ERP\Comments $Comments
+     */
+    public static function onQuiqqerErpGetCommentsByUser(
+        QUI\Users\User $User,
+        QUI\ERP\Comments $Comments
+    ) {
+        $Handler = Handler::getInstance();
+        $orders  = $Handler->getOrdersByUser($User);
+
+        foreach ($orders as $Order) {
+            $Comments->import($Order->getComments());
+        }
     }
 }

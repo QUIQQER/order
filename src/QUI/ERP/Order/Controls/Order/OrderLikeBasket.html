@@ -8,14 +8,16 @@
         <span>{$Order->getCreateDate()}</span>
     </div>
 
+    {if !($Order instanceof QUI\ERP\Order\OrderInProcess)}
     <span class="quiqqer-order-control-order-header-placer">|</span>
 
     <div class="quiqqer-order-control-order-header-id">
         <span>{locale group="quiqqer/order" var="control.order.details.orderNo"}</span>
         <span>{$Order->getId()}</span>
     </div>
+    {/if}
 
-    {if $Order->getAttribute('downloadLink') || $Order->isSuccessful() === false}
+    {if $Order->isPosted() && $Order->getAttribute('downloadLink') || $Order->isSuccessful() === false}
     <span class="quiqqer-order-control-order-header-placer">|</span>
     {/if}
 
@@ -60,17 +62,60 @@
             </h2>
         </header>
 
-        <img src="{$Payment->getIcon()}" class="quiqqer-order-control-order-information-payment-icon"/>
         <div class="quiqqer-order-control-order-information-payment-title">
             {$Payment->getTitle()}
         </div>
+
+        <img src="{$Payment->getIcon()}"
+             class="quiqqer-order-control-order-information-payment-icon"
+             alt="{$Payment->getTitle()}"
+        />
+
         <div class="quiqqer-order-control-order-information-payment-description">
             {$Payment->getDescription()}
         </div>
-
     </section>
     {/if}
 </div>
+
+{if $shippingIsInstalled && ($DeliveryAddress || $Shipping)}
+<div class="quiqqer-order-control-order-information-delivery">
+    {if $DeliveryAddress}
+    <section class="quiqqer-order-control-order-information-delivery-address">
+        <header>
+            <h2>
+                {locale group="quiqqer/order" var="control.order.deliveryAddress.title"}
+            </h2>
+        </header>
+
+        {if $DeliveryAddress->getId() === $Address->getId()}
+        <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+        {elseif $DeliveryAddress}
+        {$DeliveryAddress->render(['tel' => false, 'mail' => false])}
+        {/if}
+    </section>
+    {/if}
+
+    {if $Shipping}
+    <section class="quiqqer-order-control-order-information-shipping">
+        <header>
+            <h2>
+                {locale group="quiqqer/order" var="control.order.shipping.title"}
+            </h2>
+        </header>
+
+        <p>
+            {$Shipping->getTitle()}
+        </p>
+
+        <img src="{$Shipping->getIcon()}"
+             alt="{$Shipping->getTitle()}"
+             class="quiqqer-order-control-order-information-shipping-icon"
+        />
+    </section>
+    {/if}
+</div>
+{/if}
 
 <section class="quiqqer-order-control-order-articles">
     <header>
@@ -80,7 +125,7 @@
     </header>
 
     {assign var=pos value=1}
-    {foreach $Articles as $Article}
+    {foreach $Articles->getArticles() as $Article}
     <article>
         <div class="quiqqer-order-profile-orders-order-articles-article-pos">
             {$pos}.
@@ -106,13 +151,15 @@
             <div class="quiqqer-order-profile-orders-order-articles-article-description">
                 {$Article->getDescription()}
 
-                {assign var=customFields value=$Article->getCustomFields()}
+                {assign var=customFields value=$Article->getView()->getCustomFields()}
                 {if count($customFields)}
                 <ul class="quiqqer-order-profile-orders-order-articles-article-description-customFields">
                     {foreach $customFields as $field}
                     <li class="quiqqer-order-profile-orders-order-articles-article-description-customFields-field">
                         <span>{$field.title}:</span>
+                        {if isset($field.custom_calc) && isset($field.custom_calc.valueText)}
                         <span>{$field.custom_calc.valueText}</span>
+                        {/if}
                     </li>
                     {/foreach}
                 </ul>
@@ -134,10 +181,14 @@
     <table class="quiqqer-order-control-order-information-orderData-table">
         <tr class="quiqqer-order-control-order-information-orderData-subSum">
             <td class="quiqqer-order-control-order-information-orderData-subSum-title">
-                {locale group="quiqqer/order" var="control.order.overview.subSum"}
+                <span class="quiqqer-order-control-order-information-orderData-subSum-text">
+                    {locale group="quiqqer/order" var="control.order.overview.subSum"}
+                </span>
             </td>
             <td class="quiqqer-order-control-order-information-orderData-subSum-sum">
-                {$Calculation->getSubSum()->formatted()}
+                <span class="quiqqer-order-control-order-information-orderData-subSum-value">
+                    {$Calculation->getSubSum()->formatted()}
+                </span>
             </td>
         </tr>
         {foreach $PriceFactors as $Factor}
@@ -167,10 +218,14 @@
         {/foreach}
         <tr>
             <td class="quiqqer-order-control-order-information-orderData-sum-title">
-                {locale group="quiqqer/order" var="control.order.overview.sum"}
+                <span class="quiqqer-order-control-order-information-orderData-sum-text">
+                    {locale group="quiqqer/order" var="control.order.overview.sum"}
+                </span>
             </td>
             <td class="quiqqer-order-control-order-information-orderData-sum">
-                {$Calculation->getSum()->formatted()}
+                <span class="quiqqer-order-control-order-information-orderData-value">
+                    {$Calculation->getSum()->formatted()}
+                </span>
             </td>
         </tr>
     </table>

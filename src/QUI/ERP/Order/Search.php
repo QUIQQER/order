@@ -51,6 +51,13 @@ class Search extends Singleton
     protected $cache = [];
 
     /**
+     * currency of the searched orders
+     *
+     * @var string
+     */
+    protected $currency = '';
+
+    /**
      * Set a filter
      *
      * @param string $filter
@@ -64,13 +71,40 @@ class Search extends Singleton
             return;
         }
 
-        $keys = array_flip($this->allowedFilters);
+        if ($filter === 'currency') {
+            if (empty($value)) {
+                $this->currency = QUI\ERP\Currency\Handler::getDefaultCurrency()->getCode();
+
+                return;
+            }
+
+            try {
+                $allowed = QUI\ERP\Currency\Handler::getAllowedCurrencies();
+            } catch (QUI\Exception $Exception) {
+                return;
+            }
+
+            $allowed = \array_map(function ($Currency) {
+                /* @var $Currency QUI\ERP\Currency\Currency */
+                return $Currency->getCode();
+            }, $allowed);
+
+            $allowed = \array_flip($allowed);
+
+            if (isset($allowed[$value])) {
+                $this->currency = $value;
+            }
+
+            return;
+        }
+
+        $keys = \array_flip($this->allowedFilters);
 
         if (!isset($keys[$filter]) && $filter !== 'from' && $filter !== 'to') {
             return;
         }
 
-        if (!is_array($value)) {
+        if (!\is_array($value)) {
             $value = [$value];
         }
 
@@ -79,11 +113,11 @@ class Search extends Singleton
                 continue;
             }
 
-            if ($filter === 'from' && is_numeric($val)) {
+            if ($filter === 'from' && \is_numeric($val)) {
                 $val = date('Y-m-d 00:00:00', $val);
             }
 
-            if ($filter === 'to' && is_numeric($val)) {
+            if ($filter === 'to' && \is_numeric($val)) {
                 $val = date('Y-m-d 23:59:59', $val);
             }
 
@@ -131,8 +165,8 @@ class Search extends Singleton
             $allowed[] = $field.' desc';
         }
 
-        $order   = trim($order);
-        $allowed = array_flip($allowed);
+        $order   = \trim($order);
+        $allowed = \array_flip($allowed);
 
         if (isset($allowed[$order])) {
             $this->order = $order;
@@ -173,7 +207,7 @@ class Search extends Singleton
         $oldLimit = $this->limit;
 
         $this->limit  = false;
-        $this->filter = array_filter($this->filter, function ($filter) {
+        $this->filter = \array_filter($this->filter, function ($filter) {
             return $filter['filter'] != 'paid_status';
         });
 
@@ -182,13 +216,23 @@ class Search extends Singleton
         $this->filter = $oldFiler;
         $this->limit  = $oldLimit;
 
+        // currency
+        $Currency = null;
+
+        if (!empty($this->currency)) {
+            try {
+                $Currency = QUI\ERP\Currency\Handler::getCurrency($this->currency);
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         // result
         $result = $this->parseListForGrid($orders);
         $Grid   = new QUI\Utils\Grid();
 
         return [
             'grid'  => $Grid->parseResult($result, $count),
-            'total' => QUI\ERP\Accounting\Calc::calculateTotal($calc)
+            'total' => QUI\ERP\Accounting\Calc::calculateTotal($calc, $Currency)
         ];
     }
 
@@ -231,10 +275,31 @@ class Search extends Singleton
             ];
         }
 
+        // filter start
         $where = [];
         $binds = [];
         $fc    = 0;
 
+        // currency
+        $DefaultCurrency = QUI\ERP\Currency\Handler::getDefaultCurrency();
+
+        if (empty($this->currency)) {
+            $this->currency = $DefaultCurrency->getCode();
+        }
+
+        // fallback for old orders
+        if ($DefaultCurrency->getCode() === $this->currency) {
+            $where[] = "(currency = :currency OR currency = '')";
+        } else {
+            $where[] = 'currency = :currency';
+        }
+
+        $binds[':currency'] = [
+            'value' => $this->currency,
+            'type'  => \PDO::PARAM_STR
+        ];
+
+        // filter
         foreach ($this->filter as $filter) {
             $bind = ':filter'.$fc;
 
@@ -289,9 +354,9 @@ class Search extends Singleton
             ];
         }
 
-        $whereQuery = 'WHERE '.implode(' AND ', $where);
+        $whereQuery = 'WHERE '.\implode(' AND ', $where);
 
-        if (!count($where)) {
+        if (!\count($where)) {
             $whereQuery = '';
         }
 
@@ -400,6 +465,10 @@ class Search extends Singleton
             'payment_method',
             'payment_title',
             'processing_status',
+            'status',
+            'status_id',
+            'status_title',
+            'status_color',
             'taxId',
             'euVatId'
         ];
@@ -432,10 +501,11 @@ class Search extends Singleton
             $Customer  = $Order->getCustomer();
             $orderData = $entry;
 
+            $orderData['id']          = (int)$orderData['id'];
             $orderData['hash']        = $Order->getHash();
             $orderData['prefixed-id'] = $Order->getPrefixedId();
 
-
+            // customer data
             if (empty($orderData['customer_id'])) {
                 $orderData['customer_id'] = $Customer->getId();
 
@@ -446,19 +516,19 @@ class Search extends Singleton
 
                     $Address = $Order->getInvoiceAddress();
 
-                    if (empty(trim($orderData['customer_name']))) {
+                    if (empty(\trim($orderData['customer_name']))) {
                         $orderData['customer_name'] = $Address->getAttribute('firstname');
                         $orderData['customer_name'] .= ' ';
                         $orderData['customer_name'] .= $Address->getAttribute('lastname');
 
-                        $orderData['customer_name'] = trim($orderData['customer_name']);
+                        $orderData['customer_name'] = \trim($orderData['customer_name']);
                     }
 
                     if ($Address) {
                         $address = $Address->getAttributes();
 
                         if (!empty($address['company'])) {
-                            $orderData['customer_name'] = trim($orderData['customer_name']);
+                            $orderData['customer_name'] = \trim($orderData['customer_name']);
 
                             if (!empty($orderData['customer_name'])) {
                                 $orderData['customer_name'] = ' ('.$orderData['customer_name'].')';
@@ -472,8 +542,23 @@ class Search extends Singleton
 
             if (empty($orderData['c_date'])) {
                 $orderData['c_date'] = $DateFormatter->format(
-                    strtotime($Order->getCreateDate())
+                    \strtotime($Order->getCreateDate())
                 );
+            }
+
+            // processing status
+            $orderData['status_id']    = Handler::EMPTY_VALUE;
+            $orderData['status_title'] = Handler::EMPTY_VALUE;
+            $orderData['status_color'] = '';
+
+            try {
+                $ProcessingStatus = $Order->getProcessingStatus();
+
+                $orderData['status_id']    = $ProcessingStatus->getId();
+                $orderData['status_title'] = $ProcessingStatus->getTitle();
+                $orderData['status_color'] = $ProcessingStatus->getColor();
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::addDebug($Exception->getMessage());
             }
 
             // payment
@@ -517,13 +602,13 @@ class Search extends Singleton
             }
 
             // currency data
-            $orderData['currency_data'] = json_encode($Currency->toArray());
+            $orderData['currency_data'] = \json_encode($Currency->toArray());
 
 
             // calculation
             $transactions = $Transactions->getTransactionsByHash($Order->getHash());
 
-            $paid = array_map(function ($Transaction) {
+            $paid = \array_map(function ($Transaction) {
                 /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
                 if ($Transaction->isPending()) {
                     return 0;
@@ -532,7 +617,7 @@ class Search extends Singleton
                 return $Transaction->getAmount();
             }, $transactions);
 
-            $paid = array_sum($paid);
+            $paid = \array_sum($paid);
 
             $orderData['calculated_nettosum'] = $calculations['nettoSum'];
             $orderData['calculated_sum']      = $calculations['sum'];
@@ -544,25 +629,25 @@ class Search extends Singleton
             // vat information
             $vatArray = $calculations['vatArray'];
 
-            $vat = array_map(function ($data) use ($Currency) {
+            $vat = \array_map(function ($data) use ($Currency) {
                 return $data['text'].': '.$Currency->format($data['sum']);
             }, $vatArray);
 
-            $vatSum = array_map(function ($data) {
+            $vatSum = \array_map(function ($data) {
                 return $data['sum'];
             }, $vatArray);
 
-            $orderData['vat']               = implode('; ', $vat);
-            $orderData['display_vatsum']    = $Currency->format(array_sum($vatSum));
+            $orderData['vat']               = \implode('; ', $vat);
+            $orderData['display_vatsum']    = $Currency->format(\array_sum($vatSum));
             $orderData['calculated_vat']    = $vatSum;
-            $orderData['calculated_vatsum'] = array_sum($vatSum);
+            $orderData['calculated_vatsum'] = \array_sum($vatSum);
 
 
             // display
             $orderData['display_nettosum'] = $Currency->format($calculations['nettoSum']);
             $orderData['display_sum']      = $Currency->format($calculations['sum']);
             $orderData['display_subsum']   = $Currency->format($calculations['subSum']);
-            $orderData['display_vatsum']   = $Currency->format(array_sum($vatSum));
+            $orderData['display_vatsum']   = $Currency->format(\array_sum($vatSum));
 
             $fillFields($orderData);
 

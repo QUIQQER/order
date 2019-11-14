@@ -31,6 +31,7 @@ class BasketGuest
     {
         $this->List            = new ProductList();
         $this->List->duplicate = true;
+        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
     /**
@@ -86,7 +87,7 @@ class BasketGuest
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 
@@ -106,12 +107,29 @@ class BasketGuest
                 }
 
                 if (isset($productData['quantity'])) {
+                    if (!\is_numeric($productData['quantity'])) {
+                        $productData['quantity'] = 1;
+                    }
+
+                    $productData['quantity'] = \floatval($productData['quantity']);
+
+                    if ($productData['quantity'] < 0) {
+                        $productData['quantity'] = 1;
+                    }
+
                     $Product->setQuantity($productData['quantity']);
                 }
 
                 $this->List->addProduct($Product);
             } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
             }
+        }
+
+        try {
+            $this->List->recalculation();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
     }
 
@@ -158,8 +176,23 @@ class BasketGuest
             ];
         }
 
+        // calc data
+        $calculations = [];
+
+        try {
+            $data = $Products->getFrontendView()->toArray();
+
+            unset($data['attributes']);
+            unset($data['products']);
+
+            $calculations = $data;
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
         return [
-            'products' => $result
+            'products'     => $result,
+            'calculations' => $calculations
         ];
     }
 

@@ -11,6 +11,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'qui/controls/buttons/Separator',
     'qui/controls/windows/Confirm',
     'package/quiqqer/order/bin/backend/Orders',
+    'package/quiqqer/order/bin/backend/ProcessingStatus',
     'package/quiqqer/payments/bin/backend/Payments',
     'package/quiqqer/erp/bin/backend/controls/Comments',
     'package/quiqqer/invoice/bin/backend/controls/articles/Text',
@@ -20,10 +21,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'Mustache',
     'Users',
 
-    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html'
+    'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html',
+    'css!package/quiqqer/order/bin/backend/controls/panels/Order.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
-             Orders, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
+             Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
              templateData) {
     "use strict";
 
@@ -43,6 +45,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openCommunication',
             'openArticles',
             'openDeleteDialog',
+            'openPayments',
             'openCopyDialog',
             'openPostDialog',
             'toggleSort',
@@ -95,6 +98,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$SortSeparator = null;
 
             this.$serializedList = {};
+            this.$initialStatus  = false;
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -137,8 +141,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('customerId', data.customerId);
                     self.setAttribute('customer', data.customer);
                     self.setAttribute('data', data.data);
+                    self.setAttribute('hash', data.hash);
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
+
+                    if (data.addressDelivery) {
+                        self.setAttribute('hasDeliveryAddress', true);
+                    }
 
                     self.setAttribute('cDate', data.cDate);
                     self.setAttribute('cUser', data.cUser);
@@ -146,9 +155,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     self.setAttribute('paymentId', data.paymentId);
                     self.setAttribute('paymentMethod', data.paymentMethod);
+                    self.setAttribute('status', data.status);
 
                     if (data.articles) {
                         self.$serializedList = data.articles;
+
+                        if (typeof self.$serializedList.articles !== 'undefined') {
+                            self.setAttribute('articles', self.$serializedList.articles);
+                        }
                     }
 
                     resolve();
@@ -179,13 +193,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 addressDelivery: this.getAttribute('addressDelivery'),
                 data           : this.getAttribute('data'),
                 articles       : this.getAttribute('articles'),
-                paymentId      : this.getAttribute('paymentId')
+                paymentId      : this.getAttribute('paymentId'),
+                status         : this.getAttribute('status')
             };
 
             return new Promise(function (resolve) {
-                Orders.updateOrder(orderId, data).then(function () {
-                    resolve();
-                    self.Loader.hide();
+                self.$dialogStatusChangeNotification(data.status).then(function (notificationText) {
+                    data.notification = notificationText;
+
+                    Orders.updateOrder(orderId, data).then(function () {
+                        resolve();
+                        self.Loader.hide();
+                    });
                 });
             });
         },
@@ -345,6 +364,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 text  : QUILocale.get(lg, 'panel.order.category.articles'),
                 events: {
                     onClick: this.openArticles
+                }
+            });
+
+            this.addCategory({
+                icon  : 'fa fa-money',
+                name  : 'payments',
+                title : QUILocale.get(lg, 'panel.order.category.payment'),
+                text  : QUILocale.get(lg, 'panel.order.category.payment'),
+                events: {
+                    onClick: this.openPayments
                 }
             });
 
@@ -551,8 +580,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textOrderData           : QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate           : QUILocale.get(lg, 'panel.order.data.date'),
                         textOrderedBy           : QUILocale.get(lg, 'panel.order.data.orderedBy'),
+                        textStatus              : QUILocale.get(lg, 'panel.order.data.status'),
                         textPaymentTitle        : QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
-                        textPayment             : QUILocale.get(lg, 'order.payment.panel.payment')
+                        textPayment             : QUILocale.get(lg, 'order.payment.panel.payment'),
+
+                        messageDifferentDeliveryAddress: QUILocale.get(lg, 'message.different,delivery.address')
                     })
                 });
 
@@ -672,8 +704,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                                  .getElements('.closable')
-                                  .setStyle('display', null);
+                        .getElements('.closable')
+                        .setStyle('display', null);
                 }
 
                 if (self.getAttribute('cDate')) {
@@ -715,6 +747,77 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     Select.disabled = false;
                     Select.value    = self.getAttribute('paymentId');
+                });
+            }).then(function () {
+                // order status
+                var StatusSelect = self.getContent().getElement('.order-data-status-field-select');
+                var StatusColor  = self.getContent().getElement('.order-data-status-field-colorPreview');
+
+                StatusSelect.addEvent('change', function () {
+                    var Option = StatusSelect.getElement('[value="' + this.value + '"]');
+
+                    if (Option) {
+                        StatusColor.setStyle('backgroundColor', Option.get('data-color'));
+                    } else {
+                        StatusColor.setStyle('backgroundColor', '');
+                    }
+                });
+
+                return ProcessingStatus.getList().then(function (statusList) {
+                    statusList = statusList.data;
+
+                    new Element('option', {
+                        html        : '',
+                        value       : '',
+                        'data-color': ''
+                    }).inject(StatusSelect);
+
+                    for (var i = 0, len = statusList.length; i < len; i++) {
+                        new Element('option', {
+                            html        : statusList[i].title,
+                            value       : statusList[i].id,
+                            'data-color': statusList[i].color
+                        }).inject(StatusSelect);
+                    }
+
+                    StatusSelect.disabled = false;
+                    StatusSelect.value    = self.getAttribute('status');
+                    StatusSelect.fireEvent('change');
+
+                    if (self.$initialStatus === false) {
+                        self.$initialStatus = self.getAttribute('status');
+                    }
+                });
+            }).then(function () {
+                return self.$openCategory();
+            }).then(function () {
+                self.Loader.hide();
+            });
+        },
+
+        /**
+         * Open payments list
+         */
+        openPayments: function () {
+            var self = this;
+
+            this.Loader.show();
+            this.getCategory('payments').setActive();
+
+            return this.$closeCategory().then(function (Container) {
+                return new Promise(function (resolve) {
+                    require([
+                        'package/quiqqer/order/bin/backend/controls/panels/order/Payments'
+                    ], function (Payments) {
+                        new Payments({
+                            Panel   : self,
+                            hash    : self.getAttribute('hash'),
+                            disabled: self.$locked,
+                            events  : {
+                                onLoad: resolve
+                            }
+                        }).inject(Container);
+                    });
                 });
             }).then(function () {
                 return self.$openCategory();
@@ -1085,9 +1188,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * drop the data into the order
          */
         $unLoadCategory: function () {
-            var Content        = this.getContent(),
-                deliverAddress = Content.getElement('[name="differentDeliveryAddress"]'),
-                PaymentForm    = Content.getElement('form[name="payment"]');
+            var Content          = this.getContent(),
+                deliverAddress   = Content.getElement('[name="differentDeliveryAddress"]'),
+                PaymentForm      = Content.getElement('form[name="payment"]'),
+                ProcessingStatus = Content.getElement('[name="status"]');
 
             if (this.$AddressInvoice) {
                 this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
@@ -1104,6 +1208,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             if (this.$ArticleList) {
                 this.setAttribute('articles', this.$ArticleList.save());
                 this.$serializedList = this.$ArticleList.serialize();
+            }
+
+            // processing status
+            if (ProcessingStatus) {
+                this.setAttribute('status', ProcessingStatus.value);
             }
 
             // payments
@@ -1208,6 +1317,105 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     self.$AddProduct.setAttribute('textimage', 'fa fa-plus');
                 });
+            });
+        },
+
+        /**
+         * Prompt for a customer notification if the order status is changed
+         *
+         * @param {Number} statusId
+         * @return {Promise}
+         */
+        $dialogStatusChangeNotification: function (statusId) {
+            if (this.$initialStatus === statusId || !statusId) {
+                return Promise.resolve(false);
+            }
+
+            var NotifyTextEditor;
+            var self                      = this;
+            var notificationConfirmOpened = false;
+
+            return new Promise(function (resolve) {
+                var onNotifyConfirmSubmit = function (Win) {
+                    if (notificationConfirmOpened) {
+                        resolve(NotifyTextEditor.getContent());
+                        Win.close();
+                        return;
+                    }
+
+                    notificationConfirmOpened = true;
+
+                    Win.Loader.show();
+
+                    var SubmitBtn = Win.getButton('submit');
+                    SubmitBtn.disable();
+
+                    ProcessingStatus.getNotificationText(statusId, self.getAttribute('orderId')).then(
+                        function (notificationText) {
+                            require([
+                                'Editors'
+                            ], function (Editors) {
+                                Editors.getEditor().then(function (Editor) {
+                                    Win.Loader.hide();
+
+                                    Win.setAttribute('maxHeight', 600);
+                                    Win.resize();
+                                    SubmitBtn.setAttributes({
+                                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
+                                        textimage: 'fa fa-check'
+                                    });
+
+                                    SubmitBtn.enable();
+
+                                    var NotificationElm = new Element('div', {
+                                        'class': 'order-notification',
+                                        html   : '<span>' + QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') + '</span>'
+                                    }).inject(Win.getContent());
+
+                                    Editor.inject(NotificationElm);
+                                    Editor.setContent(notificationText);
+
+                                    NotifyTextEditor = Editor;
+                                })
+                            });
+                        }
+                    );
+                };
+
+                new QUIConfirm({
+                    title        : QUILocale.get(lg, 'dialog.statusChangeNotification.title'),
+                    text         : QUILocale.get(lg, 'dialog.statusChangeNotification.text'),
+                    information  : '',
+                    icon         : 'fa fa-envelope',
+                    texticon     : 'fa fa-envelope',
+                    maxHeight    : 275,
+                    maxWidth     : 600,
+                    autoclose    : false,
+                    ok_button    : {
+                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm'),
+                        textimage: 'fa fa-envelope'
+                    },
+                    cancel_button: {
+                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.cancel'),
+                        textimage: 'fa fa-close'
+                    },
+                    events       : {
+                        onOpen  : function (Win) {
+                            // get current status title
+                            var statusTitle = self.$Elm.getElement(
+                                'select[name="status"] option[value="' + statusId + '"]'
+                            ).innerHTML;
+
+                            Win.setAttribute('information', QUILocale.get(lg, 'dialog.statusChangeNotification.information', {
+                                statusTitle: statusTitle
+                            }));
+                        },
+                        onSubmit: onNotifyConfirmSubmit,
+                        onCancel: function () {
+                            return resolve(false);
+                        }
+                    }
+                }).open();
             });
         }
     });

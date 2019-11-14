@@ -12,6 +12,8 @@ use QUI;
  * Class CustomerData
  *
  * @package QUI\ERP\Order\Controls\OrderProcess
+ *
+ * @event quiqqerOrderCustomerDataSave [ self ]
  */
 class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
@@ -30,10 +32,12 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         ]);
 
         $this->addCSSClass('quiqqer-order-customerData-container');
-        $this->addCSSFile(dirname(__FILE__).'/CustomerData.css');
+        $this->addCSSFile(\dirname(__FILE__).'/CustomerData.css');
     }
 
     /**
+     * Return the body
+     *
      * @return string
      */
     public function getBody()
@@ -121,13 +125,14 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine->assign([
             'User'            => $User,
             'Address'         => $Address,
+            'Order'           => $this->getOrder(),
             'isB2B'           => QUI\ERP\Utils\Shop::isOnlyB2B() || QUI\ERP\Utils\Shop::isOnlyB2C(),
             'b2bSelected'     => $isB2B(),
             'commentMessage'  => $commentMessage,
             'commentCustomer' => $commentCustomer
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');
+        return $Engine->fetch(\dirname(__FILE__).'/CustomerData.html');
     }
 
     /**
@@ -180,9 +185,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $firstName = $Address->getAttribute('firstname');
         $lastName  = $Address->getAttribute('lastname');
         $street_no = $Address->getAttribute('street_no');
-        $zip       = $Address->getAttribute('zip');
-        $city      = $Address->getAttribute('city');
-        $country   = $Address->getAttribute('country');
+//        $zip       = $Address->getAttribute('zip');
+        $city    = $Address->getAttribute('city');
+        $country = $Address->getAttribute('country');
 
         /**
          * @param $field
@@ -214,11 +219,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
-        if (empty($zip)) {
-            $throwException(
-                QUI::getLocale()->get('quiqqer/order', 'zip')
-            );
-        }
+//        if (empty($zip)) {
+//            $throwException(
+//                QUI::getLocale()->get('quiqqer/order', 'zip')
+//            );
+//        }
 
         if (empty($city)) {
             $throwException(
@@ -253,6 +258,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if (!isset($_REQUEST['addressId'])) {
             return;
         }
+
+        QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSave', [$this]);
 
         $Address = $this->getAddressById((int)$_REQUEST['addressId']);
 
@@ -409,9 +416,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     }
 
     /**
-     * event on execute payable status
+     * event on order is successful
+     *
+     * @param QUI\ERP\Order\AbstractOrder $Order
      */
-    public function onExecutePayableStatus()
+    public static function onQuiqqerOrderSuccessful(QUI\ERP\Order\AbstractOrder $Order)
     {
         $message = '';
 
@@ -423,13 +432,13 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $message .= QUI::getSession()->get('comment-message');
         }
 
-        $message = trim($message);
+        $message = \trim($message);
 
         if (empty($message)) {
             return;
         }
 
-        $Comments = $this->getOrder()->getComments();
+        $Comments = $Order->getComments();
         $comments = $Comments->toArray();
 
         // look if the same comment already exists
@@ -442,7 +451,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Comments->addComment($message);
 
         try {
-            $this->getOrder()->save(QUI::getUsers()->getSystemUser());
+            $Order->save(QUI::getUsers()->getSystemUser());
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

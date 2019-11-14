@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
+use QUI\ERP\Order\AbstractOrder;
 
 /**
  * Class Handler
@@ -44,7 +45,7 @@ class Handler extends QUI\Utils\Singleton
             return [];
         }
 
-        if (!$result || !is_array($result)) {
+        if (!$result || !\is_array($result)) {
             $this->list = [];
 
             return $this->list;
@@ -58,7 +59,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Return the complete processing status objects
      *
-     * @return array
+     * @return Status[]
      */
     public function getProcessingStatusList()
     {
@@ -79,12 +80,16 @@ class Handler extends QUI\Utils\Singleton
      * Return a processing status
      *
      * @param $id
-     * @return Status
+     * @return Status|StatusUnknown
      *
      * @throws Exception
      */
     public function getProcessingStatus($id)
     {
+        if ($id === 0) {
+            return new StatusUnknown();
+        }
+
         return new Status($id);
     }
 
@@ -115,6 +120,28 @@ class Handler extends QUI\Utils\Singleton
         $Config  = $Package->getConfig();
 
         $Config->del('processing_status', $Status->getId());
+        $Config->save();
+    }
+
+    /**
+     * Set auto-notification setting for a status
+     *
+     * @param int $id - ProcessingStatus ID
+     * @param bool $notify - Auto-notification if an order is changed to the given status?
+     * @return void
+     *
+     * @throws Exception
+     * @throws QUI\Exception
+     */
+    public function setProcessingStatusNotification($id, $notify)
+    {
+        $Status = $this->getProcessingStatus($id);
+
+        // update config
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config  = $Package->getConfig();
+
+        $Config->setValue('processing_status_notification', $Status->getId(), $notify ? "1" : "0");
         $Config->save();
     }
 
@@ -158,12 +185,105 @@ class Handler extends QUI\Utils\Singleton
 
         QUI\Translator::publish('quiqqer/order');
 
-
         // update config
         $Package = QUI::getPackage('quiqqer/order');
         $Config  = $Package->getConfig();
 
         $Config->setValue('processing_status', $Status->getId(), $color);
         $Config->save();
+    }
+
+    /**
+     * Create translations for status notification
+     *
+     * @param int $id
+     * @return void
+     */
+    public function createNotificationTranslations($id)
+    {
+        $data = [
+            'package'  => 'quiqqer/order',
+            'datatype' => 'php,js',
+            'html'     => 1
+        ];
+
+        // translations
+        $L         = new QUI\Locale();
+        $languages = QUI::availableLanguages();
+
+        foreach ($languages as $language) {
+            $L->setCurrent($language);
+            $data[$language] = $L->get('quiqqer/order', 'processing.status.notification.template');
+        }
+
+        try {
+            // Check if transaltion already exists
+            $translation = QUI\Translator::get('quiqqer/order', 'processing.status.notification.'.$id);
+
+            if (!empty($translation)) {
+                return;
+            }
+
+            // ProcessingStatus notification messages
+            QUI\Translator::addUserVar(
+                'quiqqer/order',
+                'processing.status.notification.'.$id,
+                $data
+            );
+
+            QUI\Translator::publish('quiqqer/order');
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+    }
+
+    /**
+     * Notify customer about an Order status change (via e-mail)
+     *
+     * @param AbstractOrder $Order
+     * @param int $statusId
+     * @param string $message (optional) - Custom notification message [default: default status change message]
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function sendStatusChangeNotification(AbstractOrder $Order, $statusId, $message = null)
+    {
+        $Customer      = $Order->getCustomer();
+        $customerEmail = $Customer->getAttribute('email');
+
+        if (empty($customerEmail)) {
+            QUI\System\Log::addWarning(
+                'Status change notification for order #'.$Order->getPrefixedId().' cannot be sent'
+                .' because customer #'.$Customer->getId().' has no e-mail address.'
+            );
+
+            return;
+        }
+
+        if (empty($message)) {
+            $Status  = $this->getProcessingStatus($statusId);
+            $message = $Status->getStatusChangenNotificationText($Order);
+        }
+
+        $Mailer = new QUI\Mail\Mailer();
+        /** @var QUI\Locale $Locale */
+        $Locale = $Order->getCustomer()->getLocale();
+
+        $Mailer->setSubject(
+            $Locale->get('quiqqer/order', 'processing.status.notification.subject', [
+                'orderNo' => $Order->getPrefixedId()
+            ])
+        );
+
+        $Mailer->setBody($message);
+        $Mailer->addRecipient($customerEmail);
+
+        try {
+            $Mailer->send();
+            $Order->addStatusMail($message);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 }

@@ -41,6 +41,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     {
         $this->Order    = $Order;
         $this->Articles = $this->Order->getArticles();
+        $this->Articles->setCurrency($Order->getCurrency());
 
         $this->setAttributes($this->Order->getAttributes());
     }
@@ -67,6 +68,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function getId()
     {
         return $this->Order->getIdPrefix().$this->Order->getId();
+    }
+
+    /**
+     * @return ProcessingStatus\Status
+     * @throws ProcessingStatus\Exception
+     */
+    public function getProcessingStatus()
+    {
+        return $this->Order->getProcessingStatus();
     }
 
     /**
@@ -123,11 +133,11 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function getCreateDate()
     {
         $createDate = $this->Order->getCreateDate();
-        $createDate = strtotime($createDate);
+        $createDate = \strtotime($createDate);
 
         $DateFormatter = QUI::getLocale()->getDateFormatter(
             \IntlDateFormatter::SHORT,
-            \IntlDateFormatter::SHORT
+            \IntlDateFormatter::NONE
         );
 
         return $DateFormatter->format($createDate);
@@ -269,6 +279,32 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function getArticles()
     {
         return $this->Articles;
+    }
+
+    //endregion
+
+    //region shipping
+
+    /**
+     * do nothing, its a view
+     */
+    public function setShipping(\QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    {
+    }
+
+    /**
+     * @return QUI\ERP\Shipping\Types\ShippingEntry|null
+     */
+    public function getShipping()
+    {
+        return $this->Order->getShipping();
+    }
+
+    /**
+     * do nothing, its a view
+     */
+    public function removeShipping()
+    {
     }
 
     //endregion

@@ -26,21 +26,34 @@
  ==========================================  */
 
 .quiqqer-order-control-order-information {
-    border-top: 1px solid #DEDEDE;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
     float: left;
     margin-top: 20px;
-    padding-top: 20px;
+    padding: 20px 10px 10px 10px;
+    width: 100%;
+}
+
+.quiqqer-order-control-order-information-delivery {
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    float: left;
+    margin-top: 20px;
+    padding: 20px 10px 10px 10px;
     width: 100%;
 }
 
 .quiqqer-order-control-order-information-payment,
 .quiqqer-order-control-order-information-invoiceAddress,
-.quiqqer-order-control-order-information-orderData {
+.quiqqer-order-control-order-information-orderData,
+.quiqqer-order-control-order-information-delivery-address,
+.quiqqer-order-control-order-information-shipping {
     float: left;
     margin-bottom: 20px;
     width: 50%;
 }
 
+.quiqqer-order-control-order-information-delivery h2,
 .quiqqer-order-control-order-information h2 {
     font-size: 20px;
     margin: 0 0 10px;
@@ -63,9 +76,10 @@
     clear: both;
 }
 
+.quiqqer-order-control-order-information-shipping-icon,
 .quiqqer-order-control-order-information-payment-icon {
     float: left;
-    max-width: 30%;
+    max-width: 100%;
 }
 
 .quiqqer-order-control-order-information-payment-title {
@@ -77,9 +91,10 @@
  ==========================================  */
 
 .quiqqer-order-control-order-articles {
+    border: 1px solid #ddd;
     float: left;
-    border-top: 1px solid #DEDEDE;
-    padding-top: 20px;
+    margin-top: 20px;
+    padding: 20px 20px 10px 10px;
     width: 100%;
 }
 
@@ -120,6 +135,7 @@
 
 .quiqqer-order-profile-orders-order-articles-article-price {
     margin-top: 10px;
+    text-align: right;
 }
 
 .quiqqer-order-profile-orders-order-articles-article-quantity {

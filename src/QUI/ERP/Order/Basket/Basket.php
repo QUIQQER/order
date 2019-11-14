@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Basket\Baseket
+ * This file contains QUI\ERP\Order\Basket\Basket
  */
 
 namespace QUI\ERP\Order\Basket;
@@ -58,10 +58,7 @@ class Basket
         }
 
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
-            throw new Exception([
-                'quiqqer/order',
-                'exception.basket.not.found'
-            ], 404);
+            return;
         }
 
         $this->List            = new ProductList();
@@ -70,6 +67,9 @@ class Basket
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
         } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return;
         }
 
         if (isset($Exception)) {
@@ -90,7 +90,8 @@ class Basket
         $this->User = $User;
         $this->hash = $data['hash'];
 
-        $this->import(json_decode($data['products'], true));
+        $this->import(\json_decode($data['products'], true));
+        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
     /**
@@ -109,29 +110,6 @@ class Basket
     public function clear()
     {
         $this->List->clear();
-
-        // if the order is successful, then create a new
-        try {
-            $Order = $this->getOrder();
-        } catch (QUI\Exception $Exception) {
-            try {
-                $Order = $this->createNewOrder();
-            } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-
-                return;
-            }
-        }
-
-        if ($Order->isSuccessful()) {
-            try {
-                // create a new in process
-                $NewOrder   = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
-                $this->hash = $NewOrder->getHash();
-            } catch (QUi\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-            }
-        }
     }
 
     /**
@@ -194,7 +172,7 @@ class Basket
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 
@@ -202,6 +180,14 @@ class Basket
             $this->List,
             $products
         );
+
+        try {
+            $this->List->recalculate();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+        $this->save();
     }
 
     /**
@@ -240,17 +226,21 @@ class Basket
             $result[] = $productData;
         }
 
-        QUI::getDataBase()->update(
-            QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            [
-                'products' => json_encode($result),
-                'hash'     => $this->hash
-            ],
-            [
-                'id'  => $this->getId(),
-                'uid' => $this->User->getId()
-            ]
-        );
+        try {
+            QUI::getDataBase()->update(
+                QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+                [
+                    'products' => \json_encode($result),
+                    'hash'     => $this->hash
+                ],
+                [
+                    'id'  => $this->getId(),
+                    'uid' => $this->User->getId()
+                ]
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 
     /**
@@ -292,8 +282,12 @@ class Basket
         $calculations = [];
 
         try {
-            $data         = $Products->toArray();
-            $calculations = $data['calculations'];
+            $data = $Products->getFrontendView()->toArray();
+
+            unset($data['attributes']);
+            unset($data['products']);
+
+            $calculations = $data;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -377,15 +371,6 @@ class Basket
     public function updateOrder()
     {
         try {
-            // insert basket products into the articles
-            $Products = $this->getProducts()->calc();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return;
-        }
-
-        try {
             $Order = $this->getOrder();
         } catch (QUI\Exception $Exception) {
             if ($Exception->getCode() !== QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND) {
@@ -397,10 +382,33 @@ class Basket
             $Order = $this->createNewOrder();
         }
 
+        $this->toOrder($Order);
+        $this->setHash($Order->getHash());
+    }
+
+    /**
+     * @param QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess $Order
+     *
+     * @throws QUI\ERP\Exception
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     * @throws QUI\Permissions\Exception
+     */
+    public function toOrder($Order)
+    {
+        try {
+            // insert basket products into the articles
+            $Products = $this->getProducts()->calc();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+
+            return;
+        }
+
         // update the data
         $products = $Products->getProducts();
 
-        $Order->clearArticles();
+        $Order->clear();
 
         foreach ($products as $Product) {
             try {
@@ -410,6 +418,8 @@ class Basket
                 QUI\System\Log::writeDebugException($Exception);
             }
         }
+
+        $Order->save();
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderBasketToOrder',
@@ -425,7 +435,10 @@ class Basket
         $Order->getArticles()->calc();
         $Order->save();
 
-        $this->setHash($Order->getHash());
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderEnd',
+            [$this, $Order, $Products]
+        );
     }
 
     /**

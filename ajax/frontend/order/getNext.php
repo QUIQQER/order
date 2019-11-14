@@ -13,30 +13,41 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getNext',
-    function ($current, $orderHash) {
-        $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderHash' => $orderHash,
-            'step'      => $current
-        ]);
+    function ($current, $orderHash, $basketEditable) {
+        try {
+            if (!isset($basketEditable) || $basketEditable === '') {
+                $basketEditable = true;
+            }
 
-        $Next = $OrderProcess->getNextStep();
+            $OrderProcess = new QUI\ERP\Order\OrderProcess([
+                'orderHash'      => $orderHash,
+                'step'           => $current,
+                'basketEditable' => \boolval($basketEditable)
+            ]);
 
-        if (!$Next) {
-            $Next = $OrderProcess->getFirstStep();
+            $Next = $OrderProcess->getNextStep();
+
+            if (!$Next) {
+                $Next = $OrderProcess->getFirstStep();
+            }
+
+            $OrderProcess->setAttribute('step', $Next->getName());
+
+            $html    = $OrderProcess->create();
+            $Current = $OrderProcess->getCurrentStep();
+            $current = $Current->getName();
+
+            return [
+                'html' => $html,
+                'step' => $current,
+                'url'  => $OrderProcess->getStepUrl($Current->getName()),
+                'hash' => $OrderProcess->getStepHash()
+            ];
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            throw new QUI\Exception('Something went wrong');
         }
-
-        $OrderProcess->setAttribute('step', $Next->getName());
-
-        $html    = $OrderProcess->create();
-        $Current = $OrderProcess->getCurrentStep();
-        $current = $Current->getName();
-
-        return [
-            'html' => $html,
-            'step' => $current,
-            'url'  => $OrderProcess->getStepUrl($Current->getName()),
-            'hash' => $OrderProcess->getStepHash()
-        ];
     },
-    ['current', 'orderHash']
+    ['current', 'orderHash', 'basketEditable']
 );

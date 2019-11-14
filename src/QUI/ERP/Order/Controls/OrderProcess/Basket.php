@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
+use QUI\ERP\Coupons\Handler;
 use QUI\ERP\Order\Controls\Basket\Basket as BasketControl;
 
 /**
@@ -27,13 +28,21 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param array $attributes
      *
-     * @throws QUI\ERP\Order\Basket\Exception
+     * @throws QUI\Exception
      */
     public function __construct($attributes = [])
     {
+        $this->setAttributes([
+            'editable' => true
+        ]);
+
         parent::__construct($attributes);
 
-        if ($this->getAttribute('Basket')) {
+        if ($this->getAttribute('Order')) {
+            $this->Basket = new QUI\ERP\Order\Basket\BasketOrder(
+                $this->getAttribute('Order')->getHash()
+            );
+        } elseif ($this->getAttribute('Basket')) {
             $this->Basket = $this->getAttribute('Basket');
         } else {
             $this->Basket = new QUI\ERP\Order\Basket\Basket(
@@ -41,7 +50,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
-        $this->addCSSFile(dirname(__FILE__).'/Basket.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Basket.css');
         $this->addCSSClass('quiqqer-order-step-basket');
         $this->setAttribute('nodeName', 'section');
     }
@@ -82,6 +91,44 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 'exception.basket.has.no.articles'
             ]);
         }
+
+        /* @var $OrderProcess QUI\ERP\Order\OrderProcess */
+        $OrderProcess = $this->getAttribute('OrderProcess');
+
+        // clean up 0 articles
+        try {
+            if ($OrderProcess) {
+                $Current = $OrderProcess->getCurrentStep();
+
+                // if current step is basket, we need no cleanup ... only later
+                if ($Current instanceof QUI\ERP\Order\Controls\Basket\Basket) {
+                    return;
+                }
+            }
+
+            $Order    = $this->Basket->getOrder();
+            $Articles = $Order->getArticles();
+            $empty    = [];
+
+            foreach ($Articles as $key => $Article) {
+                if (!$Article->getQuantity()) {
+                    $empty[] = $key;
+                }
+            }
+
+            foreach ($empty as $pos) {
+                $Order->removeArticle($pos);
+            }
+
+            $Order->save();
+
+            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
+            $products    = $BasketOrder->getProducts()->toArray();
+
+            $this->Basket->import($products['products']);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**
@@ -89,11 +136,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function showNext()
     {
-        if (!$this->Basket->count()) {
-            return false;
-        }
-
-        return true;
+        return (bool)$this->Basket->count();
     }
 
     /**
@@ -103,21 +146,30 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getBody()
     {
+        if ($this->Basket instanceof QUI\ERP\Order\Basket\BasketOrder) {
+            $this->Basket->refresh();
+        }
+
         $Engine = QUI::getTemplateManager()->getEngine();
 
         if (!$this->Basket->count()) {
-            return $Engine->fetch(dirname(__FILE__).'/BasketEmpty.html');
+            return $Engine->fetch(\dirname(__FILE__).'/BasketEmpty.html');
         }
 
-        $BasketControl = new BasketControl();
+        $BasketControl = new BasketControl([
+            'editable' => $this->getAttribute('editable')
+        ]);
+
         $BasketControl->setBasket($this->Basket);
 
         $Engine->assign([
             'BasketControl' => $BasketControl,
-            'Basket'        => $this->Basket
+            'Basket'        => $this->Basket,
+            'Order'         => $this->getAttribute('Order'),
+            'this'          => $this
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Basket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
     }
 
     /**
@@ -125,5 +177,6 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function save()
     {
+        $this->Basket->save();
     }
 }

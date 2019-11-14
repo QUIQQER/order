@@ -48,7 +48,7 @@ class Factory extends QUI\Utils\Singleton
         $Config->save();
 
         // translations
-        if (is_array($title)) {
+        if (\is_array($title)) {
             $languages = QUI::availableLanguages();
 
             foreach ($languages as $language) {
@@ -58,6 +58,7 @@ class Factory extends QUI\Utils\Singleton
             }
         }
 
+        // ProcessingSatus title
         $data['package']  = 'quiqqer/order';
         $data['datatype'] = 'php,js';
         $data['html']     = 1;
@@ -69,6 +70,9 @@ class Factory extends QUI\Utils\Singleton
         );
 
         QUI\Translator::publish('quiqqer/order');
+
+        // Create translations for auto-notification
+        Handler::getInstance()->createNotificationTranslations($id);
     }
 
     /**
@@ -80,11 +84,11 @@ class Factory extends QUI\Utils\Singleton
     {
         $list = Handler::getInstance()->getList();
 
-        if (!count($list)) {
+        if (!\count($list)) {
             return 1;
         }
 
-        $max = max(array_keys($list));
+        $max = \max(\array_keys($list));
 
         return $max + 1;
     }

@@ -28,6 +28,24 @@
                     <type><![CDATA[bool]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
                 </conf>
+                <conf name="sendAdminOrderConfirmation">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
+            </section>
+
+            <section name="orderStatus">
+                <conf name="standard">
+                    <type><![CDATA[integer]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
+            </section>
+
+            <section name="orderProcess">
+                <conf name="showArticleNumberInBasket">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -113,6 +131,16 @@
                             </description>
                         </input>
 
+                        <input type="checkbox" conf="order.sendAdminOrderConfirmation">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.sendAdminOrderConfirmation"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.sendAdminOrderConfirmation.description"/>
+                            </description>
+                        </input>
+
                         <input type="text" conf="order.prefix">
                             <text>
                                 <locale group="quiqqer/order" var="order.settings.order.prefix"/>
@@ -121,6 +149,36 @@
                                 <locale group="quiqqer/order"
                                         var="order.settings.order.prefix.description"/>
                             </description>
+                        </input>
+                    </settings>
+
+                    <settings title="orderStatusSettings" name="orderStatusSettings">
+                        <title>
+                            <locale group="quiqqer/order" var="order.status.settings.title"/>
+                        </title>
+
+                        <input conf="orderStatus.standard">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.defaultOrderStatus"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.defaultOrderStatus.description"
+                                />
+                            </description>
+                        </input>
+                    </settings>
+
+                    <settings title="orderProcess" name="orderProcess">
+                        <title>
+                            <locale group="quiqqer/order" var="order.process.settings.title"/>
+                        </title>
+
+                        <input type="checkbox" conf="orderProcess.showArticleNumberInBasket">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.showArticleNumberInBasket"/>
+                            </text>
                         </input>
                     </settings>
 
@@ -134,7 +192,6 @@
                                label="false"
                         />
                     </settings>
-
 
                     <settings>
                         <title>

@@ -45,13 +45,18 @@ class Factory extends QUI\Utils\Singleton
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->table();
+        $status = AbstractOrder::STATUS_CREATED;
+
+        if (Settings::getInstance()->get('orderStatus', 'standard')) {
+            $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
+        }
 
         QUI::getDataBase()->insert($table, [
             'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId() ? $User->getId() : 0,
-            'c_date'      => date('Y-m-d H:i:s'),
+            'c_date'      => \date('Y-m-d H:i:s'),
             'hash'        => $hash,
-            'status'      => AbstractOrder::STATUS_CREATED,
+            'status'      => $status,
             'customerId'  => 0,
             'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
             'successful'  => 0
@@ -98,26 +103,55 @@ class Factory extends QUI\Utils\Singleton
             $PermissionUser
         );
 
+        $orderId = $this->createOrderInProcessDataBaseEntry($PermissionUser);
+
+        return Handler::getInstance()->getOrderInProcess($orderId);
+    }
+
+    /**
+     * Create a new OrderInProcess database entry
+     *
+     * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @return int - OrderInProcess ID
+     * @throws QUI\Database\Exception
+     */
+    public function createOrderInProcessDataBaseEntry($PermissionUser = null)
+    {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
+        QUI\Permissions\Permission::hasPermission(
+            'quiqqer.order.edit',
+            $PermissionUser
+        );
+
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->tableOrderProcess();
 
         // @todo set default from customer
 
+        $status = AbstractOrder::STATUS_CREATED;
+
+        if (Settings::getInstance()->get('orderStatus', 'standard')) {
+            $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
+        }
+
         QUI::getDataBase()->insert($table, [
             'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId(),
-            'c_date'      => date('Y-m-d H:i:s'),
+            'c_date'      => \date('Y-m-d H:i:s'),
             'hash'        => QUI\Utils\Uuid::get(),
             'customerId'  => $User->getId(),
-            'status'      => AbstractOrder::STATUS_CREATED,
+            'status'      => $status,
             'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
             'successful'  => 0
         ]);
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
 
-        return $Orders->getOrderInProcess($orderId);
+        return $orderId;
     }
 
     /**

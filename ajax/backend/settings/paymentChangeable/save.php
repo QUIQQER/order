@@ -16,7 +16,7 @@ use QUI\ERP\Accounting\Payments\Types\Payment;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_settings_paymentChangeable_save',
     function ($data) {
-        $data     = json_decode($data, true);
+        $data     = \json_decode($data, true);
         $Config   = QUI::getPackage('quiqqer/order')->getConfig();
         $payments = Payments::getInstance()->getPayments();
         $section  = $Config->getSection('paymentChangeable');

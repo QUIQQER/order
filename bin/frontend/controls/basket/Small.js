@@ -76,18 +76,29 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
             var render = function (result) {
                 self.getElm().set('html', result);
 
-                var ButtonCheckout = self.getElm().getElement('.to-the-checkout');
+                var ButtonCheckout     = self.getElm().getElement('.open-checkout'),
+                    ButtonShoppingCart = self.getElm().getElement('.open-shopping-cart');
 
-                ButtonCheckout.addEvent('mousedown', function (event) {
-                    event.stop();
-                });
+                if (ButtonCheckout) {
+                    ButtonCheckout.addEvent('mousedown', function (event) {
+                        event.stop();
+                    });
+                }
+
+                if (ButtonShoppingCart) {
+                    ButtonShoppingCart.addEvent('mousedown', function (event) {
+                        event.stop();
+                    });
+                }
 
                 self.getElm().getElements(
                     '.quiqqer-order-basket-small-articles-article-delete'
                 ).addEvent('click', function () {
-                    Basket.removeProductPos(
+                    var pos = parseInt(
                         this.getParent('.quiqqer-order-basket-small-articles-article').get('data-pos')
                     );
+
+                    Basket.removeProductPos(pos);
                 });
 
                 QUI.parse(self.getElm());

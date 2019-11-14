@@ -5,7 +5,7 @@
             <td>
                 <label class="field-container">
                     <span class="field-container-item" title="">
-                        Title
+                        {{labelTitle}}
                     </span>
                     <input name="title" data-qui="controls/lang/InputMultiLang"/>
                 </label>
@@ -15,7 +15,7 @@
             <td>
                 <label class="field-container">
                     <span class="field-container-item" title="">
-                        Status Nr.
+                        {{labelStatusNo}}
                     </span>
                     <input type="number" name="id" min="0" class="field-container-field"/>
                 </label>
@@ -25,10 +25,25 @@
             <td>
                 <label class="field-container">
                     <span class="field-container-item" title="">
-                        Farbe
+                        {{labelColor}}
                     </span>
                     <input type="color" name="color" class="field-container-field"/>
                 </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="">
+                        {{labelNotification}}
+                    </span>
+                    <span class="field-container-field">
+                        <input type="checkbox" name="notification"/>
+                    </span>
+                </label>
+                <div class="field-container-item-desc">
+                    {{{descNotification}}}
+                </div>
             </td>
         </tr>
         </tbody>

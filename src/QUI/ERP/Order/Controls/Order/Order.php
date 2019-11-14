@@ -37,7 +37,7 @@ class Order extends QUI\Control
 
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__).'/Order.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Order.css');
         $this->addCSSClass('quiqqer-order-control-order');
     }
 
@@ -95,13 +95,13 @@ class Order extends QUI\Control
 
         switch ($this->getAttribute('template')) {
             case 'Order':
-                $template = dirname(__FILE__).'/Order.html';
+                $template = \dirname(__FILE__).'/Order.html';
                 break;
 
             case 'OrderLikeBasket':
-                $template = dirname(__FILE__).'/OrderLikeBasket.html';
+                $template = \dirname(__FILE__).'/OrderLikeBasket.html';
 
-                $this->addCSSFile(dirname(__FILE__).'/OrderLikeBasket.css');
+                $this->addCSSFile(\dirname(__FILE__).'/OrderLikeBasket.css');
                 $this->addCSSClass('quiqqer-order-control-orderLikeBasket');
                 break;
 
@@ -109,15 +109,24 @@ class Order extends QUI\Control
                 $template = $this->getAttribute('template');
         }
 
+        $DeliveryAddress = $Order->getDeliveryAddress();
+
+        if ($DeliveryAddress->getId() === $Order->getInvoiceAddress()->getId()) {
+            $DeliveryAddress = null;
+        }
+
         // template
         $Engine->assign([
-            'Order'        => $View,
-            'Articles'     => $View->getArticles(),
-            'Invoice'      => $Invoice,
-            'Calculation'  => $View->getPriceCalculation(),
-            'Vats'         => $View->getPriceCalculation()->getVat(),
-            'PriceFactors' => $View->getArticles()->getPriceFactors(),
-            'Payment'      => $View->getPayment()
+            'Order'               => $View,
+            'Articles'            => $View->getArticles(),
+            'Invoice'             => $Invoice,
+            'Calculation'         => $View->getPriceCalculation(),
+            'Vats'                => $View->getPriceCalculation()->getVat(),
+            'PriceFactors'        => $View->getArticles()->getPriceFactors(),
+            'Payment'             => $View->getPayment(),
+            'DeliveryAddress'     => $DeliveryAddress,
+            'shippingIsInstalled' => QUI\ERP\Utils\Shop::isShippingInstalled(),
+            'Shipping'            => $Order->getShipping()
         ]);
 
         return $Engine->fetch($template);
@@ -134,6 +143,12 @@ class Order extends QUI\Control
     public function getOrder()
     {
         if ($this->Order !== null) {
+            return $this->Order;
+        }
+
+        if ($this->getAttribute('Order')) {
+            $this->Order = $this->getAttribute('Order');
+
             return $this->Order;
         }
 

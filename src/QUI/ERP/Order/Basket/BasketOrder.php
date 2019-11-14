@@ -86,9 +86,21 @@ class BasketOrder
     }
 
     /**
+     * refresh the basket
+     * - import the order stuff to the basket
+     */
+    public function refresh()
+    {
+        try {
+            $this->readOrder();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+    }
+
+    /**
      * imports the order data into the basket
      *
-     * @throws Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
@@ -96,26 +108,16 @@ class BasketOrder
     protected function readOrder()
     {
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
+        $this->Order->refresh();
 
         $data     = $this->Order->getArticles()->toArray();
         $articles = $data['articles'];
 
-        $this->List            = new ProductList($data);
+        $this->List            = new ProductList();
         $this->List->duplicate = true;
+        $this->List->setCurrency($this->Order->getCurrency());
 
         $this->import($articles);
-
-        // PriceFactors
-        $factors = $this->Order->getArticles()->getPriceFactors()->toArray();
-
-        foreach ($factors as $factor) {
-            $this->List->getPriceFactors()->add(
-                new QUI\ERP\Products\Utils\PriceFactor($factor)
-            );
-        }
-
-        $this->List->recalculate();
-        $this->Order->recalculate($this);
     }
 
     /**
@@ -130,15 +132,15 @@ class BasketOrder
 
     /**
      * Clear the basket
-     * This method don't clear the order articles
-     * if you want to clear the order articles, you must use Order->clear()
+     * This method clears only  the order articles
+     * if you want to clear the order, you must use Order->clear()
      */
     public function clear()
     {
         $this->List->clear();
 
         if ($this->hasOrder()) {
-            $this->getOrder()->clearArticles();
+            $this->getOrder()->getArticles()->clear();
         }
     }
 
@@ -215,7 +217,7 @@ class BasketOrder
     {
         $this->clear();
 
-        if (!is_array($products)) {
+        if (!\is_array($products)) {
             $products = [];
         }
 
@@ -223,14 +225,49 @@ class BasketOrder
             $this->List,
             $products
         );
+
+        try {
+            $this->List->calc();
+            $this->save();
+
+            QUI::getEvents()->fireEvent(
+                'quiqqerOrderBasketToOrder',
+                [$this, $this->Order, $this->List]
+            );
+
+            QUI::getEvents()->fireEvent(
+                'quiqqerOrderBasketToOrderEnd',
+                [$this, $this->Order, $this->List]
+            );
+
+            $this->List->calc();
+            $this->save();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
     }
 
     /**
      * Save the basket -> order
+     *
+     * @throws QUI\Exception
      */
     public function save()
     {
         $this->updateOrder();
+    }
+
+    /**
+     * @throws Exception
+     * @throws ExceptionBasketNotFound
+     * @throws QUI\Database\Exception
+     */
+    public function saveToSessionBasket()
+    {
+        $data = $this->toArray();
+
+        $Basket = QUI\ERP\Order\Handler::getInstance()->getBasketFromUser($this->User);
+        $Basket->import($data['products']);
     }
 
     /**
@@ -270,11 +307,27 @@ class BasketOrder
             $result[] = $attributes;
         }
 
+        // calc data
+        $calculations = [];
+
+        try {
+            $data = $Products->getFrontendView()->toArray();
+
+            unset($data['attributes']);
+            unset($data['products']);
+
+            $calculations = $data;
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
+        }
+
+
         return [
             'id'           => $this->getId(),
             'orderHash'    => $this->getOrder()->getHash(),
             'products'     => $result,
-            'priceFactors' => $Products->getPriceFactors()->toArray()
+            'priceFactors' => $Products->getPriceFactors()->toArray(),
+            'calculations' => $calculations
         ];
     }
 
@@ -323,11 +376,40 @@ class BasketOrder
 
     /**
      * placeholder for api
+     *
+     * @throws QUI\Exception
      */
     public function updateOrder()
     {
-        $Order = $this->Order;
-        $Order->save();
+        $this->Order->getArticles()->clear();
+        $products = $this->List->getProducts();
+
+        foreach ($products as $Product) {
+            try {
+                /* @var QUI\ERP\Order\Basket\Product $Product */
+                $this->Order->addArticle($Product->toArticle(null, false));
+            } catch (QUI\Users\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+
+        $PriceFactors = $this->List->getPriceFactors();
+
+        $this->Order->getArticles()->importPriceFactors(
+            $PriceFactors->toErpPriceFactorList()
+        );
+
+        $this->Order->getArticles()->recalculate();
+        $this->Order->save();
+    }
+
+    /**
+     * @throws QUI\Exception
+     */
+    public function toOrder()
+    {
+        $this->updateOrder();
     }
 
     //endregion

@@ -13,31 +13,42 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getStep',
-    function ($orderId, $step, $orderHash) {
-        $_REQUEST['current'] = $step;
+    function ($orderId, $step, $orderHash, $basketEditable) {
+        try {
+            if (!isset($basketEditable) || $basketEditable === '') {
+                $basketEditable = true;
+            }
 
-        $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId'   => (int)$orderId,
-            'orderHash' => $orderHash
-        ]);
+            $_REQUEST['current'] = $step;
 
-        $Current = $OrderProcess->getCurrentStep();
+            $OrderProcess = new QUI\ERP\Order\OrderProcess([
+                'orderId'        => (int)$orderId,
+                'orderHash'      => $orderHash,
+                'basketEditable' => \boolval($basketEditable)
+            ]);
 
-        if (!$Current) {
-            $Current = $OrderProcess->getFirstStep();
+            $Current = $OrderProcess->getCurrentStep();
+
+            if (!$Current) {
+                $Current = $OrderProcess->getFirstStep();
+            }
+
+            $OrderProcess->setAttribute('step', $Current->getName());
+
+            $html    = $OrderProcess->create();
+            $current = $OrderProcess->getCurrentStep()->getName();
+
+            return [
+                'html' => $html,
+                'step' => $current,
+                'url'  => $OrderProcess->getStepUrl($Current->getName()),
+                'hash' => $OrderProcess->getStepHash()
+            ];
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            throw new QUI\Exception('Something went wrong');
         }
-
-        $OrderProcess->setAttribute('step', $Current->getName());
-
-        $html    = $OrderProcess->create();
-        $current = $OrderProcess->getCurrentStep()->getName();
-
-        return [
-            'html' => $html,
-            'step' => $current,
-            'url'  => $OrderProcess->getStepUrl($Current->getName()),
-            'hash' => $OrderProcess->getStepHash()
-        ];
     },
-    ['orderId', 'step', 'orderHash']
+    ['orderId', 'step', 'orderHash', 'basketEditable']
 );

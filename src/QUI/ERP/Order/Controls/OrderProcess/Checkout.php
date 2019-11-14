@@ -30,7 +30,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__).'/Checkout.css');
+        $this->addCSSFile(\dirname(__FILE__).'/Checkout.css');
     }
 
     /**
@@ -85,7 +85,8 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Order->recalculate();
 
-        $Articles = $Order->getArticles()->toUniqueList();
+        $ArticleList = $Order->getArticles();
+        $Articles    = $ArticleList->toUniqueList();
         $Articles->hideHeader();
 
         $text = QUI::getLocale()->get(
@@ -106,12 +107,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment'         => $Order->getPayment(),
+            'Shipping'        => $Order->getShipping(),
             'Articles'        => $Articles,
             'Order'           => $Order,
             'text'            => $text
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Checkout.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Checkout.html');
     }
 
     /**
@@ -234,7 +236,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $lang   = $Project->getLang();
-        $values = json_decode($values, true);
+        $values = \json_decode($values, true);
 
         if (!isset($values[$lang]) || empty($values[$lang])) {
             return '';

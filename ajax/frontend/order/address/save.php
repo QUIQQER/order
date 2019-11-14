@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
     function ($addressId, $data) {
         $User    = QUI::getUserBySession();
         $Address = $User->getAddress((int)$addressId);
-        $data    = json_decode($data, true);
+        $data    = \json_decode($data, true);
 
         if ($Address === null) {
             return false;

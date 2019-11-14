@@ -1,11 +1,11 @@
 <?php
 
 /**
- * This file contains package_quiqqer_order_ajax_frontend_basket_save
+ * This file contains package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder
  */
 
 /**
- * Saves the basket to the temporary order
+ * Add a product to the order
  *
  * @param integer $orderId
  * @param string $articles
@@ -13,7 +13,7 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder',
-    function ($basketId, $orderHash, $productId, $fields, $quantity) {
+    function ($orderHash, $productId, $fields, $quantity) {
         try {
             $OrderBasket = new QUI\ERP\Order\Basket\BasketOrder($orderHash);
         } catch (QUI\Exception $Exception) {
@@ -23,14 +23,14 @@ QUI::$Ajax->registerFunction(
             return;
         }
 
-        $fields = json_decode($fields, true);
+        $fields = \json_decode($fields, true);
 
-        if (!is_array($fields)) {
+        if (!\is_array($fields)) {
             $fields = [];
         }
 
         try {
-            $Product = new QUI\ERP\Order\Basket\Product($productId, $fields);
+            $Product = new QUI\ERP\Order\Basket\Product($productId, ['fields' => $fields]);
             $Real    = QUI\ERP\Products\Handler\Products::getProduct($productId); // check if active
 
             if (!$Real->isActive()) {
@@ -48,5 +48,5 @@ QUI::$Ajax->registerFunction(
             // @todo message an benutzer - Product konnte nicht aufgenommen werden
         }
     },
-    ['basketId', 'orderHash', 'productId', 'fields', 'quantity']
+    ['orderHash', 'productId', 'fields', 'quantity']
 );

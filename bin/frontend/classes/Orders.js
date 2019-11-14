@@ -76,6 +76,20 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
                 });
             });
         },
+        /**
+         * Return the url of the order process
+         *
+         * @returns {Promise}
+         */
+        getOrderProcessUrl: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getOrderProcessUrl', resolve, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    showError: false
+                });
+            });
+        },
 
         /**
          * Create an in processing order
@@ -155,12 +169,41 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
         },
 
         /**
+         * Clears the complete order
+         *
+         * @param orderHash
+         * @return {Promise}
+         */
+        clearOrder: function (orderHash) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_clear', function () {
+                    self.fireEvent('orderClear', [self, orderHash]);
+                    resolve();
+                }, {
+                    'package': 'quiqqer/order',
+                    orderHash: orderHash,
+                    onError  : reject,
+                    showError: false
+                });
+            });
+
+        },
+
+        /**
          * Validate a VAT ID
          *
          * @param {String|Number} vatId
          * @returns {Promise}
          */
         validateVatId: function (vatId) {
+            vatId = vatId.trim();
+
+            if (vatId === '') {
+                return Promise.reject();
+            }
+
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_validateVatId', resolve, {
                     'package': 'quiqqer/order',

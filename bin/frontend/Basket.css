@@ -1,0 +1,4 @@
+.window-basket-merge {
+    display: flex;
+    flex-direction: column;
+}

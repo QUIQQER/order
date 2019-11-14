@@ -1,0 +1,50 @@
+{$message}
+
+{if $InvoiceAddress}
+<div class="quiqqer-order-confirmation-mail-invoice-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.invoice.title"}</h4>
+    {$InvoiceAddress->render()}
+</div>
+{/if}
+
+{if $DeliveryAddress && $DeliveryAddress->getId() === $InvoiceAddress->getId()}
+<div class="quiqqer-order-confirmation-mail-delivery-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+</div>
+{elseif $DeliveryAddress}
+<div class="quiqqer-order-confirmation-mail-delivery-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    {$DeliveryAddress->render()}
+</div>
+{/if}
+
+<br/>
+<br/>
+
+{$Articles->renderForMail()}
+
+<div style="clear: both; width: 100%"></div>
+
+{if $Shipping}
+<div style="clear: both;">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.shipping.title"}</h4>
+    {$Shipping->getTitle()}
+</div>
+{/if}
+
+{if $Payment}
+<div class="">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.payment.title"}</h4>
+    {$Payment->getTitle()}
+</div>
+{/if}
+
+{if !empty($comments)}
+<h4>{locale group="quiqqer/order" var="mail.order.confirmation.comments.title"}</h4>
+{foreach $comments as $comment}
+<div style="clear: both; margin-bottom: 20px;">
+    {$comment.message}
+</div>
+{/foreach}
+{/if}

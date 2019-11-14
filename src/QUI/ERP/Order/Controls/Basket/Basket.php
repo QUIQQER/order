@@ -29,6 +29,26 @@ class Basket extends QUI\Control
     protected $Project;
 
     /**
+     * Basket constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct($attributes = [])
+    {
+        $this->setAttributes([
+            'buttons'   => true,
+            'isLoading' => false,
+            'editable'  => true
+        ]);
+
+        parent::__construct($attributes);
+
+        $this->setAttributes([
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/basket/Basket'
+        ]);
+    }
+
+    /**
      * @param QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest $Basket
      */
     public function setBasket($Basket)
@@ -50,20 +70,59 @@ class Basket extends QUI\Control
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts();
 
+        $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
         $Products->setUser(QUI::getUserBySession());
-        $Products->calc();
+        $Products->recalculate();
 
-        $View = $Products->getView();
+        $View              = $Products->getView(QUI::getLocale());
+        $showArticleNumber = QUI\ERP\Order\Settings::getInstance()->get('orderProcess', 'showArticleNumberInBasket');
 
         $Engine->assign([
-            'data'     => $View->toArray(),
-            'Basket'   => $this->Basket,
-            'Project'  => $this->Project,
-            'Products' => $View,
-            'products' => $View->getProducts()
+            'data'              => $View->toArray(),
+            'Basket'            => $this->Basket,
+            'Project'           => $this->Project,
+            'Products'          => $View,
+            'products'          => $View->getProducts(),
+            'this'              => $this,
+            'showArticleNumber' => $showArticleNumber
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Basket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
+    }
+
+    /**
+     * @param $fieldValueText
+     * @return mixed|string
+     */
+    public function getValueText($fieldValueText)
+    {
+        $current = QUI::getLocale()->getCurrent();
+
+        if (!\is_array($fieldValueText)) {
+            return $fieldValueText;
+        }
+
+        if (isset($fieldValueText[$current])) {
+            return $fieldValueText[$current];
+        }
+
+        return '';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGuest()
+    {
+        return QUI::getUsers()->isNobodyUser(QUI::getUserBySession());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoading()
+    {
+        return $this->getAttribute('isLoading');
     }
 
     //region project

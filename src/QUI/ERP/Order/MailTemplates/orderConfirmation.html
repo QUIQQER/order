@@ -1,0 +1,55 @@
+{template_event name="quiqqer::order::mail::orderConfirmation::begin" Order=$Order Articles=$Articles}
+
+{$message}
+
+{if $InvoiceAddress}
+<div class="quiqqer-order-confirmation-mail-invoice-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.invoice.title"}</h4>
+    {$InvoiceAddress->render()}
+</div>
+{/if}
+
+{if $DeliveryAddress && $DeliveryAddress->getId() === $InvoiceAddress->getId()}
+<div class="quiqqer-order-confirmation-mail-delivery-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+</div>
+{elseif $DeliveryAddress}
+<div class="quiqqer-order-confirmation-mail-delivery-address">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    {$DeliveryAddress->render()}
+</div>
+{/if}
+
+<br/>
+<br/>
+
+{$Articles->renderForMail()}
+
+<div style="clear: both; width: 100%"></div>
+
+{template_event name="quiqqer::order::mail::orderConfirmation::middle" Order=$Order Articles=$Articles}
+
+{if $Shipping}
+<div class="quiqqer-order-confirmation-mail-shipping-address" style="clear: both;">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.shipping.title"}</h4>
+    {$Shipping->getTitle()}
+</div>
+{/if}
+
+{if $Payment}
+<div class="quiqqer-order-confirmation-mail-payment">
+    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.payment.title"}</h4>
+    {$Payment->getTitle()}
+    {$Payment->getOrderInformationText($Order)}
+</div>
+{/if}
+
+{if !empty($comment)}
+<h4>{locale group="quiqqer/order" var="mail.order.confirmation.comments.title"}</h4>
+{$comment}
+{/if}
+
+{template_event name="quiqqer::order::mail::orderConfirmation::end" Order=$Order Articles=$Articles}
+
+{locale group="quiqqer/order" var="mail.order.confirmation.details"}

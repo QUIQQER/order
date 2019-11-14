@@ -58,7 +58,7 @@ class Handler extends Singleton
                     $Package = QUI::getPackage($package);
 
                     if ($Package->isQuiqqerPackage()) {
-                        $providers = array_merge($providers, $Package->getProvider('orderProcess'));
+                        $providers = \array_merge($providers, $Package->getProvider('orderProcess'));
                     }
                 } catch (QUI\Exception $Exception) {
                 }
@@ -75,7 +75,7 @@ class Handler extends Singleton
         $result = [];
 
         foreach ($providers as $provider) {
-            if (!class_exists($provider)) {
+            if (!\class_exists($provider)) {
                 continue;
             }
 
@@ -206,6 +206,8 @@ class Handler extends Singleton
      *
      * @param string $id - Global process id
      * @return Order[]|OrderInProcess|Order|Order[]
+     *
+     * @throws QUI\Database\Exception
      */
     public function getOrdersByGlobalProcessId($id)
     {
@@ -287,6 +289,7 @@ class Handler extends Singleton
      * @return array
      *
      * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Database\Exception
      */
     public function getOrderData($orderId)
     {
@@ -311,7 +314,8 @@ class Handler extends Singleton
     /**
      * @param QUI\Interfaces\Users\User $User
      * @param array $params
-     * @return array
+     *
+     * @return Order[]
      */
     public function getOrdersByUser(QUI\Interfaces\Users\User $User, $params = [])
     {
@@ -345,7 +349,12 @@ class Handler extends Singleton
             $query['limit'] = $params['limit'];
         }
 
-        $data   = QUI::getDataBase()->fetch($query);
+        try {
+            $data = QUI::getDataBase()->fetch($query);
+        } catch (QUI\Exception $Exception) {
+            return [];
+        }
+
         $result = [];
 
         foreach ($data as $entry) {
@@ -364,6 +373,8 @@ class Handler extends Singleton
      *
      * @param QUI\Interfaces\Users\User $User
      * @return int
+     *
+     * @throws QUI\Database\Exception
      */
     public function countOrdersByUser(QUI\Interfaces\Users\User $User)
     {
@@ -405,6 +416,7 @@ class Handler extends Singleton
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\ERP\Exception
+     * @throws  QUI\Database\Exception
      */
     public function getOrderInProcess($orderId)
     {
@@ -423,6 +435,7 @@ class Handler extends Singleton
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\ERP\Exception
+     * @throws QUI\Database\Exception
      */
     public function getOrderInProcessByHash($hash)
     {
@@ -450,6 +463,8 @@ class Handler extends Singleton
      *
      * @param QUI\Interfaces\Users\User $User
      * @return array
+     *
+     * @throws QUI\Database\Exception
      */
     public function getOrdersInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
@@ -478,6 +493,8 @@ class Handler extends Singleton
      *
      * @param QUI\Interfaces\Users\User $User
      * @return int
+     *
+     * @throws QUI\Database\Exception
      */
     public function countOrdersInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
@@ -505,6 +522,7 @@ class Handler extends Singleton
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\ERP\Exception
+     * @throws QUI\Database\Exception
      */
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
@@ -535,6 +553,7 @@ class Handler extends Singleton
      * @return array
      *
      * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Database\Exception
      */
     public function getOrderProcessData($orderId)
     {
@@ -582,10 +601,11 @@ class Handler extends Singleton
      * @throws Basket\Exception
      * @throws Basket\ExceptionBasketNotFound
      * @throws QUI\Users\Exception
+     * @throws QUI\Database\Exception
      */
     public function getBasket($str, $User = null)
     {
-        if (is_numeric($str)) {
+        if (\is_numeric($str)) {
             return self::getBasketById($str, $User);
         }
 
@@ -601,6 +621,7 @@ class Handler extends Singleton
      * @throws Basket\Exception
      * @throws Basket\ExceptionBasketNotFound
      * @throws QUI\Users\Exception
+     * @throws QUI\Database\Exception
      */
     public function getBasketById($basketId, $User = null)
     {
@@ -640,6 +661,7 @@ class Handler extends Singleton
      * @throws Basket\Exception
      * @throws Basket\ExceptionBasketNotFound
      * @throws QUI\Users\Exception
+     * @throws QUI\Database\Exception
      */
     public function getBasketByHash($hash, $User = null)
     {
@@ -677,6 +699,7 @@ class Handler extends Singleton
      *
      * @throws Basket\Exception
      * @throws Basket\ExceptionBasketNotFound
+     * @throws QUI\Database\Exception
      */
     public function getBasketFromUser(QUI\Interfaces\Users\User $User)
     {
@@ -699,7 +722,9 @@ class Handler extends Singleton
             ]);
         }
 
-        return new Basket\Basket($data[0]['id'], $User);
+        $Basket = new Basket\Basket($data[0]['id'], $User);
+
+        return $Basket;
     }
 
     /**
@@ -711,6 +736,7 @@ class Handler extends Singleton
      *
      * @throws Basket\Exception
      * @throws Basket\ExceptionBasketNotFound
+     * @throws QUI\Database\Exception
      */
     public function getBasketData($basketId, $User = null)
     {
