@@ -52,9 +52,9 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         ]);
 
         $Engine->assign([
-            'User'         => $Order->getCustomer(),
-            'OrderControl' => $OrderControl,
-            'orderHash'    => $Order->getHash()
+            'User'      => $Order->getCustomer(),
+            'orderHtml' => $OrderControl->create(),
+            'orderHash' => $Order->getHash()
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/Finish.html');
