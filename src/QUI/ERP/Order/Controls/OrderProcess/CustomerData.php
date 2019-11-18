@@ -14,6 +14,7 @@ use QUI;
  * @package QUI\ERP\Order\Controls\OrderProcess
  *
  * @event quiqqerOrderCustomerDataSave [ self ]
+ * @event quiqqerOrderCustomerDataSaveEnd [ self ]
  */
 class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
@@ -330,6 +331,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $this->getOrder()->setInvoiceAddress($Address);
         $this->getOrder()->setCustomer($User);
         $this->getOrder()->save();
+
+        QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSaveEnd', [$this]);
     }
 
     /**

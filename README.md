@@ -74,6 +74,9 @@ Developers
 - onQuiqqerOrderPaidStatusChanged [Order, currentPaidStatus, previousPaidStatus]
 - onQuiqqerOrderProcessStatusChange [Order, QUI\ERP\Order\ProcessingStatus\Status]
 
+- quiqqerOrderCustomerDataSave [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
+- quiqqerOrderCustomerDataSaveEnd [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
+
 ### Order Events
 
 - onOrderStart [\QUI\ERP\Order\OrderProcess]
