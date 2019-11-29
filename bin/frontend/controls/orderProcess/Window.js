@@ -177,7 +177,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                         this.Loader.hide();
                     }.bind(this),
 
-                    onChange: onOrderChange
+                    onChange: onOrderChange,
+                    
+                    onInject: function () {
+                        
+                    }
                 }
             }).inject(this.$Container);
 
@@ -189,6 +193,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 events   : {
                     onClick: function () {
                         if (this.$Order) {
+                            if (self.$Order.getCurrentStepData().step === 'Basket') {
+                                self.close();
+                                return;
+                            }
+
                             this.$Order.previous().then(function () {
                                 self.resize();
                             });
