@@ -183,7 +183,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
 
             // buttons
             this.$Previous = new QUIButton({
-                'class'  : 'btn-light',
+                'class'  : 'btn-light qui-window-popup-buttons-previous',
                 text     : QUILocale.get(lg, 'ordering.btn.previous'),
                 textimage: 'fa fa-angle-left',
                 events   : {
@@ -196,7 +196,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             });
 
             this.$Next = new QUIButton({
-                'class'  : 'btn-success',
+                'class'  : 'btn-success qui-window-popup-buttons-next',
                 text     : QUILocale.get(lg, 'ordering.btn.next'),
                 textimage: 'fa fa-angle-right',
                 events   : {
@@ -209,7 +209,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             });
 
             this.$Submit = new QUIButton({
-                'class'  : 'quiqqer-order-btn-submit',
+                'class'  : 'quiqqer-order-btn-submit btn-success qui-window-popup-buttons-order',
                 text     : QUILocale.get(lg, 'ordering.btn.pay.to.order'),
                 textimage: 'fa fa-shopping-cart',
                 events   : {
