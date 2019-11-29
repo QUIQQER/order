@@ -189,7 +189,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 events   : {
                     onClick: function () {
                         if (this.$Order) {
-                            this.$Order.previous();
+                            this.$Order.previous().then(function () {
+                                self.resize();
+                            });
                         }
                     }.bind(this)
                 }
@@ -202,7 +204,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 events   : {
                     onClick: function () {
                         if (this.$Order) {
-                            this.$Order.next();
+                            this.$Order.next().then(function () {
+                                self.resize();
+                            });
                         }
                     }.bind(this)
                 }
