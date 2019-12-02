@@ -15,7 +15,8 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
             ->setDescription(
                 QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.desc')
             )
-            ->addArgument('orderNumber',
+            ->addArgument(
+                'orderNumber',
                 QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.help.orderNumber')
             );
     }
