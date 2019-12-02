@@ -1014,6 +1014,11 @@
             <de><![CDATA[Artikel Nr.:]]></de>
             <en><![CDATA[Article No.:]]></en>
         </locale>
+
+        <locale name="console.SendOrderConfirmationMail.desc">
+            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt.]]></de>
+            <en><![CDATA[Sends an order confirmation email. The order number is required.]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
