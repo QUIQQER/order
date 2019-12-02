@@ -38,12 +38,11 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
-            $this->writeLn(
-                QUI::getLocale()->get(
-                    'quiqqer/order',
-                    'console.SendOrderConfirmationMail.message.noOrderFound',
-                    ['orderId' => $this->getArgument('orderId')]
-                ));
+            $this->writeLn(QUI::getLocale()->get(
+                'quiqqer/order',
+                'console.SendOrderConfirmationMail.message.noOrderFound',
+                ['orderId' => $this->getArgument('orderId')]
+            ));
             $this->writeLn();
 
             exit(1);
