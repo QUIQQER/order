@@ -1016,12 +1016,24 @@
         </locale>
 
         <locale name="console.SendOrderConfirmationMail.desc">
-            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt (--orderNumber=1234).]]></de>
-            <en><![CDATA[Sends an order confirmation email. The order number is required (--orderNumber=1234).]]></en>
+            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt. Die ID kann mit oder ohne Prefix eingegeben werden (--orderId=1234).]]></de>
+            <en><![CDATA[Sends an order confirmation email. The order number is required. The ID can be entered with or without a prefix (--orderId=1234).]]></en>
         </locale>
-        <locale name="console.SendOrderConfirmationMail.help.orderNumber">
+        <locale name="console.SendOrderConfirmationMail.help.orderId">
             <de><![CDATA[Die interne Bestellnummer für die gewünschte (bereits abgegebene) Bestellung. Das System verschickt jedes mal eine Bestätigungsmail auf die admin Email-Adresse.]]></de>
-            <en><![CDATA[The internal order number for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
+            <en><![CDATA[The internal order id for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.noOrderFound">
+            <de><![CDATA[Die Bestellung mit der ID [orderId] wurde nicht gefunen.]]></de>
+            <en><![CDATA[The order with the ID [orderId] was not found.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.cantSendEmail">
+            <de><![CDATA[Die Email konnte nicht geschickt werden.]]></de>
+            <en><![CDATA[The email could not be sent.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.success">
+            <de><![CDATA[Die Email wurde verschickt.]]></de>
+            <en><![CDATA[The email was sent.]]></en>
         </locale>
     </groups>
 

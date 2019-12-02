@@ -16,22 +16,62 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
                 QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.desc')
             )
             ->addArgument(
-                'orderNumber',
-                QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.help.orderNumber')
+                'orderId',
+                QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.help.orderId')
             );
     }
 
     public function execute()
     {
+        $Handler = QUI\ERP\Order\Handler::getInstance();
+        $orderId = $this->getArgument('orderId');
 
-        $this->writeLn("this is a Test");                    // Hier Wird eine Test Message in die Konsole ausgegeben
-        $this->writeLn("Hello World");                       // Hier Wird eine Test Message in die Konsole ausgegeben
-        $this->writeLn();                                    // Hier wird eine Leerzeile in der Konsole ausgegeben
+        // is order id with trailing character (order prefix)?
+        if (strrpos($orderId, '-')) {
+            $orderId = substr($orderId, strrpos($orderId, '-') + 1);
+        }
 
-        // execute bereich
+        try {
+            $Order = $Handler->get($orderId);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
 
-        $this->writeLn($this->getArgument('table'));         // Hier wird das eingefügte '--table=""' Argument in der Konsole ausgegeben
+            $this->writeLn(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'console.SendOrderConfirmationMail.message.noOrderFound',
+                    ['orderId' => $this->getArgument('orderId')])
+            );
+            $this->writeLn();
+
+            exit(1);
+        }
+
+        // todo set email to send
+        /*$Customer = $Order->getCustomer();
+        $User = QUI::getUsers()->getUserByName($username);
+        $email    = $Customer->getAttribute('email');*/
+
+        try {
+            QUI\ERP\Order\Mail::sendOrderConfirmationMail($Order);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            $this->writeLn(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'console.SendOrderConfirmationMail.message.cantSendEmail'
+                ));
+
+            exit(1);
+        }
+
+        $this->writeLn(QUI::getLocale()->get(
+            'quiqqer/order',
+            'console.SendOrderConfirmationMail.message.success'
+        ));
         $this->writeLn();
-        $this->writeLn();
+
+        exit(0);
     }
 }
