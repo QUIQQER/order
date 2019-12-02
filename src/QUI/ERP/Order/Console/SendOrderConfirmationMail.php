@@ -1,6 +1,6 @@
 <?php
 /**
- * SendOrderConfirmationMail.php
+ * This file contains \QUI\ERP\Order\Console\SendOrderConfirmationMail
  */
 
 namespace QUI\ERP\Order\Console;
@@ -11,11 +11,14 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
 {
     public function __construct()
     {
-        $this->setName('order:send-order-confirmation-mail')               // Hier wird der Packet Name des Konsolen Tools übergeben
-        ->setDescription(QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.desc'))         // Dies ist eine Beschreibung für das Konsolen Tool
-        ->addArgument('delete-tables', 'Beschreibung');    // Dies ist eine Beschreibung für die in der Konsole ausführbaren Befehle oder Argumente
+        $this->setName('order:sendOrderConfirmationMail')
+            ->setDescription(
+                QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.desc')
+            )
+            ->addArgument('orderNumber',
+                QUI::getLocale()->get('quiqqer/order', 'console.SendOrderConfirmationMail.help.orderNumber')
+            );
     }
-
 
     public function execute()
     {

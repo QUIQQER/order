@@ -1016,8 +1016,12 @@
         </locale>
 
         <locale name="console.SendOrderConfirmationMail.desc">
-            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt.]]></de>
-            <en><![CDATA[Sends an order confirmation email. The order number is required.]]></en>
+            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt (--orderNumber=1234).]]></de>
+            <en><![CDATA[Sends an order confirmation email. The order number is required (--orderNumber=1234).]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.help.orderNumber">
+            <de><![CDATA[Die interne Bestellnummer für die gewünschte (bereits abgegebene) Bestellung. Das System verschickt jedes mal eine Bestätigungsmail auf die admin Email-Adresse.]]></de>
+            <en><![CDATA[The internal order number for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
         </locale>
     </groups>
 
