@@ -42,8 +42,8 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
                 QUI::getLocale()->get(
                     'quiqqer/order',
                     'console.SendOrderConfirmationMail.message.noOrderFound',
-                    ['orderId' => $this->getArgument('orderId')])
-            );
+                    ['orderId' => $this->getArgument('orderId')]
+                ));
             $this->writeLn();
 
             exit(1);
