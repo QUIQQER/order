@@ -29,6 +29,5 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
         $this->writeLn($this->getArgument('table'));         // Hier wird das eingefügte '--table=""' Argument in der Konsole ausgegeben
         $this->writeLn();
         $this->writeLn();
-
     }
 }
