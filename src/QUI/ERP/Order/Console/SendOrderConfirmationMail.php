@@ -1,6 +1,8 @@
 <?php
 /**
  * This file contains \QUI\ERP\Order\Console\SendOrderConfirmationMail
+ *
+ * https://dev.quiqqer.com/quiqqer/order/wikis/Home/Send-order-confirmation-mail-console-tool
  */
 
 namespace QUI\ERP\Order\Console;
@@ -57,11 +59,10 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
-            $this->writeLn(
-                QUI::getLocale()->get(
-                    'quiqqer/order',
-                    'console.SendOrderConfirmationMail.message.cantSendEmail'
-                ));
+            $this->writeLn(QUI::getLocale()->get(
+                'quiqqer/order',
+                'console.SendOrderConfirmationMail.message.cantSendEmail'
+            ));
 
             exit(1);
         }
