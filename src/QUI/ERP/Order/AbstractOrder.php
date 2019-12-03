@@ -395,6 +395,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
 
+        if ($this->isApproved()) {
+            QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
+        }
+
         $this->addHistory(
             QUI::getLocale()->get(
                 'quiqqer/order',
@@ -632,6 +636,16 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function isSuccessful()
     {
         return $this->successful;
+    }
+
+    /**
+     * is the order approved
+     *
+     * @return bool
+     */
+    public function isApproved()
+    {
+        return $this->isPaid() && $this->isSuccessful();
     }
 
     /**

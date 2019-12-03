@@ -119,7 +119,7 @@ class OrderProcess extends QUI\Control
             $Order->save();
         }
 
-        // order is successfull, so no other step must be shown
+        // order is successful, so no other step must be shown
         if ($Order && $Order->isSuccessful()) {
             $LastStep = \end($steps);
 
