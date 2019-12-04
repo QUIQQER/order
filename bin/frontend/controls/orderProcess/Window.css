@@ -6,22 +6,28 @@
  ============================================= */
 
 .quiqqer-order-window-header {
-    border-bottom: 20px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #ddd;
     float: left;
-    padding: 20px;
+    padding: 15px 20px;
     width: 100%;
 }
 
 .quiqqer-order-window-header-text {
     float: left;
     font-size: 24px;
-    line-height: 60px;
-    width: calc(100% - 60px);
+    line-height: 30px;
+    width: calc(100% - 40px);
+}
+
+@media screen and (max-width: 767px) {
+    .quiqqer-order-window-header-text {
+        font-size: 22px;
+    }
 }
 
 .quiqqer-order-window-header-description {
     float: left;
-    width: calc(100% - 60px);
+    width: calc(100% - 40px);
 }
 
 .quiqqer-order-window-header-text .fa {
@@ -29,11 +35,12 @@
 }
 
 .quiqqer-order-window-header-close {
-    float: left;
-    font-size: 40px;
     cursor: pointer;
+    float: left;
+    font-size: 20px;
+    line-height: 20px;
     text-align: center;
-    width: 60px;
+    width: 40px;
 }
 
 /** content
@@ -53,4 +60,49 @@
 .quiqqer-order-window-container .quiqqer-order-ordering,
 .quiqqer-order-window-container [data-qui="package/quiqqer/order/bin/frontend/controls/Ordering"] {
     height: 100%;
+}
+
+/******************/
+/* Footer buttons */
+/******************/
+.qui-window-popup-buttons .qui-window-popup-buttons-next,
+.qui-window-popup-buttons .qui-window-popup-buttons-order {
+    float: right;
+}
+@media screen and (max-width: 767px) {
+    .quiqqer-order-window .qui-window-popup-buttons {
+        border-top: 1px solid #ddd;
+        display: flex;
+        padding: 10px 0 !important;
+    }
+
+    .quiqqer-order-window .qui-window-popup-buttons button {
+        width: auto;
+        flex-grow: 1;
+    }
+
+    /* next button */
+    .qui-window-popup-buttons-next {
+        order: 2;
+    }
+
+    /* previous button */
+    .quiqqer-order-window button.qui-window-popup-buttons-previous {
+        min-width: 3rem !important;
+        order: 1;
+        flex-grow: 0;
+    }
+
+    .qui-window-popup-buttons-previous .qui-button-text-image {
+        margin-right: 0
+    }
+
+    .qui-window-popup-buttons-previous .qui-button-text {
+        display: none
+    }
+
+    /* order button */
+    .qui-window-popup-buttons-order {
+        order: 3;
+    }
 }
