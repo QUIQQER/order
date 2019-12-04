@@ -872,15 +872,15 @@
         </locale>
         <locale name="order.confirmation.body" html="true">
             <de><![CDATA[
-            <h1>Hallo [user],</h1>
+            <h3>Hallo [user],</h3>
             vielen Dank für Ihre Bestellung.
             Hier sind die Details zu Ihrer Bestellung:<br />
-            Bestellnummer: [orderId]
+            <h4>Bestellnummer</h4> [orderId]
             ]]></de>
             <en><![CDATA[
             Dear [user],<br />
             Thank you for your order. Here are the details:<br />
-            Order ID: [orderId]
+            <h4>Order ID</h4> [orderId]
             ]]></en>
         </locale>
 

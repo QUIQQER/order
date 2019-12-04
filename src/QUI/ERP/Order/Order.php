@@ -521,6 +521,10 @@ class Order extends AbstractOrder implements OrderInterface
                 'onQuiqqerOrderPaidStatusChanged',
                 [$this, $status, $oldPaidStatus]
             );
+
+            if ($this->isApproved()) {
+                QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
+            }
         }
 
         $this->setAttribute('paid_status', $status);
