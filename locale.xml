@@ -875,7 +875,7 @@
             <h3>Hallo [user],</h3>
             vielen Dank für Ihre Bestellung.
             Hier sind die Details zu Ihrer Bestellung:<br />
-            <h4>Bestellnummer</h4> [orderId]
+            <h4 style="margin-bottom: 10px;">Bestellnummer</h4> [orderId]
             ]]></de>
             <en><![CDATA[
             Dear [user],<br />
