@@ -429,6 +429,7 @@ class OrderProcess extends QUI\Control
     public function getBody()
     {
         $this->Events->fireEvent('getBodyBegin', [$this]);
+        QUI::getEvents()->fireEvent('quiqqerOrderOrderProcessGetBodyBegin', [$this]);
 
         $this->setAttribute(
             'data-qui-option-basketeditable',
@@ -528,6 +529,9 @@ class OrderProcess extends QUI\Control
 
         try {
             $Current->validate();
+
+            $this->Events->fireEvent('validate', [$this]);
+            QUI::getEvents()->fireEvent('quiqqerOrderOrderProcessValidate', [$this]);
         } catch (QUI\ERP\Order\Exception $Exception) {
             $error = $Exception->getMessage();
 
