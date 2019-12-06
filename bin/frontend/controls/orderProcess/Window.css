@@ -69,9 +69,13 @@
 .qui-window-popup-buttons .qui-window-popup-buttons-order {
     float: right;
 }
+
+.quiqqer-order-window .qui-window-popup-buttons {
+    border-top: 1px solid #ddd;
+}
+
 @media screen and (max-width: 767px) {
     .quiqqer-order-window .qui-window-popup-buttons {
-        border-top: 1px solid #ddd;
         display: flex;
         padding: 10px 0 !important;
     }
