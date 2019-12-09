@@ -4,19 +4,19 @@
 
 {if $InvoiceAddress}
 <div class="quiqqer-order-confirmation-mail-invoice-address">
-    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.invoice.title"}</h4>
+    <h4 style="margin-bottom: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.invoice.title"}</h4>
     {$InvoiceAddress->render()}
 </div>
 {/if}
 
 {if $DeliveryAddress && $DeliveryAddress->getId() === $InvoiceAddress->getId()}
 <div class="quiqqer-order-confirmation-mail-delivery-address">
-    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
-    <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
+    <h4 style="margin-bottom: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    <p style="margin-top: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>
 </div>
 {elseif $DeliveryAddress}
 <div class="quiqqer-order-confirmation-mail-delivery-address">
-    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
+    <h4 style="margin-bottom: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
     {$DeliveryAddress->render()}
 </div>
 {/if}
@@ -32,21 +32,21 @@
 
 {if $Shipping}
 <div class="quiqqer-order-confirmation-mail-shipping-address" style="clear: both;">
-    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.shipping.title"}</h4>
+    <h4 style="margin-bottom: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.shipping.title"}</h4>
     {$Shipping->getTitle()}
 </div>
 {/if}
 
 {if $Payment}
 <div class="quiqqer-order-confirmation-mail-payment">
-    <h4>{locale group="quiqqer/order" var="mail.order.confirmation.payment.title"}</h4>
+    <h4 style="margin-bottom: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.payment.title"}</h4>
     {$Payment->getTitle()}
     {$Payment->getOrderInformationText($Order)}
 </div>
 {/if}
 
 {if !empty($comment)}
-<h4>{locale group="quiqqer/order" var="mail.order.confirmation.comments.title"}</h4>
+<h4 style="margin-bottom: 10px;">{locale group="quiqqer/order" var="mail.order.confirmation.comments.title"}</h4>
 {$comment}
 {/if}
 

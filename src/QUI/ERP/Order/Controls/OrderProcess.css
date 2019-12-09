@@ -196,6 +196,10 @@
         width: initial;
     }
 
+    .quiqqer-order-ordering-timeline-container ul {
+        padding-left: 0;
+    }
+
     .quiqqer-order-ordering-timeline li {
         display: inline-block;
         float: none;

@@ -129,11 +129,6 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
             Elm.addEvent('click', function () {
-                if (QUI.getWindowSize().x <= 768) {
-                    new BasketWindow().open();
-                    return;
-                }
-
                 if (self.getAttribute('open') === 0) {
                     return;
                 }

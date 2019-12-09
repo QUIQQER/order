@@ -70,8 +70,18 @@
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"
         >
             {if $this->getAttribute('editable')}
+
+            {assign var=maxQuantityAttr value=""}
+            {if !isset($product.maximumQuantity) || $product.maximumQuantity}
+            {assign var=maxQuantityAttr value=" max='{$product.maximumQuantity}'"}
+            {/if}
             <label>
-                <input type="number" name="quantity" min="0" value="{$product.quantity}"/>
+                <input type="number"
+                       name="quantity"
+                       min="0"
+                       value="{$product.quantity}"
+                       {$maxQuantityAttr}
+                />
             </label>
             {else}
             {$product.quantity}

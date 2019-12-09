@@ -872,15 +872,15 @@
         </locale>
         <locale name="order.confirmation.body" html="true">
             <de><![CDATA[
-            <h1>Hallo [user],</h1>
+            <h3>Hallo [user],</h3>
             vielen Dank für Ihre Bestellung.
             Hier sind die Details zu Ihrer Bestellung:<br />
-            Bestellnummer: [orderId]
+            <h4 style="margin-bottom: 10px;">Bestellnummer</h4> [orderId]
             ]]></de>
             <en><![CDATA[
             Dear [user],<br />
             Thank you for your order. Here are the details:<br />
-            Order ID: [orderId]
+            <h4>Order ID</h4> [orderId]
             ]]></en>
         </locale>
 
@@ -1013,6 +1013,27 @@
         <locale name="basket.articles.articleNo">
             <de><![CDATA[Artikel Nr.:]]></de>
             <en><![CDATA[Article No.:]]></en>
+        </locale>
+
+        <locale name="console.SendOrderConfirmationMail.desc">
+            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt. Die ID kann mit oder ohne Prefix eingegeben werden (--orderId=1234).]]></de>
+            <en><![CDATA[Sends an order confirmation email. The order number is required. The ID can be entered with or without a prefix (--orderId=1234).]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.help.orderId">
+            <de><![CDATA[Die interne Bestellnummer für die gewünschte (bereits abgegebene) Bestellung. Das System verschickt jedes mal eine Bestätigungsmail auf die admin Email-Adresse.]]></de>
+            <en><![CDATA[The internal order id for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.noOrderFound">
+            <de><![CDATA[Die Bestellung mit der ID [orderId] wurde nicht gefunen.]]></de>
+            <en><![CDATA[The order with the ID [orderId] was not found.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.cantSendEmail">
+            <de><![CDATA[Die Email konnte nicht geschickt werden.]]></de>
+            <en><![CDATA[The email could not be sent.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.success">
+            <de><![CDATA[Die Email wurde verschickt.]]></de>
+            <en><![CDATA[The email was sent.]]></en>
         </locale>
     </groups>
 
