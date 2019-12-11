@@ -1,42 +1,41 @@
 {
-  "name": "quiqqer/order",
-  "type": "quiqqer-module",
-  "description": "QUIQQER ERP Order",
-  "version": "dev-dev",
-  "license": [
-    "GPL-3.0+",
-    "PCSG QEL-1.0"
-  ],
-  "authors": [
-    {
-      "name": "Henning Leutz",
-      "email": "support@pcsg.de",
-      "homepage": "http://www.pcsg.de",
-      "role": "Developer"
+    "name": "quiqqer\/order",
+    "type": "quiqqer-module",
+    "description": "QUIQQER ERP Order",
+    "license": [
+        "GPL-3.0+",
+        "PCSG QEL-1.0"
+    ],
+    "authors": [
+        {
+            "name": "Henning Leutz",
+            "email": "support@pcsg.de",
+            "homepage": "http:\/\/www.pcsg.de",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "support@pcsg.de",
+        "url": "http:\/\/www.pcsg.de"
+    },
+    "require": {
+        "php": ">=5.3",
+        "quiqqer\/quiqqer": "*@dev",
+        "quiqqer\/countries": "*",
+        "quiqqer\/areas": "*",
+        "quiqqer\/products": "*",
+        "quiqqer\/payments": "*",
+        "quiqqer\/tax": "*",
+        "quiqqer\/payment-transactions": "*",
+        "quiqqer\/fontawesome": ">=4.5|dev-master|dev-dev",
+        "ramsey\/uuid": "3.*",
+        "npm-asset\/navigo": "5.*",
+        "npm-asset\/history-events": "1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "QUI\\ERP\\Order\\": "src\/QUI\/ERP\/Order",
+            "QUITests\\ERP\\Order\\": "tests\/QUITests\/ERP\/Order"
+        }
     }
-  ],
-  "support": {
-    "email": "support@pcsg.de",
-    "url": "http://www.pcsg.de"
-  },
-  "require": {
-    "php": ">=5.3",
-    "quiqqer/quiqqer": "*@dev",
-    "quiqqer/countries": "*",
-    "quiqqer/areas": "*",
-    "quiqqer/products": "*",
-    "quiqqer/payments": "*",
-    "quiqqer/tax": "*",
-    "quiqqer/payment-transactions": "*",
-    "quiqqer/fontawesome": ">=4.5|dev-master|dev-dev",
-    "ramsey/uuid": "3.*",
-    "npm-asset/navigo": "5.*",
-    "npm-asset/history-events": "1.*"
-  },
-  "autoload": {
-    "psr-4": {
-      "QUI\\ERP\\Order\\": "src/QUI/ERP/Order",
-      "QUITests\\ERP\\Order\\": "tests/QUITests/ERP/Order"
-    }
-  }
 }
