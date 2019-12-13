@@ -40,7 +40,7 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(\dirname(__FILE__) . '/ProductToBasket.css');
+        $this->addCSSFile(\dirname(__FILE__).'/ProductToBasket.css');
     }
 
     /**
@@ -56,7 +56,8 @@ class ProductToBasket extends QUI\Control
             return '';
         }
 
-        $Locale = QUI::getLocale();
+        $Locale      = QUI::getLocale();
+        $maxQuantity = '';
 
         $addButtonTitle = QUI::getLocale()->get(
             'quiqqer/order',
@@ -65,7 +66,12 @@ class ProductToBasket extends QUI\Control
 
         if ($this->getAttribute('Product')) {
             /* @var $Product QUI\ERP\Products\Product\Product */
-            $Product = $this->getAttribute('Product');
+            $Product     = $this->getAttribute('Product');
+            $maxQuantity = $Product->getMaximumQuantity();
+
+            if (!$maxQuantity) {
+                $maxQuantity = '';
+            }
 
             $this->setAttribute('data-pid', $Product->getId());
 
@@ -104,9 +110,10 @@ class ProductToBasket extends QUI\Control
             'showLabel'      => $this->getAttribute('showLabel'),
             'showControls'   => $this->getAttribute('showControls'),
             'btnText'        => $btnText,
-            'disableSpins'   => $disableSpins
+            'disableSpins'   => $disableSpins,
+            'maxQuantity'    => $maxQuantity
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/ProductToBasket.html');
+        return $Engine->fetch(\dirname(__FILE__).'/ProductToBasket.html');
     }
 }
