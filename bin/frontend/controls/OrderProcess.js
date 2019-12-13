@@ -272,7 +272,19 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
                     );
 
-                    var styles = Ghost.getElements('style');
+                    var styles  = Ghost.getElements('style');
+                    var scripts = [];
+
+                    Process.getElements('script').forEach(function (Script) {
+                        scripts.push(
+                            new Element('script', {
+                                html: Script.get('html')
+                            })
+                        );
+
+                        Script.destroy();
+                    });
+
 
                     self.getElm().set({
                         'data-qui': Process.get('data-qui'),
@@ -281,6 +293,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     });
 
                     styles.inject(self.getElm());
+                    scripts.forEach(function (Script) {
+                        Script.inject(self.getElm());
+                    });
 
                     self.$onImport();
                 }, {
