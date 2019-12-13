@@ -12,9 +12,9 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
     "use strict";
 
     return new Class({
+
         Extends: QUIControl,
         Type   : 'package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket',
-
 
         Binds: [
             '$onImport',
@@ -243,6 +243,9 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             var type  = Button.getProperty('data-button-type'),
                 value = parseInt(this.$Input.value);
 
+            var max = this.$Input.get('max'),
+                min = this.$Input.get('min');
+
             if (!value) {
                 value             = 1;
                 this.$Input.value = value;
@@ -253,7 +256,15 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                     return;
                 }
 
+                if (min && min >= value) {
+                    return;
+                }
+
                 this.$Input.value = --value;
+                return;
+            }
+
+            if (max && max <= value) {
                 return;
             }
 
