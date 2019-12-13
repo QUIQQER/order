@@ -363,7 +363,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             return new Promise(function (resolve, reject) {
+                Basket.fireEvent('addBegin');
+
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductToBasketOrder', function () {
+                    Basket.fireEvent('add');
                     self.refreshCurrentStep().then(resolve);
                 }, {
                     'package': 'quiqqer/order',
