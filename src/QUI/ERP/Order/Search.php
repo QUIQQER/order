@@ -313,7 +313,7 @@ class Search extends Singleton
                     break;
 
                 default:
-                    continue;
+                    continue 2;
             }
 
             $binds[$bind] = [
