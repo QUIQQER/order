@@ -192,7 +192,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
                 Done    = Promise.resolve();
 
-            if (this.$StepContainer.getElement('.quiqqer-order-step-basket')) {
+            // parse basket container - only in qui popup
+            if (this.$StepContainer.getElement('.quiqqer-order-step-basket') &&
+                this.$Next.getParent('.qui-window-popup').length &&
+                this.$Next.getParent('.qui-window-popup')[0]) {
                 Done = QUI.parse(this.$StepContainer.getElement('.quiqqer-order-step-basket'));
             }
 
