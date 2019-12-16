@@ -215,6 +215,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 Done = QUI.parse(Nobody);
             }
+            
+            // parse basket container - only in qui popup
+            if (!Nobody &&
+                this.$StepContainer.getElement('.quiqqer-order-step-basket') &&
+                this.$StepContainer.getParent('.qui-window-popup')) {
+                Done = QUI.parse(this.$StepContainer.getElement('.quiqqer-order-step-basket'));
+            }
 
             return Done.then(function () {
                 if (Nobody) {
@@ -284,7 +291,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                         Script.destroy();
                     });
-
 
                     self.getElm().set({
                         'data-qui': Process.get('data-qui'),
