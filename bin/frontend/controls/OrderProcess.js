@@ -192,6 +192,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
                 Done    = Promise.resolve();
 
+            if (this.$StepContainer.getElement('.quiqqer-order-step-basket')) {
+                Done = QUI.parse(this.$StepContainer.getElement('.quiqqer-order-step-basket'));
+            }
+
             if (!Current) {
                 Current = this.$TimelineContainer.getFirst('ul li');
             }
@@ -284,7 +288,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                         Script.destroy();
                     });
-
 
                     self.getElm().set({
                         'data-qui': Process.get('data-qui'),
