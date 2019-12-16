@@ -192,13 +192,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 Nobody  = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
                 Done    = Promise.resolve();
 
-            // parse basket container - only in qui popup
-            if (this.$StepContainer.getElement('.quiqqer-order-step-basket') &&
-                this.$Next.getParent('.qui-window-popup').length &&
-                this.$Next.getParent('.qui-window-popup')[0]) {
-                Done = QUI.parse(this.$StepContainer.getElement('.quiqqer-order-step-basket'));
-            }
-
             if (!Current) {
                 Current = this.$TimelineContainer.getFirst('ul li');
             }
@@ -221,6 +214,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.$TimelineContainer.setStyle('display', 'none');
 
                 Done = QUI.parse(Nobody);
+            }
+
+            if (!Nobody &&
+                this.$StepContainer.getElement('.quiqqer-order-step-basket') &&
+                this.$StepContainer.getParent('.qui-window-popup')) {
+                // parse basket container - only in qui popup
+                Done = QUI.parse(this.$StepContainer.getElement('.quiqqer-order-step-basket'));
             }
 
             return Done.then(function () {
