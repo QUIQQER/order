@@ -105,3 +105,10 @@
 .order-data-status-field-select:disabled {
     border: none;
 }
+
+.order-payment-status {
+    border-width: 1px;
+    border-style: solid;
+    padding: 2px 5px;
+    text-transform: uppercase;
+}

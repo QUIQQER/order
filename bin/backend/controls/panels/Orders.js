@@ -121,9 +121,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     entry.opener = '&nbsp;';
 
                     entry.status = new Element('span', {
-                        text  : entry.status_title,
-                        styles: {
-                            color: entry.status_color !== '---' ? entry.status_color : ''
+                        'class': 'order-payment-status',
+                        text   : entry.status_title,
+                        styles : {
+                            color      : entry.status_color !== '---' ? entry.status_color : '',
+                            borderColor: entry.status_color !== '---' ? entry.status_color : ''
                         }
                     });
 
