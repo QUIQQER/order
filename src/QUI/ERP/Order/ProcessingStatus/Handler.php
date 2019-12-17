@@ -57,6 +57,18 @@ class Handler extends QUI\Utils\Singleton
     }
 
     /**
+     * Refresh the internal list
+     *
+     * @return array
+     */
+    public function refreshList()
+    {
+        $this->list = null;
+
+        return $this->getList();
+    }
+
+    /**
      * Return the complete processing status objects
      *
      * @return Status[]
