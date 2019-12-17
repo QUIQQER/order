@@ -106,6 +106,7 @@
     border: none;
 }
 
+.order-shipping-status,
 .order-payment-status {
     border-width: 1px;
     border-style: solid;
