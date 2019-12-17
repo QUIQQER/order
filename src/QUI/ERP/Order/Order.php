@@ -357,8 +357,9 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         //shipping
-        $shippingId   = null;
-        $shippingData = '';
+        $shippingId     = null;
+        $shippingData   = '';
+        $shippingStatus = null;
 
         $Shipping = $this->getShipping();
 
@@ -367,6 +368,9 @@ class Order extends AbstractOrder implements OrderInterface
             $shippingData = $Shipping->toJSON();
         }
 
+        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+            $shippingStatus = (int)$this->getAttribute('shipping_status');
+        }
 
         return [
             'id_prefix'    => $idPrefix,
@@ -397,8 +401,9 @@ class Order extends AbstractOrder implements OrderInterface
             ),
             'payment_address' => '',  // verschlüsselt
 
-            'shipping_id'   => $shippingId,
-            'shipping_data' => $shippingData
+            'shipping_id'     => $shippingId,
+            'shipping_data'   => $shippingData,
+            'shipping_status' => $shippingStatus
         ];
     }
 

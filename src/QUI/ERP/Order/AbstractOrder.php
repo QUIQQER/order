@@ -619,12 +619,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         $this->Articles->calc();
 
-        $Calculations = new QUI\ERP\Accounting\Calculations(
+        return new QUI\ERP\Accounting\Calculations(
             $this->Articles->getCalculations(),
             $this->Articles->getArticles()
         );
-
-        return $Calculations;
     }
 
     /**
@@ -1325,6 +1323,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         if ($this->shippingId === null) {
             return null;
         }
+
+        if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+            return null;
+        }
+
 
         $Shipping = QUI\ERP\Shipping\Shipping::getInstance();
 
