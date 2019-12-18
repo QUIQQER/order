@@ -1672,6 +1672,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->ShippingStatus = $Status;
 
         if ($OldStatus !== $this->ShippingStatus) {
+            $this->History->addComment(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'message.change.order.shipping.status',
+                    [
+                        'status'   => $Status->getTitle(),
+                        'statusId' => $Status->getId()
+                    ]
+                )
+            );
+            
             $this->update();
 
             try {

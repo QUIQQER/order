@@ -163,6 +163,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             );
         }
 
+
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
             $data,
