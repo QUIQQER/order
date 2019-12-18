@@ -19,7 +19,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'Mustache',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Total.html',
-    'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css'
+
+    'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css',
+    'css!package/quiqqer/erp/bin/backend/payment-status.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUISelect, QUIConfirm, QUIContextMenuItem,
              Grid, Orders, TimeFilter, QUILocale, QUIAjax,
@@ -123,7 +125,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     entry.opener = '&nbsp;';
 
                     entry.status = new Element('span', {
-                        'class': 'order-payment-status',
+                        'class': 'order-status',
                         text   : entry.status_title,
                         styles : {
                             color      : entry.status_color !== '---' ? entry.status_color : '',
@@ -134,7 +136,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     if (shippingInstalled) {
                         entry.shipping_status = new Element('span', {
                             'class': 'order-shipping-status',
-                            html   : entry.shipping_title,
+                            html   : entry.shipping_status_title,
                             styles : {
                                 color      : entry.shipping_status_color !== '---' ? entry.shipping_status_color : '',
                                 borderColor: entry.shipping_status_color !== '---' ? entry.shipping_status_color : ''
@@ -404,6 +406,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     shippingInstalled = isInstalled;
 
                     self.$createGrid();
+                    self.$onResize();
 
                     self.$Total = new Element('div', {
                         'class': 'order-total'
@@ -434,7 +437,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: on order change, if an order has been changed
          */
         $onOrderChange: function () {
-            this.refresh();
+            this.refresh().catch(function (err) {
+                console.error(err);
+            });
         },
 
         /**
@@ -785,7 +790,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }
 
             if (event.key === 'enter') {
-                this.refresh();
+                this.refresh().catch(function (err) {
+                    console.error(err);
+                });
             }
         },
 
@@ -882,7 +889,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 header   : QUILocale.get(lg, 'grid.orderStatus'),
                 dataIndex: 'status',
                 dataType : 'node',
-                width    : 100
+                width    : 100,
+                className: 'grid-align-center'
             }];
 
             if (shippingInstalled) {
@@ -890,7 +898,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     header   : QUILocale.get('quiqqer/shipping', 'grid.shippingStatus'),
                     dataIndex: 'shipping_status',
                     dataType : 'node',
-                    width    : 100
+                    width    : 140,
+                    className: 'grid-align-center'
                 });
             }
 
@@ -943,8 +952,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 header   : QUILocale.get(lg, 'grid.paymentStatus'),
                 dataIndex: 'paid_status_display',
                 dataType : 'string',
-                width    : 180,
-                sortable : false
+                width    : 100,
+                sortable : false,
+                className: 'grid-align-center'
             }, {
                 header   : QUILocale.get(lg, 'grid.taxId'),
                 dataIndex: 'taxId',
@@ -1013,7 +1023,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     json: 'JSON'
                 },
 
-                buttons: [this.$Actions, {
+                columnModel: this.$getGridColumnModel(),
+                buttons    : [this.$Actions, {
                     name     : 'create',
                     text     : QUILocale.get(lg, 'panel.btn.createOrder'),
                     textimage: 'fa fa-plus',
@@ -1028,9 +1039,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                             });
                         }
                     }
-                }],
-
-                columnModel: this.$getGridColumnModel()
+                }]
             });
 
             this.$Grid.addEvents({
