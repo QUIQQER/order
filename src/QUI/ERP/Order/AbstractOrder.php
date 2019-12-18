@@ -75,6 +75,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     protected $Status = null;
 
     /**
+     * @var null|QUI\ERP\Shipping\ShippingStatus\Status
+     */
+    protected $ShippingStatus = null;
+
+    /**
      * @var int
      */
     protected $successful;
@@ -379,6 +384,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 $this->shippingId = false;
             }
         }
+
+        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping') && isset($data['shipping_status'])) {
+            try {
+                $Handler              = QUI\ERP\Shipping\ShippingStatus\Handler::getInstance();
+                $this->ShippingStatus = $Handler->getShippingStatus($data['shipping_status']);
+            } catch (QUI\ERP\Shipping\ShippingStatus\Exception $Exception) {
+                QUI\System\Log::addWarning($Exception->getMessage());
+            }
+        }
     }
 
     /**
@@ -387,7 +401,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @throws QUI\Exception
      * @throws QUI\ExceptionStack
      */
-    public function setSuccessfulStatus()
+    public
+    function setSuccessfulStatus()
     {
         if ($this->successful === 1) {
             return;
@@ -421,8 +436,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @throws QUI\ERP\Exception
      * @throws QUI\Exception
      */
-    public function recalculate($Basket = null)
-    {
+    public
+    function recalculate(
+        $Basket = null
+    ) {
         $Customer = $this->getCustomer();
 
         if ($Basket === null) {
@@ -517,9 +534,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function toArray()
     {
-        $status     = '';
-        $paymentId  = '';
-        $paidStatus = [];
+        $status         = '';
+        $shippingStatus = false;
+        $paymentId      = '';
+        $paidStatus     = [];
 
         $articles = $this->getArticles()->toArray();
         $Payment  = $this->getPayment();
@@ -541,18 +559,21 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             QUI\System\Log::writeDebugException($Exception);
         }
 
+        if ($this->getShippingStatus()) {
+            $shippingStatus = $this->getShippingStatus()->getId();
+        }
+
+
         return [
-            'id'        => $this->id,
-            'invoiceId' => $this->invoiceId,
-            'hash'      => $this->hash,
-            'cDate'     => $this->cDate,
-            'cUser'     => $this->cUser,
-            'cUsername' => $this->getCreateUser()->getName(),
-            'data'      => $this->data,
-
-            'customerId' => $this->customerId,
-            'customer'   => $this->getCustomer()->getAttributes(),
-
+            'id'          => $this->id,
+            'invoiceId'   => $this->invoiceId,
+            'hash'        => $this->hash,
+            'cDate'       => $this->cDate,
+            'cUser'       => $this->cUser,
+            'cUsername'   => $this->getCreateUser()->getName(),
+            'data'        => $this->data,
+            'customerId'  => $this->customerId,
+            'customer'    => $this->getCustomer()->getAttributes(),
             'comments'    => $this->getComments()->toArray(),
             'statusMails' => $this->getStatusMails()->toArray(),
 
@@ -562,7 +583,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'addressInvoice'     => $this->getInvoiceAddress()->getAttributes(),
             'paymentId'          => $paymentId,
             'status'             => $status,
-            'paidStatus'         => $paidStatus
+            'paidStatus'         => $paidStatus,
+            'shippingStatus'     => $shippingStatus
         ];
     }
 
@@ -1585,6 +1607,81 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->status        = $Status->getId();
         $this->Status        = null;
         $this->statusChanged = true;
+    }
+
+    //endregion
+
+    //region shipping status
+
+    /**
+     * Return the shipping status
+     * -> This method only works if shipping is installed
+     *
+     * @return QUI\ERP\Shipping\ShippingStatus\Status|bool
+     */
+    public function getShippingStatus()
+    {
+        if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+            return false;
+        }
+
+        if ($this->ShippingStatus !== null) {
+            return $this->ShippingStatus;
+        }
+
+        $Handler = QUI\ERP\Shipping\ShippingStatus\Handler::getInstance();
+
+        try {
+            $this->ShippingStatus = $Handler->getShippingStatus($this->getAttribute('shipping_status'));
+        } catch (QUI\Exception $Exception) {
+        }
+
+        // use default status
+        if ($this->ShippingStatus === null) {
+            return false;
+        }
+
+        return $this->ShippingStatus;
+    }
+
+    /**
+     * Set a shipping status to the order
+     * -> This method only works if shipping is installed
+     * -> when the status changes, it triggers the onShippingStatusChange event
+     *
+     * @param int|QUI\ERP\Shipping\ShippingStatus\Status $status
+     */
+    public function setShippingStatus($status)
+    {
+        if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+            return;
+        }
+
+        if ($status instanceof QUI\ERP\Shipping\ShippingStatus\Status) {
+            $Status = $status;
+        } else {
+            try {
+                $Handler = QUI\ERP\Shipping\ShippingStatus\Handler::getInstance();
+                $Status  = $Handler->getShippingStatus($status);
+            } catch (QUI\ERP\Shipping\ShippingStatus\Exception $Exception) {
+                QUI\System\Log::addWarning($Exception->getMessage());
+
+                return;
+            }
+        }
+
+        $OldStatus            = $this->ShippingStatus;
+        $this->ShippingStatus = $Status;
+
+        if ($OldStatus !== $this->ShippingStatus) {
+            $this->update();
+
+            try {
+                QUI::getEvents()->fireEvent('quiqqerOrderShippingStatusChange', [$this]);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+        }
     }
 
     //endregion

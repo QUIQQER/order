@@ -136,6 +136,19 @@ QUI::$Ajax->registerFunction(
                     );
                 }
             } catch (QUI\ERP\Order\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+        }
+
+        if (isset($data['shippingStatus']) && $data['shippingStatus'] !== false) {
+            try {
+                $Order->setShippingStatus($data['shippingStatus']);
+
+                // Send status notification @todo
+                if (!empty($data['notificationShipping'])) {
+
+                }
+            } catch (QUI\ERP\Order\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }

@@ -2,8 +2,63 @@
     width: 100%;
 }
 
+/** Order details
+ ================================================= */
+
+.orders-order-details {
+    border: 1px solid #DDDDDD;
+    float: left;
+    margin-bottom: 10px;
+    max-width: 800px;
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+.orders-order-details h1 {
+    display: none;
+}
+
+.orders-order-details .articles-article {
+    margin-top: 0;
+}
+
+.orders-order-details .articles-article-header th {
+    background: #dedede;
+    line-height: normal;
+}
+
+.orders-order-details td {
+    background: #fefefe;
+    border-right: 0 !important;
+}
+
+.orders-order-details .articles-sum td {
+    text-align: right;
+}
+
+.order-data-shipping-status-field,
+.order-data-status-field {
+    display: flex;
+}
+
+.order-data-shipping-status-field-colorPreview,
+.order-data-status-field-colorPreview {
+    width: 40px;
+}
+
+.order-data-shipping-status-field-select,
+.order-data-status-field-select {
+    flex-grow: 1;
+}
+
+.order-data-shipping-status-field-select:disabled,
+.order-data-status-field-select:disabled {
+    border: none;
+}
+
 /** Order notification
  ================================================= */
+
 .order-notification {
     margin-top: 20px;
     float: left;

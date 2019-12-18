@@ -259,6 +259,30 @@
         </tr>
         </tbody>
     </table>
+
+    <table class="data-table data-table-flexbox order-shipping" style="display: none">
+        <thead>
+        <tr>
+            <th>{{textShippingStatusTitle}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textShipping}}">
+                        {{textShippingStatus}}
+                    </span>
+                    <span class="field-container-field field-container-field-no-padding order-data-shipping-status-field">
+                        <span class="order-data-shipping-status-field-colorPreview"></span>
+                        <select type="text" class="field-container-field" name="shippingStatus" disabled></select>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </form>
 
 <form name="payment">

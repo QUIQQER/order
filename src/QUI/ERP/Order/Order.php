@@ -369,7 +369,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
-            $shippingStatus = (int)$this->getAttribute('shipping_status');
+            $shippingStatus = $this->getShippingStatus()->getId();
         }
 
         return [
