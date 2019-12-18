@@ -401,8 +401,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @throws QUI\Exception
      * @throws QUI\ExceptionStack
      */
-    public
-    function setSuccessfulStatus()
+    public function setSuccessfulStatus()
     {
         if ($this->successful === 1) {
             return;
@@ -436,8 +435,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @throws QUI\ERP\Exception
      * @throws QUI\Exception
      */
-    public
-    function recalculate(
+    public function recalculate(
         $Basket = null
     ) {
         $Customer = $this->getCustomer();

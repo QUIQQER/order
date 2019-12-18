@@ -146,7 +146,6 @@ QUI::$Ajax->registerFunction(
 
                 // Send status notification @todo
                 if (!empty($data['notificationShipping'])) {
-
                 }
             } catch (QUI\ERP\Order\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
