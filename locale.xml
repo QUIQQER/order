@@ -233,7 +233,7 @@
             <en><![CDATA[error]]></en>
         </locale>
         <locale name="payment.status.5">
-            <de><![CDATA[storniert}]></de>
+            <de><![CDATA[storniert]]></de>
             <en><![CDATA[canceled]]></en>
         </locale>
         <locale name="payment.status.11">
@@ -1564,7 +1564,7 @@
             ]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.notification.label">
-            <de><![CDATA[Bitte legen Sie die Nachricht an den Benutzer fest:]]></de>
+            <de><![CDATA[Bitte gebe eine Nachricht an den Benutzer ein:]]></de>
             <en><![CDATA[Please specify the message to the user:]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.btn.confirm">

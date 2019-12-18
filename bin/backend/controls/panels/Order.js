@@ -1388,8 +1388,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 Editors.getEditor().then(function (Editor) {
                                     Win.Loader.hide();
 
-                                    Win.setAttribute('maxHeight', 600);
+                                    Win.setAttribute('maxHeight', 900);
+                                    Win.setAttribute('maxWidth', 800);
                                     Win.resize();
+
                                     SubmitBtn.setAttributes({
                                         text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
                                         textimage: 'fa fa-check'
@@ -1560,25 +1562,28 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             Editors.getEditor().then(function (Editor) {
                                 Win.Loader.hide();
 
-                                Win.setAttribute('maxHeight', 600);
-                                Win.resize();
+                                Win.setAttribute('maxHeight', 900);
+                                Win.setAttribute('maxWidth', 800);
 
-                                SubmitBtn.setAttributes({
-                                    text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
-                                    textimage: 'fa fa-check'
+                                Win.resize().then(function () {
+                                    var NotificationElm = new Element('div', {
+                                        'class': 'order-notification',
+                                        html   : '<span>' + QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') + '</span>'
+                                    }).inject(Win.getContent());
+
+                                    Editor.setHeight(400);
+                                    Editor.inject(NotificationElm);
+                                    Editor.setContent(notificationText);
+
+                                    NotifyTextEditor = Editor;
+
+                                    SubmitBtn.setAttributes({
+                                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
+                                        textimage: 'fa fa-check'
+                                    });
+
+                                    SubmitBtn.enable();
                                 });
-
-                                SubmitBtn.enable();
-
-                                var NotificationElm = new Element('div', {
-                                    'class': 'order-notification',
-                                    html   : '<span>' + QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') + '</span>'
-                                }).inject(Win.getContent());
-
-                                Editor.inject(NotificationElm);
-                                Editor.setContent(notificationText);
-
-                                NotifyTextEditor = Editor;
                             });
                         });
                     });
