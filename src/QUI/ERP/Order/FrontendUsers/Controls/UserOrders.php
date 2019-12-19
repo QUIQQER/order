@@ -165,7 +165,7 @@ class UserOrders extends Control implements ControlInterface
         $orderStatus   = $PSHandler->getProcessingStatus(0)->getTitle();
 
         foreach ($statusList as $Status) {
-            if ($Status->getId() === $OrderStatus->getId()) {
+            if ($OrderStatus && $Status->getId() === $OrderStatus->getId()) {
                 $orderStatusId = $Status->getId();
                 $orderStatus   = $Status->getTitle();
                 break;

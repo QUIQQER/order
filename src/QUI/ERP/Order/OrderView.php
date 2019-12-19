@@ -34,8 +34,6 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * OrderView constructor.
      *
      * @param Order $Order
-     *
-     * @throws QUI\Exception
      */
     public function __construct(Order $Order)
     {
@@ -72,7 +70,6 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * @return ProcessingStatus\Status
-     * @throws ProcessingStatus\Exception
      */
     public function getProcessingStatus()
     {

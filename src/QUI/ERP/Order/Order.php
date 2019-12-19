@@ -446,6 +446,8 @@ class Order extends AbstractOrder implements OrderInterface
                     ]
                 )
             );
+
+            $this->statusChanged = false;
         }
 
         // save data

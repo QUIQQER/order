@@ -556,14 +556,12 @@ class Search extends Singleton
             $orderData['status_title'] = Handler::EMPTY_VALUE;
             $orderData['status_color'] = '';
 
-            try {
-                $ProcessingStatus = $Order->getProcessingStatus();
+            $ProcessingStatus = $Order->getProcessingStatus();
 
+            if ($ProcessingStatus) {
                 $orderData['status_id']    = $ProcessingStatus->getId();
                 $orderData['status_title'] = $ProcessingStatus->getTitle();
                 $orderData['status_color'] = $ProcessingStatus->getColor();
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::addDebug($Exception->getMessage());
             }
 
             if ($shippingIsInstalled) {
@@ -589,12 +587,7 @@ class Search extends Singleton
             }
 
             // articles
-            try {
-                $calculations = $Order->getArticles()->getCalculations();
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-                continue;
-            }
+            $calculations = $Order->getArticles()->getCalculations();
 
             if ($Customer->getAttribute('quiqqer.erp.taxId')) {
                 $orderData['taxId'] = $Customer->getAttribute('quiqqer.erp.taxId');
