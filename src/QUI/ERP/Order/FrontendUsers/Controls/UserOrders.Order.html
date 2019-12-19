@@ -64,6 +64,13 @@
         </div>
         {/if}
 
+        {if !empty($shippingStatus)}
+        <div class="quiqqer-order-profile-orders-order-footer-shipping">
+            <span>{locale group="quiqqer/shipping" var="control.profile.orders.shipping"}:</span>
+            <span>{$shippingStatus}</span>
+        </div>
+        {/if}
+
         {if isset($orderStatus)}
         <div class="quiqqer-order-profile-orders-order-footer-orderStatus">
             <span>{locale group="quiqqer/order" var="control.profile.orders.order.orderStatus"}:</span>

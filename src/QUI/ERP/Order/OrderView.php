@@ -141,6 +141,14 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @return bool|QUI\ERP\Shipping\ShippingStatus\Status
+     */
+    public function getShippingStatus()
+    {
+        return $this->Order->getShippingStatus();
+    }
+
+    /**
      * @return int
      */
     public function isSuccessful()

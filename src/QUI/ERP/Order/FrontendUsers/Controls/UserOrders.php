@@ -172,20 +172,29 @@ class UserOrders extends Control implements ControlInterface
             }
         }
 
+        $shippingStatus = false;
+
+        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+            && $Order->getShippingStatus()
+        ) {
+            $shippingStatus = $Order->getShippingStatus()->getTitle();
+        }
+
         $Engine->assign([
-            'this'          => $this,
-            'Project'       => $this->getProject(),
-            'Order'         => $Order,
-            'Payment'       => $Order->getPayment(),
-            'Invoice'       => $Invoice,
-            'Articles'      => $Articles,
-            'articles'      => $Articles->getArticles(),
-            'order'         => $Articles->toArray(),
-            'paymentStatus' => $paymentStatus,
-            'orderStatusId' => $orderStatusId,
-            'orderStatus'   => $orderStatus,
-            'Utils'         => new QUI\ERP\Order\Utils\Utils(),
-            'orderUrl'      => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+            'this'           => $this,
+            'Project'        => $this->getProject(),
+            'Order'          => $Order,
+            'Payment'        => $Order->getPayment(),
+            'Invoice'        => $Invoice,
+            'Articles'       => $Articles,
+            'articles'       => $Articles->getArticles(),
+            'order'          => $Articles->toArray(),
+            'paymentStatus'  => $paymentStatus,
+            'orderStatusId'  => $orderStatusId,
+            'orderStatus'    => $orderStatus,
+            'shippingStatus' => $shippingStatus,
+            'Utils'          => new QUI\ERP\Order\Utils\Utils(),
+            'orderUrl'       => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
                 $this->getProject(),
                 $Order->getHash()
             )
