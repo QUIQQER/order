@@ -881,27 +881,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 width          : 30,
                 showNotInExport: true
             }, {
-                header   : QUILocale.get(lg, 'grid.orderNo'),
-                dataIndex: 'prefixed-id',
-                dataType : 'string',
-                width    : 80
-            }, {
                 header   : QUILocale.get(lg, 'grid.orderStatus'),
                 dataIndex: 'status',
                 dataType : 'node',
                 width    : 100,
                 className: 'grid-align-center'
+            }, {
+                header   : QUILocale.get(lg, 'grid.orderNo'),
+                dataIndex: 'prefixed-id',
+                dataType : 'string',
+                width    : 80
             }];
-
-            if (shippingInstalled) {
-                columns.push({
-                    header   : QUILocale.get('quiqqer/shipping', 'grid.shippingStatus'),
-                    dataIndex: 'shipping_status',
-                    dataType : 'node',
-                    width    : 140,
-                    className: 'grid-align-center'
-                });
-            }
 
             columns = columns.concat([{
                 header   : QUILocale.get(lg, 'grid.customerNo'),
@@ -955,7 +945,20 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 width    : 100,
                 sortable : false,
                 className: 'grid-align-center'
-            }, {
+            }]);
+
+
+            if (shippingInstalled) {
+                columns.push({
+                    header   : QUILocale.get('quiqqer/shipping', 'grid.shippingStatus'),
+                    dataIndex: 'shipping_status',
+                    dataType : 'node',
+                    width    : 140,
+                    className: 'grid-align-center'
+                });
+            }
+
+            columns = columns.concat([{
                 header   : QUILocale.get(lg, 'grid.taxId'),
                 dataIndex: 'taxId',
                 dataType : 'string',
