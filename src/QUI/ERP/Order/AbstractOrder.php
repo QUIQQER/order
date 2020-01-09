@@ -1483,6 +1483,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function addComment($message)
     {
+        $message = \strip_tags($message);
+
         $this->Comments->addComment($message);
     }
 
