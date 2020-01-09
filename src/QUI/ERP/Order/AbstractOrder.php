@@ -1483,7 +1483,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function addComment($message)
     {
-        $message = \strip_tags($message);
+        $message = \strip_tags(
+            $message,
+
+            '<div><span><pre><p><br><hr>
+            <ul><ol><li><dl><dt><dd><strong><em><b><i><u>
+            <img><table><tbody><td><tfoot><th><thead><tr>'
+        );
 
         $this->Comments->addComment($message);
     }
@@ -1534,8 +1540,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function addStatusMail($message)
     {
-        $message = preg_replace('#<br\s*/?>#i', "\n", $message);
-        $message = strip_tags($message);
+        $message = \preg_replace('#<br\s*/?>#i', "\n", $message);
+        $message = \strip_tags($message);
 
         $this->StatusMails->addComment($message);
     }
