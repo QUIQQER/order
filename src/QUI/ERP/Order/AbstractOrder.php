@@ -1485,7 +1485,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         $message = \strip_tags(
             $message,
-
             '<div><span><pre><p><br><hr>
             <ul><ol><li><dl><dt><dd><strong><em><b><i><u>
             <img><table><tbody><td><tfoot><th><thead><tr>'
