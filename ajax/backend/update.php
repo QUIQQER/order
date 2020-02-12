@@ -136,6 +136,23 @@ QUI::$Ajax->registerFunction(
                     );
                 }
             } catch (QUI\ERP\Order\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+        }
+
+        if (isset($data['shippingStatus']) && $data['shippingStatus'] !== false) {
+            try {
+                $Order->setShippingStatus($data['shippingStatus']);
+
+                // Send status notification
+                if (!empty($data['notificationShipping'])) {
+                    QUI\ERP\Shipping\Shipping::getInstance()->sendStatusChangeNotification(
+                        $Order,
+                        (int)$data['status'],
+                        $data['notificationShipping']
+                    );
+                }
+            } catch (QUI\ERP\Order\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }

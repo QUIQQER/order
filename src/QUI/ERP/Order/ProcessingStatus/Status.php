@@ -99,20 +99,30 @@ class Status
      * @param QUI\Locale $Locale (optional) - [default: QUI::getLocale()]
      * @return string
      */
-    public function getStatusChangenNotificationText(AbstractOrder $Order, $Locale = null)
+    public function getStatusChangeNotificationText(AbstractOrder $Order, $Locale = null)
     {
         if (!($Locale instanceof QUI\Locale)) {
             $Locale = QUI::getLocale();
         }
 
         $Customer = $Order->getCustomer();
-
-        return $Locale->get('quiqqer/order', 'processing.status.notification.'.$this->id, [
+        $message  = $Locale->get('quiqqer/order', 'processing.status.notification.'.$this->id, [
             'customerName' => $Customer->getName(),
             'orderNo'      => $Order->getPrefixedId(),
             'orderDate'    => $Locale->formatDate($Order->getCreateDate()),
             'orderStatus'  => $this->getTitle($Locale)
         ]);
+
+        if (QUI::getLocale()->isLocaleString($message)) {
+            $message = $Locale->get('quiqqer/order', 'processing.status.notification.template', [
+                'customerName' => $Customer->getName(),
+                'orderNo'      => $Order->getPrefixedId(),
+                'orderDate'    => $Locale->formatDate($Order->getCreateDate()),
+                'orderStatus'  => $this->getTitle($Locale)
+            ]);
+        }
+
+        return $message;
     }
 
     /**

@@ -427,9 +427,10 @@ class Search extends Singleton
      */
     protected function parseListForGrid($data)
     {
-        $Orders       = Handler::getInstance();
-        $Locale       = QUI::getLocale();
-        $Transactions = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
+        $Orders              = Handler::getInstance();
+        $Locale              = QUI::getLocale();
+        $Transactions        = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
+        $shippingIsInstalled = QUI::getPackageManager()->isInstalled('quiqqer/shipping');
 
         $localeCode = QUI::getLocale()->getLocalesByLang(
             QUI::getLocale()->getCurrent()
@@ -470,7 +471,11 @@ class Search extends Singleton
             'status_title',
             'status_color',
             'taxId',
-            'euVatId'
+            'euVatId',
+            'shipping_status',
+            'shipping_status_id',
+            'shipping_status_title',
+            'shipping_status_color',
         ];
 
         $fillFields = function (&$data) use ($needleFields) {
@@ -551,14 +556,26 @@ class Search extends Singleton
             $orderData['status_title'] = Handler::EMPTY_VALUE;
             $orderData['status_color'] = '';
 
-            try {
-                $ProcessingStatus = $Order->getProcessingStatus();
+            $ProcessingStatus = $Order->getProcessingStatus();
 
+            if ($ProcessingStatus) {
                 $orderData['status_id']    = $ProcessingStatus->getId();
                 $orderData['status_title'] = $ProcessingStatus->getTitle();
                 $orderData['status_color'] = $ProcessingStatus->getColor();
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::addDebug($Exception->getMessage());
+            }
+
+            if ($shippingIsInstalled) {
+                $orderData['shipping_status_id']    = Handler::EMPTY_VALUE;
+                $orderData['shipping_status_title'] = Handler::EMPTY_VALUE;
+                $orderData['shipping_status_color'] = '';
+
+                $ShippingStatus = $Order->getShippingStatus();
+
+                if ($ShippingStatus) {
+                    $orderData['shipping_status_id']    = $ShippingStatus->getId();
+                    $orderData['shipping_status_title'] = $ShippingStatus->getTitle();
+                    $orderData['shipping_status_color'] = $ShippingStatus->getColor();
+                }
             }
 
             // payment
@@ -570,12 +587,7 @@ class Search extends Singleton
             }
 
             // articles
-            try {
-                $calculations = $Order->getArticles()->getCalculations();
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeException($Exception);
-                continue;
-            }
+            $calculations = $Order->getArticles()->getCalculations();
 
             if ($Customer->getAttribute('quiqqer.erp.taxId')) {
                 $orderData['taxId'] = $Customer->getAttribute('quiqqer.erp.taxId');

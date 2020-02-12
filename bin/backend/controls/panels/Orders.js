@@ -19,14 +19,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'Mustache',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Total.html',
-    'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css'
+
+    'css!package/quiqqer/order/bin/backend/controls/panels/Orders.css',
+    'css!package/quiqqer/erp/bin/backend/payment-status.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUISelect, QUIConfirm, QUIContextMenuItem,
              Grid, Orders, TimeFilter, QUILocale, QUIAjax,
              Mustache, templateTotal) {
     "use strict";
 
-    var lg = 'quiqqer/order';
+    var lg                = 'quiqqer/order';
+    var shippingInstalled = false;
 
     return new Class({
 
@@ -65,6 +68,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$TimeFilter = null;
             this.$Search     = null;
             this.$Currency   = null;
+            this.$Actions    = null;
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -121,11 +125,24 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     entry.opener = '&nbsp;';
 
                     entry.status = new Element('span', {
-                        text  : entry.status_title,
-                        styles: {
-                            color: entry.status_color !== '---' ? entry.status_color : ''
+                        'class': 'order-status',
+                        text   : entry.status_title,
+                        styles : {
+                            color      : entry.status_color !== '---' ? entry.status_color : '',
+                            borderColor: entry.status_color !== '---' ? entry.status_color : ''
                         }
                     });
+
+                    if (shippingInstalled) {
+                        entry.shipping_status = new Element('span', {
+                            'class': 'order-shipping-status',
+                            html   : entry.shipping_status_title,
+                            styles : {
+                                color      : entry.shipping_status_color !== '---' ? entry.shipping_status_color : '',
+                                borderColor: entry.shipping_status_color !== '---' ? entry.shipping_status_color : ''
+                            }
+                        });
+                    }
 
                     return entry;
                 });
@@ -158,24 +175,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            var selected = this.$Grid.getSelectedData(),
-                buttons  = this.$Grid.getButtons();
-
-            var Actions = buttons.filter(function (Button) {
-                return Button.getAttribute('name') === 'actions';
-            })[0];
-
+            var selected = this.$Grid.getSelectedData();
 
             if (selected.length) {
                 if (selected[0].paid_status === 1 ||
                     selected[0].paid_status === 5) {
                 }
 
-                Actions.enable();
+                this.$Actions.enable();
                 return;
             }
 
-            Actions.disable();
+            this.$Actions.disable();
         },
 
         /**
@@ -260,7 +271,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.addButton(this.$Search);
 
             // grid buttons
-            var Actions = new QUIButton({
+            this.$Actions = new QUIButton({
                 name      : 'actions',
                 text      : QUILocale.get(lg, 'panel.btn.actions'),
                 menuCorner: 'topRight',
@@ -269,7 +280,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            Actions.appendChild({
+            this.$Actions.appendChild({
                 name  : 'addPayment',
                 text  : QUILocale.get(lg, 'panel.btn.paymentBook'),
                 icon  : 'fa fa-money',
@@ -278,7 +289,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            Actions.appendChild({
+            this.$Actions.appendChild({
                 name  : 'create',
                 text  : QUILocale.get(lg, 'panel.btn.createInvoice'),
                 icon  : 'fa fa-money',
@@ -287,7 +298,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            Actions.appendChild({
+            this.$Actions.appendChild({
                 name  : 'cancel',
                 text  : QUILocale.get(lg, 'panel.btn.deleteOrder'),
                 icon  : 'fa fa-trash',
@@ -296,7 +307,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            Actions.appendChild({
+            this.$Actions.appendChild({
                 name  : 'copy',
                 text  : QUILocale.get(lg, 'panel.btn.copyOrder'),
                 icon  : 'fa fa-copy',
@@ -305,7 +316,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            Actions.appendChild({
+            this.$Actions.appendChild({
                 name  : 'open',
                 text  : QUILocale.get(lg, 'panel.btn.openOrder'),
                 icon  : 'fa fa-shopping-cart',
@@ -314,248 +325,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            this.addButton(Actions);
-
-            // Grid
-            var Container = new Element('div').inject(
-                this.getContent()
-            );
-
-            this.$Grid = new Grid(Container, {
-                accordion            : true,
-                serverSort           : true,
-                autoSectionToggle    : false,
-                openAccordionOnClick : false,
-                toggleiconTitle      : '',
-                accordionLiveRenderer: this.$onClickOrderDetails,
-                pagination           : true,
-                exportData           : true,
-                exportTypes          : {
-                    csv : 'CSV',
-                    json: 'JSON'
-                },
-                buttons              : [Actions, {
-                    name     : 'create',
-                    text     : QUILocale.get(lg, 'panel.btn.createOrder'),
-                    textimage: 'fa fa-plus',
-                    events   : {
-                        onClick: function (Btn) {
-                            Btn.setAttribute('textimage', 'fa fa-spinner fa-spin');
-
-                            self.$clickCreateOrder(Btn).then(function () {
-                                Btn.setAttribute('textimage', 'fa fa-plus');
-                            }).catch(function () {
-                                Btn.setAttribute('textimage', 'fa fa-plus');
-                            });
-                        }
-                    }
-                }],
-                columnModel          : [{
-                    header         : '&nbsp;',
-                    dataIndex      : 'opener',
-                    dataType       : 'int',
-                    width          : 30,
-                    showNotInExport: true
-                }, {
-                    header   : QUILocale.get(lg, 'grid.orderNo'),
-                    dataIndex: 'prefixed-id',
-                    dataType : 'string',
-                    width    : 80
-                }, {
-                    header   : QUILocale.get(lg, 'grid.orderStatus'),
-                    dataIndex: 'status',
-                    dataType : 'node',
-                    width    : 100
-                }, {
-                    header   : QUILocale.get(lg, 'grid.customerNo'),
-                    dataIndex: 'customer_id',
-                    dataType : 'integer',
-                    width    : 100,
-                    className: 'clickable'
-                }, {
-                    header   : QUILocale.get('quiqqer/system', 'name'),
-                    dataIndex: 'customer_name',
-                    dataType : 'string',
-                    width    : 130,
-                    className: 'clickable',
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.orderDate'),
-                    dataIndex: 'c_date',
-                    dataType : 'date',
-                    width    : 140
-                }, {
-                    header   : QUILocale.get(lg, 'grid.netto'),
-                    dataIndex: 'display_nettosum',
-                    dataType : 'currency',
-                    width    : 100,
-                    className: 'payment-status-amountCell',
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.vat'),
-                    dataIndex: 'display_vatsum',
-                    dataType : 'currency',
-                    width    : 100,
-                    className: 'payment-status-amountCell',
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.sum'),
-                    dataIndex: 'display_sum',
-                    dataType : 'currency',
-                    width    : 100,
-                    className: 'payment-status-amountCell',
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.paymentMethod'),
-                    dataIndex: 'payment_title',
-                    dataType : 'string',
-                    width    : 180,
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.paymentStatus'),
-                    dataIndex: 'paid_status_display',
-                    dataType : 'string',
-                    width    : 180,
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.taxId'),
-                    dataIndex: 'taxId',
-                    dataType : 'string',
-                    width    : 120,
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.euVatId'),
-                    dataIndex: 'euVatId',
-                    dataType : 'string',
-                    width    : 120,
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.processingStatus'),
-                    dataIndex: 'processing',
-                    dataType : 'string',
-                    width    : 150,
-                    sortable : false
-                }, {
-                    header   : QUILocale.get(lg, 'grid.invoiceNo'),
-                    dataIndex: 'invoice_id',
-                    dataType : 'integer',
-                    width    : 100,
-                    className: 'clickable'
-                }, {
-                    header   : QUILocale.get(lg, 'grid.brutto'),
-                    dataIndex: 'isbrutto',
-                    dataType : 'integer',
-                    width    : 50
-                }, {
-                    header   : QUILocale.get(lg, 'grid.hash'),
-                    dataIndex: 'hash',
-                    dataType : 'string',
-                    width    : 280,
-                    className: 'monospace'
-                }, {
-                    header   : QUILocale.get('quiqqer/system', 'id'),
-                    dataIndex: 'id',
-                    dataType : 'integer',
-                    width    : 80
-                }]
-            });
-
-            this.$Grid.addEvents({
-                onRefresh : this.refresh,
-                onClick   : this.$refreshButtonStatus,
-                onDblClick: function (data) {
-                    var Cell     = data.cell,
-                        position = Cell.getPosition(),
-                        rowData  = self.$Grid.getDataByRow(data.row);
-
-
-                    if (Cell.get('data-index') === 'customer_id' ||
-                        Cell.get('data-index') === 'customer_name' ||
-                        Cell.get('data-index') === 'invoice_id') {
-
-                        require([
-                            'qui/controls/contextmenu/Menu',
-                            'qui/controls/contextmenu/Item'
-                        ], function (QUIMenu, QUIMenuItem) {
-                            var Menu = new QUIMenu({
-                                events: {
-                                    onBlur: function () {
-                                        Menu.hide();
-                                        Menu.destroy();
-                                    }
-                                }
-                            });
-
-                            Menu.appendChild(
-                                new QUIMenuItem({
-                                    icon  : 'fa fa-calculator',
-                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.order'),
-                                    events: {
-                                        onClick: function () {
-                                            self.openOrder(rowData.id);
-                                        }
-                                    }
-                                })
-                            );
-
-                            Menu.appendChild(
-                                new QUIMenuItem({
-                                    icon  : 'fa fa-users',
-                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.user'),
-                                    events: {
-                                        onClick: function () {
-                                            require(['utils/Panels'], function (PanelUtils) {
-                                                PanelUtils.openUserPanel(rowData.customer_id);
-                                            });
-                                        }
-                                    }
-                                })
-                            );
-
-                            if (rowData.invoice_id !== '') {
-                                Menu.appendChild(
-                                    new QUIMenuItem({
-                                        icon  : 'fa fa-file-text-o',
-                                        text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.invoice'),
-                                        events: {
-                                            onClick: function () {
-                                                require([
-                                                    'utils/Panels',
-                                                    'package/quiqqer/invoice/bin/backend/controls/panels/Invoice'
-                                                ], function (PanelUtils, InvoicePanel) {
-                                                    var Panel = new InvoicePanel({
-                                                        invoiceId: rowData.invoice_id
-                                                    });
-
-                                                    PanelUtils.openPanelInTasks(Panel);
-                                                });
-                                            }
-                                        }
-                                    })
-                                );
-                            }
-
-                            Menu.inject(document.body);
-                            Menu.setPosition(position.x, position.y + 30);
-                            Menu.setTitle(rowData['prefixed-id']);
-                            Menu.show();
-                            Menu.focus();
-                        });
-
-                        return;
-                    }
-
-                    var selected = self.$Grid.getSelectedData();
-
-                    if (selected.length) {
-                        self.openOrder(selected[0].id);
-                    }
-                }
-            });
-
-            this.$Total = new Element('div', {
-                'class': 'order-total'
-            }).inject(this.getContent());
+            this.addButton(this.$Actions);
         },
 
         /**
@@ -583,6 +353,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          */
         $onInject: function () {
             var self = this;
+
+            this.Loader.show();
 
             QUIAjax.get([
                 'package_quiqqer_currency_ajax_getAllowedCurrencies',
@@ -629,7 +401,24 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 ContextMenu.setAttribute('showIcons', false);
             });
 
-            this.refresh();
+            require(['Packages'], function (Packages) {
+                Packages.isInstalled('quiqqer/shipping').then(function (isInstalled) {
+                    shippingInstalled = isInstalled;
+
+                    self.$createGrid();
+                    self.$onResize();
+
+                    self.$Total = new Element('div', {
+                        'class': 'order-total'
+                    }).inject(self.getContent());
+
+                    self.refresh().catch(function (err) {
+                        console.error(err);
+                    });
+
+                    self.Loader.hide();
+                });
+            });
         },
 
         /**
@@ -648,7 +437,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: on order change, if an order has been changed
          */
         $onOrderChange: function () {
-            this.refresh();
+            this.refresh().catch(function (err) {
+                console.error(err);
+            });
         },
 
         /**
@@ -999,7 +790,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }
 
             if (event.key === 'enter') {
-                this.refresh();
+                this.refresh().catch(function (err) {
+                    console.error(err);
+                });
             }
         },
 
@@ -1072,6 +865,279 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 self.Loader.hide();
             }).catch(function (err) {
                 console.error(err);
+            });
+        },
+
+        /**
+         * Return the grid column
+         *
+         * @return {({dataIndex: string, dataType: string, showNotInExport: boolean, width: number, header: string}|{dataIndex: string, dataType: string, width: number, header: *}|{dataIndex: string, dataType: string, width: number, header: *})[]}
+         */
+        $getGridColumnModel: function () {
+            var columns = [{
+                header         : '&nbsp;',
+                dataIndex      : 'opener',
+                dataType       : 'int',
+                width          : 30,
+                showNotInExport: true
+            }, {
+                header   : QUILocale.get(lg, 'grid.orderStatus'),
+                dataIndex: 'status',
+                dataType : 'node',
+                width    : 100,
+                className: 'grid-align-center'
+            }, {
+                header   : QUILocale.get(lg, 'grid.orderNo'),
+                dataIndex: 'prefixed-id',
+                dataType : 'string',
+                width    : 80
+            }];
+
+            columns = columns.concat([{
+                header   : QUILocale.get(lg, 'grid.customerNo'),
+                dataIndex: 'customer_id',
+                dataType : 'integer',
+                width    : 100,
+                className: 'clickable'
+            }, {
+                header   : QUILocale.get('quiqqer/system', 'name'),
+                dataIndex: 'customer_name',
+                dataType : 'string',
+                width    : 130,
+                className: 'clickable',
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.orderDate'),
+                dataIndex: 'c_date',
+                dataType : 'date',
+                width    : 140
+            }, {
+                header   : QUILocale.get(lg, 'grid.netto'),
+                dataIndex: 'display_nettosum',
+                dataType : 'currency',
+                width    : 100,
+                className: 'payment-status-amountCell',
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.vat'),
+                dataIndex: 'display_vatsum',
+                dataType : 'currency',
+                width    : 100,
+                className: 'payment-status-amountCell',
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.sum'),
+                dataIndex: 'display_sum',
+                dataType : 'currency',
+                width    : 100,
+                className: 'payment-status-amountCell',
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.paymentMethod'),
+                dataIndex: 'payment_title',
+                dataType : 'string',
+                width    : 180,
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.paymentStatus'),
+                dataIndex: 'paid_status_display',
+                dataType : 'string',
+                width    : 100,
+                sortable : false,
+                className: 'grid-align-center'
+            }]);
+
+
+            if (shippingInstalled) {
+                columns.push({
+                    header   : QUILocale.get('quiqqer/shipping', 'grid.shippingStatus'),
+                    dataIndex: 'shipping_status',
+                    dataType : 'node',
+                    width    : 140,
+                    className: 'grid-align-center'
+                });
+            }
+
+            columns = columns.concat([{
+                header   : QUILocale.get(lg, 'grid.taxId'),
+                dataIndex: 'taxId',
+                dataType : 'string',
+                width    : 120,
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.euVatId'),
+                dataIndex: 'euVatId',
+                dataType : 'string',
+                width    : 120,
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.processingStatus'),
+                dataIndex: 'processing',
+                dataType : 'string',
+                width    : 150,
+                sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.invoiceNo'),
+                dataIndex: 'invoice_id',
+                dataType : 'integer',
+                width    : 100,
+                className: 'clickable'
+            }, {
+                header   : QUILocale.get(lg, 'grid.brutto'),
+                dataIndex: 'isbrutto',
+                dataType : 'integer',
+                width    : 50
+            }, {
+                header   : QUILocale.get(lg, 'grid.hash'),
+                dataIndex: 'hash',
+                dataType : 'string',
+                width    : 280,
+                className: 'monospace'
+            }, {
+                header   : QUILocale.get('quiqqer/system', 'id'),
+                dataIndex: 'id',
+                dataType : 'integer',
+                width    : 80
+            }]);
+
+            return columns;
+        },
+
+        /**
+         * Create / render the grid
+         */
+        $createGrid: function () {
+            var self = this;
+
+            // Grid
+            var Container = new Element('div').inject(this.getContent());
+
+            this.$Grid = new Grid(Container, {
+                accordion            : true,
+                serverSort           : true,
+                autoSectionToggle    : false,
+                openAccordionOnClick : false,
+                toggleiconTitle      : '',
+                accordionLiveRenderer: this.$onClickOrderDetails,
+                pagination           : true,
+                exportData           : true,
+                exportTypes          : {
+                    csv : 'CSV',
+                    json: 'JSON'
+                },
+
+                columnModel: this.$getGridColumnModel(),
+                buttons    : [this.$Actions, {
+                    name     : 'create',
+                    text     : QUILocale.get(lg, 'panel.btn.createOrder'),
+                    textimage: 'fa fa-plus',
+                    events   : {
+                        onClick: function (Btn) {
+                            Btn.setAttribute('textimage', 'fa fa-spinner fa-spin');
+
+                            self.$clickCreateOrder(Btn).then(function () {
+                                Btn.setAttribute('textimage', 'fa fa-plus');
+                            }).catch(function () {
+                                Btn.setAttribute('textimage', 'fa fa-plus');
+                            });
+                        }
+                    }
+                }]
+            });
+
+            this.$Grid.addEvents({
+                onRefresh : this.refresh,
+                onClick   : this.$refreshButtonStatus,
+                onDblClick: function (data) {
+                    var Cell     = data.cell,
+                        position = Cell.getPosition(),
+                        rowData  = self.$Grid.getDataByRow(data.row);
+
+
+                    if (Cell.get('data-index') === 'customer_id' ||
+                        Cell.get('data-index') === 'customer_name' ||
+                        Cell.get('data-index') === 'invoice_id') {
+
+                        require([
+                            'qui/controls/contextmenu/Menu',
+                            'qui/controls/contextmenu/Item'
+                        ], function (QUIMenu, QUIMenuItem) {
+                            var Menu = new QUIMenu({
+                                events: {
+                                    onBlur: function () {
+                                        Menu.hide();
+                                        Menu.destroy();
+                                    }
+                                }
+                            });
+
+                            Menu.appendChild(
+                                new QUIMenuItem({
+                                    icon  : 'fa fa-calculator',
+                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.order'),
+                                    events: {
+                                        onClick: function () {
+                                            self.openOrder(rowData.id);
+                                        }
+                                    }
+                                })
+                            );
+
+                            Menu.appendChild(
+                                new QUIMenuItem({
+                                    icon  : 'fa fa-users',
+                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.user'),
+                                    events: {
+                                        onClick: function () {
+                                            require(['utils/Panels'], function (PanelUtils) {
+                                                PanelUtils.openUserPanel(rowData.customer_id);
+                                            });
+                                        }
+                                    }
+                                })
+                            );
+
+                            if (rowData.invoice_id !== '') {
+                                Menu.appendChild(
+                                    new QUIMenuItem({
+                                        icon  : 'fa fa-file-text-o',
+                                        text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.invoice'),
+                                        events: {
+                                            onClick: function () {
+                                                require([
+                                                    'utils/Panels',
+                                                    'package/quiqqer/invoice/bin/backend/controls/panels/Invoice'
+                                                ], function (PanelUtils, InvoicePanel) {
+                                                    var Panel = new InvoicePanel({
+                                                        invoiceId: rowData.invoice_id
+                                                    });
+
+                                                    PanelUtils.openPanelInTasks(Panel);
+                                                });
+                                            }
+                                        }
+                                    })
+                                );
+                            }
+
+                            Menu.inject(document.body);
+                            Menu.setPosition(position.x, position.y + 30);
+                            Menu.setTitle(rowData['prefixed-id']);
+                            Menu.show();
+                            Menu.focus();
+                        });
+
+                        return;
+                    }
+
+                    var selected = self.$Grid.getSelectedData();
+
+                    if (selected.length) {
+                        self.openOrder(selected[0].id).catch(function (err) {
+                            console.error(err);
+                        });
+                    }
+                }
             });
         }
     });

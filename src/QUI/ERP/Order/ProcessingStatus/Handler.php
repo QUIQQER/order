@@ -57,6 +57,18 @@ class Handler extends QUI\Utils\Singleton
     }
 
     /**
+     * Refresh the internal list
+     *
+     * @return array
+     */
+    public function refreshList()
+    {
+        $this->list = null;
+
+        return $this->getList();
+    }
+
+    /**
      * Return the complete processing status objects
      *
      * @return Status[]
@@ -263,8 +275,10 @@ class Handler extends QUI\Utils\Singleton
 
         if (empty($message)) {
             $Status  = $this->getProcessingStatus($statusId);
-            $message = $Status->getStatusChangenNotificationText($Order);
+            $message = $Status->getStatusChangeNotificationText($Order);
         }
+
+        $message = QUI::getLocale()->get('quiqqer/order', 'processing.status.notification.template').$message;
 
         $Mailer = new QUI\Mail\Mailer();
         /** @var QUI\Locale $Locale */

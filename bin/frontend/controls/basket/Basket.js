@@ -186,6 +186,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             });
 
             //change quantity
+            this.getElm().getElements('[name="quantity"]').addEvent('mousedown', function () {
+                this.focus();
+            });
+
             this.getElm().getElements('[name="quantity"]').addEvent('focus', function () {
                 this.set('data-quantity', parseInt(this.value));
 

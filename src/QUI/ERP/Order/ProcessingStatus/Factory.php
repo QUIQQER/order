@@ -73,6 +73,7 @@ class Factory extends QUI\Utils\Singleton
 
         // Create translations for auto-notification
         Handler::getInstance()->createNotificationTranslations($id);
+        Handler::getInstance()->refreshList();
     }
 
     /**

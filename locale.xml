@@ -212,39 +212,39 @@
             <en><![CDATA[Orders]]></en>
         </locale>
 
-        <locale name="payment.status.0" html="true">
-            <de><![CDATA[<span class="payment-status-0">offen</span>]]></de>
-            <en><![CDATA[<span class="payment-status-0">open</span>]]></en>
+        <locale name="payment.status.0">
+            <de><![CDATA[offen]]></de>
+            <en><![CDATA[open]]></en>
         </locale>
-        <locale name="payment.status.1" html="true">
-            <de><![CDATA[<span class="payment-status-1">bezahlt</span>]]></de>
-            <en><![CDATA[<span class="payment-status-1">paid</span>]]></en>
+        <locale name="payment.status.1">
+            <de><![CDATA[bezahlt]]></de>
+            <en><![CDATA[paid]]></en>
         </locale>
-        <locale name="payment.status.2" html="true">
-            <de><![CDATA[<span class="payment-status-2">Teilzahlung</span>]]></de>
-            <en><![CDATA[<span class="payment-status-2">part payment</span>]]></en>
+        <locale name="payment.status.2">
+            <de><![CDATA[Teilzahlung]]></de>
+            <en><![CDATA[part payment]]></en>
         </locale>
-        <locale name="payment.status.3" html="true">
-            <de><![CDATA[<span class="payment-status-3">storniert</span>]]></de>
-            <en><![CDATA[<span class="payment-status-3">canceled</span>]]></en>
+        <locale name="payment.status.3">
+            <de><![CDATA[storniert]]></de>
+            <en><![CDATA[canceled]]></en>
         </locale>
-        <locale name="payment.status.4" html="true">
-            <de><![CDATA[<span class="payment-status-4">error</span>]]></de>
-            <en><![CDATA[<span class="payment-status-4">error</span>]]></en>
+        <locale name="payment.status.4">
+            <de><![CDATA[error]]></de>
+            <en><![CDATA[error]]></en>
         </locale>
-        <locale name="payment.status.5" html="true">
-            <de><![CDATA[<span class="payment-status-5">storniert</span>]]></de>
-            <en><![CDATA[<span class="payment-status-5">canceled</span>]]></en>
+        <locale name="payment.status.5">
+            <de><![CDATA[storniert]]></de>
+            <en><![CDATA[canceled]]></en>
         </locale>
-        <locale name="payment.status.11" html="true">
-            <de><![CDATA[<span class="payment-status-11">Lastschrift</span>]]></de>
-            <en><![CDATA[<span class="payment-status-11">Debit</span>]]></en>
+        <locale name="payment.status.11">
+            <de><![CDATA[Lastschrift]]></de>
+            <en><![CDATA[Debit]]></en>
         </locale>
-        <locale name="payment.status.12" html="true">
-            <de><![CDATA[<span class="payment-status-12">Abonnement</span>]]></de>
-            <en><![CDATA[<span class="payment-status-12">Subscription plan</span>]]></en>
+        <locale name="payment.status.12">
+            <de><![CDATA[Abonnement]]></de>
+            <en><![CDATA[Subscription plan]]></en>
         </locale>
-        <locale name="dunning.level.0" html="true">
+        <locale name="dunning.level.0">
             <de><![CDATA[---]]></de>
             <en><![CDATA[---]]></en>
         </locale>
@@ -789,7 +789,11 @@
         </locale>
         <locale name="message.change.order.status">
             <de><![CDATA[Der Status der Bestellung wurde geändert in: [status]]]></de>
-            <en><![CDATA[The status of the purchase order has been changed to: [status]]]></en>
+            <en><![CDATA[The status of the order has been changed to: [status]]]></en>
+        </locale>
+        <locale name="message.change.order.shipping.status">
+            <de><![CDATA[Der Versandtatus der Bestellung wurde geändert in: [status]]]></de>
+            <en><![CDATA[The shipping status of the order has been changed to: [status]]]></en>
         </locale>
 
         <locale name="control.order.details.title">
@@ -1016,12 +1020,16 @@
         </locale>
 
         <locale name="console.SendOrderConfirmationMail.desc">
-            <de><![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt. Die ID kann mit oder ohne Prefix eingegeben werden (--orderId=1234).]]></de>
-            <en><![CDATA[Sends an order confirmation email. The order number is required. The ID can be entered with or without a prefix (--orderId=1234).]]></en>
+            <de>
+                <![CDATA[Sendet eine Bestellbestätigungmail. Die Bestellnummer wird benötigt. Die ID kann mit oder ohne Prefix eingegeben werden (--orderId=1234).]]></de>
+            <en>
+                <![CDATA[Sends an order confirmation email. The order number is required. The ID can be entered with or without a prefix (--orderId=1234).]]></en>
         </locale>
         <locale name="console.SendOrderConfirmationMail.help.orderId">
-            <de><![CDATA[Die interne Bestellnummer für die gewünschte (bereits abgegebene) Bestellung. Das System verschickt jedes mal eine Bestätigungsmail auf die admin Email-Adresse.]]></de>
-            <en><![CDATA[The internal order id for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
+            <de>
+                <![CDATA[Die interne Bestellnummer für die gewünschte (bereits abgegebene) Bestellung. Das System verschickt jedes mal eine Bestätigungsmail auf die admin Email-Adresse.]]></de>
+            <en>
+                <![CDATA[The internal order id for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
         </locale>
         <locale name="console.SendOrderConfirmationMail.message.noOrderFound">
             <de><![CDATA[Die Bestellung mit der ID [orderId] wurde nicht gefunen.]]></de>
@@ -1130,6 +1138,14 @@
         <locale name="panel.order.data.status">
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
+        </locale>
+        <locale name="panel.order.shipping.data.title">
+            <de><![CDATA[Versandstatus]]></de>
+            <en><![CDATA[Shipping status]]></en>
+        </locale>
+        <locale name="panel.order.shipping.data.status">
+            <de><![CDATA[Status]]></de>
+            <en><![CDATA[Status]]></en>
         </locale>
 
         <locale name="panel.orders.contextMenu.open.order">
@@ -1542,13 +1558,17 @@
             <en><![CDATA[Order status has changed]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.information" html="true">
-            <de>
-                <![CDATA[Der Status der Bestellung wurde auf <b>[statusTitle]</b> geändert. Soll dem Kunden eine Benachrichtigung über diese Änderung per E-Mail gesendet werden?]]></de>
-            <en>
-                <![CDATA[The status of the order was changed to <b>[statusTitle]</b>. Should a notification of this change be sent to the customer by e-mail?]]></en>
+            <de><![CDATA[
+            Der Status der Bestellung wurde auf <b>[statusTitle]</b> geändert.
+            Soll dem Kunden eine Benachrichtigung über diese Änderung per E-Mail gesendet werden?
+            ]]></de>
+            <en><![CDATA[
+            The status of the order was changed to <b>[statusTitle]</b>.
+            Should a notification of this change be sent to the customer by e-mail?
+            ]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.notification.label">
-            <de><![CDATA[Bitte legen Sie die Nachricht an den Benutzer fest:]]></de>
+            <de><![CDATA[Bitte gebe eine Nachricht an den Benutzer ein:]]></de>
             <en><![CDATA[Please specify the message to the user:]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.btn.confirm">
@@ -1557,7 +1577,7 @@
         </locale>
         <locale name="dialog.statusChangeNotification.btn.cancel">
             <de><![CDATA[Keine Nachricht senden]]></de>
-            <en><![CDATA[Do not send notification]]></en>
+            <en><![CDATA[Do not send a notification]]></en>
         </locale>
         <locale name="dialog.statusChangeNotification.btn.confirm_message">
             <de><![CDATA[Nachricht bestätigen]]></de>
@@ -1566,6 +1586,41 @@
         <locale name="basket.add.information">
             <de><![CDATA[Produkt wurde hinzugefügt]]></de>
             <en><![CDATA[Product was added]]></en>
+        </locale>
+
+        <locale name="dialog.shippingStatusChangeNotification.title">
+            <de><![CDATA[Versandstatus wurde geändert]]></de>
+            <en><![CDATA[Shipping status has changed]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.text">
+            <de><![CDATA[Versandstatus wurde geändert]]></de>
+            <en><![CDATA[Shipping status has changed]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.information" html="true">
+            <de><![CDATA[
+            Der Versandstatus der Bestellung wurde auf <b>[statusTitle]</b> geändert.
+            Soll dem Kunden eine Benachrichtigung über diese Änderung per E-Mail gesendet werden?
+            ]]></de>
+            <en><![CDATA[
+            The shipping status of the order was changed to <b>[statusTitle]</b>.
+            Should a notification of this change be sent to the customer by e-mail?
+            ]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.notification.label">
+            <de><![CDATA[Bitte legen Sie die Nachricht an den Benutzer fest:]]></de>
+            <en><![CDATA[Please specify the message to the user:]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.btn.confirm">
+            <de><![CDATA[Kunden benachrichtigen]]></de>
+            <en><![CDATA[Notify customer]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.btn.cancel">
+            <de><![CDATA[Keine Nachricht senden]]></de>
+            <en><![CDATA[Do not send a notification]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.btn.confirm_message">
+            <de><![CDATA[Nachricht bestätigen]]></de>
+            <en><![CDATA[Confirm message]]></en>
         </locale>
 
     </groups>

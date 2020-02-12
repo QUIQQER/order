@@ -1,11 +1,6 @@
 /**
  * @module package/quiqqer/order/bin/backend/controls/panels/order/Address
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/windows/Confirm
- * @require package/quiqqer/countries/bin/Countries
- * @require Users
+ * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
 

@@ -20,16 +20,19 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'Locale',
     'Mustache',
     'Users',
+    'Packages',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html',
     'css!package/quiqqer/order/bin/backend/controls/panels/Order.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
-             Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker, QUIAjax, QUILocale, Mustache, Users,
+             Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker,
+             QUIAjax, QUILocale, Mustache, Users, Packages,
              templateData) {
     "use strict";
 
-    var lg = 'quiqqer/order';
+    var lg                = 'quiqqer/order';
+    var shippingInstalled = false;
 
     return new Class({
 
@@ -97,8 +100,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$AddSeparator  = null;
             this.$SortSeparator = null;
 
-            this.$serializedList = {};
-            this.$initialStatus  = false;
+            this.$serializedList        = {};
+            this.$initialStatus         = false;
+            this.$initialShippingStatus = false;
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -156,6 +160,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('paymentId', data.paymentId);
                     self.setAttribute('paymentMethod', data.paymentMethod);
                     self.setAttribute('status', data.status);
+                    self.setAttribute('shippingStatus', data.shippingStatus);
+
+                    self.$initialStatus         = parseInt(data.status);
+                    self.$initialShippingStatus = parseInt(data.shippingStatus);
 
                     if (data.articles) {
                         self.$serializedList = data.articles;
@@ -194,12 +202,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 data           : this.getAttribute('data'),
                 articles       : this.getAttribute('articles'),
                 paymentId      : this.getAttribute('paymentId'),
-                status         : this.getAttribute('status')
+                status         : this.getAttribute('status'),
+                shippingStatus : this.getAttribute('shippingStatus')
             };
 
             return new Promise(function (resolve) {
                 self.$dialogStatusChangeNotification(data.status).then(function (notificationText) {
                     data.notification = notificationText;
+
+                    return self.$dialogShippingStatusChangeNotification(data.shippingStatus);
+                }).then(function (notificationShippingText) {
+                    data.notificationShipping = notificationShippingText;
 
                     Orders.updateOrder(orderId, data).then(function () {
                         resolve();
@@ -433,6 +446,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.$getLockGroups()
                 );
             }).then(function () {
+                return Packages.isInstalled('quiqqer/shipping');
+            }).then(function (isInstalled) {
+                shippingInstalled = isInstalled;
+
                 return self.refresh();
             }).then(this.openInfo).catch(function (Err) {
                 QUI.getMessageHandler().then(function (MH) {
@@ -583,6 +600,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textStatus              : QUILocale.get(lg, 'panel.order.data.status'),
                         textPaymentTitle        : QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
                         textPayment             : QUILocale.get(lg, 'order.payment.panel.payment'),
+                        textShippingStatus      : QUILocale.get(lg, 'panel.order.shipping.data.status'),
+                        textShippingStatusTitle : QUILocale.get(lg, 'panel.order.shipping.data.title'),
 
                         messageDifferentDeliveryAddress: QUILocale.get(lg, 'message.different,delivery.address')
                     })
@@ -704,8 +723,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                        .getElements('.closable')
-                        .setStyle('display', null);
+                                  .getElements('.closable')
+                                  .setStyle('display', null);
                 }
 
                 if (self.getAttribute('cDate')) {
@@ -719,6 +738,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 EUVAT.disabled = false;
                 TaxId.disabled = false;
 
+                if (!shippingInstalled) {
+                    return;
+                }
+
+                return self.$initShippingStatus();
             }).then(function () {
                 // payments
                 var Select  = self.getContent().getElement('[name="paymentId"]'),
@@ -785,7 +809,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     StatusSelect.fireEvent('change');
 
                     if (self.$initialStatus === false) {
-                        self.$initialStatus = self.getAttribute('status');
+                        self.$initialStatus = parseInt(self.getAttribute('status'));
                     }
                 });
             }).then(function () {
@@ -1191,7 +1215,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             var Content          = this.getContent(),
                 deliverAddress   = Content.getElement('[name="differentDeliveryAddress"]'),
                 PaymentForm      = Content.getElement('form[name="payment"]'),
-                ProcessingStatus = Content.getElement('[name="status"]');
+                ProcessingStatus = Content.getElement('[name="status"]'),
+                ShippingStatus   = Content.getElement('[name="shippingStatus"]');
 
             if (this.$AddressInvoice) {
                 this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
@@ -1212,7 +1237,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             // processing status
             if (ProcessingStatus) {
-                this.setAttribute('status', ProcessingStatus.value);
+                this.setAttribute('status', parseInt(ProcessingStatus.value));
+            }
+
+            // processing status
+            if (ShippingStatus) {
+                this.setAttribute('shippingStatus', parseInt(ShippingStatus.value));
             }
 
             // payments
@@ -1321,7 +1351,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         },
 
         /**
-         * Prompt for a customer notification if the order status is changed
+         * Prompt for a customer notification if the order status has changed
          *
          * @param {Number} statusId
          * @return {Promise}
@@ -1358,8 +1388,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 Editors.getEditor().then(function (Editor) {
                                     Win.Loader.hide();
 
-                                    Win.setAttribute('maxHeight', 600);
+                                    Win.setAttribute('maxHeight', 900);
+                                    Win.setAttribute('maxWidth', 800);
                                     Win.resize();
+
                                     SubmitBtn.setAttributes({
                                         text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
                                         textimage: 'fa fa-check'
@@ -1376,7 +1408,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                     Editor.setContent(notificationText);
 
                                     NotifyTextEditor = Editor;
-                                })
+                                });
                             });
                         }
                     );
@@ -1417,6 +1449,183 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
                 }).open();
             });
+        },
+
+        //region shipping
+
+        /**
+         * Shipping init
+         * - shipping status render and building
+         *
+         * @return {Promise}
+         */
+        $initShippingStatus: function () {
+            if (!shippingInstalled) {
+                return Promise.resolve();
+            }
+
+            var self    = this,
+                Content = this.getContent();
+
+            // build shipping status stuff
+            Content.getElement('.order-shipping').setStyle('display', null);
+
+            // order status
+            var StatusSelect = Content.getElement('[name="shippingStatus"]');
+            var StatusColor  = Content.getElement('.order-data-shipping-status-field-colorPreview');
+
+            StatusSelect.addEvent('change', function () {
+                var Option = StatusSelect.getElement('[value="' + this.value + '"]');
+
+                if (Option) {
+                    StatusColor.setStyle('backgroundColor', Option.get('data-color'));
+                } else {
+                    StatusColor.setStyle('backgroundColor', '');
+                }
+            });
+
+            return new Promise(function (resolve) {
+                require(['package/quiqqer/shipping/bin/backend/ShippingStatus'], function (ShippingStatus) {
+                    ShippingStatus.getList().then(function (statusList) {
+                        statusList = statusList.data;
+
+                        new Element('option', {
+                            html        : '',
+                            value       : '',
+                            'data-color': ''
+                        }).inject(StatusSelect);
+
+                        for (var i = 0, len = statusList.length; i < len; i++) {
+                            new Element('option', {
+                                html        : statusList[i].title,
+                                value       : statusList[i].id,
+                                'data-color': statusList[i].color
+                            }).inject(StatusSelect);
+                        }
+
+                        StatusSelect.disabled = false;
+                        StatusSelect.value    = self.getAttribute('shippingStatus');
+                        StatusSelect.fireEvent('change');
+
+                        if (self.$initialShippingStatus === false) {
+                            self.$initialShippingStatus = parseInt(self.getAttribute('shippingStatus'));
+                        }
+                    }).then(resolve);
+                });
+            });
+        },
+
+        /**
+         * Prompt for a customer notification if the order shipping status has changed
+         *
+         * @param {Number} statusId
+         *
+         * @return {Promise}
+         */
+        $dialogShippingStatusChangeNotification: function (statusId) {
+            if (!shippingInstalled) {
+                return Promise.resolve(false);
+            }
+
+            if (this.$initialShippingStatus === statusId || !statusId) {
+                return Promise.resolve(false);
+            }
+
+            var self = this;
+
+            var NotifyTextEditor;
+            var notificationConfirmOpened = false;
+
+            return new Promise(function (resolve) {
+                var onNotifyConfirmSubmit = function (Win) {
+                    if (notificationConfirmOpened) {
+                        resolve(NotifyTextEditor.getContent());
+                        Win.close();
+                        return;
+                    }
+
+                    notificationConfirmOpened = true;
+
+                    Win.Loader.show();
+
+                    var SubmitBtn = Win.getButton('submit');
+                    SubmitBtn.disable();
+
+                    require([
+                        'package/quiqqer/shipping/bin/backend/ShippingStatus',
+                        'Editors'
+                    ], function (ShippingStatus, Editors) {
+                        ShippingStatus.getNotificationText(
+                            statusId,
+                            self.getAttribute('orderId')
+                        ).then(function (notificationText) {
+                            Editors.getEditor().then(function (Editor) {
+                                Win.Loader.hide();
+
+                                Win.setAttribute('maxHeight', 900);
+                                Win.setAttribute('maxWidth', 800);
+
+                                Win.resize().then(function () {
+                                    var NotificationElm = new Element('div', {
+                                        'class': 'order-notification',
+                                        html   : '<span>' + QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') + '</span>'
+                                    }).inject(Win.getContent());
+
+                                    Editor.setHeight(400);
+                                    Editor.inject(NotificationElm);
+                                    Editor.setContent(notificationText);
+
+                                    NotifyTextEditor = Editor;
+
+                                    SubmitBtn.setAttributes({
+                                        text     : QUILocale.get(lg, 'dialog.statusChangeNotification.btn.confirm_message'),
+                                        textimage: 'fa fa-check'
+                                    });
+
+                                    SubmitBtn.enable();
+                                });
+                            });
+                        });
+                    });
+                };
+
+                new QUIConfirm({
+                    title        : QUILocale.get(lg, 'dialog.shippingStatusChangeNotification.title'),
+                    text         : QUILocale.get(lg, 'dialog.shippingStatusChangeNotification.text'),
+                    information  : '',
+                    icon         : 'fa fa-envelope',
+                    texticon     : 'fa fa-envelope',
+                    maxHeight    : 275,
+                    maxWidth     : 600,
+                    autoclose    : false,
+                    ok_button    : {
+                        text     : QUILocale.get(lg, 'dialog.shippingStatusChangeNotification.btn.confirm'),
+                        textimage: 'fa fa-envelope'
+                    },
+                    cancel_button: {
+                        text     : QUILocale.get(lg, 'dialog.shippingStatusChangeNotification.btn.cancel'),
+                        textimage: 'fa fa-close'
+                    },
+                    events       : {
+                        onOpen  : function (Win) {
+                            // get current status title
+                            var statusTitle = self.$Elm.getElement(
+                                'select[name="status"] option[value="' + statusId + '"]'
+                            ).innerHTML;
+
+                            Win.setAttribute('information', QUILocale.get(lg, 'dialog.shippingStatusChangeNotification.information', {
+                                statusTitle: statusTitle
+                            }));
+                        },
+                        onSubmit: onNotifyConfirmSubmit,
+                        onCancel: function () {
+                            return resolve(false);
+                        }
+                    }
+                }).open();
+            });
         }
+
+        //endregion
     });
 });
