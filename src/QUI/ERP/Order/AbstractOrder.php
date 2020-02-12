@@ -382,7 +382,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
             if (!$Shipping->isValid()
                 || !$Shipping->canUsedInOrder($this)
-                || !$Shipping->canUsedBy($this->getCustomer())) {
+                || !$Shipping->canUsedBy($this->getCustomer(), $this)) {
                 $this->shippingId = false;
             }
         }
