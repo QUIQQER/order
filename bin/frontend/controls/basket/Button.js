@@ -41,13 +41,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         ],
 
         options: {
-            open         : 2, // 0 = nothing, 1 = order window, 2 = order process
-            text         : true,
-            styles       : false,
-            batchPosition: {
+            open                     : 2, // 0 = nothing, 1 = order window, 2 = order process
+            text                     : true,
+            styles                   : false,
+            batchPosition            : {
                 right: -16,
                 top  : -10
-            }
+            },
+            showMiniBasketOnMouseOver: true
         },
 
         initialize: function (options) {
@@ -145,20 +146,22 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             var delay = null;
 
-            Elm.addEvents({
-                mouseenter: function () {
-                    delay = setTimeout(function () {
-                        if (QUI.getWindowSize().x <= 768) {
-                            return;
-                        }
+            if (this.getAttribute('showMiniBasketNnMouseOver')) {
+                Elm.addEvents({
+                    mouseenter: function () {
+                        delay = setTimeout(function () {
+                            if (QUI.getWindowSize().x <= 768) {
+                                return;
+                            }
 
-                        self.showSmallBasket();
-                    }, 250);
-                },
-                mouseleave: function () {
-                    clearTimeout(delay);
-                }
-            });
+                            self.showSmallBasket();
+                        }, 250);
+                    },
+                    mouseleave: function () {
+                        clearTimeout(delay);
+                    }
+                });
+            }
 
             if (this.$Batch) {
                 this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
