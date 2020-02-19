@@ -7,8 +7,8 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
-use QUI\ERP\Coupons\Handler;
 use QUI\ERP\Order\Controls\Basket\Basket as BasketControl;
+use QUI\ERP\Order\OrderInterface;
 
 /**
  * Class Basket
@@ -136,6 +136,15 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function showNext()
     {
+        if ($this->getAttribute('Order')) {
+            /* @var $Order OrderInterface */
+            $Order = $this->getAttribute('Order');
+
+            if ($Order->count()) {
+                return true;
+            }
+        }
+
         return (bool)$this->Basket->count();
     }
 
