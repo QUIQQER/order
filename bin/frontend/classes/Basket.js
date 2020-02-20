@@ -431,10 +431,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            self.fireEvent('refreshBegin', [this]);
+            this.fireEvent('refreshBegin', [this]);
             this.fireEvent('removeBegin', [this]);
 
-            self.$products.splice(index, 1);
+            this.$products.splice(index, 1);
 
             return self.save().then(function () {
                 self.fireEvent('remove', [self]);

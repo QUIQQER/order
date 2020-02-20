@@ -91,6 +91,22 @@ class Handler extends Singleton
         return $result;
     }
 
+    /**
+     * Remove a order instance
+     *
+     * @param $orderId
+     */
+    public function removeFromInstanceCache($orderId)
+    {
+        if (isset($this->orders[$orderId])) {
+            unset($this->orders[$orderId]);
+        }
+
+        if (isset($this->cache[$orderId])) {
+            unset($this->cache[$orderId]);
+        }
+    }
+
     //region Order
 
     /**
