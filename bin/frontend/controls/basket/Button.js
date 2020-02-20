@@ -146,7 +146,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             var delay = null;
 
-            if (this.getAttribute('showMiniBasketNnMouseOver')) {
+            if (this.getAttribute('showMiniBasketOnMouseOver')) {
                 Elm.addEvents({
                     mouseenter: function () {
                         delay = setTimeout(function () {
