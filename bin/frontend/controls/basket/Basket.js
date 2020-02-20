@@ -193,6 +193,28 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             this.getElm().getElements('[name="quantity"]').addEvent('focus', function () {
                 this.set('data-quantity', parseInt(this.value));
 
+                var Parent = this.parentNode;
+
+                if (!Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh')) {
+                    var Refresh = new Element('button', {
+                        'class': 'quiqqer-order-basket-articles-article-quantity-refresh',
+                        'html' : '<span class="fa fa-refresh"></span>',
+                        styles : {
+                            position: 'absolute',
+                            opacity : 0
+                        }
+                    }).inject(this, 'after');
+
+                    var buttonWidth = Refresh.getSize().x;
+                    var inputWidth  = this.getSize().x;
+
+                    Parent.setStyle('width', Parent.getSize().x);
+
+                    this.setStyle('width', inputWidth - buttonWidth);
+                    Refresh.setStyle('position', null);
+                    Refresh.setStyle('opacity', null);
+                }
+
                 if (Order) {
                     Order.disable();
                 }
@@ -202,6 +224,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 var Article     = this.getParent('.quiqqer-order-basket-small-articles-article');
                 var quantity    = this.value;
                 var oldQuantity = this.get('data-quantity');
+                var Parent      = this.parentNode;
+
+                if (Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh')) {
+                    Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh').destroy();
+                    this.setStyle('width', null);
+                    Parent.setStyle('width', null);
+                }
 
                 if (oldQuantity && quantity === oldQuantity) {
                     if (Order) {
