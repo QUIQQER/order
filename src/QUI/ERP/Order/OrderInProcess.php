@@ -59,6 +59,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     {
         if ($this->orderId) {
             try {
+                Handler::getInstance()->removeFromInstanceCache($this->orderId);
+
                 $Order = Handler::getInstance()->get($this->orderId);
                 $Order->refresh();
             } catch (QUI\Exception $Exception) {
@@ -638,16 +640,19 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         $this->delete();
 
-        $hash       = $this->getHash();
+        $hash = $this->getHash();
+
+        $oldOrderId = $this->getId();
         $newOrderId = QUI\ERP\Order\Factory::getInstance()->createOrderInProcessDataBaseEntry();
 
         QUI::getDataBase()->update(
             Handler::getInstance()->tableOrderProcess(),
-            ['hash' => $hash],
+            [
+                'hash' => $hash,
+                'id'   => $oldOrderId
+            ],
             ['id' => $newOrderId]
         );
-
-        $this->id = $newOrderId;
 
         $this->refresh();
 

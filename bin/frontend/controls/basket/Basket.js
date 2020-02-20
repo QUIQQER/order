@@ -67,6 +67,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
         $onImport: function () {
             // user need no import
             if (!this.isGuest()) {
+                this.getElm().style.outline = 0;
+                this.getElm().setAttribute('tabindex', "-1");
                 this.$setEvents();
 
                 this.$Loader.inject(this.getElm());
@@ -143,6 +145,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          */
         $render: function (result) {
             this.getElm().set('html', result);
+
             this.$Loader.inject(this.getElm());
             this.$setEvents();
             this.$Loader.hide();
@@ -157,7 +160,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 Order = this.getOrderProcess();
 
             // remove
-            this.getElm().getElements('.fa-trash').getParent('button').addEvent('click', function () {
+            this.getElm().getElements('.fa-trash').getParent('button').addEvent('click', function (event) {
+                event.stop();
+console.log('DELETE');
                 self.$Loader.show();
 
                 var Article = this.getParent('.quiqqer-order-basket-small-articles-article');
@@ -188,6 +193,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             //change quantity
             this.getElm().getElements('[name="quantity"]').addEvent('mousedown', function () {
                 this.focus();
+            });
+
+            this.getElm().getElements('[name="quantity"]').addEvent('keyup', function (event) {
+                if (event.key === 'enter') {
+                    self.getElm().focus();
+                }
             });
 
             this.getElm().getElements('[name="quantity"]').addEvent('focus', function () {

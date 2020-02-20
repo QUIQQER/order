@@ -174,6 +174,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$TimelineContainer = this.getElm().getElement('.quiqqer-order-ordering-timeline-container');
             this.$Form              = this.getElm().getElement('[name="order"]');
 
+            this.$Form.addEvent('submit', function (e) {
+                e.stop();
+            });
+
             if (this.getAttribute('buttons') === false) {
                 this.$Buttons.setStyle('display', 'none');
             }
@@ -215,7 +219,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 Done = QUI.parse(Nobody);
             }
-            
+
             // parse basket container - only in qui popup
             if (!Nobody &&
                 this.$StepContainer.getElement('.quiqqer-order-step-basket') &&

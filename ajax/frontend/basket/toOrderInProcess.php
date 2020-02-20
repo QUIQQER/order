@@ -17,7 +17,7 @@ QUI::$Ajax->registerFunction(
         $User = QUI::getUserBySession();
 
         if (QUI::getUsers()->isNobodyUser($User)) {
-            return;
+            return false;
         }
 
         $Basket       = new QUI\ERP\Order\Basket\Basket($basketId, $User);
@@ -43,6 +43,8 @@ QUI::$Ajax->registerFunction(
         if ($Order) {
             $Basket->toOrder($Order);
         }
+
+        return $Order->getHash();
     },
     ['basketId', 'orderHash']
 );
