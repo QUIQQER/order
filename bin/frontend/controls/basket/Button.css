@@ -43,11 +43,6 @@
     z-index: 1001;
 }
 
-.quiqqer-order-basket-articles-article-quantity-refresh .fa {
-    margin: 0;
-    padding: 0;
-}
-
 @keyframes bounceInDown {
     from,
     60%,

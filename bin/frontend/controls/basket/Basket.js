@@ -9,7 +9,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
     'qui/controls/Control',
     'qui/controls/loader/Loader',
     'Ajax',
-    'package/quiqqer/order/bin/frontend/Basket'
+    'package/quiqqer/order/bin/frontend/Basket',
+
+    'css!package/quiqqer/order/bin/frontend/controls/basket/Basket.css'
 
 ], function (QUI, QUIControl, QUILoader, QUIAjax, Basket) {
     "use strict";
@@ -162,7 +164,6 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             // remove
             this.getElm().getElements('.fa-trash').getParent('button').addEvent('click', function (event) {
                 event.stop();
-console.log('DELETE');
                 self.$Loader.show();
 
                 var Article = this.getParent('.quiqqer-order-basket-small-articles-article');
@@ -207,23 +208,10 @@ console.log('DELETE');
                 var Parent = this.parentNode;
 
                 if (!Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh')) {
-                    var Refresh = new Element('button', {
+                    new Element('button', {
                         'class': 'quiqqer-order-basket-articles-article-quantity-refresh',
-                        'html' : '<span class="fa fa-refresh"></span>',
-                        styles : {
-                            position: 'absolute',
-                            opacity : 0
-                        }
-                    }).inject(this, 'after');
-
-                    var buttonWidth = Refresh.getSize().x;
-                    var inputWidth  = this.getSize().x;
-
-                    Parent.setStyle('width', Parent.getSize().x);
-
-                    this.setStyle('width', inputWidth - buttonWidth);
-                    Refresh.setStyle('position', null);
-                    Refresh.setStyle('opacity', null);
+                        'html' : '<span class="fa fa-refresh"></span>'
+                    }).inject(this, 'before');
                 }
 
                 if (Order) {
@@ -236,11 +224,10 @@ console.log('DELETE');
                 var quantity    = this.value;
                 var oldQuantity = this.get('data-quantity');
                 var Parent      = this.parentNode;
+                var Refresh     = Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh');
 
-                if (Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh')) {
-                    Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh').destroy();
-                    this.setStyle('width', null);
-                    Parent.setStyle('width', null);
+                if (Refresh) {
+                    Refresh.destroy();
                 }
 
                 if (oldQuantity && quantity === oldQuantity) {
