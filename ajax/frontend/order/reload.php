@@ -13,12 +13,13 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_reload',
-    function ($orderId, $step, $orderHash) {
+    function ($orderId, $step, $orderHash, $basketEditable) {
         $_REQUEST['current'] = $step;
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId'   => (int)$orderId,
-            'orderHash' => $orderHash
+            'orderId'        => (int)$orderId,
+            'orderHash'      => $orderHash,
+            'basketEditable' => \boolval($basketEditable)
         ]);
 
         $Order   = $OrderProcess->getOrder();
@@ -41,5 +42,5 @@ QUI::$Ajax->registerFunction(
             'hash' => $Order->getHash()
         ];
     },
-    ['orderId', 'step', 'orderHash']
+    ['orderId', 'step', 'orderHash', 'basketEditable']
 );

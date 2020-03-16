@@ -4,8 +4,9 @@ $Site->setAttribute('nocache', true);
 
 try {
     $OrderProcess = new QUI\ERP\Order\OrderProcess([
-        'step'      => $Site->getAttribute('order::step'),
-        'orderHash' => $Site->getAttribute('order::hash')
+        'step'           => $Site->getAttribute('order::step'),
+        'orderHash'      => $Site->getAttribute('order::hash'),
+        'basketEditable' => false
     ]);
 
     $Engine->assign([

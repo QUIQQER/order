@@ -97,6 +97,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 return '';
             }
 
+            if (QUI\ERP\Utils\Shop::isB2CPrioritized() ||
+                QUI\ERP\Utils\Shop::isOnlyB2C()) {
+                return '';
+            }
+
             if (QUI\ERP\Utils\Shop::isB2B()) {
                 return ' selected="selected"';
             }
