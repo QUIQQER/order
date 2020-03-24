@@ -6,7 +6,7 @@ try {
     $OrderProcess = new QUI\ERP\Order\OrderProcess([
         'step'           => $Site->getAttribute('order::step'),
         'orderHash'      => $Site->getAttribute('order::hash'),
-        'basketEditable' => false
+        'basketEditable' => true
     ]);
 
     $Engine->assign([
