@@ -72,7 +72,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             var val = parseInt(this.getElm().get('data-validate'));
 
             if (isNaN(val) || !val) {
-                this.openAddressEdit();
+                this.openAddressEdit().catch(function (err) {
+                    console.error(err);
+                });
             }
         },
 
@@ -167,23 +169,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 EditContainer    = Elm.getElement('.quiqqer-order-customerData-edit'),
                 Header           = Elm.getElement('.quiqqer-order-customerData header');
 
-            var VatId        = Elm.getElement('[name="vatId"]');
-            var Company      = Elm.getElement('[name="company"]');
             var BusinessType = Elm.getElement('[name="businessType"]');
             var OrderProcess = self.$getOrderProcess();
-
-            if (VatId.value !== '') {
-                //VatId.disabled = true;
-            }
-
-            if (Company.value !== '') {
-                //Company.disabled = true;
-            }
-
-            if (BusinessType.value !== '') {
-                //BusinessType.disabled = true;
-            }
-
 
             if (OrderProcess) {
                 OrderProcess.resize();
@@ -216,9 +203,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     opacity: 1
                 });
             }).then(function () {
-                self.$onBusinessTypeChange({
-                    target: self.getElm().getElement('[name="businessType"]')
-                });
+                if (BusinessType) {
+                    self.$onBusinessTypeChange({
+                        target: BusinessType
+                    });
+                }
 
                 EditContainer.setStyle('display', 'inline');
                 Container.setStyle('height', null);

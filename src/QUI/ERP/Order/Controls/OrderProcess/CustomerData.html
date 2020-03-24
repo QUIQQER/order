@@ -54,6 +54,7 @@
                value="{$Address->getId()}"
         />
 
+        {if $businessTypeIsChangeable}
         <label class="quiqqer-order-customerData-edit-businessType">
             <span>
                 {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType"}
@@ -67,7 +68,9 @@
                 </option>
             </select>
         </label>
+        {/if}
 
+        {if $isB2B}
         <label class="quiqqer-order-customerData-edit-company">
             <span>{locale group="quiqqer/order" var="company"}</span>
             <input type="text"
@@ -83,6 +86,7 @@
                    value="{$User->getAttribute('quiqqer.erp.euVatId')|escape:'html'}"
             />
         </label>
+        {/if}
 
         {if $isB2B}
         <style type="text/css">

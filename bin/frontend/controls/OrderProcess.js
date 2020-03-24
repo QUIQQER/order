@@ -799,9 +799,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                     Basket.refresh();
                 }, {
-                    'package': 'quiqqer/order',
-                    orderHash: self.getAttribute('orderHash'),
-                    step     : self.getCurrentStepData().step
+                    'package'     : 'quiqqer/order',
+                    orderHash     : self.getAttribute('orderHash'),
+                    step          : self.getCurrentStepData().step,
+                    basketEditable: self.getAttribute('basketEditable') ? 1 : 0
                 });
             });
         },

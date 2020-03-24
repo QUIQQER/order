@@ -97,6 +97,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 return '';
             }
 
+            if (QUI\ERP\Utils\Shop::isB2CPrioritized() ||
+                QUI\ERP\Utils\Shop::isOnlyB2C()) {
+                return '';
+            }
+
             if (QUI\ERP\Utils\Shop::isB2B()) {
                 return ' selected="selected"';
             }
@@ -127,10 +132,13 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'User'            => $User,
             'Address'         => $Address,
             'Order'           => $this->getOrder(),
-            'isB2B'           => QUI\ERP\Utils\Shop::isOnlyB2B() || QUI\ERP\Utils\Shop::isOnlyB2C(),
             'b2bSelected'     => $isB2B(),
             'commentMessage'  => $commentMessage,
-            'commentCustomer' => $commentCustomer
+            'commentCustomer' => $commentCustomer,
+
+            'businessTypeIsChangeable' => !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B()),
+            'isB2C'                    => QUI\ERP\Utils\Shop::isB2C(),
+            'isB2B'                    => QUI\ERP\Utils\Shop::isB2B(),
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/CustomerData.html');
