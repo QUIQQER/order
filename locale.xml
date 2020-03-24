@@ -85,6 +85,10 @@
             <de><![CDATA[Umsatzsteuer-ID]]></de>
             <en><![CDATA[VAT ID]]></en>
         </locale>
+        <locale name="chUID">
+            <de><![CDATA[Unternehmens-ID (UID)]]></de>
+            <en><![CDATA[Company ID (UID)]]></en>
+        </locale>
 
         <locale name="exception.order.construct.needle.missing">
             <de><![CDATA[Fehlender Wert für Bestellungs-Konstruktor [needle]]]></de>
