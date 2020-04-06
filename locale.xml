@@ -1047,6 +1047,12 @@
             <de><![CDATA[Die Email wurde verschickt.]]></de>
             <en><![CDATA[The email was sent.]]></en>
         </locale>
+
+
+        <locale name="erp.comment.order.created">
+            <de><![CDATA[Bestellung #[orderId] erstellt]]></de>
+            <en><![CDATA[Created order #[orderId]]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
