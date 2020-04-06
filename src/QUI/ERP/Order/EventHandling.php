@@ -418,6 +418,14 @@ class EventHandling
 
         foreach ($orders as $Order) {
             $Comments->import($Order->getComments());
+
+            // created invoice
+            $Comments->addComment(
+                QUI::getLocale()->get('quiqqer/order', 'erp.comment.order.created', [
+                    'orderId' => $Order->getId()
+                ]),
+                \strtotime($Order->getAttribute('c_date'))
+            );
         }
     }
 }

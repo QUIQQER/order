@@ -21,7 +21,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             'openAddressEdit',
             'closeAddressEdit',
             '$onBusinessTypeChange',
-            'validateVatId'
+            'validateVatId',
+            '$onCountryChange'
         ],
 
         initialize: function (options) {
@@ -76,6 +77,25 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     console.error(err);
                 });
             }
+
+            // country edit
+            var Country = self.getElm().getElement('[name="country"]');
+
+            if (Country.get('data-qui') && !Country.get('data-quiid')) {
+                QUI.parse(this.getElm()).then(function () {
+                    QUI.Controls
+                       .getById(Country.get('data-quiid'))
+                       .addEvent('onCountryChange', self.$onCountryChange);
+                });
+            } else if (Country.get('data-quiid')) {
+                QUI.Controls
+                   .getById(Country.get('data-quiid'))
+                   .addEvent('onCountryChange', self.$onCountryChange);
+            } else {
+                Country.addEvent('change', self.$onCountryChange);
+            }
+
+            this.$onCountryChange();
         },
 
         /**
@@ -123,6 +143,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             if (Loader) {
                 Loader.show();
+            }
+
+            if (address.country === 'CH') {
+                address.vatId = '';
+            } else {
+                address.chUID = '';
             }
 
             // save the data
@@ -370,6 +396,24 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     OrderProcess.resize();
                 }
             }).delay(500, this);
+        },
+
+        /**
+         * event: on country change
+         */
+        $onCountryChange: function () {
+            var VatId = this.getElm().getElements('.quiqqer-order-customerData-edit-vatId');
+            var chUID = this.getElm().getElements('.quiqqer-order-customerData-edit-chUID');
+
+            var Country = this.getElm().getElement('[name="country"]');
+
+            if (Country.value === 'CH') {
+                VatId.setStyle('display', 'none');
+                chUID.setStyle('display', null);
+            } else {
+                VatId.setStyle('display', null);
+                chUID.setStyle('display', 'none');
+            }
         },
 
         /**

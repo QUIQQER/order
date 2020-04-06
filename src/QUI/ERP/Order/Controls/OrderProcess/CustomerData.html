@@ -86,6 +86,13 @@
                    value="{$User->getAttribute('quiqqer.erp.euVatId')|escape:'html'}"
             />
         </label>
+        <label class="quiqqer-order-customerData-edit-chUID">
+            <span>{locale group="quiqqer/order" var="chUID"}</span>
+            <input type="text"
+                   name="chUID"
+                   value="{$User->getAttribute('quiqqer.erp.chUID')|escape:'html'}"
+            />
+        </label>
         {/if}
 
         {if $isB2B}
@@ -99,7 +106,8 @@
         {if $isB2B === false}
         <style type="text/css">
             .quiqqer-order-customerData-edit-company,
-            .quiqqer-order-customerData-edit-vatId {
+            .quiqqer-order-customerData-edit-vatId,
+            .quiqqer-order-customerData-edit-chUID {
                 display: none;
             }
         </style>
