@@ -282,6 +282,24 @@
             <de><![CDATA[---]]></de>
             <en><![CDATA[---]]></en>
         </locale>
+
+        <locale name="ordering.nobody.login.text.prefix" html="true">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+        <locale name="ordering.nobody.login.text.suffix" html="true">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+        <locale name="ordering.nobody.registration.text.prefix" html="true">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+        <locale name="ordering.nobody.registration.text.suffix" html="true">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
