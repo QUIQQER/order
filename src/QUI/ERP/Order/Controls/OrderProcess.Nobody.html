@@ -9,11 +9,41 @@
          data-qui="package/quiqqer/order/bin/frontend/controls/orderProcess/Login"
     >
         <div class="quiqqer-order-ordering-nobody-login">
+
+            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.prefix'}}
+            {if $text != ''}
+            <div class="quiqqer-order-ordering-nobody-login-text quiqqer-order-ordering-nobody-login-text__prefix">
+                {$text}
+            </div>
+            {/if}
+
             {$Login->create()}
+
+            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.suffix'}}
+            {if $text != ''}
+            <div class="quiqqer-order-ordering-nobody-login-text quiqqer-order-ordering-nobody-login-text__suffix">
+                {$text}
+            </div>
+            {/if}
         </div>
 
         <div class="quiqqer-order-ordering-nobody-registration">
+
+            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.registration.text.prefix'}}
+            {if $text != ''}
+            <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-registration-text__prefix">
+                {$text}
+            </div>
+            {/if}
+
             {$Registration->create()}
+
+            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.registration.text.suffix'}}
+            {if $text != ''}
+            <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-registration-text__suffix">
+                {$text}
+            </div>
+            {/if}
         </div>
     </div>
 

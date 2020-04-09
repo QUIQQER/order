@@ -226,7 +226,7 @@
 
 
 .quiqqer-fu-login-container,
-.quiqqer-order-ordering-nobody-registration {
+.quiqqer-fu-registrationSignUp {
     margin-left: 1rem;
     margin-right: 1rem;
 }
@@ -243,11 +243,14 @@
 .quiqqer-order-ordering-nobody-registration {
     display: flex;
     width: 50%;
+    flex-direction: column;
+}
+.quiqqer-order-ordering-nobody-login {
+    margin-right: 1rem;
 }
 
-.quiqqer-order-ordering-nobody-login > div,
-.quiqqer-order-ordering-nobody-registration > div {
-    flex-grow: 1;
+.quiqqer-order-ordering-nobody-registration {
+    margin-left: 1rem;
 }
 
 .quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp,
@@ -269,19 +272,33 @@
     padding: 0.75rem;
 }
 
+.quiqqer-order-ordering-nobody-login-text,
+.quiqqer-order-ordering-nobody-registration-text {
+    margin-bottom: 2rem
+}
+
+.quiqqer-order-ordering-nobody-login-text__suffix,
+.quiqqer-order-ordering-nobody-registration-text__suffix {
+    margin-top: 2rem;
+}
+
 @media screen and (max-width: 767px) {
     .quiqqer-order-ordering-nobody {
         flex-direction: column;
     }
 
     .quiqqer-fu-login-container,
+    .quiqqer-order-ordering-nobody-login,
     .quiqqer-order-ordering-nobody-registration {
         margin-left: 0;
         margin-right: 0;
     }
 
+    .quiqqer-order-ordering-nobody-registration {
+    }
+
     .quiqqer-order-ordering-nobody-login {
-        margin-bottom: 4rem;
+        margin-bottom: 1rem;
     }
 
     .quiqqer-order-ordering-nobody-login,
