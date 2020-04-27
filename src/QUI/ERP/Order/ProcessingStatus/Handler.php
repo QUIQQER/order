@@ -278,8 +278,6 @@ class Handler extends QUI\Utils\Singleton
             $message = $Status->getStatusChangeNotificationText($Order);
         }
 
-        $message = QUI::getLocale()->get('quiqqer/order', 'processing.status.notification.template').$message;
-
         $Mailer = new QUI\Mail\Mailer();
         /** @var QUI\Locale $Locale */
         $Locale = $Order->getCustomer()->getLocale();
