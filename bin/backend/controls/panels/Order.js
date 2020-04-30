@@ -141,7 +141,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return new Promise(function (resolve, reject) {
                 Orders.get(orderId).then(function (data) {
-
                     self.setAttribute('customerId', data.customerId);
                     self.setAttribute('customer', data.customer);
                     self.setAttribute('data', data.data);
@@ -150,7 +149,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('addressDelivery', data.addressDelivery);
 
                     if (data.addressDelivery &&
-                        (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length)) {
+                        (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
+                        JSON.stringify(data.addressDelivery) !== JSON.stringify(data.addressInvoice)) {
                         self.setAttribute('hasDeliveryAddress', true);
                     }
 
