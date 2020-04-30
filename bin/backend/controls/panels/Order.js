@@ -149,7 +149,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
 
-                    if (data.addressDelivery) {
+                    if (data.addressDelivery &&
+                        (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length)) {
                         self.setAttribute('hasDeliveryAddress', true);
                     }
 
