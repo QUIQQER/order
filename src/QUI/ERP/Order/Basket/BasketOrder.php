@@ -243,7 +243,7 @@ class BasketOrder
             $this->List->calc();
             $this->save();
         } catch (\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
+            QUI\System\Log::addDebug($Exception->getMessage());
         }
     }
 
