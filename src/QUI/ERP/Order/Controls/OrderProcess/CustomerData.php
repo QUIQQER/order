@@ -84,7 +84,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
 
-        $isB2B = function () use ($User) {
+        $isUserB2B = function () use ($User) {
             if (!$User) {
                 return '';
             }
@@ -128,17 +128,40 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $this->setAttribute('data-validate', 0);
         }
 
+        // frontend users address profile settings
+        try {
+            $Conf     = QUI::getPackage('quiqqer/frontend-users')->getConfig();
+            $settings = $Conf->getValue('profile', 'addressFields');
+
+            if (!empty($settings)) {
+                $settings = \json_decode($settings, true);
+            }
+        } catch (QUI\Exception $Exception) {
+            $settings = [];
+        }
+
+        $settings                 = QUI\FrontendUsers\Controls\Address\Address::checkSettingsArray($settings);
+        $businessTypeIsChangeable = !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B());
+
+        $isB2B     = QUI\ERP\Utils\Shop::isB2B();
+        $isB2C     = QUI\ERP\Utils\Shop::isB2C();
+        $isOnlyB2B = QUI\ERP\Utils\Shop::isOnlyB2B();
+        $isOnlyB2C = QUI\ERP\Utils\Shop::isOnlyB2C();
+
         $Engine->assign([
             'User'            => $User,
             'Address'         => $Address,
             'Order'           => $this->getOrder(),
-            'b2bSelected'     => $isB2B(),
+            'b2bSelected'     => $isUserB2B(),
             'commentMessage'  => $commentMessage,
             'commentCustomer' => $commentCustomer,
+            'settings'        => $settings,
 
-            'businessTypeIsChangeable' => !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B()),
-            'isB2C'                    => QUI\ERP\Utils\Shop::isB2C(),
-            'isB2B'                    => QUI\ERP\Utils\Shop::isB2B(),
+            'businessTypeIsChangeable' => $businessTypeIsChangeable,
+            'isB2C'                    => $isB2C,
+            'isB2B'                    => $isB2B,
+            'isOnlyB2B'                => $isOnlyB2B,
+            'isOnlyB2C'                => $isOnlyB2C,
         ]);
 
         return $Engine->fetch(\dirname(__FILE__).'/CustomerData.html');

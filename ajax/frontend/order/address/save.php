@@ -43,6 +43,14 @@ QUI::$Ajax->registerFunction(
             $Address->editPhone(0, $data['tel']);
         }
 
+        if (isset($data['mobile'])) {
+            $Address->editMobile($data['mobile']);
+        }
+
+        if (isset($data['fax'])) {
+            $Address->editFax($data['fax']);
+        }
+
 
         // user data
         $User = $Address->getUser();
@@ -62,6 +70,17 @@ QUI::$Ajax->registerFunction(
         }
 
         $User->save();
+
+        // check missing fields
+        $missing = QUI\FrontendUsers\Utils::getMissingAddressFields($Address);
+
+        if (\count($missing)) {
+            throw new QUI\Exception([
+                'quiqqer/frontend-users',
+                'exception.controls.profile.address.required_fields_empty'
+            ]);
+        }
+
         $Address->save();
 
         try {

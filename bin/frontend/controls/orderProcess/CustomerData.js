@@ -170,9 +170,19 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
-                    onError  : reject,
                     addressId: address.addressId,
-                    data     : JSON.encode(address)
+                    data     : JSON.encode(address),
+                    onError  : function (err) {
+                        QUI.getMessageHandler().then(function (MH) {
+                            MH.addError(err.getMessage());
+                        });
+
+                        if (Loader) {
+                            Loader.hide();
+                        }
+
+                        reject();
+                    }
                 });
             });
         },
