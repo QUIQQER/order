@@ -19,8 +19,8 @@
         "url": "http:\/\/www.pcsg.de"
     },
     "require": {
-        "php": ">=7.0",
-        "quiqqer\/quiqqer": ">=1.4|dev-master|dev-dev",
+        "php": ">=7.2",
+        "quiqqer\/quiqqer": ">=1.5|dev-master|dev-dev",
         "quiqqer\/erp": "^1|dev-master|dev-dev",
         "quiqqer\/countries": "*",
         "quiqqer\/areas": "*",
