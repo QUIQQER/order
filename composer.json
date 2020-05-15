@@ -2,6 +2,7 @@
     "name": "quiqqer\/order",
     "type": "quiqqer-module",
     "description": "QUIQQER ERP Order",
+    "version": "1.0.0",
     "license": [
         "GPL-3.0+",
         "PCSG QEL-1.0"
