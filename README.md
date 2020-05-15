@@ -5,8 +5,6 @@ QUIQQER Order (ERP module)
 
 The QUIQQER Order Module integrates complete order management in QUIQQER.
 
-*This module is not functional at the moment. This module is in heavy development* 
-
 Paketname:
 
     quiqqer/order

@@ -1,0 +1,22 @@
+
+1.0
+======
+
+Release notes for 1.0.0
+
+Features
+------
+
+The QUIQQER Order Module integrates a complete order management in QUIQQER.
+
+- Order system
+    - Manager Orders
+    - Provides an order process for the frontend
+    - Integrates the Payment API to the Order Process
+    - Integrates the Invoice Module
+    - Automatic creation of invoices by orders
+    - It is possible to create orders by hand in the administration.
+
+- Basket (Shopping cart)
+    - The shopping cart allows the user to place orders
+    - There exists a basket and order overview in the administration
