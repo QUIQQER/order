@@ -20,7 +20,7 @@
     },
     "require": {
         "php": ">=7.0",
-        "quiqqer\/quiqqer": "=>1.4|dev-master|dev-dev",
+        "quiqqer\/quiqqer": ">=1.4|dev-master|dev-dev",
         "quiqqer\/erp": "^1|dev-master|dev-dev",
         "quiqqer\/countries": "*",
         "quiqqer\/areas": "*",
