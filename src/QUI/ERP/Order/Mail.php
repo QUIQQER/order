@@ -71,6 +71,8 @@ class Mail
             ])
         );
 
+        self::addOrderMailAttachments($Mailer);
+
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $OrderControl->getOrder();
 
@@ -255,7 +257,10 @@ class Mail
     }
 
     /**
-     * @param $Mail
+     * Add the order mail attachments to the
+     * like privacy policy, terms and condition and cacellation policy
+     *
+     * @param QUI\Mail\Mailer $Mail
      */
     protected static function addOrderMailAttachments(QUI\Mail\Mailer $Mail)
     {
@@ -268,28 +273,15 @@ class Mail
         $Config   = $Package->getConfig();
         $language = QUI::getLocale()->getCurrent();
 
-        try {
-            $DefaultProject = QUI::getProjectManager()->getStandard();
-            $Project        = QUI::getProject($DefaultProject->getName(), $language);
-        } catch (QUI\Exception $Exception) {
-            return;
-        }
-
         $privacyPolicy      = (int)$Config->getValue('mails', 'privacyPolicy');
         $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
         $cancellationPolicy = (int)$Config->getValue('mails', 'cancellationPolicy');
 
         if ($privacyPolicy) {
             try {
-                $sites = $Project->getSites([
-                    'where' => [
-                        'type' => 'quiqqer/sitetypes:types/privacypolicy'
-                    ],
-                    'limit' => 1
-                ]);
+                $Site = QUI\ERP\Utils\Sites::getPrivacyPolicy();
 
-                if (isset($sites[0])) {
-                    $Site = $sites[0];
+                if ($Site) {
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
@@ -299,15 +291,9 @@ class Mail
 
         if ($termsAndConditions) {
             try {
-                $sites = $Project->getSites([
-                    'where' => [
-                        'type' => 'quiqqer/sitetypes:types/generalTermsAndConditions'
-                    ],
-                    'limit' => 1
-                ]);
+                $Site = QUI\ERP\Utils\Sites::getTermsAndConditions();
 
-                if (isset($sites[0])) {
-                    $Site = $sites[0];
+                if ($Site) {
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
@@ -317,15 +303,9 @@ class Mail
 
         if ($cancellationPolicy) {
             try {
-                $sites = $Project->getSites([
-                    'where' => [
-                        'type' => 'quiqqer/order-cancellation-policy:types/privacypolicy'
-                    ],
-                    'limit' => 1
-                ]);
+                $Site = QUI\ERP\Utils\Sites::getRevocation();
 
-                if (isset($sites[0])) {
-                    $Site = $sites[0];
+                if ($Site) {
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
@@ -335,18 +315,30 @@ class Mail
     }
 
     /**
+     * @param QUI\Projects\Site $Site
      * @return string
+     *
      * @throws QUI\Exception
      */
     protected static function generatePdfFromSite(QUI\Projects\Site $Site)
     {
         $Document = new QUI\HtmlToPdf\Document();
 
-        //$Document->setHeaderHTML('<div class="header-test"><p>I am a header</p></div>');
+        //$Document->setHeaderHTML('');
         $Document->setContentHTML($Site->getAttribute('content'));
-        //$Document->setFooterHTML('<div class="footer-test">I am a footer</div>');
+        //$Document->setFooterHTML('');
 
         // create PDF file
-        return $Document->createPDF();
+        $file = $Document->createPDF();
+
+        // rename for attachment
+        $title = $Site->getAttribute('title');
+
+        ['dirname' => $dirname, 'extension' => $extension] = \pathinfo($file);
+        $newFile = $dirname.'/'.$title.'.'.$extension;
+
+        \rename($file, $newFile);
+
+        return $newFile;
     }
 }
