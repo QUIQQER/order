@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\Projects\Site\Utils as SiteUtils;
 
 /**
  * Class Mail
@@ -69,6 +70,8 @@ class Mail
                 'orderId' => $Order->getPrefixedId()
             ])
         );
+
+        self::addOrderMailAttachments($Mailer);
 
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $OrderControl->getOrder();
@@ -178,6 +181,9 @@ class Mail
             ])
         );
 
+        self::addOrderMailAttachments($Mailer);
+
+
         try {
             $Engine = QUI::getTemplateManager()->getEngine();
             $Order  = $OrderControl->getOrder();
@@ -248,5 +254,91 @@ class Mail
 
             return;
         }
+    }
+
+    /**
+     * Add the order mail attachments to the
+     * like privacy policy, terms and condition and cacellation policy
+     *
+     * @param QUI\Mail\Mailer $Mail
+     */
+    protected static function addOrderMailAttachments(QUI\Mail\Mailer $Mail)
+    {
+        // check if html2pdf is installed
+        if (QUI::getPackageManager()->isInstalled('quiqqer/htmltopdf') === false) {
+            return;
+        }
+
+        $Package  = QUI::getPackage('quiqqer/order');
+        $Config   = $Package->getConfig();
+        $language = QUI::getLocale()->getCurrent();
+
+        $privacyPolicy      = (int)$Config->getValue('mails', 'privacyPolicy');
+        $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
+        $cancellationPolicy = (int)$Config->getValue('mails', 'cancellationPolicy');
+
+        if ($privacyPolicy) {
+            try {
+                $Site = QUI\ERP\Utils\Sites::getPrivacyPolicy();
+
+                if ($Site) {
+                    $file = self::generatePdfFromSite($Site);
+                    $Mail->addAttachment($file);
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if ($termsAndConditions) {
+            try {
+                $Site = QUI\ERP\Utils\Sites::getTermsAndConditions();
+
+                if ($Site) {
+                    $file = self::generatePdfFromSite($Site);
+                    $Mail->addAttachment($file);
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if ($cancellationPolicy) {
+            try {
+                $Site = QUI\ERP\Utils\Sites::getRevocation();
+
+                if ($Site) {
+                    $file = self::generatePdfFromSite($Site);
+                    $Mail->addAttachment($file);
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+    }
+
+    /**
+     * @param QUI\Projects\Site $Site
+     * @return string
+     *
+     * @throws QUI\Exception
+     */
+    protected static function generatePdfFromSite(QUI\Projects\Site $Site)
+    {
+        $Document = new QUI\HtmlToPdf\Document();
+
+        //$Document->setHeaderHTML('');
+        $Document->setContentHTML($Site->getAttribute('content'));
+        //$Document->setFooterHTML('');
+
+        // create PDF file
+        $file = $Document->createPDF();
+
+        // rename for attachment
+        $title = $Site->getAttribute('title');
+
+        ['dirname' => $dirname, 'extension' => $extension] = \pathinfo($file);
+        $newFile = $dirname.'/'.$title.'.'.$extension;
+
+        \rename($file, $newFile);
+
+        return $newFile;
     }
 }
