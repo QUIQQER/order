@@ -34,6 +34,21 @@
                 </conf>
             </section>
 
+            <section name="mails">
+                <!-- Datenschutz -->
+                <conf name="privacyPolicy">
+                    <type><![CDATA[string]]></type>
+                </conf>
+                <!-- AGB -->
+                <conf name="termsAndConditions">
+                    <type><![CDATA[string]]></type>
+                </conf>
+                <!-- Cancellation policy -->
+                <conf name="cancellationPolicy">
+                    <type><![CDATA[string]]></type>
+                </conf>
+            </section>
+
             <section name="orderStatus">
                 <conf name="standard">
                     <type><![CDATA[integer]]></type>
@@ -150,6 +165,34 @@
                                         var="order.settings.order.prefix.description"/>
                             </description>
                         </input>
+                    </settings>
+
+                    <settings>
+                        <title>
+                            <locale group="quiqqer/order" var="order.settings.mails.attachments"/>
+                        </title>
+                        <text>
+                            <locale group="quiqqer/order"
+                                    var="order.settings.mails.attachments.description"
+                            />
+                        </text>
+
+                        <input type="checkbox" conf="mails.termsAndConditions">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.mails.termsAndConditions"/>
+                            </text>
+                        </input>
+                        <input type="checkbox" conf="mails.privacyPolicy">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.mails.privacyPolicy"/>
+                            </text>
+                        </input>
+                        <input type="checkbox" conf="mails.cancellationPolicy">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.mails.cancellationPolicy"/>
+                            </text>
+                        </input>
+
                     </settings>
 
                     <settings title="orderStatusSettings" name="orderStatusSettings">

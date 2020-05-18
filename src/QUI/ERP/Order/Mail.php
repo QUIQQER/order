@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\Projects\Site\Utils as SiteUtils;
 
 /**
  * Class Mail
@@ -178,6 +179,9 @@ class Mail
             ])
         );
 
+        self::addOrderMailAttachments($Mailer);
+
+
         try {
             $Engine = QUI::getTemplateManager()->getEngine();
             $Order  = $OrderControl->getOrder();
@@ -248,5 +252,101 @@ class Mail
 
             return;
         }
+    }
+
+    /**
+     * @param $Mail
+     */
+    protected static function addOrderMailAttachments(QUI\Mail\Mailer $Mail)
+    {
+        // check if html2pdf is installed
+        if (QUI::getPackageManager()->isInstalled('quiqqer/htmltopdf') === false) {
+            return;
+        }
+
+        $Package  = QUI::getPackage('quiqqer/order');
+        $Config   = $Package->getConfig();
+        $language = QUI::getLocale()->getCurrent();
+
+        try {
+            $DefaultProject = QUI::getProjectManager()->getStandard();
+            $Project        = QUI::getProject($DefaultProject->getName(), $language);
+        } catch (QUI\Exception $Exception) {
+            return;
+        }
+
+        $privacyPolicy      = (int)$Config->getValue('mails', 'privacyPolicy');
+        $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
+        $cancellationPolicy = (int)$Config->getValue('mails', 'cancellationPolicy');
+
+        if ($privacyPolicy) {
+            try {
+                $sites = $Project->getSites([
+                    'where' => [
+                        'type' => 'quiqqer/sitetypes:types/privacypolicy'
+                    ],
+                    'limit' => 1
+                ]);
+
+                if (isset($sites[0])) {
+                    $Site = $sites[0];
+                    $file = self::generatePdfFromSite($Site);
+                    $Mail->addAttachment($file);
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if ($termsAndConditions) {
+            try {
+                $sites = $Project->getSites([
+                    'where' => [
+                        'type' => 'quiqqer/sitetypes:types/generalTermsAndConditions'
+                    ],
+                    'limit' => 1
+                ]);
+
+                if (isset($sites[0])) {
+                    $Site = $sites[0];
+                    $file = self::generatePdfFromSite($Site);
+                    $Mail->addAttachment($file);
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if ($cancellationPolicy) {
+            try {
+                $sites = $Project->getSites([
+                    'where' => [
+                        'type' => 'quiqqer/order-cancellation-policy:types/privacypolicy'
+                    ],
+                    'limit' => 1
+                ]);
+
+                if (isset($sites[0])) {
+                    $Site = $sites[0];
+                    $file = self::generatePdfFromSite($Site);
+                    $Mail->addAttachment($file);
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+    }
+
+    /**
+     * @return string
+     * @throws QUI\Exception
+     */
+    protected static function generatePdfFromSite(QUI\Projects\Site $Site)
+    {
+        $Document = new QUI\HtmlToPdf\Document();
+
+        //$Document->setHeaderHTML('<div class="header-test"><p>I am a header</p></div>');
+        $Document->setContentHTML($Site->getAttribute('content'));
+        //$Document->setFooterHTML('<div class="footer-test">I am a footer</div>');
+
+        // create PDF file
+        return $Document->createPDF();
     }
 }

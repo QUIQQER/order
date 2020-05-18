@@ -579,6 +579,30 @@
             <de><![CDATA[Vorgehen bei gescheiterter Zahlung]]></de>
             <en><![CDATA[Procedure for failed payment]]></en>
         </locale>
+        <locale name="order.settings.mails.attachments">
+            <de><![CDATA[Automatische Mailanhänge]]></de>
+            <en><![CDATA[Automatic mail attachments]]></en>
+        </locale>
+        <locale name="order.settings.mails.attachments.description">
+            <de><![CDATA[
+            Die ausgewählten Seiten werden automatisch als Mailanhänge an jede Bestellmail mit versendet.
+            ]]></de>
+            <en><![CDATA[
+            The selected pages are automatically attached to each order mail as mail attachments.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.mails.termsAndConditions">
+            <de><![CDATA[AGB]]></de>
+            <en><![CDATA[Terms and Condistions]]></en>
+        </locale>
+        <locale name="order.settings.mails.privacyPolicy">
+            <de><![CDATA[Datenschutz]]></de>
+            <en><![CDATA[Privacy Policy]]></en>
+        </locale>
+        <locale name="order.settings.mails.cancellationPolicy">
+            <de><![CDATA[Widerrufsrecht]]></de>
+            <en><![CDATA[Cancellation Policy]]></en>
+        </locale>
 
         <locale name="order.settings.failedPaymentProcedure,execute">
             <de><![CDATA[Bestellung ausführen]]></de>
