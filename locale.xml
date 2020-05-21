@@ -472,6 +472,10 @@
             <de><![CDATA[gewerblich]]></de>
             <en><![CDATA[business]]></en>
         </locale>
+        <locale name="ordering.step.title.CustomerData.requiredField.text">
+            <de><![CDATA[Felder mit einem * sind Pflichtfelder. Bitte füllen Sie alle diese Felder korrekt aus.]]></de>
+            <en><![CDATA[Fields with a * are mandatory. Please fill in all these fields correctly.]]></en>
+        </locale>
 
         <locale name="ordering.step.checkout.text" html="true">
             <de><![CDATA[

@@ -196,3 +196,11 @@
 .quiqqer-order-customerData-comment-description {
     margin-bottom: 20px;
 }
+
+.quiqqer-order-customerData-requiredFields-message {
+    margin-bottom: 20px;
+}
+
+.quiqqer-order-customerData-requiredFields-message:hover {
+    opacity: 1;
+}

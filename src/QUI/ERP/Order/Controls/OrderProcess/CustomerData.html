@@ -54,6 +54,10 @@
                value="{$Address->getId()}"
         />
 
+        <div class="quiqqer-order-customerData-requiredFields-message messages-message message-attention">
+            {locale group='quiqqer/order' var='ordering.step.title.CustomerData.requiredField.text'}
+        </div>
+
         {if $businessTypeIsChangeable}
         <label class="quiqqer-order-customerData-edit-businessType">
             <span>
