@@ -110,13 +110,20 @@ class BasketOrder
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
         $this->Order->refresh();
 
-        $data     = $this->Order->getArticles()->toArray();
+        $data         = $this->Order->getArticles()->toArray();
+        $priceFactors = $this->Order->getArticles()->getPriceFactors()->toArray();
+
         $articles = $data['articles'];
 
         $this->List            = new ProductList();
         $this->List->duplicate = true;
-        $this->List->setCurrency($this->Order->getCurrency());
 
+        $this->List->setCurrency($this->Order->getCurrency());
+        $this->List->getPriceFactors()->importList([
+            'end' => $priceFactors
+        ]);
+
+        // note, import do a cleanup
         $this->import($articles);
     }
 
