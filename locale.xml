@@ -304,6 +304,11 @@
 
     <groups name="quiqqer/order" datatype="php">
 
+        <locale name="controls.UsedOrders.Article.buy_again">
+            <de><![CDATA[Nochmal kaufen]]></de>
+            <en><![CDATA[Buy again]]></en>
+        </locale>
+        
         <locale name="message.backend.update.success">
             <de><![CDATA[Bestellung #[oderId] wurde erfolgreich gespeichert.]]></de>
             <en><![CDATA[Order #[orderId] was successfully saved.]]></en>
