@@ -472,6 +472,10 @@
             <de><![CDATA[gewerblich]]></de>
             <en><![CDATA[business]]></en>
         </locale>
+        <locale name="ordering.step.title.CustomerData.requiredField.text">
+            <de><![CDATA[Felder mit einem * sind Pflichtfelder. Bitte füllen Sie alle diese Felder korrekt aus.]]></de>
+            <en><![CDATA[Fields with a * are mandatory. Please fill in all these fields correctly.]]></en>
+        </locale>
 
         <locale name="ordering.step.checkout.text" html="true">
             <de><![CDATA[
@@ -578,6 +582,30 @@
         <locale name="order.settings.failedPaymentProcedure">
             <de><![CDATA[Vorgehen bei gescheiterter Zahlung]]></de>
             <en><![CDATA[Procedure for failed payment]]></en>
+        </locale>
+        <locale name="order.settings.mails.attachments">
+            <de><![CDATA[Automatische Mailanhänge]]></de>
+            <en><![CDATA[Automatic mail attachments]]></en>
+        </locale>
+        <locale name="order.settings.mails.attachments.description">
+            <de><![CDATA[
+            Die ausgewählten Seiten werden automatisch als Mailanhänge an jede Bestellmail mit versendet.
+            ]]></de>
+            <en><![CDATA[
+            The selected pages are automatically attached to each order mail as mail attachments.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.mails.termsAndConditions">
+            <de><![CDATA[AGB]]></de>
+            <en><![CDATA[Terms and Condistions]]></en>
+        </locale>
+        <locale name="order.settings.mails.privacyPolicy">
+            <de><![CDATA[Datenschutz]]></de>
+            <en><![CDATA[Privacy Policy]]></en>
+        </locale>
+        <locale name="order.settings.mails.cancellationPolicy">
+            <de><![CDATA[Widerrufsrecht]]></de>
+            <en><![CDATA[Cancellation Policy]]></en>
         </locale>
 
         <locale name="order.settings.failedPaymentProcedure,execute">
