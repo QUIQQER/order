@@ -32,7 +32,7 @@
         {$Article->getPrice()->getDisplayPrice()}
     </div>
 
-    {if !empty($Product)}
+    {if !empty($Product) && $Product->isActive()}
     <noscript>
         <style>
             .quiqqer-order-profile-orders-order-articles-rebuy {
@@ -44,7 +44,7 @@
             data-articleno="{$Article->getArticleNo()}"
             disabled
     >
-        Nochmal kaufen
+        {locale group="quiqqer/order" var="controls.UsedOrders.Article.buy_again"}
     </button>
     {/if}
 

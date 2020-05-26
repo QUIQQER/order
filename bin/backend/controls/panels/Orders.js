@@ -326,6 +326,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             this.addButton(this.$Actions);
+            this.Loader.show();
         },
 
         /**
@@ -415,8 +416,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     self.refresh().catch(function (err) {
                         console.error(err);
                     });
-
-                    self.Loader.hide();
                 });
             });
         },
