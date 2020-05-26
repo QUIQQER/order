@@ -426,6 +426,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             ['id' => $Order->getId()]
         );
 
+        $Order->setAttribute('inOrderCreation', true);
+        $this->setAttribute('inOrderCreation', true);
+
         // get the order with new data
         $Order->refresh();
         $Order->recalculate();
