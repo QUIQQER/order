@@ -690,6 +690,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @param {Object} data
          */
         $onClickOrderDetails: function (data) {
+            if (data.parent.getStyle('display') === 'none') {
+                return;
+            }
+
             var row        = data.row,
                 ParentNode = data.parent;
 
