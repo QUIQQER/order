@@ -166,8 +166,8 @@ QUI::$Ajax->registerFunction(
         if (isset($data['priceFactors'])) {
             /* @var $Articles \QUI\ERP\Accounting\ArticleList */
             /* @var $FactorList FactorList */
-            $Articles = $Order->getArticles();;
-            $factors = [];
+            $Articles = $Order->getArticles();
+            $factors  = [];
 
             foreach ($data['priceFactors'] as $priceFactor) {
                 $factors[] = new Factor($priceFactor);
