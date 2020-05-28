@@ -103,19 +103,6 @@ QUI::$Ajax->registerFunction(
             $Order->removeDeliveryAddress();
         }
 
-        if (isset($data['articles'])) {
-            $Order->clearArticles();
-
-            foreach ($data['articles'] as $article) {
-                try {
-                    $Order->addArticle(
-                        new QUI\ERP\Accounting\Article($article)
-                    );
-                } catch (QUI\Exception $Exception) {
-                }
-            }
-        }
-
         if (isset($data['paymentId'])) {
             try {
                 $Order->setPayment($data['paymentId']);
@@ -159,6 +146,21 @@ QUI::$Ajax->registerFunction(
 
         $Order->setAttribute('userSave', true);
         $Order->update();
+
+        if (isset($data['articles'])) {
+            $Order->clearArticles();
+
+            foreach ($data['articles'] as $article) {
+                try {
+                    $Order->addArticle(
+                        new QUI\ERP\Accounting\Article($article)
+                    );
+                } catch (QUI\Exception $Exception) {
+                }
+            }
+        }
+
+        $Order->recalculate();
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
