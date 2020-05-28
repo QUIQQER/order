@@ -14,7 +14,11 @@ use QUI\ERP\Order\Handler;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_getArticleHtml',
     function ($orderId) {
-        return Handler::getInstance()->get($orderId)->getView()->getArticles()->render();
+        $Order    = Handler::getInstance()->get($orderId);
+        $View     = $Order->getView();
+        $Articles = $View->getArticles();
+
+        return $Articles->render();
     },
     ['orderId'],
     'Permission::checkAdminUser'

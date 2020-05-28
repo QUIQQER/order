@@ -152,15 +152,16 @@ QUI::$Ajax->registerFunction(
 
             foreach ($data['articles'] as $article) {
                 try {
-                    $Order->addArticle(
-                        new QUI\ERP\Accounting\Article($article)
-                    );
+                    $Article = new QUI\ERP\Accounting\Article($article);
+
+                    $Order->addArticle($Article);
                 } catch (QUI\Exception $Exception) {
                 }
             }
         }
 
-        $Order->recalculate();
+        $Order->getArticles()->recalculate();
+        $Order->update();
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(

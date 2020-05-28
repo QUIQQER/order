@@ -292,13 +292,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $articles = \json_decode($data['articles'], true);
 
             if ($articles) {
-                // clear vat for recalculation
-                if (isset($articles['articles'])) {
-                    foreach ($articles['articles'] as $key => $article) {
-                        unset($articles['articles'][$key]['vat']);
-                    }
-                }
-
                 try {
                     $this->Articles = new ArticleList($articles);
                 } catch (QUI\ERP\Exception $Exception) {
