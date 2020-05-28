@@ -5,6 +5,8 @@
  */
 
 use QUI\ERP\Order\ProcessingStatus\Handler;
+use QUI\ERP\Accounting\PriceFactors\FactorList;
+use QUI\ERP\Accounting\PriceFactors\Factor;
 
 /**
  * Update an order
@@ -152,12 +154,26 @@ QUI::$Ajax->registerFunction(
 
             foreach ($data['articles'] as $article) {
                 try {
-                    $Article = new QUI\ERP\Accounting\Article($article);
-
-                    $Order->addArticle($Article);
+                    $Order->addArticle(
+                        new QUI\ERP\Accounting\Article($article)
+                    );
                 } catch (QUI\Exception $Exception) {
                 }
             }
+        }
+
+        // import factor list
+        if (isset($data['priceFactors'])) {
+            /* @var $Articles \QUI\ERP\Accounting\ArticleList */
+            /* @var $FactorList FactorList */
+            $Articles = $Order->getArticles();;
+            $factors = [];
+
+            foreach ($data['priceFactors'] as $priceFactor) {
+                $factors[] = new Factor($priceFactor);
+            }
+
+            $Articles->importPriceFactors(new FactorList($factors));
         }
 
         $Order->getArticles()->recalculate();
