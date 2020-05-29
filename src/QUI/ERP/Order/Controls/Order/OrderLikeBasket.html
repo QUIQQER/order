@@ -148,6 +148,12 @@
                 {$Article->getTitle()}
             </div>
 
+            {if $Article->getArticleNo() !== ''}
+            <div class="quiqqer-order-profile-orders-order-articles-article-articleNo">
+                {locale group="quiqqer/order" var="order.products.articleNo"}: {$Article->getArticleNo()}
+            </div>
+            {/if}
+
             <div class="quiqqer-order-profile-orders-order-articles-article-description">
                 {$Article->getDescription()}
 

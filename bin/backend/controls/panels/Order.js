@@ -100,6 +100,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$AddSeparator  = null;
             this.$SortSeparator = null;
 
+            this.$priceFactors          = null;
             this.$serializedList        = {};
             this.$initialStatus         = false;
             this.$initialShippingStatus = false;
@@ -204,7 +205,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 articles       : this.getAttribute('articles'),
                 paymentId      : this.getAttribute('paymentId'),
                 status         : this.getAttribute('status'),
-                shippingStatus : this.getAttribute('shippingStatus')
+                shippingStatus : this.getAttribute('shippingStatus'),
+                priceFactors   : this.$serializedList.priceFactors
             };
 
             return new Promise(function (resolve) {
@@ -920,6 +922,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return this.$closeCategory().then(function (Container) {
                 return new Promise(function (resolve, reject) {
+                    // @todo must be into erp
                     require([
                         'package/quiqqer/invoice/bin/backend/controls/InvoiceArticleList',
                         'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoice.Summary'
