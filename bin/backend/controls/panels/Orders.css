@@ -107,5 +107,6 @@
 }
 
 .orders-order-details td {
+    vertical-align: top;
     padding: 3px 10px;
 }
