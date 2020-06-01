@@ -59,10 +59,8 @@ class Mail
         $Mailer = QUI::getMailManager()->getMailer();
         $Mailer->addRecipient($email);
 
-        if (Settings::getInstance()->get('order', 'sendOrderConfirmationToAdmin') && QUI::conf('mail', 'admin_mail')) {
-            $Mailer->addBCC(
-                QUI::conf('mail', 'admin_mail')
-            );
+        if (Settings::getInstance()->get('order', 'sendOrderConfirmationToAdmin')) {
+            self::addBCCMailAddress($Mailer);
         }
 
         $Mailer->setSubject(
@@ -143,7 +141,13 @@ class Mail
      */
     public static function sendAdminOrderConfirmationMail(Order $Order)
     {
-        $email = QUI::conf('mail', 'admin_mail');
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config  = $Package->getConfig();
+        $email   = $Config->getValue('order', 'orderAdminMails');
+
+        if (empty($email)) {
+            $email = QUI::conf('mail', 'admin_mail');
+        }
 
         if (empty($email)) {
             QUI\System\Log::addAlert(
@@ -340,5 +344,26 @@ class Mail
         \rename($file, $newFile);
 
         return $newFile;
+    }
+
+    /**
+     * Add the order bcc addresses
+     *
+     * @param QUI\Mail\Mailer $Mailer
+     * @throws QUI\Exception
+     */
+    protected static function addBCCMailAddress(QUI\Mail\Mailer $Mailer)
+    {
+        $Package    = QUI::getPackage('quiqqer/order');
+        $Config     = $Package->getConfig();
+        $orderMails = $Config->getValue('order', 'orderAdminMails');
+
+        if (empty($orderMails)) {
+            $orderMails = QUI::conf('mail', 'admin_mail');
+        }
+
+        if (!empty($orderMails)) {
+            $Mailer->addBCC($orderMails);
+        }
     }
 }
