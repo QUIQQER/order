@@ -20,6 +20,9 @@
                     <type><![CDATA[bool]]></type>
                     <defaultvalue>1</defaultvalue>
                 </conf>
+                <conf name="orderAdminMails">
+                    <type><![CDATA[string]]></type>
+                </conf>
                 <conf name="sendOrderConfirmation">
                     <type><![CDATA[bool]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
@@ -123,6 +126,16 @@
                             <description>
                                 <locale group="quiqqer/order"
                                         var="order.settings.autoInvoicePost.description"/>
+                            </description>
+                        </input>
+
+                        <input conf="order.orderAdminMails">
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.order.orderAdminMails"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.orderAdminMails.description"/>
                             </description>
                         </input>
 

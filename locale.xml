@@ -308,7 +308,7 @@
             <de><![CDATA[Nochmal kaufen]]></de>
             <en><![CDATA[Buy again]]></en>
         </locale>
-        
+
         <locale name="message.backend.update.success">
             <de><![CDATA[Bestellung #[oderId] wurde erfolgreich gespeichert.]]></de>
             <en><![CDATA[Order #[orderId] was successfully saved.]]></en>
@@ -649,6 +649,21 @@
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
         </locale>
+        <locale name="order.settings.order.orderAdminMails">
+            <de><![CDATA[E-Mail Adressen für Bestellmails]]></de>
+            <en><![CDATA[E-mail addresses for order mails]]></en>
+        </locale>
+        <locale name="order.settings.order.orderAdminMails.description">
+            <de><![CDATA[
+            Alle die hier angegeben E-Mail Adressen erhalten die Bestellmails. Mehrere E-Mail Adressen kannst du kommasepariert angeben.
+            Sind keine E-Mail Adressen angebeben, wird die standard Administrations Einstellung verwendet.
+            ]]></de>
+            <en><![CDATA[
+            All the emails addresses receive the order emails. You can enter multiple e-mail addresses separated by commas.
+            If no e-mail addresses are specified, the default administration setting is used.
+            ]]></en>
+        </locale>
+
         <locale name="order.settings.order.prefix">
             <de><![CDATA[Präfix für Bestellnummern]]></de>
             <en><![CDATA[Prefix for order numbers]]></en>
