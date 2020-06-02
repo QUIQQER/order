@@ -427,7 +427,10 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         // set status change
+        $fireStatusChangedEvent = false;
+
         if ($this->statusChanged) {
+            $fireStatusChangedEvent = true;
             $status = $this->status;
 
             try {
@@ -466,7 +469,7 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
 
-        if ($this->statusChanged) {
+        if ($fireStatusChangedEvent) {
             try {
                 QUI::getEvents()->fireEvent('quiqqerOrderProcessStatusChange', [
                     $this,
