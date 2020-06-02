@@ -26,13 +26,13 @@ use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN = 0;
-    const PAYMENT_STATUS_PAID = 1;
-    const PAYMENT_STATUS_PART = 2;
-    const PAYMENT_STATUS_ERROR = 4;
+    const PAYMENT_STATUS_OPEN     = 0;
+    const PAYMENT_STATUS_PAID     = 1;
+    const PAYMENT_STATUS_PART     = 2;
+    const PAYMENT_STATUS_ERROR    = 4;
     const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT = 11;
-    const PAYMENT_STATUS_PLAN = 12;
+    const PAYMENT_STATUS_DEBIT    = 11;
+    const PAYMENT_STATUS_PLAN     = 12;
 
     /**
      * Order is only created
@@ -662,13 +662,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * is the order approved
+     * OrderProcess was successful and payment process was successful
      *
      * @return bool
      */
     public function isApproved()
     {
-        return $this->isPaid() && $this->isSuccessful();
+        try {
+            return $this->getPayment()->getPaymentType()->isApproved($this->getHash()) && $this->isSuccessful();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            return false;
+        }
     }
 
     /**
