@@ -438,6 +438,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function recalculate($Basket = null)
     {
+        if ($this instanceof Order) {
+            $this->Articles->recalculate();
+            $this->save();
+
+            return;
+        }
+
         $Customer = $this->getCustomer();
 
         if ($Basket === null) {
