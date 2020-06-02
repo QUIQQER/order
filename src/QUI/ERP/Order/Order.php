@@ -431,7 +431,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($this->statusChanged) {
             $fireStatusChangedEvent = true;
-            $status = $this->status;
+            $status                 = $this->status;
 
             try {
                 $Status = QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($status);
@@ -645,7 +645,15 @@ class Order extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderDelete',
-            [$this->getId(), $this->getDataForSaving()]
+            [
+                $this->getId(),
+                \array_merge(
+                    [
+                        'hash' => $this->getHash()
+                    ],
+                    $this->getDataForSaving()
+                )
+            ]
         );
     }
 
