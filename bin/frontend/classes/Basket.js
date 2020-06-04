@@ -285,7 +285,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     return Promise.all(proms);
                 };
 
-
                 // clear the storage, otherwise the next time we have a double basket.
                 QUI.Storage.set(STORAGE_KEY, JSON.encode({}));
 

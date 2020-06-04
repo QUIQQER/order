@@ -7,7 +7,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
         'qui/QUI',
         'qui/controls/buttons/Button',
         'package/quiqqer/order/bin/frontend/classes/Basket',
-        'Locale',
+        'Locale'
 
     ], function (QUI, QUIButton, Basket, QUILocale) {
         "use strict";

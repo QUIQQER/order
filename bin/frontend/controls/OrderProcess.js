@@ -1524,6 +1524,29 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         return;
                     }
 
+                    var storageData     = QUI.Storage.get('quiqqer-basket-products');
+                    var storageProducts = [];
+
+                    try {
+                        storageData     = JSON.decode(storageData);
+                        var currentList = storageData.currentList;
+
+                        if (typeof storageData.products !== 'undefined' &&
+                            typeof storageData.products[currentList] !== 'undefined') {
+                            storageProducts = storageData.products[currentList];
+                        }
+                    } catch (e) {
+                        // nothing
+                    }
+
+                    if (!storageProducts.length) {
+                        GlobalBasket.load().then(function () {
+                            window.location.reload();
+                        });
+
+                        return;
+                    }
+
                     GlobalBasket.showMergeWindow().then(function () {
                         window.location.reload();
                     });
