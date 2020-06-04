@@ -452,7 +452,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         $Payment = $Order->getPayment();
 
-        if ($Payment->isSuccessful($Order->getHash())) {
+        if ($Payment && $Payment->isSuccessful($Order->getHash())) {
             $Order->setSuccessfulStatus();
             $this->setSuccessfulStatus();
         }

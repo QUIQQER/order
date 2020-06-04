@@ -21,16 +21,23 @@ QUI::$Ajax->registerFunction(
         $User = QUI::getUserBySession();
 
         $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
-        $Basket->import(\json_decode($products, true));
 
         if (!QUI::getUsers()->isNobodyUser($User)) {
             try {
                 $Order       = Handler::getInstance()->getLastOrderInProcessFromUser($User);
                 $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash(), $User);
                 $BasketOrder->import(\json_decode($products, true));
+
+                $productsCalc = $BasketOrder->getProducts()->toArray();
+                $products     = $productsCalc['products'];
+
+                // set the order products to the basket
+                $Basket->import($products);
             } catch (QUI\Exception $Exception) {
                 Log::writeDebugException($Exception);
             }
+        } else {
+            $Basket->import(\json_decode($products, true));
         }
 
         return $Basket->toArray();

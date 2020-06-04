@@ -304,6 +304,8 @@ class Utils
                 $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
 
                 if (!$Real->isActive()) {
+                    // @todo message an benutzer - Product konnte nicht aufgenommen werden
+
                     continue;
                 }
 
@@ -315,10 +317,77 @@ class Utils
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
 
-                // @todo message an benutzer - Product konnte nicht aufgenommen werden
+                // @todo produkt existiert nicht, dummy product
             }
         }
 
         return $List;
+    }
+
+    /**
+     * Return a product array with all important fields, to compare a product with another
+     *
+     * @param $product
+     * @return array
+     */
+    public static function getCompareProductArray($product)
+    {
+        $compare = [];
+        $needles = [
+            'id',
+            'title',
+            'articleNo',
+            'description',
+            'unitPrice',
+            'displayPrice',
+            'class',
+            'customFields',
+            'customData',
+            'display_unitPrice'
+        ];
+
+        foreach ($needles as $f) {
+            if (isset($product[$f])) {
+                $compare[$f] = $product[$f];
+            }
+        }
+
+        return $compare;
+    }
+
+    /**
+     * Takes a product array and brings together all products that can be brought together
+     *
+     * @param $products
+     * @return array
+     */
+    public static function getMergedProductList($products)
+    {
+        $newProductList  = [];
+        $getProductIndex = function ($product) use (&$newProductList) {
+            foreach ($newProductList as $index => $p) {
+                $p1 = \serialize(self::getCompareProductArray($product));
+                $p2 = \serialize(self::getCompareProductArray($p));
+
+                if ($p1 == $p2) {
+                    return $index;
+                }
+            }
+
+            return false;
+        };
+
+        foreach ($products as $product) {
+            $index = $getProductIndex($product);
+
+            if ($index !== false) {
+                $newProductList[$index]['quantity'] = $newProductList[$index]['quantity'] + $product['quantity'];
+                continue;
+            }
+
+            $newProductList[] = $product;
+        }
+
+        return $newProductList;
     }
 }

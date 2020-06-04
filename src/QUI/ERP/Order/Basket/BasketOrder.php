@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\Basket;
 
 use QUI;
 use QUI\ERP\Products\Product\ProductList;
+use QUI\ERP\Order\Utils\Utils as OrderProductUtils;
 
 /**
  * Class BasketOrder
@@ -179,14 +180,44 @@ class BasketOrder
      */
     public function addProduct(Product $Product)
     {
-        $this->List->addProduct($Product);
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config  = $Package->getConfig();
+        $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+
+        if (!$merge) {
+            $this->List->addProduct($Product);
+
+            if ($this->hasOrder()) {
+                $this->updateOrder();
+            }
+
+            return;
+        }
+
+
+        $Products     = $this->List->getProducts();
+        $foundProduct = false;
+
+        foreach ($Products as $key => $P) {
+            $p1 = OrderProductUtils::getCompareProductArray($Product->toArray());
+            $p2 = OrderProductUtils::getCompareProductArray($P->toArray());
+
+            if ($p1 == $p2) {
+                $foundProduct = true;
+                $quantity     = $P->getQuantity();
+                $quantity     = $quantity + $Product->getQuantity();
+
+                $P->setQuantity($quantity);
+                break;
+            }
+        }
+
+        if ($foundProduct === false) {
+            $this->List->addProduct($Product);
+        }
 
         if ($this->hasOrder()) {
-            try {
-                $this->getOrder()->addArticle($Product->toArticle());
-                $this->save();
-            } catch (QUI\Exception $Exception) {
-            }
+            $this->updateOrder();
         }
     }
 
@@ -195,7 +226,6 @@ class BasketOrder
      *
      * @param integer $pos
      *
-     * @throws Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
@@ -226,6 +256,14 @@ class BasketOrder
 
         if (!\is_array($products)) {
             $products = [];
+        }
+
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config  = $Package->getConfig();
+        $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+
+        if ($merge) {
+            $products = OrderProductUtils::getMergedProductList($products);
         }
 
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(

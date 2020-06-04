@@ -64,6 +64,10 @@
                     <type><![CDATA[bool]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
                 </conf>
+                <conf name="mergeSameProducts">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -83,6 +87,30 @@
                         <locale group="quiqqer/order" var="window.erp.order.title"/>
                     </text>
                     <icon>fa fa-shopping-basket</icon>
+
+                    <settings title="orderProcess" name="orderProcess">
+                        <title>
+                            <locale group="quiqqer/order" var="order.process.settings.title"/>
+                        </title>
+
+                        <input type="checkbox" conf="orderProcess.showArticleNumberInBasket">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.showArticleNumberInBasket"/>
+                            </text>
+                        </input>
+
+                        <input type="checkbox" conf="orderProcess.mergeSameProducts">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.mergeSameProducts"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.mergeSameProducts.description"/>
+                            </description>
+                        </input>
+                    </settings>
 
                     <settings title="order" name="order">
                         <title>
@@ -222,19 +250,6 @@
                                         var="order.settings.order.defaultOrderStatus.description"
                                 />
                             </description>
-                        </input>
-                    </settings>
-
-                    <settings title="orderProcess" name="orderProcess">
-                        <title>
-                            <locale group="quiqqer/order" var="order.process.settings.title"/>
-                        </title>
-
-                        <input type="checkbox" conf="orderProcess.showArticleNumberInBasket">
-                            <text>
-                                <locale group="quiqqer/order"
-                                        var="order.settings.orderProcess.showArticleNumberInBasket"/>
-                            </text>
                         </input>
                     </settings>
 
