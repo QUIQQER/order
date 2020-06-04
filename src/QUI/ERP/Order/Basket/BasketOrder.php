@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\Basket;
 
 use QUI;
 use QUI\ERP\Products\Product\ProductList;
+use QUI\ERP\Order\Utils\Utils as OrderProductUtils;
 
 /**
  * Class BasketOrder
@@ -175,30 +176,48 @@ class BasketOrder
      * Add a product to the basket
      *
      * @param Product $Product
+     * @throws QUI\Exception
      */
     public function addProduct(Product $Product)
     {
-        /** @noinspection \QUI\Exception */
         $Package = QUI::getPackage('quiqqer/order');
         $Config  = $Package->getConfig();
         $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if (!$merge) {
             $this->List->addProduct($Product);
-        } else {
-            $Products = $this->List->getProducts();
 
-            foreach ($Products as $Product) {
+            if ($this->hasOrder()) {
+                $this->updateOrder();
+            }
 
+            return;
+        }
+
+
+        $Products     = $this->List->getProducts();
+        $foundProduct = false;
+
+        foreach ($Products as $key => $P) {
+            $p1 = OrderProductUtils::getCompareProductArray($Product->toArray());
+            $p2 = OrderProductUtils::getCompareProductArray($P->toArray());
+
+            if ($p1 == $p2) {
+                $foundProduct = true;
+                $quantity     = $P->getQuantity();
+                $quantity     = $quantity + $Product->getQuantity();
+
+                $P->setQuantity($quantity);
+                break;
             }
         }
 
-        if ($this->hasOrder()) {
-            if (!$merge) {
-                $this->getOrder()->addArticle($Product->toArticle());
-            }
+        if ($foundProduct === false) {
+            $this->List->addProduct($Product);
+        }
 
-            $this->save();
+        if ($this->hasOrder()) {
+            $this->updateOrder();
         }
     }
 
@@ -207,7 +226,6 @@ class BasketOrder
      *
      * @param integer $pos
      *
-     * @throws Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
@@ -245,36 +263,11 @@ class BasketOrder
         $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if ($merge) {
-            $newProductList = [];
-
-            $getCompareProductArray = function ($product) {
-                $compare = [];
-                $needles = [
-                    'id',
-                    'title',
-                    'articleNo',
-                    'description',
-                    'unitPrice',
-                    'displayPrice',
-                    'class',
-                    'customFields',
-                    'customData',
-                    'display_unitPrice'
-                ];
-
-                foreach ($needles as $f) {
-                    if (isset($product[$f])) {
-                        $compare[$f] = $product[$f];
-                    }
-                }
-
-                return $compare;
-            };
-
-            $getProductIndex = function ($product) use (&$newProductList, $getCompareProductArray) {
+            $newProductList  = [];
+            $getProductIndex = function ($product) use (&$newProductList) {
                 foreach ($newProductList as $index => $p) {
-                    $p1 = \serialize($getCompareProductArray($product));
-                    $p2 = \serialize($getCompareProductArray($p));
+                    $p1 = \serialize(OrderProductUtils::getCompareProductArray($product));
+                    $p2 = \serialize(OrderProductUtils::getCompareProductArray($p));
 
                     if ($p1 == $p2) {
                         return $index;

@@ -323,4 +323,35 @@ class Utils
 
         return $List;
     }
+
+    /**
+     * Return a product array with all important fields, to compare a product with another
+     *
+     * @param $product
+     * @return array
+     */
+    public static function getCompareProductArray($product)
+    {
+        $compare = [];
+        $needles = [
+            'id',
+            'title',
+            'articleNo',
+            'description',
+            'unitPrice',
+            'displayPrice',
+            'class',
+            'customFields',
+            'customData',
+            'display_unitPrice'
+        ];
+
+        foreach ($needles as $f) {
+            if (isset($product[$f])) {
+                $compare[$f] = $product[$f];
+            }
+        }
+
+        return $compare;
+    }
 }
