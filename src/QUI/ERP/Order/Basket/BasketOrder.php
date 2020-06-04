@@ -263,32 +263,7 @@ class BasketOrder
         $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if ($merge) {
-            $newProductList  = [];
-            $getProductIndex = function ($product) use (&$newProductList) {
-                foreach ($newProductList as $index => $p) {
-                    $p1 = \serialize(OrderProductUtils::getCompareProductArray($product));
-                    $p2 = \serialize(OrderProductUtils::getCompareProductArray($p));
-
-                    if ($p1 == $p2) {
-                        return $index;
-                    }
-                }
-
-                return false;
-            };
-
-            foreach ($products as $product) {
-                $index = $getProductIndex($product);
-
-                if ($index !== false) {
-                    $newProductList[$index]['quantity'] = $newProductList[$index]['quantity'] + $product['quantity'];
-                    continue;
-                }
-
-                $newProductList[] = $product;
-            }
-
-            $products = $newProductList;
+            $products = OrderProductUtils::getMergedProductList($products);
         }
 
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(

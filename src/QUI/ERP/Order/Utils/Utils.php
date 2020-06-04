@@ -354,4 +354,40 @@ class Utils
 
         return $compare;
     }
+
+    /**
+     * Takes a product array and brings together all products that can be brought together
+     *
+     * @param $products
+     * @return array
+     */
+    public static function getMergedProductList($products)
+    {
+        $newProductList  = [];
+        $getProductIndex = function ($product) use (&$newProductList) {
+            foreach ($newProductList as $index => $p) {
+                $p1 = \serialize(self::getCompareProductArray($product));
+                $p2 = \serialize(self::getCompareProductArray($p));
+
+                if ($p1 == $p2) {
+                    return $index;
+                }
+            }
+
+            return false;
+        };
+
+        foreach ($products as $product) {
+            $index = $getProductIndex($product);
+
+            if ($index !== false) {
+                $newProductList[$index]['quantity'] = $newProductList[$index]['quantity'] + $product['quantity'];
+                continue;
+            }
+
+            $newProductList[] = $product;
+        }
+
+        return $newProductList;
+    }
 }
