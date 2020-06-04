@@ -304,6 +304,8 @@ class Utils
                 $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
 
                 if (!$Real->isActive()) {
+                    // @todo message an benutzer - Product konnte nicht aufgenommen werden
+
                     continue;
                 }
 
@@ -315,7 +317,7 @@ class Utils
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
 
-                // @todo message an benutzer - Product konnte nicht aufgenommen werden
+                // @todo produkt existiert nicht, dummy product
             }
         }
 
