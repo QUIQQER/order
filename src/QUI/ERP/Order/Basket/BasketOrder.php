@@ -175,18 +175,30 @@ class BasketOrder
      * Add a product to the basket
      *
      * @param Product $Product
-     * @throws QUI\Exception
      */
     public function addProduct(Product $Product)
     {
-        $this->List->addProduct($Product);
+        /** @noinspection \QUI\Exception */
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config  = $Package->getConfig();
+        $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+
+        if (!$merge) {
+            $this->List->addProduct($Product);
+        } else {
+            $Products = $this->List->getProducts();
+
+            foreach ($Products as $Product) {
+
+            }
+        }
 
         if ($this->hasOrder()) {
-            try {
+            if (!$merge) {
                 $this->getOrder()->addArticle($Product->toArticle());
-                $this->save();
-            } catch (QUI\Exception $Exception) {
             }
+
+            $this->save();
         }
     }
 
@@ -226,6 +238,64 @@ class BasketOrder
 
         if (!\is_array($products)) {
             $products = [];
+        }
+
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config  = $Package->getConfig();
+        $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+
+        if ($merge) {
+            $newProductList = [];
+
+            $getCompareProductArray = function ($product) {
+                $compare = [];
+                $needles = [
+                    'id',
+                    'title',
+                    'articleNo',
+                    'description',
+                    'unitPrice',
+                    'displayPrice',
+                    'class',
+                    'customFields',
+                    'customData',
+                    'display_unitPrice'
+                ];
+
+                foreach ($needles as $f) {
+                    if (isset($product[$f])) {
+                        $compare[$f] = $product[$f];
+                    }
+                }
+
+                return $compare;
+            };
+
+            $getProductIndex = function ($product) use (&$newProductList, $getCompareProductArray) {
+                foreach ($newProductList as $index => $p) {
+                    $p1 = \serialize($getCompareProductArray($product));
+                    $p2 = \serialize($getCompareProductArray($p));
+
+                    if ($p1 == $p2) {
+                        return $index;
+                    }
+                }
+
+                return false;
+            };
+
+            foreach ($products as $product) {
+                $index = $getProductIndex($product);
+
+                if ($index !== false) {
+                    $newProductList[$index]['quantity'] = $newProductList[$index]['quantity'] + $product['quantity'];
+                    continue;
+                }
+
+                $newProductList[] = $product;
+            }
+
+            $products = $newProductList;
         }
 
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(

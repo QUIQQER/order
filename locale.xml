@@ -752,6 +752,21 @@
             <de><![CDATA[Artikelnummer im Warenkorb anzeigen]]></de>
             <en><![CDATA[Show article number in shopping cart]]></en>
         </locale>
+        <locale name="order.settings.orderProcess.mergeSameProducts">
+            <de><![CDATA[Gleiche Produkte zusammenführen]]></de>
+            <en><![CDATA[Merge the same products]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mergeSameProducts.description">
+            <de><![CDATA[
+            Beim Hinzufügen eines Produktes werden gleiche Produkte zu einem Produkt zusammen geführt
+            und die Anzahl dementsprechend erhöht.
+            Ist diese Option nicht aktiviert bekommt jedes Hinzufügen eines Produktes eine eigene Position.
+            ]]></de>
+            <en><![CDATA[
+            When a product is added, identical products are merged into one product and the number is increased accordingly.
+            If this option is not activated, each product added will have its own position.
+            ]]></en>
+        </locale>
 
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>
