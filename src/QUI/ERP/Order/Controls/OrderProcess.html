@@ -13,7 +13,7 @@
           data-order-hash="{$hash}"
     >
 {/if}
-    <div class="quiqqer-order-ordering-timeline">
+    <div class="quiqqer-order-ordering-timeline" {if count($steps) <= 1}style="display: none"{/if}>
         <div class="quiqqer-order-ordering-timeline-container">
             <ul>
                 {strip}
