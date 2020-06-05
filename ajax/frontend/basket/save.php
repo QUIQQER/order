@@ -5,6 +5,7 @@
  */
 
 use QUI\ERP\Order\Handler;
+use QUI\ERP\Order\Factory;
 use QUI\System\Log;
 
 /**
@@ -24,18 +25,21 @@ QUI::$Ajax->registerFunction(
 
         if (!QUI::getUsers()->isNobodyUser($User)) {
             try {
-                $Order       = Handler::getInstance()->getLastOrderInProcessFromUser($User);
-                $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash(), $User);
-                $BasketOrder->import(\json_decode($products, true));
-
-                $productsCalc = $BasketOrder->getProducts()->toArray();
-                $products     = $productsCalc['products'];
-
-                // set the order products to the basket
-                $Basket->import($products);
+                $Order = Handler::getInstance()->getLastOrderInProcessFromUser($User);
             } catch (QUI\Exception $Exception) {
+                $Order = Factory::getInstance()->createOrderInProcess($User);
+
                 Log::writeDebugException($Exception);
             }
+
+            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash(), $User);
+            $BasketOrder->import(\json_decode($products, true));
+
+            $productsCalc = $BasketOrder->getProducts()->toArray();
+            $products     = $productsCalc['products'];
+
+            // set the order products to the basket
+            $Basket->import($products);
         } else {
             $Basket->import(\json_decode($products, true));
         }
