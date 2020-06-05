@@ -646,6 +646,18 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                     // chrome validate message
                     if ("reportValidity" in Field) {
+                        // open customer edit
+                        if (this.getElm().getElement('.quiqqer-order-customerData-container')) {
+                            var quiid    = this.getElm().getElement('.quiqqer-order-customerData-container').get('data-quiid');
+                            var Instance = QUI.Controls.getById(quiid);
+
+                            Instance.openAddressEdit().then(function () {
+                                this.reportValidity();
+                            }.bind(Field));
+
+                            return false;
+                        }
+
                         Field.reportValidity();
                         return false;
                     }
@@ -1225,6 +1237,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     return;
                 }
 
+                // validate current step
+                if (self.$isNextClick(Target.get('data-step')) && self.validateStep() === false) {
+                    return;
+                }
+
                 self.openStep(Target.get('data-step'));
             });
 
@@ -1262,6 +1279,20 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 this.$Next.addClass('quiqqer-order-next-mobile');
             }
+        },
+
+        /**
+         *
+         * @param stepName
+         * @return {boolean}
+         */
+        $isNextClick: function (stepName) {
+            var current = this.getAttribute('current');
+            var list    = this.$TimelineContainer.getElements('li').map(function (Node) {
+                return Node.get('data-step');
+            });
+
+            return list.indexOf(stepName) >= list.indexOf(current);
         },
 
         /**

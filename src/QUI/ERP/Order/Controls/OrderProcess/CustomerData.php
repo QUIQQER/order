@@ -65,7 +65,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
-        if (!$Address) {
+        if (!$Address || $this->isAddressEmpty($Address)) {
             try {
                 /* @var $User \QUI\Users\User */
                 $Address = $User->getStandardAddress();
@@ -273,6 +273,47 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     }
 
     /**
+     * @param QUI\Users\Address $Address
+     * @return bool
+     */
+    protected function isAddressValid(QUI\Users\Address $Address)
+    {
+        try {
+            $this->validateAddress($Address);
+        } catch (QUI\Exception $Exception) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param QUI\Users\Address $Address
+     * @return bool
+     */
+    protected function isAddressEmpty(QUI\Users\Address $Address)
+    {
+        $firstName = $Address->getAttribute('firstname');
+        $lastName  = $Address->getAttribute('lastname');
+        $street_no = $Address->getAttribute('street_no');
+        $zip       = $Address->getAttribute('zip');
+        $city      = $Address->getAttribute('city');
+        $country   = $Address->getAttribute('country');
+
+        if (empty($firstName)
+            && empty($lastName)
+            && empty($street_no)
+            && empty($zip)
+            && empty($city)
+            && empty($country)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Order was ordered with costs
      *
      * @return void
@@ -417,7 +458,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             if ($Address->getId()) {
                 return $User->getAddress($Address->getId());
             }
-        } catch (QUi\Exception $Exception) {
+        } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
 
@@ -427,13 +468,15 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             if ($Address->getId()) {
                 return $User->getAddress($Address->getId());
             }
-        } catch (QUi\Exception $Exception) {
+        } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
 
         if ($User->getAttribute('quiqqer.erp.address')) {
             try {
-                return $User->getAddress($User->getAttribute('quiqqer.erp.address'));
+                $Address = $User->getAddress($User->getAttribute('quiqqer.erp.address'));
+
+                return $Address;
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
