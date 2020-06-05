@@ -986,6 +986,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
             var TimeLine    = Ghost.getElement('.quiqqer-order-ordering-timeline');
             var Form        = Ghost.getElement('[name="order"]');
+            var scripts     = Ghost.getElements('script');
 
             if (Form) {
                 this.$Form.set('data-order-hash', Form.get('data-order-hash'));
@@ -1031,6 +1032,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             Next.inject(this.$StepContainer);
+
+            // load script elements
+            scripts.forEach(function (Script) {
+                new Element('script', {
+                    html: Script.get('html')
+                }).inject(self.$StepContainer)
+            });
+
 
             // render buttons
             this.$Buttons.set(
