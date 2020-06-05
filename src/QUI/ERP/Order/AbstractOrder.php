@@ -445,6 +445,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
+        if ($this instanceof OrderInProcess && $this->getOrderId()) {
+            // if an order exists for the order in process
+            // never recalculate it
+            return;
+        }
+
         $Customer = $this->getCustomer();
 
         if ($Basket === null) {
