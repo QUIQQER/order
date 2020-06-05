@@ -65,7 +65,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
-        if (!$Address || $this->isAddressEmpty($Address)) {
+        if (!$Address) {
             try {
                 /* @var $User \QUI\Users\User */
                 $Address = $User->getStandardAddress();
@@ -455,7 +455,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $Address = $Order->getInvoiceAddress();
 
-            if ($Address->getId()) {
+            if ($Address->getId() && !$this->isAddressEmpty($Address)) {
                 return $User->getAddress($Address->getId());
             }
         } catch (QUI\Exception $Exception) {
@@ -465,7 +465,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $Address = $Customer->getStandardAddress();
 
-            if ($Address->getId()) {
+            if ($Address->getId() && !$this->isAddressEmpty($Address)) {
                 return $User->getAddress($Address->getId());
             }
         } catch (QUI\Exception $Exception) {
