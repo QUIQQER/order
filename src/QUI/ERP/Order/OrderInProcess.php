@@ -58,11 +58,17 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     public function refresh()
     {
         if ($this->orderId) {
+            if ($this->isSuccessful()) {
+                return;
+            }
+
             try {
                 Handler::getInstance()->removeFromInstanceCache($this->orderId);
-
                 $Order = Handler::getInstance()->get($this->orderId);
-                $Order->refresh();
+
+                if (!$Order->isSuccessful()) {
+                    $Order->refresh();
+                }
             } catch (QUI\Exception $Exception) {
             }
         }
