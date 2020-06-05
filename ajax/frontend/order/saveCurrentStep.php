@@ -32,8 +32,15 @@ QUI::$Ajax->registerFunction(
         $Step = $OrderProcess->getCurrentStep();
         $Step->save();
 
+        $Order = $OrderProcess->getOrder();
+        $hash  = '';
+
+        if ($Order) {
+            $hash = $Order->getHash();
+        }
+
         return [
-            'hash' => $OrderProcess->getOrder()->getHash()
+            'hash' => $hash
         ];
     },
     ['step', 'data', 'orderHash']
