@@ -101,6 +101,17 @@ class OrderProcess extends QUI\Control
             ]);
         }
 
+        if ($Order->isSuccessful()) {
+            $this->setAttribute('orderHash', $Order->getHash());
+            $LastStep = \end($steps);
+
+            $this->setAttribute('step', $LastStep->getName());
+            $this->setAttribute('orderHash', $Order->getHash());
+
+            return;
+        }
+
+
         // basket into the order
         $Basket = $this->getBasket();
 
@@ -724,7 +735,7 @@ class OrderProcess extends QUI\Control
             return $render();
         }
 
-        if ($Checkout->getName() !== $Current->getName()) {
+        if ($Checkout && $Checkout->getName() !== $Current->getName()) {
             return false;
         }
 
@@ -745,6 +756,12 @@ class OrderProcess extends QUI\Control
      */
     protected function renderFinish()
     {
+        $Order = $this->getOrder();
+
+        if ($Order instanceof Order) {
+            $this->Order = null;
+        }
+
         $Basket = $this->getBasket();
 
         // clear basket
@@ -755,19 +772,25 @@ class OrderProcess extends QUI\Control
         $template = \dirname(__FILE__).'/Controls/OrderProcess.html';
         $Engine   = QUI::getTemplateManager()->getEngine();
 
+        $steps       = $this->getSteps();
+        $LastStep    = $this->getLastStep();
+        $Site        = $this->getSite();
+        $stepHash    = $this->getStepHash();
+        $stepControl = QUI\ControlUtils::parse($LastStep);
+
         $Engine->assign([
-            'listWidth'          => \floor(100 / \count($this->getSteps())),
+            'listWidth'          => \floor(100 / \count($steps)),
             'this'               => $this,
             'error'              => false,
             'next'               => false,
             'previous'           => false,
             'payableToOrder'     => false,
-            'steps'              => $this->getSteps(),
-            'CurrentStep'        => $this->getLastStep(),
-            'currentStepContent' => QUI\ControlUtils::parse($this->getLastStep()),
-            'Site'               => $this->getSite(),
-            'Order'              => $this->getOrder(),
-            'hash'               => $this->getStepHash()
+            'steps'              => $steps,
+            'CurrentStep'        => $LastStep,
+            'currentStepContent' => $stepControl,
+            'Site'               => $Site,
+            'Order'              => $Order,
+            'hash'               => $stepHash
         ]);
 
         $this->Events->fireEvent('getBody', [$this]);
@@ -1288,6 +1311,17 @@ class OrderProcess extends QUI\Control
 
         if ($Order instanceof OrderInProcess) {
             $Basket = $this->getBasket();
+        }
+
+        if ($Order->isSuccessful()) {
+            $Finish = new Controls\OrderProcess\Finish([
+                'Order'    => $Order,
+                'priority' => 50
+            ]);
+
+            $Steps->append($Finish);
+
+            return $Steps;
         }
 
         $Registration = new Controls\OrderProcess\Registration([
