@@ -426,6 +426,7 @@ class Order extends AbstractOrder implements OrderInterface
             );
         }
 
+
         // set status change
         $fireStatusChangedEvent = false;
 
@@ -456,6 +457,24 @@ class Order extends AbstractOrder implements OrderInterface
 
         // save data
         $data = $this->getDataForSaving();
+
+        if (QUI::isFrontend()
+            && $this->isSuccessful()
+            && !QUI::getUsers()->isSystemUser($PermissionUser)) {
+            // if order is successful
+            // only some stuff are allowed to changed
+
+            $_data = [
+                'payment_id'      => $data['payment_id'],
+                'payment_method'  => $data['payment_method'],
+                'payment_data'    => $data['payment_data'],
+                'payment_address' => $data['payment_address'],
+                'comments'        => $data['comments'],
+                'history'         => $data['history']
+            ];
+
+            $data = $_data;
+        }
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderUpdateBegin',
