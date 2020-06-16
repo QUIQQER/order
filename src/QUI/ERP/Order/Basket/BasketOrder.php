@@ -119,6 +119,7 @@ class BasketOrder
         $this->List            = new ProductList();
         $this->List->duplicate = true;
 
+        $this->List->setOrder($this->Order);
         $this->List->setCurrency($this->Order->getCurrency());
         $this->List->getPriceFactors()->importList([
             'end' => $priceFactors

@@ -724,6 +724,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getArticles()
     {
+        $this->Articles->setOrder($this);
         $this->Articles->setUser($this->getCustomer());
         $this->Articles->setCurrency($this->getCurrency());
         $this->Articles->calc();
