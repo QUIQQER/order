@@ -176,6 +176,11 @@ class Basket
             $products = [];
         }
 
+        try {
+            $this->List->setOrder($this->getOrder());
+        } catch (QUI\Exception $Exception) {
+        }
+
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(
             $this->List,
             $products
