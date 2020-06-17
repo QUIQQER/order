@@ -1079,15 +1079,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return null;
         }
 
+        $Currency     = $this->getCurrency();
         $Payments     = Payments::getInstance();
         $calculations = $this->Articles->getCalculations();
 
         try {
-            /* @todo die rundung muss währungsabhängig sein,
-             * hierzu brauchen wir noch eine einstellung
-             * quiqqer/package-currency#3
-             */
-            if (\round($calculations['sum'], 2) >= 0 && \round($calculations['sum'], 2) <= 0) {
+            if (\round($calculations['sum'], $Currency->getPrecision()) >= 0
+                && \round($calculations['sum'], $Currency->getPrecision()) <= 0) {
                 return $Payments->getPayment(
                     QUI\ERP\Accounting\Payments\Methods\Free\Payment::ID
                 );
