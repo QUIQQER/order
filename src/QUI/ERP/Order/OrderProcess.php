@@ -1313,7 +1313,7 @@ class OrderProcess extends QUI\Control
             $Basket = $this->getBasket();
         }
 
-        if ($Order->isSuccessful()) {
+        if ($Order && $Order->isSuccessful()) {
             $Finish = new Controls\OrderProcess\Finish([
                 'Order'    => $Order,
                 'priority' => 50
