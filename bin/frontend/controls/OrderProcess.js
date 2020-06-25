@@ -136,6 +136,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on import
          */
         $onImport: function () {
+            this.$startLoginCheck();
+
+
             var self = this;
 
             if (this.getAttribute('showLoader')) {
@@ -314,6 +317,53 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     basket        : self.getAttribute('basket'),
                     basketEditable: self.getAttribute('basketEditable') ? 1 : 0
                 });
+            });
+        },
+
+        /**
+         * login check
+         */
+        $startLoginCheck: function () {
+            var self = this;
+
+            if (this.getElm().getElement('[data-qui="package/quiqqer/frontend-users/bin/frontend/controls/login/Login"]')) {
+                return;
+            }
+
+            QUIAjax.get('package_quiqqer_order_ajax_frontend_order_isLoggedIn', function (isLoggedIn) {
+                if (!isLoggedIn) {
+                    // show login
+                    self.$showLogin();
+                    return;
+                }
+
+
+                (function () {
+                    self.$startLoginCheck();
+                }).delay(10000);
+            }, {
+                package: 'quiqqer/order'
+            });
+        },
+
+        /**
+         * show the login window
+         */
+        $showLogin: function () {
+            var self = this;
+
+            require(['package/quiqqer/frontend-users/bin/frontend/controls/login/Window'], function (LoginWindow) {
+                new LoginWindow({
+                    reload: false,
+                    events: {
+                        onCancel : function () {
+                            window.location.reload();
+                        },
+                        onSuccess: function () {
+                            self.$startLoginCheck();
+                        }
+                    }
+                }).open();
             });
         },
 
