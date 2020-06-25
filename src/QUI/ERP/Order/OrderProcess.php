@@ -1309,6 +1309,18 @@ class OrderProcess extends QUI\Control
         $Order  = $this->getOrder();
         $Basket = $this->Basket;
 
+        if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
+            $Steps->append(
+                new Controls\OrderProcess\Registration([
+                    'Basket'   => $Basket,
+                    'Order'    => $Order,
+                    'priority' => 1
+                ])
+            );
+
+            return $Steps;
+        }
+
         if ($Order instanceof OrderInProcess) {
             $Basket = $this->getBasket();
         }
@@ -1355,10 +1367,6 @@ class OrderProcess extends QUI\Control
 
 
         // init steps
-        if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
-            $Steps->append($Registration);
-        }
-
         $Steps->append($Basket);
         $Steps->append($CustomerData);
 
