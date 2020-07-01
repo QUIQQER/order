@@ -8,3 +8,9 @@
         QUI.setAttribute('QUIQQER_ORDER_CHECKOUT_FINISH', "{$orderHash}");
     });
 </script>
+
+{template_event
+    name="quiqqer::order::orderProcessFinish"
+    User=$User
+    Order=$Order
+}

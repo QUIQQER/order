@@ -92,3 +92,5 @@ Developers
 
 - onQuiqqer::order::orderProcessCheckoutBegin [Collector, User, Order]
 - onQuiqqer::order::orderProcessCheckoutEnd [Collector, User, Order]
+
+- onQuiqqer::order::orderProcessFinish [Collector, User, Order]
