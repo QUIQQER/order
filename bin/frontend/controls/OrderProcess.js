@@ -290,12 +290,17 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     var scripts = [];
 
                     Process.getElements('script').forEach(function (Script) {
-                        scripts.push(
-                            new Element('script', {
-                                html: Script.get('html')
-                            })
-                        );
+                        var New = new Element('script');
 
+                        if (Script.get('html')) {
+                            New.set('html', Script.get('html'));
+                        }
+
+                        if (Script.get('src')) {
+                            New.set('src', Script.get('src'));
+                        }
+
+                        scripts.push(New);
                         Script.destroy();
                     });
 
@@ -1085,9 +1090,17 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             // load script elements
             scripts.forEach(function (Script) {
-                new Element('script', {
-                    html: Script.get('html')
-                }).inject(self.$StepContainer)
+                var New = new Element('script');
+
+                if (Script.get('html')) {
+                    New.set('html', Script.get('html'));
+                }
+
+                if (Script.get('src')) {
+                    New.set('src', Script.get('src'));
+                }
+
+                New.inject(self.$StepContainer);
             });
 
 
