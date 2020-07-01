@@ -53,6 +53,7 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Engine->assign([
             'User'      => $Order->getCustomer(),
+            'Order'     => $Order,
             'orderHtml' => $OrderControl->create(),
             'orderHash' => $Order->getHash()
         ]);
