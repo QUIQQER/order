@@ -197,7 +197,7 @@ class Order extends AbstractOrder implements OrderInterface
                 'currency_data' => \json_encode($this->getCurrency()->toArray()),
                 'currency'      => $this->getCurrency()->getCode(),
             ],
-            ['id' => $this->getId()]
+            ['id' => $TemporaryInvoice->getCleanId()]
         );
 
         // create the real invoice
