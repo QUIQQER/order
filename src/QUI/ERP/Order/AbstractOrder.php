@@ -264,6 +264,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 $customerData['address'] = $this->addressInvoice;
             }
 
+            if (!isset($customerData['isCompany']) && isset($this->customer['company'])) {
+                $customerData['isCompany'] = !empty($this->customer['company']);
+            }
+
+            if (!isset($customerData['country']) && isset($customerData['address']['country'])) {
+                $customerData['country'] = $customerData['address']['country'];
+            }
+
             try {
                 $this->setCustomer($customerData);
             } catch (QUi\Exception $Exception) {
@@ -300,7 +308,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             }
         }
 
-        $this->Articles->setUser($this->getCustomer());
+        $Customer = $this->getCustomer();
+        $Customer->setAddress($this->getDeliveryAddress());
+
+        $this->Articles->setUser($Customer);
         $this->Articles->calc();
 
         // comments
