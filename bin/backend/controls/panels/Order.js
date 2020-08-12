@@ -924,7 +924,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return new Promise(function (resolve, reject) {
                     require([
                         'package/quiqqer/erp/bin/backend/controls/articles/ArticleList',
-                        'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoice.Summary'
+                        'package/quiqqer/erp/bin/backend/controls/articles/ArticleSummary'
                     ], function (ArticleList, Summary) {
                         Container.setStyle('height', '100%');
 
