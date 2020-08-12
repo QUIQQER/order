@@ -277,17 +277,17 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         $calculations  = QUI\ERP\Accounting\Calc::calculatePayments($this);
 
         switch ($this->getAttribute('paid_status')) {
-            case self::PAYMENT_STATUS_OPEN:
-            case self::PAYMENT_STATUS_PAID:
-            case self::PAYMENT_STATUS_PART:
-            case self::PAYMENT_STATUS_ERROR:
-            case self::PAYMENT_STATUS_DEBIT:
-            case self::PAYMENT_STATUS_CANCELED:
-            case self::PAYMENT_STATUS_PLAN:
+            case QUI\ERP\Constants::PAYMENT_STATUS_OPEN:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PAID:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PART:
+            case QUI\ERP\Constants::PAYMENT_STATUS_ERROR:
+            case QUI\ERP\Constants::PAYMENT_STATUS_DEBIT:
+            case QUI\ERP\Constants::PAYMENT_STATUS_CANCELED:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PLAN:
                 break;
 
             default:
-                $this->setAttribute('paid_status', self::PAYMENT_STATUS_ERROR);
+                $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_ERROR);
         }
 
         $this->addHistory(
@@ -315,7 +315,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         // create order, if the payment status is paid and no order exists
-        if ($this->getAttribute('paid_status') === self::PAYMENT_STATUS_PAID && !$this->orderId) {
+        if ($this->getAttribute('paid_status') === QUI\ERP\Constants::PAYMENT_STATUS_PAID && !$this->orderId) {
             $this->createOrder();
         }
 
@@ -444,7 +444,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         try {
             // reset & recalculation
-            $Order->setAttribute('paid_status', QUI\ERP\Accounting\Invoice\Invoice::PAYMENT_STATUS_OPEN);
+            $Order->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
             $Order->calculatePayments();
 
             if ($data['paid_status'] !== $Order->getAttribute('paid_status')) {

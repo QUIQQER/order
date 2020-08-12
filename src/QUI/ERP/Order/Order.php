@@ -585,17 +585,17 @@ class Order extends AbstractOrder implements OrderInterface
         QUI\ERP\Debug::getInstance()->log($calculation);
 
         switch ($calculation['paidStatus']) {
-            case self::PAYMENT_STATUS_OPEN:
-            case self::PAYMENT_STATUS_PAID:
-            case self::PAYMENT_STATUS_PART:
-            case self::PAYMENT_STATUS_ERROR:
-            case self::PAYMENT_STATUS_DEBIT:
-            case self::PAYMENT_STATUS_CANCELED:
-            case self::PAYMENT_STATUS_PLAN:
+            case QUI\ERP\Constants::PAYMENT_STATUS_OPEN:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PAID:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PART:
+            case QUI\ERP\Constants::PAYMENT_STATUS_ERROR:
+            case QUI\ERP\Constants::PAYMENT_STATUS_DEBIT:
+            case QUI\ERP\Constants::PAYMENT_STATUS_CANCELED:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PLAN:
                 break;
 
             default:
-                $this->setAttribute('paid_status', self::PAYMENT_STATUS_ERROR);
+                $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_ERROR);
         }
 
         $this->addHistory(
@@ -628,7 +628,7 @@ class Order extends AbstractOrder implements OrderInterface
             ['id' => $this->getId()]
         );
 
-        if ($calculation['paidStatus'] === self::PAYMENT_STATUS_PAID) {
+        if ($calculation['paidStatus'] === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
             $this->setSuccessfulStatus();
 
             // create invoice?
@@ -734,11 +734,11 @@ class Order extends AbstractOrder implements OrderInterface
             Handler::getInstance()->table(),
             [
                 'articles'   => '[]',
-                'status'     => AbstractOrder::STATUS_CREATED,
+                'status'     => QUI\ERP\Constants::STATUS_CREATED,
                 'successful' => 0,
                 'data'       => '[]',
 
-                'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
+                'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
                 'paid_data'   => null,
                 'paid_date'   => null,
 

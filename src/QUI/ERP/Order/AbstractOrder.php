@@ -26,13 +26,23 @@ use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 {
-    const PAYMENT_STATUS_OPEN = 0;
-    const PAYMENT_STATUS_PAID = 1;
-    const PAYMENT_STATUS_PART = 2;
-    const PAYMENT_STATUS_ERROR = 4;
-    const PAYMENT_STATUS_CANCELED = 5;
-    const PAYMENT_STATUS_DEBIT = 11;
-    const PAYMENT_STATUS_PLAN = 12;
+    /* @deprecated */
+    const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
+
+    /* @deprecated */
+    const PAYMENT_STATUS_PAID = QUI\ERP\Constants::PAYMENT_STATUS_PAID;
+
+    /* @deprecated */
+    const PAYMENT_STATUS_PART = QUI\ERP\Constants::PAYMENT_STATUS_PART;
+
+    /* @deprecated */
+    const PAYMENT_STATUS_ERROR = QUI\ERP\Constants::PAYMENT_STATUS_ERROR;
+
+    /* @deprecated */
+    const PAYMENT_STATUS_CANCELED = QUI\ERP\Constants::PAYMENT_STATUS_CANCELED;
+
+    /* @deprecated */
+    const PAYMENT_STATUS_DEBIT = QUI\ERP\Constants::PAYMENT_STATUS_DEBIT;
 
     /**
      * Order is only created
@@ -1144,7 +1154,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function isPaid()
     {
-        return $this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID;
+        return $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_PAID;
     }
 
     /**
@@ -1235,10 +1245,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        if ($this->getAttribute('paid_status') == self::PAYMENT_STATUS_PAID ||
-            $this->getAttribute('paid_status') == self::PAYMENT_STATUS_CANCELED
+        if ($this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_PAID ||
+            $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_CANCELED
         ) {
-            $this->setAttribute('paid_status', self::PAYMENT_STATUS_OPEN);
+            $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
             $this->calculatePayments();
 
             return;

@@ -226,7 +226,7 @@ class EventHandling
         }
 
         try {
-            $Order->setAttribute('paid_status', Order::PAYMENT_STATUS_OPEN);
+            $Order->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
             $Order->calculatePayments();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
