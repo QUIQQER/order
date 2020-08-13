@@ -304,7 +304,12 @@ class Utils
                 $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
 
                 if (!$Real->isActive()) {
-                    // @todo message an benutzer - Product konnte nicht aufgenommen werden
+                    // @todo quiqqer/order#103
+                    if (!QUI::getUsers()->isSystemUser(QUI::getUserBySession())) {
+                        QUI::getMessagesHandler()->addAttention(
+                            'The Product '.$Real->getTitle().' is no available anymore.'
+                        );
+                    }
 
                     continue;
                 }

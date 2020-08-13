@@ -46,13 +46,13 @@ class UserOpenedOrders extends UserOrders
             if ($Order->isPosted()) {
                 $Invoice = $Order->getInvoice();
 
-                if ($Invoice->getAttribute('paid_status') === AbstractOrder::PAYMENT_STATUS_PAID) {
+                if ($Invoice->getAttribute('paid_status') === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
                     continue;
                 }
             }
 
             if (!$Order->isPosted()) {
-                if ($Order->getAttribute('paid_status') === AbstractOrder::PAYMENT_STATUS_PAID) {
+                if ($Order->getAttribute('paid_status') === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
                     continue;
                 }
             }

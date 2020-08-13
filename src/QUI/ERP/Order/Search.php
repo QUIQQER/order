@@ -196,10 +196,13 @@ class Search extends Singleton
         $this->cache = [];
 
         // select display orders
-        $orders = $this->executeQueryParams($this->getQuery());
+        $query      = $this->getQuery();
+        $queryCount = $this->getQueryCount();
+
+        $orders = $this->executeQueryParams($query);
 
         // count
-        $count = $this->executeQueryParams($this->getQueryCount());
+        $count = $this->executeQueryParams($queryCount);
         $count = (int)$count[0]['count'];
 
         // total - calculation is without limit and paid_status
@@ -289,7 +292,7 @@ class Search extends Singleton
 
         // fallback for old orders
         if ($DefaultCurrency->getCode() === $this->currency) {
-            $where[] = "(currency = :currency OR currency = '')";
+            $where[] = "(currency = :currency OR currency = '' OR currency IS NULL)";
         } else {
             $where[] = 'currency = :currency';
         }

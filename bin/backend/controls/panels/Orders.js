@@ -13,7 +13,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
     'controls/grid/Grid',
     'package/quiqqer/order/bin/backend/Orders',
-    'package/quiqqer/invoice/bin/backend/controls/elements/TimeFilter',
+    'package/quiqqer/erp/bin/backend/controls/elements/TimeFilter',
     'Locale',
     'Ajax',
     'Mustache',

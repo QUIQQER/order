@@ -58,7 +58,7 @@ class Factory extends QUI\Utils\Singleton
             'hash'        => $hash,
             'status'      => $status,
             'customerId'  => 0,
-            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
+            'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
             'successful'  => 0
         ]);
 
@@ -145,7 +145,7 @@ class Factory extends QUI\Utils\Singleton
             'hash'        => QUI\Utils\Uuid::get(),
             'customerId'  => $User->getId(),
             'status'      => $status,
-            'paid_status' => AbstractOrder::PAYMENT_STATUS_OPEN,
+            'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
             'successful'  => 0
         ]);
 

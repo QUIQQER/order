@@ -14,7 +14,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'package/quiqqer/order/bin/backend/ProcessingStatus',
     'package/quiqqer/payments/bin/backend/Payments',
     'package/quiqqer/erp/bin/backend/controls/Comments',
-    'package/quiqqer/invoice/bin/backend/controls/articles/Text',
+    'package/quiqqer/erp/bin/backend/controls/articles/Text',
     'utils/Lock',
     'Ajax',
     'Locale',
@@ -922,10 +922,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return this.$closeCategory().then(function (Container) {
                 return new Promise(function (resolve, reject) {
-                    // @todo must be into erp
                     require([
-                        'package/quiqqer/invoice/bin/backend/controls/InvoiceArticleList',
-                        'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoice.Summary'
+                        'package/quiqqer/erp/bin/backend/controls/articles/ArticleList',
+                        'package/quiqqer/erp/bin/backend/controls/articles/ArticleSummary'
                     ], function (ArticleList, Summary) {
                         Container.setStyle('height', '100%');
 
@@ -1331,8 +1330,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return new Promise(function (resolve) {
                 require([
-                    'package/quiqqer/invoice/bin/backend/controls/panels/product/AddProductWindow',
-                    'package/quiqqer/invoice/bin/backend/controls/articles/Article'
+                    'package/quiqqer/erp/bin/backend/controls/articles/product/AddProductWindow',
+                    'package/quiqqer/erp/bin/backend/controls/articles/Article'
                 ], function (Win, Article) {
                     new Win({
                         events: {
