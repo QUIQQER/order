@@ -70,7 +70,7 @@ class ProductToBasket extends QUI\Control
             $maxQuantity = $Product->getMaximumQuantity();
 
             if (!$maxQuantity) {
-                $maxQuantity = '';
+                $this->setAttribute('disabled', true);
             }
 
             $this->setAttribute('data-pid', $Product->getId());
