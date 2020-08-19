@@ -44,6 +44,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     /* @deprecated */
     const PAYMENT_STATUS_DEBIT = QUI\ERP\Constants::PAYMENT_STATUS_DEBIT;
 
+    /* @deprecated */
+    const PAYMENT_STATUS_PLAN = QUI\ERP\Constants::PAYMENT_STATUS_PLAN;
+
     /**
      * Order is only created
      *
