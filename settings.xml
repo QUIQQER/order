@@ -68,6 +68,9 @@
                     <type><![CDATA[bool]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
                 </conf>
+                <conf name="backToShopUrl">
+                    <type><![CDATA[string]]></type>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -108,6 +111,19 @@
                             <description>
                                 <locale group="quiqqer/order"
                                         var="order.settings.orderProcess.mergeSameProducts.description"/>
+                            </description>
+                        </input>
+
+                        <input conf="orderProcess.backToShopUrl"
+                               data-qui="controls/projects/project/site/Input"
+                        >
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.backToShopUrl"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.backToShopUrl.description"/>
                             </description>
                         </input>
                     </settings>
