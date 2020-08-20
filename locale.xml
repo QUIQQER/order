@@ -767,6 +767,14 @@
             If this option is not activated, each product added will have its own position.
             ]]></en>
         </locale>
+        <locale name="order.settings.orderProcess.backToShopUrl">
+            <de><![CDATA[Zurück zum Shop Link]]></de>
+            <en><![CDATA[Back to the Shop Link]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.backToShopUrl.description">
+            <de><![CDATA[Diese Eigenschaft legt fest, wohin der 'Zurück zum Shop' Link führen soll.]]></de>
+            <en><![CDATA[This property defines where the 'Back to Shop' link should lead to.]]></en>
+        </locale>
 
         <locale name="exception.order.process.not.found">
             <de><![CDATA[Keinen Bestellprozess gefunden. Bitte legen Sie einen Bestellprozess an.]]></de>

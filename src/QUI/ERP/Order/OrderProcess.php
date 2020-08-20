@@ -71,7 +71,8 @@ class OrderProcess extends QUI\Control
             'data-qui'       => 'package/quiqqer/order/bin/frontend/controls/OrderProcess',
             'orderHash'      => false,
             'basket'         => true, // import basket articles to the order, use the basket
-            'basketEditable' => true
+            'basketEditable' => true,
+            'backToShopUrl'  => false
         ]);
 
         parent::__construct($attributes);
@@ -401,7 +402,8 @@ class OrderProcess extends QUI\Control
                     'currentStepContent' => QUI\ControlUtils::parse($ProcessingStep),
                     'Site'               => $this->getSite(),
                     'Order'              => $this->getOrder(),
-                    'hash'               => $this->getStepHash()
+                    'hash'               => $this->getStepHash(),
+                    'backToShopUrl'      => $this->getBackToShopUrl()
                 ]);
 
                 return QUI\Output::getInstance()->parse($Engine->fetch($template));
@@ -419,7 +421,8 @@ class OrderProcess extends QUI\Control
                 'currentStepContent' => QUI\ControlUtils::parse($this->getCurrentStep()),
                 'Site'               => $this->getSite(),
                 'Order'              => $this->getOrder(),
-                'hash'               => $this->getStepHash()
+                'hash'               => $this->getStepHash(),
+                'backToShopUrl'      => $this->getBackToShopUrl()
             ]);
 
             return QUI\Output::getInstance()->parse($Engine->fetch($template));
@@ -595,7 +598,8 @@ class OrderProcess extends QUI\Control
             'Site'               => $this->getSite(),
             'Order'              => $this->getOrder(),
             'hash'               => $this->getStepHash(),
-            'messages'           => $this->getStepMessages(\get_class($Current))
+            'messages'           => $this->getStepMessages(\get_class($Current)),
+            'backToShopUrl'      => $this->getBackToShopUrl()
         ]);
 
         $this->Events->fireEvent('getBody', [$this]);
@@ -790,7 +794,8 @@ class OrderProcess extends QUI\Control
             'currentStepContent' => $stepControl,
             'Site'               => $Site,
             'Order'              => $Order,
-            'hash'               => $stepHash
+            'hash'               => $stepHash,
+            'backToShopUrl'      => $this->getBackToShopUrl()
         ]);
 
         $this->Events->fireEvent('getBody', [$this]);
@@ -1517,5 +1522,35 @@ class OrderProcess extends QUI\Control
         $Session->set(self::MESSAGES_SESSION_KEY, \json_encode($savedMessages));
 
         return $messages;
+    }
+
+    /**
+     * Return the url to the shop
+     * this is the url that sets the link at "back to shop
+     *
+     * @return string
+     * @throws QUI\Exception
+     */
+    protected function getBackToShopUrl()
+    {
+        $Project = $this->getSite()->getProject();
+
+        if (Settings::getInstance()->get('orderProcess', 'backToShopUrl')) {
+            $url = Settings::getInstance()->get('orderProcess', 'backToShopUrl');
+
+            if (!empty($url) && QUI\Projects\Site\Utils::isSiteLink($url)) {
+                try {
+                    return QUI\Projects\Site\Utils::getSiteByLink($url)->getUrlRewritten();
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::addDebug($Exception->getTraceAsString());
+                }
+            }
+        }
+
+        if ($this->getAttribute('backToShopUrl')) {
+            return $this->getAttribute('backToShopUrl');
+        }
+
+        return $Project->firstChild()->getUrlRewritten();
     }
 }
