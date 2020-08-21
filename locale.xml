@@ -299,7 +299,14 @@
             <de><![CDATA[]]></de>
             <en><![CDATA[]]></en>
         </locale>
-
+        <locale name="filter.status.all">
+            <de><![CDATA[Status: Alle]]></de>
+            <en><![CDATA[Status: all]]></en>
+        </locale>
+        <locale name="filter.status">
+            <de><![CDATA[Status: [status]]]></de>
+            <en><![CDATA[Status: [status]]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
