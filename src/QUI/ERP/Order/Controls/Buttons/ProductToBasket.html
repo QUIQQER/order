@@ -11,7 +11,7 @@
               title="{locale group='quiqqer/order' var='control.basket.quantity.button.decrease'}"
               data-button-type="decrease">-</span>
         {/if}
-        <input type="number" value="1" min="1" {if $maxQuantity !== ''}max="{$maxQuantity}"{/if}
+        <input type="number" value="1" min="1" {if $maxQuantity !== true}max="{$maxQuantity}"{/if}
                class="quiqqer-order-button-add-quantity-input"
                title="{locale group='quiqqer/order' var='control.basket.quantity.text'}"
                {if !$maxQuantity}disabled{/if}
