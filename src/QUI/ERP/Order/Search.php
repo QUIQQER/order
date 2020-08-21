@@ -42,7 +42,8 @@ class Search extends Singleton
      */
     protected $allowedFilters = [
         'from',
-        'to'
+        'to',
+        'status'
     ];
 
     /**
@@ -305,6 +306,17 @@ class Search extends Singleton
         // filter
         foreach ($this->filter as $filter) {
             $bind = ':filter'.$fc;
+
+            if ($filter['filter'] === 'status') {
+                $where[]      = 'status = '.$bind;
+                $binds[$bind] = [
+                    'value' => (int)$filter['value'],
+                    'type'  => \PDO::PARAM_INT
+                ];
+
+                $fc++;
+                continue;
+            }
 
             switch ($filter['filter']) {
                 case 'from':

@@ -14,6 +14,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'controls/grid/Grid',
     'package/quiqqer/order/bin/backend/Orders',
     'package/quiqqer/erp/bin/backend/controls/elements/TimeFilter',
+    'package/quiqqer/order/bin/backend/ProcessingStatus',
     'Locale',
     'Ajax',
     'Mustache',
@@ -24,7 +25,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'css!package/quiqqer/erp/bin/backend/payment-status.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUISelect, QUIConfirm, QUIContextMenuItem,
-             Grid, Orders, TimeFilter, QUILocale, QUIAjax,
+             Grid, Orders, TimeFilter, ProcessingStatus, QUILocale, QUIAjax,
              Mustache, templateTotal) {
     "use strict";
 
@@ -69,6 +70,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$Search     = null;
             this.$Currency   = null;
             this.$Actions    = null;
+            this.$Status     = null;
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -117,7 +119,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 from    : this.$TimeFilter.getValue().from,
                 to      : this.$TimeFilter.getValue().to,
                 search  : this.$Search.value,
-                currency: this.$Currency.getAttribute('value')
+                currency: this.$Currency.getAttribute('value'),
+                status  : this.$Status.getValue()
             }).then(function (result) {
                 var gridData = result.grid;
 
@@ -225,6 +228,48 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.addButton(this.$Currency);
 
+
+            this.$Status = new QUISelect({
+                disabled : true,
+                showIcons: false,
+                styles   : {
+                    'float': 'right'
+                },
+                events   : {
+                    onChange: this.refresh
+                }
+            });
+
+            this.$Status.appendChild(
+                QUILocale.get(lg, 'filter.status.all'),
+                ''
+            );
+
+            ProcessingStatus.getList().then(function (list) {
+                var data = list.data;
+
+                for (var i = 0, len = data.length; i < len; i++) {
+                    self.$Status.appendChild(
+                        QUILocale.get(lg, 'filter.status', {
+                            status: data[i].title
+                        }),
+                        data[i].id
+                    );
+                }
+
+                self.$Status.setValue('');
+                self.$Status.addEvent('change', self.refresh);
+            });
+
+
+            this.addButton(this.$Status);
+
+            this.addButton({
+                type  : 'separator',
+                styles: {
+                    'float': 'right'
+                }
+            });
 
             this.$TimeFilter = new TimeFilter({
                 name  : 'timeFilter',
