@@ -384,14 +384,28 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/system', 'exception.no.permission'),
+                QUI::getLocale()->get('quiqqer/quiqqer', 'exception.no.permission'),
                 403
             );
         }
 
+        // no duplicate is allowed
         if ($this->orderId) {
             return Handler::getInstance()->get($this->orderId);
         }
+
+        // no duplicate is allowed
+        try {
+            $Order = Handler::getInstance()->getOrderByHash($this->getHash());
+
+            if ($Order instanceof Order) {
+                QUI\System\Log::addInfo('Order->createOrder is already executed '.$Order->getHash());
+
+                return $Order;
+            }
+        } catch (QUI\Exception $Exception) {
+        }
+
 
         $SystemUser = QUI::getUsers()->getSystemUser();
         $this->recalculate();
