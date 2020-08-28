@@ -308,7 +308,8 @@ class Utils
                 if (!$Real->isActive()) {
                     $message = QUI::getLocale()->get(
                         'quiqqer/order',
-                        'order.process.product.not.available', [
+                        'order.process.product.not.available',
+                        [
                             'title'     => $Real->getTitle(),
                             'articleNo' => $Real->getField(QUI\ERP\Products\Handler\Fields::FIELD_PRODUCT_NO)->getValue()
                         ]
