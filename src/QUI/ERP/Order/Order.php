@@ -386,13 +386,14 @@ class Order extends AbstractOrder implements OrderInterface
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
-            'articles'      => $this->Articles->toJSON(),
-            'comments'      => $this->Comments->toJSON(),
-            'status_mails'  => $this->StatusMails->toJSON(),
-            'history'       => $this->History->toJSON(),
-            'data'          => \json_encode($this->data),
-            'currency_data' => \json_encode($this->getCurrency()->toArray()),
-            'currency'      => $this->getCurrency()->getCode(),
+            'articles'        => $this->Articles->toJSON(),
+            'comments'        => $this->Comments->toJSON(),
+            'status_mails'    => $this->StatusMails->toJSON(),
+            'history'         => $this->History->toJSON(),
+            'frontendMessage' => $this->FrontendMessage->toJSON(),
+            'data'            => \json_encode($this->data),
+            'currency_data'   => \json_encode($this->getCurrency()->toArray()),
+            'currency'        => $this->getCurrency()->getCode(),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
@@ -465,12 +466,13 @@ class Order extends AbstractOrder implements OrderInterface
             // only some stuff are allowed to changed
 
             $_data = [
-                'payment_id'      => $data['payment_id'],
-                'payment_method'  => $data['payment_method'],
-                'payment_data'    => $data['payment_data'],
-                'payment_address' => $data['payment_address'],
-                'comments'        => $data['comments'],
-                'history'         => $data['history']
+                'payment_id'       => $data['payment_id'],
+                'payment_method'   => $data['payment_method'],
+                'payment_data'     => $data['payment_data'],
+                'payment_address'  => $data['payment_address'],
+                'comments'         => $data['comments'],
+                'history'          => $data['history'],
+                'frontendMessages' => $data['frontendMessages'],
             ];
 
             $data = $_data;
@@ -734,7 +736,7 @@ class Order extends AbstractOrder implements OrderInterface
             Handler::getInstance()->table(),
             [
                 'articles'   => '[]',
-                'status'     => QUI\ERP\Constants::STATUS_CREATED,
+                'status'     => QUI\ERP\Constants::ORDER_STATUS_CREATED,
                 'successful' => 0,
                 'data'       => '[]',
 
@@ -754,5 +756,27 @@ class Order extends AbstractOrder implements OrderInterface
         $this->refresh();
 
         QUI::getEvents()->fireEvent('quiqqerOrderClear', [$this]);
+    }
+
+    /**
+     * @return mixed|void
+     */
+    protected function saveFrontendMessages()
+    {
+
+        try {
+            QUI::getDataBase()->update(
+                Handler::getInstance()->table(),
+                ['frontendMessages' => $this->FrontendMessage->toJSON()],
+                ['id' => $this->getId()]
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage(), [
+                'order'     => $this->getId(),
+                'orderHash' => $this->getHash(),
+                'orderType' => $this->getType(),
+                'action'    => 'Order->clearFrontendMessages'
+            ]);
+        }
     }
 }

@@ -218,4 +218,19 @@ interface OrderInterface
     public function getHistory();
 
     //endregion
+
+    //region frontend messages
+
+    /**
+     * @return null|\QUI\ERP\Comments
+     */
+    public function getFrontendMessages();
+
+    /**
+     * @param string $message
+     * @return mixed
+     */
+    public function addFrontendMessage(string $message);
+
+    //endregion
 }

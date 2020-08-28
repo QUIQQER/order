@@ -585,6 +585,14 @@ class OrderProcess extends QUI\Control
             $previous = false;
         }
 
+        $frontendMessages = [];
+        $FrontendMessages = $Order->getFrontendMessages();
+
+        if (!$FrontendMessages->isEmpty()) {
+            $frontendMessages = $FrontendMessages->toArray();
+            $Order->clearFrontendMessages();
+        }
+
         $Engine->assign([
             'listWidth'          => \floor(100 / \count($this->getSteps())),
             'this'               => $this,
@@ -599,6 +607,7 @@ class OrderProcess extends QUI\Control
             'Order'              => $this->getOrder(),
             'hash'               => $this->getStepHash(),
             'messages'           => $this->getStepMessages(\get_class($Current)),
+            'frontendMessages'   => $frontendMessages,
             'backToShopUrl'      => $this->getBackToShopUrl()
         ]);
 

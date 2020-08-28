@@ -612,15 +612,16 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
-            'articles'      => $this->Articles->toJSON(),
-            'comments'      => $this->Comments->toJSON(),
-            'status_mails'  => $this->StatusMails->toJSON(),
-            'history'       => $this->History->toJSON(),
-            'data'          => \json_encode($this->data),
-            'currency_data' => \json_encode($this->getCurrency()->toArray()),
-            'currency'      => $this->getCurrency()->getCode(),
-            'status'        => $status,
-            'successful'    => $this->successful,
+            'articles'         => $this->Articles->toJSON(),
+            'comments'         => $this->Comments->toJSON(),
+            'status_mails'     => $this->StatusMails->toJSON(),
+            'history'          => $this->History->toJSON(),
+            'frontendMessages' => $this->FrontendMessage->toJSON(),
+            'data'             => \json_encode($this->data),
+            'currency_data'    => \json_encode($this->getCurrency()->toArray()),
+            'currency'         => $this->getCurrency()->getCode(),
+            'status'           => $status,
+            'successful'       => $this->successful,
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
@@ -802,6 +803,27 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             if ($this->isApproved()) {
                 QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
             }
+        }
+    }
+
+    /**
+     * @return mixed|void
+     */
+    protected function saveFrontendMessages()
+    {
+        try {
+            QUI::getDataBase()->update(
+                Handler::getInstance()->tableOrderProcess(),
+                ['frontendMessages' => $this->FrontendMessage->toJSON()],
+                ['id' => $this->getId()]
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage(), [
+                'order'     => $this->getId(),
+                'orderHash' => $this->getHash(),
+                'orderType' => $this->getType(),
+                'action'    => 'Order->clearFrontendMessages'
+            ]);
         }
     }
 }
