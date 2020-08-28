@@ -248,12 +248,14 @@ class Utils
     /**
      * @param QUI\ERP\Products\Product\ProductList $List
      * @param array $products
+     * @param null|QUI\ERP\Order\AbstractOrder|QUI\ERP\Order\Basket\Basket $Order - optional, to add messages to the order if needed
      *
      * @return QUI\ERP\Products\Product\ProductList
      */
     public static function importProductsToBasketList(
         QUI\ERP\Products\Product\ProductList $List,
-        $products = []
+        $products = [],
+        $Order = null
     ) {
         if (!\is_array($products)) {
             $products = [];
@@ -304,11 +306,21 @@ class Utils
                 $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
 
                 if (!$Real->isActive()) {
-                    // @todo quiqqer/order#103
-                    if (!QUI::getUsers()->isSystemUser(QUI::getUserBySession())) {
-                        QUI::getMessagesHandler()->addAttention(
-                            'The Product '.$Real->getTitle().' is no available anymore.'
-                        );
+                    $message = QUI::getLocale()->get(
+                        'quiqqer/order',
+                        'order.process.product.not.available',
+                        [
+                            'title'     => $Real->getTitle(),
+                            'articleNo' => $Real->getField(QUI\ERP\Products\Handler\Fields::FIELD_PRODUCT_NO)->getValue()
+                        ]
+                    );
+
+                    if ($Order && \method_exists($Order, 'addFrontendMessage')) {
+                        $Order->addFrontendMessage($message);
+                    } else {
+                        if (!QUI::getUsers()->isSystemUser(QUI::getUserBySession())) {
+                            QUI::getMessagesHandler()->addAttention($message);
+                        }
                     }
 
                     continue;

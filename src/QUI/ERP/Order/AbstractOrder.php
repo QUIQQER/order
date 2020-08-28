@@ -50,9 +50,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     /**
      * Order is only created
      *
-     * @deprecated
+     * @deprecated use
      */
-    const STATUS_CREATED = 0;
+    const STATUS_CREATED = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
     /**
      * Order is posted (Invoice created)
@@ -60,12 +60,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      *
      * @deprecated
      */
-    const STATUS_POSTED = 1; // Bestellung ist gebucht (Invoice erstellt)
+    const STATUS_POSTED = QUI\ERP\Constants::ORDER_STATUS_POSTED; // Bestellung ist gebucht (Invoice erstellt)
 
     /**
      * @deprecated
      */
-    const STATUS_STORNO = 2; // Bestellung ist storniert
+    const STATUS_STORNO = QUI\ERP\Constants::ORDER_STATUS_STORNO; // Bestellung ist storniert
 
     /**
      * order id
@@ -171,6 +171,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * @var QUI\ERP\Comments
      */
     protected $History = null;
+
+    /**
+     * @var QUI\ERP\Comments
+     */
+    protected $FrontendMessage = null;
 
     /**
      * @var QUI\ERP\Comments
@@ -339,6 +344,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         if (isset($data['history'])) {
             $this->History = QUI\ERP\Comments::unserialize($data['history']);
+        }
+
+        // frontend messages
+        $this->FrontendMessage = new QUI\ERP\Comments();
+
+        if (isset($data['frontendMessages'])) {
+            $this->FrontendMessage = QUI\ERP\Comments::unserialize($data['frontendMessages']);
         }
 
         // status mail
@@ -1571,6 +1583,47 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         return $this->History;
     }
+
+    //endregion
+
+    //region frontend history
+
+    /**
+     * Add a feontend message´
+     *
+     * @param string $message
+     */
+    public function addFrontendMessage($message)
+    {
+        $this->FrontendMessage->addComment($message);
+        $this->saveFrontendMessages();
+    }
+
+    /**
+     * Return the frontend message object
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getFrontendMessages()
+    {
+        return $this->FrontendMessage;
+    }
+
+    /**
+     * Clears the messages and save this status to the database
+     */
+    public function clearFrontendMessages()
+    {
+        $this->FrontendMessage->clear();
+        $this->saveFrontendMessages();
+    }
+
+    /**
+     * Saves the frontend messages to the order
+     *
+     * @return mixed
+     */
+    abstract protected function saveFrontendMessages();
 
     //endregion
 

@@ -45,7 +45,7 @@ class Factory extends QUI\Utils\Singleton
         $User   = QUI::getUserBySession();
         $Orders = Handler::getInstance();
         $table  = $Orders->table();
-        $status = AbstractOrder::STATUS_CREATED;
+        $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
         if (Settings::getInstance()->get('orderStatus', 'standard')) {
             $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
@@ -132,7 +132,7 @@ class Factory extends QUI\Utils\Singleton
 
         // @todo set default from customer
 
-        $status = AbstractOrder::STATUS_CREATED;
+        $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
         if (Settings::getInstance()->get('orderStatus', 'standard')) {
             $status = (int)Settings::getInstance()->get('orderStatus', 'standard');

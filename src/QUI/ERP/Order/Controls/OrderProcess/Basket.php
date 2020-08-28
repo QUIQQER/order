@@ -53,6 +53,12 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $this->addCSSFile(\dirname(__FILE__).'/Basket.css');
         $this->addCSSClass('quiqqer-order-step-basket');
         $this->setAttribute('nodeName', 'section');
+
+        $messages = $this->Basket->getFrontendMessages()->toArray();
+
+        foreach ($messages as $message) {
+            $this->getOrder()->addFrontendMessage($message['message']);
+        }
     }
 
     /**

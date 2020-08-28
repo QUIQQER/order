@@ -47,6 +47,11 @@ class BasketOrder
     protected $id = null;
 
     /**
+     * @var QUI\ERP\Comments|null
+     */
+    protected $FrontendMessages = null;
+
+    /**
      * Basket constructor.
      *
      * @param integer|bool $orderHash - ID of the order
@@ -71,6 +76,7 @@ class BasketOrder
         $this->User = $User;
         $this->hash = $orderHash;
 
+        $this->FrontendMessages = new QUI\ERP\Comments();
         $this->readOrder();
 
         // get basket id
@@ -269,7 +275,8 @@ class BasketOrder
 
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(
             $this->List,
-            $products
+            $products,
+            $this->getOrder()
         );
 
         try {
@@ -456,6 +463,38 @@ class BasketOrder
     public function toOrder()
     {
         $this->updateOrder();
+    }
+
+    //endregion
+
+    //region frontend message
+
+    /**
+     * Add a frontend message
+     *
+     * @param string $message
+     */
+    public function addFrontendMessage($message)
+    {
+        $this->FrontendMessages->addComment($message);
+    }
+
+    /**
+     * Return the frontend message object
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getFrontendMessages()
+    {
+        return $this->FrontendMessages;
+    }
+
+    /**
+     * Clears the messages and save this status to the database
+     */
+    public function clearFrontendMessages()
+    {
+        $this->FrontendMessages->clear();
     }
 
     //endregion

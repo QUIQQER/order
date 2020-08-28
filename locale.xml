@@ -1144,10 +1144,14 @@
             <en><![CDATA[The email was sent.]]></en>
         </locale>
 
-
         <locale name="erp.comment.order.created">
             <de><![CDATA[Bestellung #[orderId] erstellt]]></de>
             <en><![CDATA[Created order #[orderId]]]></en>
+        </locale>
+
+        <locale name="order.process.product.not.available">
+            <de><![CDATA[Das Produkt [articleNo] [title] ist leider nicht mehr verfügbar.]]></de>
+            <en><![CDATA[The Product [articleNo] [title] is no longer available anymore.]]></en>
         </locale>
     </groups>
 
