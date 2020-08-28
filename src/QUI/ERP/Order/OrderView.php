@@ -329,10 +329,11 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * do nothing, its a view
+     * @return QUI\ERP\Comments|null
      */
     public function getFrontendMessages()
     {
+        return $this->Order->getFrontendMessages();
     }
 
     /**
