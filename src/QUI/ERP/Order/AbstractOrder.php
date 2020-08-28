@@ -1586,7 +1586,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
     //endregion
 
-    //region history
+    //region frontend history
 
     /**
      * Add a feontend message´

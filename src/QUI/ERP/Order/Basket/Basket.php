@@ -44,6 +44,11 @@ class Basket
     protected $hash = null;
 
     /**
+     * @var QUI\ERP\Comments
+     */
+    protected $FrontendMessages = null;
+
+    /**
      * Basket constructor.
      *
      * @param integer|bool $basketId - ID of the basket
@@ -61,8 +66,9 @@ class Basket
             return;
         }
 
-        $this->List            = new ProductList();
-        $this->List->duplicate = true;
+        $this->List             = new ProductList();
+        $this->List->duplicate  = true;
+        $this->FrontendMessages = new QUI\ERP\Comments();
 
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
@@ -176,14 +182,20 @@ class Basket
             $products = [];
         }
 
+        $OrderOrBasket = $this;
+
         try {
-            $this->List->setOrder($this->getOrder());
+            $Order = $this->getOrder();
+            $this->List->setOrder($Order);
+
+            $OrderOrBasket = $Order;
         } catch (QUI\Exception $Exception) {
         }
 
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(
             $this->List,
-            $products
+            $products,
+            $OrderOrBasket
         );
 
         try {
@@ -465,6 +477,38 @@ class Basket
         }
 
         return QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+    }
+
+    //endregion
+
+    //region frontend message
+
+    /**
+     * Add a frontend message
+     *
+     * @param string $message
+     */
+    public function addFrontendMessage($message)
+    {
+        $this->FrontendMessages->addComment($message);
+    }
+
+    /**
+     * Return the frontend message object
+     *
+     * @return null|QUI\ERP\Comments
+     */
+    public function getFrontendMessages()
+    {
+        return $this->FrontendMessages;
+    }
+
+    /**
+     * Clears the messages and save this status to the database
+     */
+    public function clearFrontendMessages()
+    {
+        $this->FrontendMessages->clear();
     }
 
     //endregion

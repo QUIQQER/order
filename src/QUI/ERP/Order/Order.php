@@ -763,7 +763,6 @@ class Order extends AbstractOrder implements OrderInterface
      */
     protected function saveFrontendMessages()
     {
-
         try {
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
