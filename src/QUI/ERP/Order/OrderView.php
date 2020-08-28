@@ -313,4 +313,32 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     //endregion
+
+    /**
+     * do nothing, its a view
+     */
+    protected function saveFrontendMessages()
+    {
+    }
+
+    /**
+     * do nothing, its a view
+     */
+    public function addFrontendMessage($message)
+    {
+    }
+
+    /**
+     * do nothing, its a view
+     */
+    public function getFrontendMessages()
+    {
+    }
+
+    /**
+     * do nothing, its a view
+     */
+    public function clearFrontendMessages()
+    {
+    }
 }
