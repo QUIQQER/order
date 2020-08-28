@@ -1616,7 +1616,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         $this->FrontendMessage->clear();
         $this->saveFrontendMessages();
-
     }
 
     /**
