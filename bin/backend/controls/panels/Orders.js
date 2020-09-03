@@ -110,6 +110,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     break;
             }
 
+            this.$Grid.setAttribute('exportName', this.$TimeFilter.$Select.$placeholderText);
+
             return Orders.search({
                 perPage: this.$Grid.options.perPage,
                 page   : this.$Grid.options.page,
@@ -1070,8 +1072,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 pagination           : true,
                 exportData           : true,
                 exportTypes          : {
-                    csv : 'CSV',
-                    json: 'JSON'
+                    csv : true,
+                    json: true,
+                    xls : true
                 },
 
                 columnModel: this.$getGridColumnModel(),

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<locales>
+<locales xmlns="https://doc.quiqqer.com/xml/quiqqer-quiqqer-locale.xsd">
 
     <groups name="quiqqer/order" datatype="php,js">
         <locale name="package.title">
