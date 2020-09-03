@@ -110,6 +110,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     break;
             }
 
+            this.$Grid.setAttribute('exportName', this.$TimeFilter.$Select.$placeholderText);
+
             return Orders.search({
                 perPage: this.$Grid.options.perPage,
                 page   : this.$Grid.options.page,
