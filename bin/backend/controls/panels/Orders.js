@@ -1070,8 +1070,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 pagination           : true,
                 exportData           : true,
                 exportTypes          : {
-                    csv : 'CSV',
-                    json: 'JSON'
+                    csv : true,
+                    json: true,
+                    xls : true
                 },
 
                 columnModel: this.$getGridColumnModel(),

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<events>
+<events xmlns="https://doc.quiqqer.com/xml/quiqqer-quiqqer-events.xsd">
     <event on="onQuiqqerProductsProductViewButtons"
            fire="\QUI\ERP\Order\EventHandling::onQuiqqerProductsProductViewButtons"
     />
