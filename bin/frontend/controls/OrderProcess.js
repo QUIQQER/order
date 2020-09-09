@@ -679,11 +679,41 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Check / valdate the step
          * html5 validation
          *
+         * @param {boolean} [stepCheck] - optional
          * @return {boolean}
          */
         validateStep: function () {
             // test html5 required
             var Required = this.getElm().getElements('[required]');
+
+            // validate controls
+            var Node = this.$StepContainer.getFirst();
+
+            if (Node.hasClass('quiqqer-order-ordering-step-next')) {
+                Node = Node.getFirst();
+            }
+
+            var Instance = QUI.Controls.getById(Node.get('data-quiid'));
+
+            if (typeof stepCheck === 'undefined') {
+                stepCheck = true;
+            }
+
+            if (stepCheck
+                && Instance
+                && typeof Instance.validate === 'function'
+                && typeof Instance.isValid === 'function'
+            ) {
+                var self = this;
+
+                if (Instance.isValid() === false) {
+                    Instance.validate().then(function () {
+                        self.validateStep(false);
+                    });
+
+                    return false;
+                }
+            }
 
             if (Required.length) {
                 var i, len, Field;
@@ -701,18 +731,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                     // chrome validate message
                     if ("reportValidity" in Field) {
-                        // open customer edit
-                        if (this.getElm().getElement('.quiqqer-order-customerData-container')) {
-                            var quiid    = this.getElm().getElement('.quiqqer-order-customerData-container').get('data-quiid');
-                            var Instance = QUI.Controls.getById(quiid);
-
-                            Instance.openAddressEdit().then(function () {
-                                this.reportValidity();
-                            }.bind(Field));
-
-                            return false;
-                        }
-
                         Field.reportValidity();
                         return false;
                     }

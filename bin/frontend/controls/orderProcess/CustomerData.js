@@ -496,6 +496,19 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             }
 
             return true;
+        },
+
+        /**
+         * validate address
+         *
+         * @return {Promise}
+         */
+        validate: function () {
+            if (this.isValid() === false) {
+                return this.openAddressEdit();
+            }
+
+            return Promise.resolve();
         }
     });
 });
