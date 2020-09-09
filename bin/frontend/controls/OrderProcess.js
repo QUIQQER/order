@@ -682,7 +682,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @param {boolean} [stepCheck] - optional
          * @return {boolean}
          */
-        validateStep: function () {
+        validateStep: function (stepCheck) {
             // test html5 required
             var Required = this.getElm().getElements('[required]');
 
