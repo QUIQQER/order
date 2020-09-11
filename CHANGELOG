@@ -1,4 +1,72 @@
 
+1.1.0
+======
+
+Features
+------
+
+- feat: Order export via Grid Export
+- feat: Integration of statistics
+- feat: Privacy policy, revocation and terms and conditions are order mail attachments now
+- feat: If a user is in the order process, it is checked in regular intervals whether the session is still active.
+- feat: Separate order mail addresses are configurable
+- feat: quiqqer/order#101 Shopping cart back to the store Link is no flexible
+- feat: quiqqer/order#103 - Show message if product is deactivated during the order process
+- feat: quiqqer/stock-management#13 - No more limited products can be added to the shopping cart
+
+Dev Features
+------
+
+- feat: new template event: onQuiqqer::order::orderProcessFinish
+
+Fixes
+------
+
+- fix: quiqqer/order#118 - Grid order details -> net instead of gross; wrong total in the order panel
+- fix: BasketSmall - a previous product is always deleted, the first product cannot be deleted.
+- fix: Sales tax ID input -> Ajax spam and error messages
+- fix: Menu and payment Paypal overlap
+- fix: quiqqer/erp#23 - JS error in step customer data
+- fix: quiqqer/stock-management#10 - String to Array conversion at onTransactionCreate event
+- fix: better payment check at isApproved
+- fix: PHP Fatal error: Class QUI\ERP\Order\OrderView contains 2 abstract methods and must therefore be declared abstract or implement
+- fix: fix -> frontendMessages
+- fix: consider empty currency -> null at order search
+- fix: quantity default = true
+- fix: correctly update temporary invoice on creation
+- fix: onRequest -> always resolve path without host
+- fix: consider script src in tpl events
+- fix: consider timline step count <= 1
+- fix: dont edit order if order is successful
+- fix: dont recalculate a order in process if an order for this order exists
+- fix: create in process if not exists
+- fix: execute script elements in order steps
+- fix: PHP Fatal error: Uncaught Error: Call to a member function getHash() on null
+- fix: quiqqer/order#116 Änderung einer Bestellung durch Kunden nach Abschluss möglich!
+- fix: correctly fire onQuiqqerOrderProcessStatusChange if order status changes
+- fix: calculation vat loosing
+- fix: show loader during open the order panel
+- fix: better pricefactor import at order recalc
+- fix: Call to a member function isSuccessful() on null
+- refactor: requirement -> erp 1.3
+- refactor: check duplicated createOrder in OrderInProcess
+- refactor: added missing (deprecated) constant PAYMENT_STATUS_PLAN
+- refactor: workaround: quiqqer/order#103
+- refactor: onQuiqqerOrderDelete parameter now includes order hash
+- refactor: order recalc at a order only recalc the articles
+- refactor: ->isApproved() now checks if ->isApproved() instead of ->isPaid()
+- refactor: order details -> td -> align top
+- refactor: feat: price factors are deletable now
+- refactor: feat: price factors are deletable now
+- refactor: consider nobody at step inits in OrderProcess
+- refactor: use currency Precision for rounding
+- refactor: feat: set current user address
+- refactor: quiqqer/invoice#66
+- refactor: merge product list method -> Takes a product array and brings together all products that can be brought together
+- refactor: order recalc at a order only recalc the articles
+- refactor: added order & orderInProcess attribute to find out whether the order is currently in creation status
+- refactor: orders in profile -> replace hardcoded string with proper translation
+
 1.0
 ======
 
