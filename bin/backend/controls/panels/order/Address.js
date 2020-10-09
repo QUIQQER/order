@@ -39,6 +39,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             this.$City      = null;
             this.$Country   = null;
 
+            this.$firstname = null;
+            this.$lastname  = null;
+
             this.$loaded = false;
             this.$userId = this.getAttribute('userId');
 
@@ -103,6 +106,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
         getValue: function () {
             return {
                 uid      : this.$userId,
+                firstname: this.$firstname,
+                lastname : this.$lastname,
                 company  : this.$Company.value,
                 street_no: this.$Street.value,
                 zip      : this.$ZIP.value,
@@ -135,6 +140,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
 
             if ("city" in value) {
                 this.$City.value = value.city;
+            }
+
+            if ("firstname" in value) {
+                this.$firstname = value.firstname;
+            }
+
+            if ("lastname" in value) {
+                this.$lastname = value.lastname;
             }
 
             if ("country" in value) {
@@ -249,6 +262,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             this.$Street.value  = data.street_no;
             this.$ZIP.value     = data.zip;
             this.$City.value    = data.city;
+            this.$firstname     = data.firstname;
+            this.$lastname      = data.lastname;
         },
 
         /**
