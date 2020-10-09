@@ -210,13 +210,16 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
             // is the button in a product?
             var fields         = {},
-                ProductElm     = this.getElm().getParent('[data-productid]'),
-                ProductControl = QUI.Controls.getById(ProductElm.get('data-quiid'));
+                ProductElm     = this.getElm().getParent('[data-productid]');
 
-            if (ProductControl && "getFieldControls" in ProductControl) {
-                ProductControl.getFieldControls().each(function (Field) {
-                    fields[Field.getFieldId()] = Field.getValue();
-                });
+            if (ProductElm) {
+                var ProductControl = QUI.Controls.getById(ProductElm.get('data-quiid'));
+
+                if (ProductControl && "getFieldControls" in ProductControl) {
+                    ProductControl.getFieldControls().each(function (Field) {
+                        fields[Field.getFieldId()] = Field.getValue();
+                    });
+                }
             }
 
             Product.setFieldValues(fields).then(function () {
