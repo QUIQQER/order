@@ -619,6 +619,10 @@
             <de><![CDATA[Widerrufsrecht]]></de>
             <en><![CDATA[Cancellation Policy]]></en>
         </locale>
+        <locale name="order.settings.mails.attachments">
+            <de><![CDATA[Dateianhänge]]></de>
+            <en><![CDATA[File attachments]]></en>
+        </locale>
 
         <locale name="order.settings.failedPaymentProcedure,execute">
             <de><![CDATA[Bestellung ausführen]]></de>
