@@ -280,6 +280,7 @@ class Mail
         $privacyPolicy      = (int)$Config->getValue('mails', 'privacyPolicy');
         $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
         $cancellationPolicy = (int)$Config->getValue('mails', 'cancellationPolicy');
+        $attachments        = $Config->getValue('mails', 'attachments');
 
         if ($privacyPolicy) {
             try {
@@ -314,6 +315,20 @@ class Mail
                     $Mail->addAttachment($file);
                 }
             } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if (!empty($attachments)) {
+            $attachments = explode(',', $attachments);
+            $Media       = QUI::getProjectManager()->getStandard()->getMedia();
+
+            foreach ($attachments as $attachment) {
+                try {
+                    $Item = $Media->get($attachment);
+                    $Mail->addAttachment($Item->getFullPath());
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::addAlert('Order mail attachment file error :: '.$Exception->getMessage());
+                }
             }
         }
     }

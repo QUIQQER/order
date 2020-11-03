@@ -42,12 +42,18 @@
                 <conf name="privacyPolicy">
                     <type><![CDATA[string]]></type>
                 </conf>
+
                 <!-- AGB -->
                 <conf name="termsAndConditions">
                     <type><![CDATA[string]]></type>
                 </conf>
+
                 <!-- Cancellation policy -->
                 <conf name="cancellationPolicy">
+                    <type><![CDATA[string]]></type>
+                </conf>
+
+                <conf name="attachments">
                     <type><![CDATA[string]]></type>
                 </conf>
             </section>
@@ -249,7 +255,15 @@
                                 <locale group="quiqqer/order" var="order.settings.mails.cancellationPolicy"/>
                             </text>
                         </input>
-
+                        <input type="text"
+                               data-qui="controls/projects/project/media/Select"
+                               data-qui-options-multiple="1"
+                               conf="mails.attachments"
+                        >
+                            <text>
+                                <locale group="quiqqer/order" var="order.settings.mails.attachments"/>
+                            </text>
+                        </input>
                     </settings>
 
                     <settings title="orderStatusSettings" name="orderStatusSettings">
