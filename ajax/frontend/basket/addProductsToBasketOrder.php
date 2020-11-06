@@ -23,7 +23,7 @@ QUI::$Ajax->registerFunction(
             return;
         }
 
-        $products = \json_decode($products);
+        $products = \json_decode($products, true);
 
         foreach ($products as $product) {
             if (!isset($product['id'])) {
