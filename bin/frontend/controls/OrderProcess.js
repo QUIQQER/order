@@ -460,6 +460,37 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Add multiple products to the order process
+         *
+         * @param {Promise} products
+         */
+        addProducts: function (products) {
+            var self = this;
+
+            if (!this.$Timeline) {
+                return new Promise(function (resolve) {
+                    (function () {
+                        self.addProducts(products).then(resolve);
+                    }).delay(500);
+                });
+            }
+
+            return new Promise(function (resolve, reject) {
+                QUI.fireEvent('onQuiqqerOrderProductAddBegin', [self]);
+
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_addProductsToBasketOrder', function () {
+                    QUI.fireEvent('onQuiqqerOrderProductAdd', [self]);
+                    self.refreshCurrentStep().then(resolve);
+                }, {
+                    'package': 'quiqqer/order',
+                    orderHash: self.getAttribute('orderHash'),
+                    products : JSON.encode(products),
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
          *
          * @param {Integer} pos
          *
