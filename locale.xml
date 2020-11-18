@@ -1394,6 +1394,10 @@
             <de><![CDATA[Zahlungsinformationen]]></de>
             <en><![CDATA[Payment informations]]></en>
         </locale>
+        <locale name="order.payment.panel.payment">
+            <de><![CDATA[Zahlugsart]]></de>
+            <en><![CDATA[Payment method]]></en>
+        </locale>
 
         <locale name="panel.order.category.details">
             <de><![CDATA[Details]]></de>
