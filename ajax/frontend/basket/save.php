@@ -19,8 +19,7 @@ use QUI\System\Log;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_save',
     function ($basketId, $products) {
-        $User = QUI::getUserBySession();
-
+        $User   = QUI::getUserBySession();
         $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
 
         if (!QUI::getUsers()->isNobodyUser($User)) {

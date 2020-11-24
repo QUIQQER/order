@@ -369,7 +369,7 @@ class Basket
      */
     public function getOrder()
     {
-        if ($this->hash === null) {
+        if ($this->hash === null || empty($this->hash)) {
             throw new Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND
