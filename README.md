@@ -75,6 +75,8 @@ Developers
 - quiqqerOrderCustomerDataSave [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
 - quiqqerOrderCustomerDataSaveEnd [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
 
+- quiqqerOrderBasketRemovePos [QUI\ERP\Order\Basket\Basket, pos]
+
 ### Order Events
 
 - onOrderStart [\QUI\ERP\Order\OrderProcess]

@@ -13,7 +13,7 @@
  * @event onClear [self]
  *
  * @event onRefreshBegin [self]
- * @event onRefresh [self]
+ * @event onRefresh [self]f
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -426,16 +426,23 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             var self  = this,
                 index = pos - 1;
 
-            if (typeof this.$products[index] === 'undefined') {
-                return Promise.resolve();
-            }
+            return new Promise(function (resolve) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_removePos', function () {
+                    if (typeof self.$products[index] === 'undefined') {
+                        return resolve();
+                    }
 
-            this.fireEvent('refreshBegin', [this]);
-            this.fireEvent('removeBegin', [this]);
+                    self.fireEvent('refreshBegin', [self]);
+                    self.fireEvent('removeBegin', [self]);
 
-            this.$products.splice(index, 1);
-
-            return self.save().then(function () {
+                    self.$products.splice(index, 1);
+                    self.save().then(resolve);
+                }, {
+                    'package': 'quiqqer/order',
+                    basketId : self.$basketId,
+                    pos      : index
+                });
+            }).then(function () {
                 self.fireEvent('remove', [self]);
                 self.fireEvent('refresh', [self]);
             });
