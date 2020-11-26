@@ -72,7 +72,7 @@
             {if $this->getAttribute('editable')}
 
             {assign var=maxQuantityAttr value=""}
-            {if !isset($product.maximumQuantity) || $product.maximumQuantity}
+            {if isset($product.maximumQuantity) && $product.maximumQuantity && $product.maximumQuantity !== true}
             {assign var=maxQuantityAttr value=" max='{$product.maximumQuantity}'"}
             {/if}
             <label>
