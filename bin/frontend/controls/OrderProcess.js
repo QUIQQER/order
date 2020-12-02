@@ -334,7 +334,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (this.getElm().getElement('[data-qui="package/quiqqer/frontend-users/bin/frontend/controls/login/Login"]')) {
                 return;
             }
-return;
+
             QUIAjax.get('package_quiqqer_order_ajax_frontend_order_isLoggedIn', function (isLoggedIn) {
                 if (!isLoggedIn) {
                     // show login
@@ -730,10 +730,10 @@ return;
                 stepCheck = true;
             }
 
-            if (stepCheck
-                && Instance
-                && typeof Instance.validate === 'function'
-                && typeof Instance.isValid === 'function'
+            if (stepCheck &&
+                Instance &&
+                typeof Instance.validate === 'function' &&
+                typeof Instance.isValid === 'function'
             ) {
                 var self = this;
 
