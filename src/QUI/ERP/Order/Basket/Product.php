@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
+use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Handler\Fields;
 use QUI\ERP\Products\Product\UniqueProduct;
 
@@ -41,7 +42,9 @@ class Product extends UniqueProduct
         foreach ($fields as $fieldId => $fieldValue) {
             $Field = $this->importFieldData($fieldId, $fieldValue);
 
-            if ($Field) {
+            if ($Field instanceof UniqueField) {
+                $fieldList[$Field->getId()] = $Field->getAttributes();
+            } elseif ($Field) {
                 $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
             }
         }
@@ -65,7 +68,9 @@ class Product extends UniqueProduct
             foreach ($attributes['customFields'] as $fieldId => $fieldValue) {
                 $Field = $this->importFieldData($fieldId, $fieldValue);
 
-                if ($Field) {
+                if ($Field instanceof UniqueField) {
+                    $fieldList[$Field->getId()] = $Field->getAttributes();
+                } elseif ($Field) {
                     $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
                 }
             }
@@ -90,11 +95,15 @@ class Product extends UniqueProduct
     /**
      * @param $fieldId
      * @param $fieldValue
-     * @return null|QUI\ERP\Products\Field\Field
+     * @return null|QUI\ERP\Products\Field\Field|UniqueField
      */
     protected function importFieldData($fieldId, $fieldValue)
     {
         try {
+            if (\is_array($fieldValue) && isset($fieldValue['identifier'])) {
+                return new UniqueField($fieldValue['identifier'], $fieldValue);
+            }
+
             if (\is_array($fieldValue) && isset($fieldValue['value'])) {
                 $Field = Fields::getField($fieldValue['id']);
                 $Field->setValue($fieldValue['value']);
