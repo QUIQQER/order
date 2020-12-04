@@ -473,6 +473,7 @@ class Order extends AbstractOrder implements OrderInterface
                 'comments'         => $data['comments'],
                 'history'          => $data['history'],
                 'frontendMessages' => $data['frontendMessages'],
+                'successful'       => $this->successful
             ];
 
             $data = $_data;
