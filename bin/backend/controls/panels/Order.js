@@ -1010,6 +1010,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             });
                         }).then(function () {
                             Win.Loader.show();
+                        }).catch(function (err) {
+                            if (typeof err.getMessage === 'function') {
+                                QUI.getMessageHandler().then(function (MH) {
+                                    MH.addError(err.getMessage());
+                                });
+                            }
+                            Win.Loader.hide();
                         });
                     }
                 }
