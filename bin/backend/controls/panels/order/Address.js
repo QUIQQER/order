@@ -261,7 +261,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             }
 
             var data = JSON.decode(options[0].get('data-value'));
-            
+
             this.$Company.value = data.company;
             this.$Street.value  = data.street_no;
             this.$ZIP.value     = data.zip;
