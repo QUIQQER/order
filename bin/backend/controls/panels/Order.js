@@ -1324,7 +1324,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$ArticleSort.setNormal();
         },
 
-
         /**
          * Opens the product search
          *
@@ -1341,6 +1340,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     'package/quiqqer/erp/bin/backend/controls/articles/Article'
                 ], function (Win, Article) {
                     new Win({
+                        user  : self.$AddressInvoice.getValue(),
                         events: {
                             onSubmit: function (Win, article) {
                                 var Instance = new Article(article);
