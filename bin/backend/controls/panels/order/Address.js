@@ -105,6 +105,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          */
         getValue: function () {
             return {
+                aid      : this.$Addresses.value,
                 uid      : this.$userId,
                 firstname: this.$firstname,
                 lastname : this.$lastname,
