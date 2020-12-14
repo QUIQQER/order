@@ -270,8 +270,16 @@
             <en><![CDATA[The order does not own any articles.]]></en>
         </locale>
         <locale name="message.different,delivery.address">
-            <de><![CDATA[Der Lieferadresse weicht von der Rechnungsadresse ab]]></de>
+            <de><![CDATA[Die Lieferadresse weicht von der Rechnungsadresse ab]]></de>
             <en><![CDATA[The delivery address differs from the billing address.]]></en>
+        </locale>
+        <locale name="dialog.edit.date.title">
+            <de><![CDATA[Ändern des Bestelldatums]]></de>
+            <en><![CDATA[Change the ordered date]]></en>
+        </locale>
+        <locale name="dialog.edit.date.text">
+            <de><![CDATA[Geben Sie bitte ein neues Bestelldatum an.]]></de>
+            <en><![CDATA[Please enter a new order on the date.]]></en>
         </locale>
 
         <locale name="control.productList.add">

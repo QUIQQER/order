@@ -380,6 +380,7 @@ class Order extends AbstractOrder implements OrderInterface
             'invoice_id'   => $invoiceId,
             'status'       => $this->status,
             'successful'   => $this->successful,
+            'c_date'       => $this->getCreateDate(),
 
             'customerId'      => $this->customerId,
             'customer'        => \json_encode($customer),
