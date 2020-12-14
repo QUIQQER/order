@@ -23,12 +23,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'Packages',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.Data.html',
+    'text!package/quiqqer/order/bin/backend/controls/panels/Order.ChangeDate.html',
     'css!package/quiqqer/order/bin/backend/controls/panels/Order.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
              Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker,
              QUIAjax, QUILocale, Mustache, Users, Packages,
-             templateData) {
+             templateData, templateChangeDate) {
     "use strict";
 
     var lg                = 'quiqqer/order';
@@ -56,7 +57,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             '$onDestroy',
             '$onInject',
             '$onOrderDelete',
-            '$showLockMessage'
+            '$showLockMessage',
+            '$editDate'
         ],
 
         options: {
@@ -206,6 +208,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 paymentId      : this.getAttribute('paymentId'),
                 status         : this.getAttribute('status'),
                 shippingStatus : this.getAttribute('shippingStatus'),
+                cDate          : this.getAttribute('cDate'),
                 priceFactors   : this.$serializedList.priceFactors
             };
 
@@ -618,6 +621,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 var TaxId          = Content.getElement('[name="quiqqer.erp.taxId"]');
                 var EUVAT          = Content.getElement('[name="quiqqer.erp.euVatId"]');
                 var DateField      = Content.getElement('[name="date"]');
+                var DateEdit       = Content.getElement('[name="edit-date"]');
                 var OrderedByField = Content.getElement('[name="orderedBy"]');
 
                 var customer = self.getAttribute('customer');
@@ -737,6 +741,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 if (self.getAttribute('cUsername') && self.getAttribute('cUser')) {
                     OrderedByField.value = self.getAttribute('cUsername') + ' (' + self.getAttribute('cUser') + ')';
                 }
+
+                DateEdit.addEvent('click', self.$editDate);
 
                 EUVAT.disabled = false;
                 TaxId.disabled = false;
@@ -1459,6 +1465,52 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
                 }).open();
             });
+        },
+
+        /**
+         * Edit the ordered date
+         */
+        $editDate: function () {
+            var self = this;
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.edit.date.title'),
+                text       : '',
+                information: '',
+                icon       : 'fa fa-calendar',
+                texticon   : 'fa fa-calendar',
+                maxHeight  : 275,
+                maxWidth   : 600,
+                events     : {
+                    onOpen  : function (Win) {
+                        var Content = Win.getContent();
+
+                        Content.addClass('order-edit-date');
+                        Content.set('html', Mustache.render(templateChangeDate, {
+                            text: QUILocale.get(lg, 'dialog.edit.date.text')
+                        }));
+
+                        var D = new Date(self.getAttribute('cDate'));
+                        D.setMinutes(D.getMinutes() - D.getTimezoneOffset());
+
+                        Content.getElement('input').value = D.toISOString().slice(0, 16);
+                        Content.getElement('form').addEvent('submit', function (e) {
+                            e.stop();
+                        });
+                    },
+                    onSubmit: function (Win) {
+                        var Content = Win.getContent();
+                        var value   = Content.getElement('input').value;
+
+                        var D = new Date(value);
+                        var p = D.toISOString().split('T');
+                        var d = p[0] + ' ' + p[1].split('.')[0];
+
+                        self.setAttribute('cDate', d);
+                        self.getBody().getElements('[name="date"]').set('value', d);
+                    }
+                }
+            }).open();
         },
 
         //region shipping

@@ -777,7 +777,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     /**
      * Return the order create date
      *
-     * @return integer
+     * @return string (Y-m-d H:i:s)
      */
     public function getCreateDate()
     {
@@ -1095,6 +1095,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->Customer   = QUI\ERP\User::convertUserToErpUser($User);
             $this->customerId = $this->Customer->getId();
         }
+    }
+
+    /**
+     * @param $date
+     */
+    public function setCreationDate($date)
+    {
+        $date = \strtotime($date);
+        $date = \date('Y-m-d H:i:s', $date);
+
+        $this->setAttribute('c_date', $date);
+        $this->cDate = $date;
     }
 
     /**

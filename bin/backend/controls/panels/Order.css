@@ -69,3 +69,16 @@
     display: inline-block;
     margin-bottom: 10px;
 }
+
+
+/** Order notification
+ ================================================= */
+
+.order-edit-date {
+    padding-top: 3rem !important;
+    text-align: center;
+}
+
+.order-edit-date input {
+    margin-top: 1rem;
+}

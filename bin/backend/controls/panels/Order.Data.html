@@ -220,12 +220,18 @@
                     <span class="field-container-item" title="{{textOrderDate}}">
                         {{textOrderDate}}
                     </span>
-                    <input class="field-container-field"
-                           type="text"
-                           name="date"
-                           value="{{date}}"
-                           disabled
-                    />
+                    <span class="field-container-field field-container-field-no-padding">
+                        <input class=""
+                               type="text"
+                               name="date"
+                               value="{{date}}"
+                               disabled
+                               style="width: calc(100% - 50px); float: left"
+                        />
+                        <button type="button" name="edit-date" class="qui-button" style="width: 50px">
+                            <span class="fa fa-edit"></span>
+                        </button>
+                    </span>
                 </label>
             </td>
         </tr>

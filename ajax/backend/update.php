@@ -29,6 +29,10 @@ QUI::$Ajax->registerFunction(
             $Customer = QUI::getUsers()->get($data['customerId']);
         }
 
+        if (!empty($data['cDate'])) {
+            $Order->setCreationDate($data['cDate']);
+        }
+
         if (!$Customer && isset($data['customer'])) {
             if (isset($data['customerId'])
                 && !isset($data['customer']['id'])
