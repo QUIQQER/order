@@ -1140,8 +1140,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                     text  : QUILocale.get(lg, 'panel.orders.contextMenu.open.user'),
                                     events: {
                                         onClick: function () {
-                                            require(['utils/Panels'], function (PanelUtils) {
-                                                PanelUtils.openUserPanel(rowData.customer_id);
+                                            require([
+                                                'utils/Panels',
+                                                'package/quiqqer/customer/bin/backend/controls/customer/Panel'
+                                            ], function (PanelUtils, CustomerPanel) {
+                                                PanelUtils.openPanelInTasks(
+                                                    new CustomerPanel({
+                                                        userId: rowData.customer_id
+                                                    })
+                                                );
                                             });
                                         }
                                     }
