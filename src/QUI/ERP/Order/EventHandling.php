@@ -102,6 +102,16 @@ class EventHandling
                 exit;
             }
 
+            if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
+                try {
+                    $Order = Handler::getInstance()->getOrderByHash($orderHash);
+                    $CheckoutSite->setAttribute('order::hash', $Order->getHash());
+                    $Rewrite->setSite($CheckoutSite);
+
+                    return;
+                } catch (QUI\Exception $Exception) {
+                }
+            }
 
             $Processing = new Controls\OrderProcess\Processing();
 
