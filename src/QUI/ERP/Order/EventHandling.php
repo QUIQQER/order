@@ -105,6 +105,16 @@ class EventHandling
             if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
                 try {
                     $Order = Handler::getInstance()->getOrderByHash($orderHash);
+
+                    // if order is finished & a order in process & the user is nobody
+                    // we need to create the order
+                    if ($Order instanceof OrderInProcess && $Order->isSuccessful()) {
+                        $OrderInProcess = $Order;
+                        $Order          = $Order->createOrder(QUI::getUsers()->getSystemUser());
+
+                        $OrderInProcess->delete(QUI::getUsers()->getSystemUser());
+                    }
+
                     $CheckoutSite->setAttribute('order::hash', $Order->getHash());
                     $Rewrite->setSite($CheckoutSite);
 
