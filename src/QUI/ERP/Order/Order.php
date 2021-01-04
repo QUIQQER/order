@@ -157,6 +157,7 @@ class Order extends AbstractOrder implements OrderInterface
             'order_id'            => $this->getId(),
             'customer_id'         => $this->customerId,
             'payment_method'      => $payment,
+            'time_for_payment'    => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
             'invoice_address_id'  => $invoiceAddressId,
             'invoice_address'     => $invoiceAddress,
             'delivery_address'    => $deliveryAddress,
