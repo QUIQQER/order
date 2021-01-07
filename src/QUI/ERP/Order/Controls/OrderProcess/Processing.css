@@ -31,6 +31,10 @@
     display: none;
 }
 
+.quiqqer-order-step-payments .quiqqer-order-step-payments-description {
+    margin-bottom: 20px;
+}
+
 .quiqqer-order-ordering-buttons-changePayment {
     display: block;
     margin: 0 auto;

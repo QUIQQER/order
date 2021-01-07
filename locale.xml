@@ -409,6 +409,10 @@
             <de><![CDATA[Zahlungsweise]]></de>
             <en><![CDATA[Payment]]></en>
         </locale>
+        <locale name="ordering.step.title.Payment.description" html="true">
+            <de><![CDATA[Bitte wählen Sie eine Zahlungsweise aus.]]></de>
+            <en><![CDATA[Please select a payment type.]]></en>
+        </locale>
         <locale name="ordering.step.title.Checkout">
             <de><![CDATA[Überprüfen & Bestellen]]></de>
             <en><![CDATA[Checkout & Order]]></en>
