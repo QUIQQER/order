@@ -76,6 +76,7 @@ Developers
 - quiqqerOrderCustomerDataSaveEnd [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
 
 - quiqqerOrderBasketRemovePos [QUI\ERP\Order\Basket\Basket, pos]
+- quiqqerOrderBasketToOrder [QUI\ERP\Order\Basket\BasketOrder, $Order, QUI\ERP\Products\Product\ProductList]
 
 ### Order Events
 

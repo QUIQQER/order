@@ -1002,15 +1002,28 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         Orders.postOrder(self.getAttribute('orderId')).then(function (invoiceId) {
                             require([
                                 'package/quiqqer/invoice/bin/backend/controls/panels/Invoice',
+                                'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoice',
+                                'package/quiqqer/invoice/bin/Invoices',
                                 'utils/Panels'
-                            ], function (InvoicePanel, PanelUtils) {
-                                Win.close();
+                            ], function (InvoicePanel, TemporaryInvoice, Invoices, PanelUtils) {
+                                // invoiceId
+                                Invoices.get(invoiceId).then(function (invoice) {
+                                    var Panel;
+                                    if (invoice.type === 2) {
+                                        Panel = new TemporaryInvoice({
+                                            invoiceId: invoiceId
+                                        });
+                                    } else {
+                                        Panel = new InvoicePanel({
+                                            invoiceId: invoiceId
+                                        });
+                                    }
 
-                                var Panel = new InvoicePanel({
-                                    invoiceId: invoiceId
+                                    PanelUtils.openPanelInTasks(Panel);
+                                    Win.close();
                                 });
 
-                                PanelUtils.openPanelInTasks(Panel);
+
                             }, function () {
                                 Win.close();
                             });

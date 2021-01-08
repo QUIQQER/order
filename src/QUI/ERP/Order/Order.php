@@ -100,8 +100,7 @@ class Order extends AbstractOrder implements OrderInterface
      */
     public function createInvoice($PermissionUser = null)
     {
-        if (Settings::getInstance()->forceCreateInvoice() === false &&
-            $this->isPosted()) {
+        if (Settings::getInstance()->forceCreateInvoice() === false && $this->isPosted()) {
             return $this->getInvoice();
         }
 
@@ -155,8 +154,10 @@ class Order extends AbstractOrder implements OrderInterface
 
         $TemporaryInvoice->setAttributes([
             'order_id'            => $this->getId(),
+            'order_date'          => $this->getCreateDate(),
             'customer_id'         => $this->customerId,
             'payment_method'      => $payment,
+            'time_for_payment'    => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
             'invoice_address_id'  => $invoiceAddressId,
             'invoice_address'     => $invoiceAddress,
             'delivery_address'    => $deliveryAddress,
