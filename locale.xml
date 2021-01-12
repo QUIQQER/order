@@ -1169,6 +1169,19 @@
             <de><![CDATA[Das Produkt [articleNo] [title] ist leider nicht mehr verfügbar.]]></de>
             <en><![CDATA[The Product [articleNo] [title] is no longer available anymore.]]></en>
         </locale>
+
+        <locale name="mail.text.orderConfirmation.title">
+            <de><![CDATA[Bestellbestätigung]]></de>
+            <en><![CDATA[Order confirmation]]></en>
+        </locale>
+        <locale name="mail.text.orderConfirmation.description">
+            <de><![CDATA[
+            Eine Bestellbestätigung wird an den Kunden versendet wenn diese eine Bestellung betätigt hat.
+            ]]></de>
+            <en><![CDATA[
+            An order confirmation is sent to the customer when they have placed an order.
+            ]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

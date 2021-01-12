@@ -6,8 +6,8 @@
 
 namespace QUI\ERP\Order;
 
+use QUI;
 use QUI\ERP\Api\AbstractErpProvider;
-
 use QUI\Controls\Sitemap\Map;
 use QUI\Controls\Sitemap\Item;
 
@@ -73,6 +73,21 @@ class ErpProvider extends AbstractErpProvider
     {
         return [
             new NumberRanges\Order()
+        ];
+    }
+
+    /**
+     * @return array[]
+     */
+    public static function getMailLocale(): array
+    {
+        return [
+            [
+                'title'       => QUI::getLocale()->get('quiqqer/order', 'mail.text.orderConfirmation.title'),
+                'description' => QUI::getLocale()->get('quiqqer/order', 'mail.text.orderConfirmation.description'),
+                'subject'     => ['quiqqer/order', 'order.confirmation.subject'],
+                'content'     => ['quiqqer/order', 'order.confirmation.body']
+            ]
         ];
     }
 }
