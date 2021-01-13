@@ -1774,7 +1774,7 @@
             </ul>
             ]]></de>
             <en><![CDATA[
-            <p>Subject of the order mail. Available variables:</p>
+            <p>Subject of the order E-mail. Available variables:</p>
             <ul>
             <li>orderId</li>
             </ul>
@@ -1790,7 +1790,7 @@
             </ul>
             ]]></de>
             <en><![CDATA[
-            <p>Content of the order e-mail. Available variables:</p>
+            <p>Content of the order E-mail. Available variables:</p>
             <ul>
                 <li>orderId</li>
                 <li>user</li>
