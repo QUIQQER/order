@@ -568,6 +568,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         $customer = $Customer->getAttributes();
         $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
+        if (!$InvoiceAddress->getId()) {
+            $InvoiceAddress = $Customer->getStandardAddress();
+        }
+
         // status
         $status = 0;
 

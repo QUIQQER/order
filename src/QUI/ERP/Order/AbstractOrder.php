@@ -539,6 +539,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $ArticleList->calc();
 
         $this->Articles = $ArticleList;
+        $this->setCustomer($Customer);
         $this->update();
     }
 

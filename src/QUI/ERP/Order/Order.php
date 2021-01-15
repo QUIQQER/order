@@ -147,6 +147,10 @@ class Order extends AbstractOrder implements OrderInterface
             $invoiceAddressId = $this->getInvoiceAddress()->getId();
         }
 
+        if (empty($invoiceAddressId)) {
+            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getId();
+        }
+
         if ($this->getDeliveryAddress()) {
             $deliveryAddress   = $this->getDeliveryAddress()->toJSON();
             $deliveryAddressId = $this->getDeliveryAddress()->getId();
