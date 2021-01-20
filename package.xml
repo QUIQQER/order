@@ -11,6 +11,7 @@
 
         <provider>
             <erp src="\QUI\ERP\Order\ErpProvider"/>
+            <paymentReceiver src="\QUI\ERP\Order\PaymentReceiver"/>
         </provider>
 
     </package>
