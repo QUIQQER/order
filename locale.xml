@@ -1775,13 +1775,33 @@
             <de><![CDATA[
             <p>Betreff der Bestellmail. Verfügbare Variablen:</p>
             <ul>
-            <li>orderId</li>
+                <li><b>[orderId]:</b> Bestell-ID</li>
+                <li><b>[hash]:</b> Bestellungs-Hash</li>
+                <li><b>[date]:</b> Bestellungsdatum</li>
+                <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
+                <li><b>[user]:</b> - Name des Kunden</li>
+                <li><b>[company]:</b> - Firma des Kunden</li>
+                <li><b>[companyOrName]:</b> - Firma des Kunden, falls diese leer ist wird [name] verwendet</li>
+                <li><b>[email]:</b> - E-Mail des Kunden</li>
+                <li><b>[salutation]:</b> - Anrede des Kunden</li>
+                <li><b>[firstname]:</b> - Vorname des Kunden</li>
+                <li><b>[lastname]:</b> - Nachname des Kunden</li>
             </ul>
             ]]></de>
             <en><![CDATA[
             <p>Subject of the order E-mail. Available variables:</p>
             <ul>
-            <li>orderId</li>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - Firstname of the customer/li>
+                <li><b>[lastname]:</b> - Lastname of the customer</li>
             </ul>
             ]]></en>
         </locale>
@@ -1789,17 +1809,33 @@
             <de><![CDATA[
             <p>Inhalt der Bestellmail. Verfügbare Variablen:</p>
             <ul>
-                <li>orderId</li>
-                <li>user</li>
-                <li>username</li>
+                <li><b>[orderId]:</b> Bestell-ID</li>
+                <li><b>[hash]:</b> Bestellungs-Hash</li>
+                <li><b>[date]:</b> Bestellungsdatum</li>
+                <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
+                <li><b>[user]:</b> - Name des Kunden</li>
+                <li><b>[company]:</b> - Firma des Kunden</li>
+                <li><b>[companyOrName]:</b> - Firma des Kunden, falls diese leer ist wird [name] verwendet</li>
+                <li><b>[email]:</b> - E-Mail des Kunden</li>
+                <li><b>[salutation]:</b> - Anrede des Kunden</li>
+                <li><b>[firstname]:</b> - Vorname des Kunden</li>
+                <li><b>[lastname]:</b> - Nachname des Kunden</li>
             </ul>
             ]]></de>
             <en><![CDATA[
             <p>Content of the order E-mail. Available variables:</p>
             <ul>
-                <li>orderId</li>
-                <li>user</li>
-                <li>username</li>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - Firstname of the customer/li>
+                <li><b>[lastname]:</b> - Lastname of the customer</li>
             </ul>
             ]]></en>
         </locale>
