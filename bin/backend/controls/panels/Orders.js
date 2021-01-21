@@ -859,30 +859,28 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             Button.setAttribute('textimage', 'fa fa-spinner fa-spin');
 
-            var hash          = selectedData[0].hash;
-            var paymentMethod = selectedData[0].payment_method;
+            var hash = selectedData[0].hash;
 
             require([
-                'package/quiqqer/order/bin/backend/controls/panels/payments/AddPaymentWindow'
+                'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/AddPaymentWindow'
             ], function (AddPaymentWindow) {
                 new AddPaymentWindow({
-                    hash         : hash,
-                    paymentMethod: paymentMethod,
-                    events       : {
+                    entityId  : selectedData[0]['prefixed-id'],
+                    entityType: 'Order',
+                    events    : {
                         onSubmit: function (Win, data) {
+                            Win.Loader.show();
+
                             self.addPayment(
                                 hash,
                                 data.amount,
                                 data.payment_method,
                                 data.date
                             ).then(function () {
-                                Button.setAttribute('textimage', 'fa fa-money');
-                                self.refresh();
+                                Win.close();
+                            }).catch(function () {
+                                Win.Loader.hide();
                             });
-                        },
-
-                        onClose: function () {
-                            Button.setAttribute('textimage', 'fa fa-money');
                         }
                     }
                 }).open();
@@ -1155,7 +1153,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 })
                             );
 
-                            if (rowData.invoice_id !== '') {
+                            if (rowData.invoice_id !== '' && rowData.invoice_id !== '---') {
                                 Menu.appendChild(
                                     new QUIMenuItem({
                                         icon  : 'fa fa-file-text-o',

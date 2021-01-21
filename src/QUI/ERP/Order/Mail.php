@@ -20,7 +20,7 @@ class Mail
      * confirmation mail for the customer
      *
      * @param Order $Order
-     * @throws QUI\Exception
+     * @throws QUI\Exception|\PHPMailer\PHPMailer\Exception
      */
     public static function sendOrderConfirmationMail(Order $Order)
     {
@@ -52,7 +52,6 @@ class Mail
 
         if (empty($user)) {
             $Address = $Customer->getAddress();
-            $user    = $Address->getName();
         }
 
         // mail
@@ -64,9 +63,11 @@ class Mail
         }
 
         $Mailer->setSubject(
-            QUI::getLocale()->get('quiqqer/order', 'order.confirmation.subject', [
-                'orderId' => $Order->getPrefixedId()
-            ])
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'order.confirmation.subject',
+                self::getOrderLocaleVar($Order, $Customer)
+            )
         );
 
         self::addOrderMailAttachments($Mailer);
@@ -120,11 +121,11 @@ class Mail
             'Articles' => $Articles,
             'Address'  => $Address,
 
-            'message' => QUI::getLocale()->get('quiqqer/order', 'order.confirmation.body', [
-                'orderId'  => $Order->getPrefixedId(),
-                'user'     => $user,
-                'username' => $Customer->getUsername(),
-            ])
+            'message' => QUI::getLocale()->get(
+                'quiqqer/order',
+                'order.confirmation.body',
+                self::getOrderLocaleVar($Order, $Customer)
+            )
         ]);
 
         $Mailer->setBody(
@@ -180,9 +181,11 @@ class Mail
         $Mailer->addRecipient($email);
 
         $Mailer->setSubject(
-            QUI::getLocale()->get('quiqqer/order', 'order.confirmation.admin.subject', [
-                'orderId' => $Order->getPrefixedId()
-            ])
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'order.confirmation.admin.subject',
+                self::getOrderLocaleVar($Order, $Customer)
+            )
         );
 
         self::addOrderMailAttachments($Mailer);
@@ -381,4 +384,118 @@ class Mail
             $Mailer->addBCC($orderMails);
         }
     }
+
+    //region mail helper
+
+    /**
+     * @param OrderInterface|Order|OrderInProcess $Order
+     * @param $Customer
+     * @return array
+     */
+    protected static function getOrderLocaleVar(OrderInterface $Order, $Customer): array
+    {
+        $Address = $Customer->getAddress();
+
+        // customer name
+        $user = $Customer->getName();
+        $user = \trim($user);
+
+        if (empty($user)) {
+            $user = $Address->getName();
+        }
+
+        // email
+        $email = $Customer->getAttribute('email');
+
+        if (empty($email)) {
+            $mailList = $Address->getMailList();
+
+            if ($mailList[0]) {
+                $email = $mailList[0];
+            }
+        }
+
+
+        return [
+            'orderId'       => $Order->getId(),
+            'hash'          => $Order->getAttribute('hash'),
+            'date'          => self::dateFormat($Order->getAttribute('date')),
+            'systemCompany' => self::getCompanyName(),
+            'user'          => $user,
+            'name'          => $user,
+            'company'       => $Customer->getStandardAddress()->getAttribute('company'),
+            'companyOrName' => self::getCompanyOrName($Customer),
+            'address'       => $Address->render(),
+            'email'         => $email,
+            'salutation'    => $Address->getAttribute('salutation'),
+            'firstname'     => $Address->getAttribute('firstname'),
+            'lastname'      => $Address->getAttribute('lastname')
+        ];
+    }
+
+    /**
+     * @param $date
+     * @return false|string
+     */
+    public static function dateFormat($date)
+    {
+        // date
+        $localeCode = QUI::getLocale()->getLocalesByLang(
+            QUI::getLocale()->getCurrent()
+        );
+
+        $Formatter = new \IntlDateFormatter(
+            $localeCode[0],
+            \IntlDateFormatter::SHORT,
+            \IntlDateFormatter::NONE
+        );
+
+        if (!$date) {
+            $date = \time();
+        } else {
+            $date = \strtotime($date);
+        }
+
+        return $Formatter->format($date);
+    }
+
+    /**
+     * @param QUI\ERP\User $Customer
+     * @return string
+     */
+    protected static function getCompanyOrName(QUI\ERP\User $Customer): string
+    {
+        $Address = $Customer->getStandardAddress();
+
+        if (!empty($Address->getAttribute('company'))) {
+            return $Address->getAttribute('company');
+        }
+
+        return $Customer->getName();
+    }
+
+    /**
+     * Return the company name of the quiqqer system
+     *
+     * @return string
+     */
+    protected static function getCompanyName(): string
+    {
+        try {
+            $Conf    = QUI::getPackage('quiqqer/erp')->getConfig();
+            $company = $Conf->get('company', 'name');
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            return '';
+        }
+
+        if (empty($company)) {
+            return '';
+        }
+
+        return $company;
+    }
+
+    //endregion
 }

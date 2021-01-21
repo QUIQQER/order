@@ -27,7 +27,7 @@
         "quiqqer\/products": "*",
         "quiqqer\/payments": "*",
         "quiqqer\/tax": "*",
-        "quiqqer\/payment-transactions": "*",
+        "quiqqer\/payment-transactions": "^1|dev-master|dev-dev",
         "quiqqer\/fontawesome": ">=4.5|dev-master|dev-dev",
         "ramsey\/uuid": "3.*",
         "npm-asset\/navigo": "5.*",
