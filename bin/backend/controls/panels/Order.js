@@ -730,8 +730,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                                  .getElements('.closable')
-                                  .setStyle('display', null);
+                        .getElements('.closable')
+                        .setStyle('display', null);
                 }
 
                 if (self.getAttribute('cDate')) {
@@ -840,14 +840,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             return this.$closeCategory().then(function (Container) {
                 return new Promise(function (resolve) {
                     require([
-                        'package/quiqqer/order/bin/backend/controls/panels/order/Payments'
-                    ], function (Payments) {
-                        new Payments({
-                            Panel   : self,
-                            hash    : self.getAttribute('hash'),
-                            disabled: self.$locked,
-                            events  : {
-                                onLoad: resolve
+                        'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/TransactionList'
+                    ], function (TransactionList) {
+                        new TransactionList({
+                            Panel     : self,
+                            hash      : self.getAttribute('hash'),
+                            entityType: 'Order',
+                            disabled  : self.$locked,
+                            events    : {
+                                onLoad          : resolve,
+                                onAddTransaction: function (data, Control) {
+                                    Orders.addPaymentToOrder(
+                                        self.getAttribute('hash'),
+                                        data.amount,
+                                        data.payment_method,
+                                        data.date
+                                    ).then(function () {
+                                        Control.refresh();
+                                    });
+                                }
                             }
                         }).inject(Container);
                     });

@@ -319,6 +319,11 @@
 
     <groups name="quiqqer/order" datatype="php">
 
+        <locale name="PaymentReceiver.Order.title">
+            <de><![CDATA[Bestellung]]></de>
+            <en><![CDATA[Order]]></en>
+        </locale>
+
         <locale name="controls.UsedOrders.Article.buy_again">
             <de><![CDATA[Nochmal kaufen]]></de>
             <en><![CDATA[Buy again]]></en>
