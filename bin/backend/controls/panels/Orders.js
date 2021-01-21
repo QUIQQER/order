@@ -1155,7 +1155,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 })
                             );
 
-                            if (rowData.invoice_id !== '') {
+                            if (rowData.invoice_id !== '' && rowData.invoice_id !== '---') {
                                 Menu.appendChild(
                                     new QUIMenuItem({
                                         icon  : 'fa fa-file-text-o',
