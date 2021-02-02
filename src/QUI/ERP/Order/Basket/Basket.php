@@ -29,9 +29,9 @@ class Basket
     /**
      * List of products
      *
-     * @var QUI\ERP\Products\Product\ProductList
+     * @var QUI\ERP\Products\Product\ProductList|null
      */
-    protected $List = [];
+    protected $List = null;
 
     /**
      * @var QUI\Interfaces\Users\User
