@@ -201,4 +201,14 @@ class PaymentReceiver implements PaymentReceiverInterface
             return false;
         }
     }
+
+    /**
+     * Get the current payment status of the ERP object
+     *
+     * @return int - One of \QUI\ERP\Constants::PAYMENT_STATUS_*
+     */
+    public function getPaymentStatus()
+    {
+        return (int)$this->Order->getAttribute('paid_status');
+    }
 }
