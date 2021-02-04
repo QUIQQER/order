@@ -446,17 +446,8 @@ class Search extends Singleton
         $Locale              = QUI::getLocale();
         $Transactions        = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
         $shippingIsInstalled = QUI::getPackageManager()->isInstalled('quiqqer/shipping');
-
-        $localeCode = QUI::getLocale()->getLocalesByLang(
-            QUI::getLocale()->getCurrent()
-        );
-
-        $DateFormatter = new \IntlDateFormatter(
-            $localeCode[0],
-            \IntlDateFormatter::SHORT,
-            \IntlDateFormatter::MEDIUM
-        );
-
+        $defaultTimeFormat   = QUI\ERP\Defaults::getTimestampFormat();
+        
         // helper
         $needleFields = [
             'invoice_id',
@@ -561,8 +552,9 @@ class Search extends Singleton
             }
 
             if (empty($orderData['c_date'])) {
-                $orderData['c_date'] = $DateFormatter->format(
-                    \strtotime($Order->getCreateDate())
+                $orderData['c_date'] = $Locale->formatDate(
+                    \strtotime($Order->getCreateDate()),
+                    $defaultTimeFormat
                 );
             }
 
