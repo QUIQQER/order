@@ -273,6 +273,11 @@ class BasketOrder
             $products = OrderProductUtils::getMergedProductList($products);
         }
 
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderBasketToOrderBegin',
+            [$this, $this->Order, &$products]
+        );
+
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(
             $this->List,
             $products,
