@@ -220,7 +220,7 @@ class UserOrders extends Control implements ControlInterface
                 $Article->getArticleNo()
             );
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
+            QUI\System\Log::addDebug($Exception->getMessage());
         }
 
         if (!empty($Product)) {
