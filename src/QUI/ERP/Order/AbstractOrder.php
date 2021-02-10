@@ -850,6 +850,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         if ($this->Customer) {
+            $Address = $this->Customer->getStandardAddress();
+
+            if (!$Address->getId()) {
+                $this->Customer->setAddress(
+                    new QUI\ERP\Address($this->addressInvoice, $this->Customer)
+                );
+            }
+
             return $this->Customer;
         }
 
