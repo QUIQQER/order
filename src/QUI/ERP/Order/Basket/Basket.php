@@ -130,7 +130,7 @@ class Basket
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->List->count();
     }
@@ -142,7 +142,7 @@ class Basket
      *
      * @return ProductList
      */
-    public function getProducts()
+    public function getProducts(): ?ProductList
     {
         return $this->List;
     }
@@ -265,7 +265,7 @@ class Basket
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
@@ -335,7 +335,7 @@ class Basket
      *
      * @return string
      */
-    public function getHash()
+    public function getHash(): ?string
     {
         return $this->hash;
     }
@@ -345,7 +345,7 @@ class Basket
      *
      * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         if (empty($this->hash)) {
             return false;
@@ -464,7 +464,7 @@ class Basket
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    protected function createNewOrder()
+    protected function createNewOrder(): QUI\ERP\Order\OrderInProcess
     {
         $Orders = QUI\ERP\Order\Handler::getInstance();
         $User   = QUI::getUserBySession();
@@ -488,7 +488,7 @@ class Basket
      *
      * @param string $message
      */
-    public function addFrontendMessage($message)
+    public function addFrontendMessage(string $message)
     {
         $this->FrontendMessages->addComment($message);
     }
@@ -498,7 +498,7 @@ class Basket
      *
      * @return null|QUI\ERP\Comments
      */
-    public function getFrontendMessages()
+    public function getFrontendMessages(): ?QUI\ERP\Comments
     {
         return $this->FrontendMessages;
     }

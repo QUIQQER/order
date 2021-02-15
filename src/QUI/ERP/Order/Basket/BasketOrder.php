@@ -140,7 +140,7 @@ class BasketOrder
      *
      * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -162,7 +162,7 @@ class BasketOrder
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->List->count();
     }
@@ -238,7 +238,7 @@ class BasketOrder
      * @throws QUI\Exception
      * @throws QUI\Permissions\Exception
      */
-    public function removePosition($pos)
+    public function removePosition(int $pos)
     {
         if (!$this->hasOrder()) {
             return;
@@ -333,7 +333,7 @@ class BasketOrder
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
@@ -417,7 +417,7 @@ class BasketOrder
      *
      * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         return true;
     }
@@ -479,7 +479,7 @@ class BasketOrder
      *
      * @param string $message
      */
-    public function addFrontendMessage($message)
+    public function addFrontendMessage(string $message)
     {
         $this->FrontendMessages->addComment($message);
     }
@@ -489,7 +489,7 @@ class BasketOrder
      *
      * @return null|QUI\ERP\Comments
      */
-    public function getFrontendMessages()
+    public function getFrontendMessages(): ?QUI\ERP\Comments
     {
         return $this->FrontendMessages;
     }
