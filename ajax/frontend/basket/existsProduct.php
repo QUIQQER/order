@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
 
             return true;
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
+            QUI\System\Log::addDebug($Exception->getMessage());
         }
 
         return false;
