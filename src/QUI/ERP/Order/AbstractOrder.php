@@ -444,7 +444,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
+        try {
+            QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage());
+        }
+        
 
         if ($this->isApproved()) {
             QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
