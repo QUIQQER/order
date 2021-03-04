@@ -69,12 +69,14 @@
         <td class="quiqqer-order-basket-articles-article-quantity"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.quantity'}"
         >
-            {if $this->getAttribute('editable')}
-
+            {assign var=maxQuantity value=""}
             {assign var=maxQuantityAttr value=""}
             {if isset($product.maximumQuantity) && $product.maximumQuantity && $product.maximumQuantity !== true}
             {assign var=maxQuantityAttr value=" max='{$product.maximumQuantity}'"}
+            {assign var=maxQuantity value=(int)$product.maximumQuantity}
             {/if}
+
+            {if $this->getAttribute('editable') && $maxQuantity != 1}
             <label>
                 <input type="number"
                        name="quantity"
@@ -84,7 +86,9 @@
                 />
             </label>
             {else}
-            {$product.quantity}
+            <div class="quiqqer-order-basket-articles-article-quantity-value">
+                {$product.quantity}
+            </div>
             {/if}
         </td>
         <td class="quiqqer-order-basket-articles-article-price"
