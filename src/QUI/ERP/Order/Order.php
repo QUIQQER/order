@@ -785,4 +785,27 @@ class Order extends AbstractOrder implements OrderInterface
             ]);
         }
     }
+
+    /**
+     * Set the successful status to the order
+     * is overwritten here, because the order in process checks if there is an order.
+     * if so, do not fire the event quiqqerOrderSuccessful twice, the order already fires this
+     *
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    public function setSuccessfulStatus()
+    {
+        $currentStatus = $this->successful;
+
+        parent::setSuccessfulStatus();
+
+        if (!$currentStatus) {
+            try {
+                QUI::getEvents()->fireEvent('quiqqerOrderSuccessfulCreated', [$this]);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+        }
+    }
 }

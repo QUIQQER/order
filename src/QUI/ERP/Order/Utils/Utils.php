@@ -29,7 +29,7 @@ class Utils
      *
      * @throws QUI\ERP\Order\Exception
      */
-    public static function getOrderProcess(QUI\Projects\Project $Project)
+    public static function getOrderProcess(QUI\Projects\Project $Project): QUI\Projects\Site
     {
         $sites = $Project->getSites([
             'where' => [
@@ -56,7 +56,7 @@ class Utils
      *
      * @throws QUI\ERP\Order\Exception
      */
-    public static function getShoppingCart(QUI\Projects\Project $Project)
+    public static function getShoppingCart(QUI\Projects\Project $Project): QUI\Projects\Site
     {
         $sites = $Project->getSites([
             'where' => [
@@ -81,7 +81,7 @@ class Utils
      *
      * @throws QUI\ERP\Order\Exception
      */
-    public static function getCheckout(QUI\Projects\Project $Project)
+    public static function getCheckout(QUI\Projects\Project $Project): QUI\Projects\Site
     {
         return self::getOrderProcess($Project);
     }
@@ -96,7 +96,7 @@ class Utils
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
-    public static function getOrderProcessUrl(QUI\Projects\Project $Project, $Step = null)
+    public static function getOrderProcessUrl(QUI\Projects\Project $Project, $Step = null): ?string
     {
         if (self::$url === null) {
             self::$url = self::getOrderProcess($Project)->getUrlRewritten();
@@ -120,7 +120,7 @@ class Utils
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
-    public static function getOrderProcessUrlForHash(QUI\Projects\Project $Project, $hash)
+    public static function getOrderProcessUrlForHash(QUI\Projects\Project $Project, $hash): string
     {
         $url = self::getOrderProcessUrl($Project);
 
@@ -133,7 +133,7 @@ class Utils
      *
      * @return string
      */
-    public static function getOrderUrl(QUI\Projects\Project $Project, $Order)
+    public static function getOrderUrl(QUI\Projects\Project $Project, $Order): string
     {
         if (!($Order instanceof QUI\ERP\Order\Order) &&
             !($Order instanceof QUI\ERP\Order\OrderView) &&
@@ -156,7 +156,7 @@ class Utils
      *
      * @return string
      */
-    public static function getOrderProfileUrl(QUI\Projects\Project $Project, $Order)
+    public static function getOrderProfileUrl(QUI\Projects\Project $Project, $Order): string
     {
         if (!($Order instanceof QUI\ERP\Order\Order) &&
             !($Order instanceof QUI\ERP\Order\OrderView) &&
@@ -206,7 +206,7 @@ class Utils
      *
      * @return string
      */
-    public static function getOrderPrefix()
+    public static function getOrderPrefix(): string
     {
         try {
             $Package = QUI::getPackage('quiqqer/order');
@@ -239,7 +239,7 @@ class Utils
      */
     public static function isPaymentChangeable(
         QUI\ERP\Accounting\Payments\Types\PaymentInterface $Payment
-    ) {
+    ): bool {
         $Settings = QUI\ERP\Order\Settings::getInstance();
 
         return (bool)$Settings->get('paymentChangeable', $Payment->getId());
@@ -256,7 +256,7 @@ class Utils
         QUI\ERP\Products\Product\ProductList $List,
         $products = [],
         $Order = null
-    ) {
+    ): QUI\ERP\Products\Product\ProductList {
         if (!\is_array($products)) {
             $products = [];
         }
@@ -300,8 +300,6 @@ class Utils
 
 
             try {
-                $Product = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
-
                 // check if active
                 $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
 
@@ -326,6 +324,8 @@ class Utils
                     continue;
                 }
 
+                $Product = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
+
                 if (isset($productData['quantity'])) {
                     $Product->setQuantity($productData['quantity']);
                 }
@@ -347,7 +347,7 @@ class Utils
      * @param $product
      * @return array
      */
-    public static function getCompareProductArray($product)
+    public static function getCompareProductArray($product): array
     {
         $compare = [];
         $needles = [
@@ -378,7 +378,7 @@ class Utils
      * @param $products
      * @return array
      */
-    public static function getMergedProductList($products)
+    public static function getMergedProductList($products): array
     {
         $newProductList  = [];
         $getProductIndex = function ($product) use (&$newProductList) {

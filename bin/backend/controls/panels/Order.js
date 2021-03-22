@@ -243,6 +243,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         $onCreate: function () {
             var self = this;
 
+            self.Loader.show();
+
             this.$AddProduct = new QUIButtonMultiple({
                 textimage: 'fa fa-plus',
                 text     : QUILocale.get(lg, 'panel.order.button.buttonAdd'),
@@ -436,6 +438,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          */
         $onInject: function () {
             var self = this;
+
+            this.Loader.show();
 
             Locker.isLocked(
                 this.$getLockKey(),

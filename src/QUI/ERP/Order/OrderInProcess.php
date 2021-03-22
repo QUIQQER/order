@@ -480,7 +480,15 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         try {
             QUI::getEvents()->fireEvent('quiqqerOrderCreated', [$Order]);
         } catch (\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
+            QUI\System\Log::addError($Exception->getMessage());
+        }
+
+        if ($Order->isSuccessful()) {
+            try {
+                QUI::getEvents()->fireEvent('quiqqerOrderSuccessfulCreated', [$Order]);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
         }
 
         $this->delete();

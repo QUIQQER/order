@@ -942,23 +942,30 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }];
 
             columns = columns.concat([{
-                header   : QUILocale.get(lg, 'grid.customerNo'),
-                dataIndex: 'customer_id',
-                dataType : 'integer',
-                width    : 100,
-                className: 'clickable'
-            }, {
                 header   : QUILocale.get('quiqqer/system', 'name'),
                 dataIndex: 'customer_name',
                 dataType : 'string',
-                width    : 130,
+                width    : 200,
                 className: 'clickable',
                 sortable : false
+            }, {
+                header   : QUILocale.get(lg, 'grid.customerNo'),
+                dataIndex: 'customer_id',
+                dataType : 'integer',
+                width    : 90,
+                className: 'clickable'
             }, {
                 header   : QUILocale.get(lg, 'grid.orderDate'),
                 dataIndex: 'c_date',
                 dataType : 'date',
                 width    : 140
+            }, {
+                header   : QUILocale.get(lg, 'grid.sum'),
+                dataIndex: 'display_sum',
+                dataType : 'currency',
+                width    : 100,
+                className: 'payment-status-amountCell',
+                sortable : false
             }, {
                 header   : QUILocale.get(lg, 'grid.netto'),
                 dataIndex: 'display_nettosum',
@@ -969,13 +976,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }, {
                 header   : QUILocale.get(lg, 'grid.vat'),
                 dataIndex: 'display_vatsum',
-                dataType : 'currency',
-                width    : 100,
-                className: 'payment-status-amountCell',
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.sum'),
-                dataIndex: 'display_sum',
                 dataType : 'currency',
                 width    : 100,
                 className: 'payment-status-amountCell',

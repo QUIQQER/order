@@ -22,7 +22,7 @@ class BasketGuest
      *
      * @var QUI\ERP\Products\Product\ProductList
      */
-    protected $List = [];
+    protected $List = null;
 
     /**
      * Basket constructor.
@@ -45,7 +45,7 @@ class BasketGuest
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->List->count();
     }
@@ -57,7 +57,7 @@ class BasketGuest
      *
      * @return ProductList
      */
-    public function getProducts()
+    public function getProducts(): ?ProductList
     {
         return $this->List;
     }
@@ -146,7 +146,7 @@ class BasketGuest
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
@@ -203,7 +203,7 @@ class BasketGuest
      *
      * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         return false;
     }
