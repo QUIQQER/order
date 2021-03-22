@@ -410,7 +410,7 @@ class Mail
         if (empty($email)) {
             $mailList = $Address->getMailList();
 
-            if ($mailList[0]) {
+            if (isset($mailList[0])) {
                 $email = $mailList[0];
             }
         }
