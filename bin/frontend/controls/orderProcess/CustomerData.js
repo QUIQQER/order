@@ -369,6 +369,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 position: 'relative'
             };
 
+            VatId.getElement('input').setStyle('display', null);
+            Company.getElement('input').setStyle('display', null);
+
             Company.setStyles(styles);
             VatId.setStyles(styles);
 
@@ -389,7 +392,14 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     padding: 0,
                     opacity: 0
                 }, {
-                    duration: 250
+                    duration: 250,
+                    callback: function () {
+                        VatId.getElement('input').setStyle('display', 'none');
+                        Company.getElement('input').setStyle('display', 'none');
+
+                        VatId.setStyle('display', 'none');
+                        Company.setStyle('display', 'none');
+                    }
                 });
             }
 
@@ -482,6 +492,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
                 for (i = 0, len = Required.length; i < len; i++) {
                     Field = Required[i];
+
+                    if (Field.getStyle('display') === 'none') {
+                        continue;
+                    }
 
                     if (!("checkValidity" in Field)) {
                         continue;
