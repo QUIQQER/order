@@ -756,6 +756,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         continue;
                     }
 
+                    if (Field.getStyle('display') === 'none') {
+                        continue;
+                    }
+                    
                     if (Field.checkValidity()) {
                         continue;
                     }
