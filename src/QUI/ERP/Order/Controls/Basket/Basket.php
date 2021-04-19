@@ -65,8 +65,11 @@ class Basket extends QUI\Control
      * @return string
      * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
+        $ProductsLocale = QUI\ERP\Products\Handler\Products::getLocale();
+        QUI\ERP\Products\Handler\Products::setLocale(QUI::getLocale());
+
         $Engine   = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts();
 
@@ -76,6 +79,8 @@ class Basket extends QUI\Control
 
         $View              = $Products->getView(QUI::getLocale());
         $showArticleNumber = QUI\ERP\Order\Settings::getInstance()->get('orderProcess', 'showArticleNumberInBasket');
+
+        QUI\ERP\Products\Handler\Products::setLocale($ProductsLocale);
 
         $Engine->assign([
             'data'              => $View->toArray(),
@@ -112,7 +117,7 @@ class Basket extends QUI\Control
     /**
      * @return bool
      */
-    public function isGuest()
+    public function isGuest(): bool
     {
         return QUI::getUsers()->isNobodyUser(QUI::getUserBySession());
     }
@@ -120,7 +125,7 @@ class Basket extends QUI\Control
     /**
      * @return bool
      */
-    public function isLoading()
+    public function isLoading(): bool
     {
         return $this->getAttribute('isLoading');
     }
@@ -142,7 +147,7 @@ class Basket extends QUI\Control
      *
      * @throws QUI\Exception
      */
-    protected function getProject()
+    protected function getProject(): QUI\Projects\Project
     {
         if ($this->Project === null) {
             $this->Project = QUI::getProjectManager()->get();
