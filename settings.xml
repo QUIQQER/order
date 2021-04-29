@@ -6,7 +6,7 @@
             <section name="order">
                 <conf name="failedPaymentProcedure">
                     <type><![CDATA[string]]></type>
-                    <defaultvalue>execute</defaultvalue>
+                    <defaultvalue>returning</defaultvalue>
                 </conf>
                 <conf name="prefix">
                     <type><![CDATA[string]]></type>
@@ -18,7 +18,7 @@
                 </conf>
                 <conf name="autoInvoicePost">
                     <type><![CDATA[bool]]></type>
-                    <defaultvalue>1</defaultvalue>
+                    <defaultvalue>0</defaultvalue>
                 </conf>
                 <conf name="orderAdminMails">
                     <type><![CDATA[string]]></type>
@@ -29,7 +29,7 @@
                 </conf>
                 <conf name="sendOrderConfirmationToAdmin">
                     <type><![CDATA[bool]]></type>
-                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                    <defaultvalue><![CDATA[0]]></defaultvalue>
                 </conf>
                 <conf name="sendAdminOrderConfirmation">
                     <type><![CDATA[bool]]></type>

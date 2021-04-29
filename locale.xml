@@ -633,8 +633,8 @@
             <en><![CDATA[Privacy Policy]]></en>
         </locale>
         <locale name="order.settings.mails.cancellationPolicy">
-            <de><![CDATA[Widerrufsrecht]]></de>
-            <en><![CDATA[Cancellation Policy]]></en>
+            <de><![CDATA[Widerrufsrecht (Nur B2C)]]></de>
+            <en><![CDATA[Cancellation Policy (Only B2C)]]></en>
         </locale>
         <locale name="order.settings.mails.attachments">
             <de><![CDATA[Dateianhänge]]></de>
