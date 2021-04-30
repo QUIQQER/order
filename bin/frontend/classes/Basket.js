@@ -408,6 +408,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                             resolve();
                             self.fireEvent('refresh', [self]);
                             self.fireEvent('add', [self, Product]);
+                        }).catch(function (err) {
+                            console.error(err);
+
+                            resolve();
                         });
                     });
                 });

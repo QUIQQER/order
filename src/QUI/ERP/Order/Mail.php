@@ -70,7 +70,7 @@ class Mail
             )
         );
 
-        self::addOrderMailAttachments($Mailer);
+        self::addOrderMailAttachments($Mailer, $Order);
 
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $OrderControl->getOrder();
@@ -188,7 +188,7 @@ class Mail
             )
         );
 
-        self::addOrderMailAttachments($Mailer);
+        self::addOrderMailAttachments($Mailer, $Order);
 
 
         try {
@@ -265,12 +265,15 @@ class Mail
 
     /**
      * Add the order mail attachments to the
-     * like privacy policy, terms and condition and cacellation policy
+     * like privacy policy, terms and condition and cancellation policy
      *
      * @param QUI\Mail\Mailer $Mail
+     * @param OrderInterface $Order
      */
-    protected static function addOrderMailAttachments(QUI\Mail\Mailer $Mail)
-    {
+    protected static function addOrderMailAttachments(
+        QUI\Mail\Mailer $Mail,
+        OrderInterface $Order
+    ) {
         // check if html2pdf is installed
         if (QUI::getPackageManager()->isInstalled('quiqqer/htmltopdf') === false) {
             return;
@@ -284,6 +287,7 @@ class Mail
         $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
         $cancellationPolicy = (int)$Config->getValue('mails', 'cancellationPolicy');
         $attachments        = $Config->getValue('mails', 'attachments');
+        $Customer           = $Order->getCustomer();
 
         if ($privacyPolicy) {
             try {
@@ -309,7 +313,7 @@ class Mail
             }
         }
 
-        if ($cancellationPolicy) {
+        if ($cancellationPolicy && !$Customer->isCompany()) {
             try {
                 $Site = QUI\ERP\Utils\Sites::getRevocation();
 

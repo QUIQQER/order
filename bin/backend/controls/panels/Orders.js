@@ -304,6 +304,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             this.$Search = new Element('input', {
+                type       : 'search',
                 placeholder: 'Search...', // #locale
                 styles     : {
                     'float': 'right',

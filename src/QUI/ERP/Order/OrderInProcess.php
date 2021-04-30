@@ -73,9 +73,21 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             }
         }
 
-        $this->setDataBaseData(
-            Handler::getInstance()->getOrderProcessData($this->getId())
-        );
+        $data = Handler::getInstance()->getOrderProcessData($this->getId());
+
+        // update customer data
+        if (isset($data['customer'])) {
+            try {
+                $customer = \json_decode($data['customer'], true);
+                $User     = QUI::getUsers()->get($customer['id']);
+
+                $customer['lang'] = $User->getLang();
+                $data['customer'] = \json_encode($customer);
+            } catch (\Exception $Exception) {
+            }
+        }
+
+        $this->setDataBaseData($data);
     }
 
     /**
