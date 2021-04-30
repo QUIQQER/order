@@ -179,6 +179,32 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 count = null,
                 size  = this.getElm().getSize();
 
+            var fields     = {},
+                ProductElm = this.getElm().getParent('[data-productid]');
+
+            if (ProductElm) {
+                // check require fields
+                var required = ProductElm.getElements('.product-data-fieldlist [required]');
+
+                if (required) {
+                    for (var i = 0, len = required.length; i < len; i++) {
+                        if (!required[i].checkValidity()) {
+                            self.enableQuantityButton();
+                            self.$Label.setStyle('visibility', 'visible');
+                            self.addingInProcess = false;
+
+                            required[i].focus();
+
+                            // chrome validate message
+                            if ("reportValidity" in required[i]) {
+                                required[i].reportValidity();
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
             if (this.$Input) {
                 count = parseInt(this.$Input.value);
             }
@@ -209,8 +235,6 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             });
 
             // is the button in a product?
-            var fields         = {},
-                ProductElm     = this.getElm().getParent('[data-productid]');
 
             if (ProductElm) {
                 var ProductControl = QUI.Controls.getById(ProductElm.get('data-quiid'));
@@ -248,13 +272,41 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                             Loader.destroy();
 
                             // go to checkout
-
                         }
                     });
 
                     self.getElm().removeClass('disabled');
 
                 }).delay(1000);
+            }.bind(this)).catch(function (err) {
+                var Span = Loader.getElement('span');
+
+                Span.removeClass('fa-spinner');
+                Span.removeClass('fa-spin');
+
+                Span.addClass('error');
+                Span.addClass('fa-bolt');
+
+                (function () {
+                    self.enableQuantityButton();
+                    self.$Label.setStyle('visibility', 'visible');
+
+                    moofx(Loader).animate({
+                        opacity: 0
+                    }, {
+                        duration: 300,
+                        callback: function () {
+                            self.addingInProcess = false;
+                            Loader.destroy();
+
+                            // go to checkout
+                        }
+                    });
+
+                    self.getElm().removeClass('disabled');
+                }).delay(1000);
+
+                console.error(err.getMessage());
             }.bind(this));
         },
 
