@@ -1,0 +1,16 @@
+.order-status-select {
+    display: flex;
+    padding: 0 !important;
+    width: 100%;
+}
+
+.order-status-select-color {
+    background: #EFEFEF;
+    width: 50px;
+}
+
+.order-status-select-qui {
+    border: none;
+    float: none;
+    width: calc(100% - 50px);
+}
