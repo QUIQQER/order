@@ -84,7 +84,7 @@
 
         <window name="ERP">
             <title>
-                <locale group="quiqqer/order" var="window.erp.title"/>
+                <locale group="quiqqer/erp" var="window.erp.title"/>
             </title>
             <params>
                 <icon>fa fa-sun-o</icon>
@@ -271,9 +271,11 @@
                             <locale group="quiqqer/order" var="order.status.settings.title"/>
                         </title>
 
-                        <input conf="orderStatus.standard">
+                        <input conf="orderStatus.standard" data-qui="package/quiqqer/order/bin/backend/utils/StatusSelect">
                             <text>
-                                <locale group="quiqqer/order" var="order.settings.order.defaultOrderStatus"/>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.defaultOrderStatus"
+                                />
                             </text>
                             <description>
                                 <locale group="quiqqer/order"
