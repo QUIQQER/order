@@ -30,6 +30,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             this.$CheckTimeout = null;
             this.$Close        = null;
+            this.EditButton    = null;
 
             this.addEvents({
                 onImport: this.$onImport
@@ -41,12 +42,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          */
         $onImport: function () {
             var self         = this,
-                EditButton   = this.getElm().getElements('[name="open-edit"]'),
                 BusinessType = this.getElm().getElements('[name="businessType"]'),
                 VatId        = this.getElm().getElements('[name="vatId"]');
 
-            EditButton.addEvent('click', this.openAddressEdit);
-            EditButton.set('disabled', false);
+            this.EditButton = this.getElm().getElements('[name="open-edit"]');
+
+            this.EditButton.addEvent('click', this.openAddressEdit);
+            this.EditButton.set('disabled', false);
 
             this.$Close = this.getElm().getElements('.quiqqer-order-customerData-edit-close');
             this.$Close.addEvent('click', this.closeAddressEdit);
@@ -84,15 +86,17 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             if (Country.get('data-qui') && !Country.get('data-quiid')) {
                 QUI.parse(this.getElm()).then(function () {
                     QUI.Controls
-                       .getById(Country.get('data-quiid'))
-                       .addEvent('onCountryChange', self.$onCountryChange);
+                        .getById(Country.get('data-quiid'))
+                        .addEvent('onCountryChange', self.$onCountryChange);
                 });
-            } else if (Country.get('data-quiid')) {
-                QUI.Controls
-                   .getById(Country.get('data-quiid'))
-                   .addEvent('onCountryChange', self.$onCountryChange);
             } else {
-                Country.addEvent('change', self.$onCountryChange);
+                if (Country.get('data-quiid')) {
+                    QUI.Controls
+                        .getById(Country.get('data-quiid'))
+                        .addEvent('onCountryChange', self.$onCountryChange);
+                } else {
+                    Country.addEvent('change', self.$onCountryChange);
+                }
             }
 
             this.$onCountryChange();
@@ -198,6 +202,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 event.stop();
             }
 
+            moofx(this.EditButton).animate({
+                opacity   : 0,
+                visibility: 'hidden'
+            });
+
             var self             = this,
                 Elm              = this.getElm(),
                 Container        = Elm.getElement('.quiqqer-order-customerData'),
@@ -284,6 +293,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 EditContainer.setStyles({
                     display: 'none',
                     opacity: null
+                });
+
+                moofx(self.EditButton).animate({
+                    opacity   : 1,
+                    visibility: null
                 });
 
                 DisplayContainer.setStyle('opacity', 0);
@@ -375,7 +389,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             Company.setStyles(styles);
             VatId.setStyles(styles);
 
-            function show() {
+            function show () {
                 moofx([VatId, Company]).animate({
                     height      : Company.getScrollSize().y,
                     marginBottom: 10,
@@ -385,7 +399,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 });
             }
 
-            function hide() {
+            function hide () {
                 moofx([VatId, Company]).animate({
                     height : 0,
                     margin : 0,

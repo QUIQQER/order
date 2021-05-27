@@ -1,7 +1,9 @@
 <section class="quiqqer-order-customerData">
     <header>
         <h1>
+            <span class="quiqqer-order-customerData-title">
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData"}
+            </span>
 
             <button name="open-edit" disabled class="btn-light">
                 <span class="quiqqer-order-customerData-edit-icon fa fa-edit"></span>
@@ -313,12 +315,16 @@
         {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.description"}
     </div>
 
+    {*
+    <!-- Das wird niergendwo benutzt. Daher auskommentiert. -->
+    <!-- Mit Mor und Hen abgesprochen -->
     <label name="comment-label">
         <span>
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.customer"}
         </span>
         <input name="comment-customer" value="{$commentCustomer}" type="text"/>
     </label>
+    *}
 
     <label name="comment-label">
         <span>
