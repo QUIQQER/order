@@ -503,6 +503,20 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             }
         }
 
+        // set accounting currency, if it needed
+        if (QUI\ERP\Currency\Conf::accountingCurrencyEnabled()) {
+            $AccountingCurrency = QUI\ERP\Currency\Conf::getAccountingCurrency();
+
+            $acData = [
+                'accountingCurrency' => $AccountingCurrency->toArray(),
+                'baseCurrency'       => $this->Currency->toArray(),
+                'rate'               => $AccountingCurrency->getExchangeRate($this->Currency)
+            ];
+
+            $Order->setData('accountingCurrencyData', $acData);
+            $Order->save();
+        }
+
         $this->delete();
 
         // create invoice?
