@@ -102,12 +102,26 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             [$this, &$text]
         );
 
+        // comment
+        $comment = '';
+
+        /*if (QUI::getSession()->get('comment-customer')) {
+            $comment .= QUI::getSession()->get('comment-customer')."\n";
+        }*/
+
+        if (QUI::getSession()->get('comment-message')) {
+            $comment .= QUI::getSession()->get('comment-message');
+        }
+
+        $comment = \trim($comment);
+
         $Engine->assign([
             'User'            => $Order->getCustomer(),
             'InvoiceAddress'  => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment'         => $Order->getPayment(),
             'Shipping'        => $Order->getShipping(),
+            'comment'         => $comment,
             'Articles'        => $Articles,
             'Order'           => $Order,
             'text'            => $text

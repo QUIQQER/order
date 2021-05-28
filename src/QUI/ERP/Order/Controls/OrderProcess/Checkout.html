@@ -15,6 +15,7 @@ Order=$Order
         {locale group="quiqqer/order" var="ordering.step.checkout.text"}
     </div>
 
+
     <div class="quiqqer-order-step-checkout-invoiceAddress">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.billing.address"}</h2>
         {$InvoiceAddress->render(['tel' => false, 'mail' => false])}
@@ -29,6 +30,17 @@ Order=$Order
     <div class="quiqqer-order-step-checkout-deliveryAddress">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.delivery.address"}</h2>
         {$DeliveryAddress->render(['tel' => false, 'mail' => false])}
+    </div>
+    {/if}
+
+    {if $comment}
+    <div class="quiqqer-order-step-checkout-customerData-comment">
+        <header>
+            <h2>{locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment"}</h2>
+        </header>
+        <div class="quiqqer-order-step-checkout-comment-text">
+            {$comment}
+        </div>
     </div>
     {/if}
 
