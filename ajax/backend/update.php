@@ -33,6 +33,15 @@ QUI::$Ajax->registerFunction(
             $Order->setCreationDate($data['cDate']);
         }
 
+        if (isset($data['currency'])) {
+            try {
+                $Order->setCurrency(
+                    QUI\ERP\Currency\Handler::getCurrency($data['currency'])
+                );
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
         if (!$Customer && isset($data['customer'])) {
             if (isset($data['customerId'])
                 && !isset($data['customer']['id'])
@@ -101,7 +110,6 @@ QUI::$Ajax->registerFunction(
         if (isset($data['addressInvoice'])) {
             $Order->setInvoiceAddress($data['addressInvoice']);
         }
-
 
         if (isset($data['addressDelivery']) && !empty($data['addressDelivery'])) {
             $Order->setDeliveryAddress($data['addressInvoice']);

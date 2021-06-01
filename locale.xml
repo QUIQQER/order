@@ -27,6 +27,14 @@
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
         </locale>
+        <locale name="panel.order.currency.title">
+            <de><![CDATA[Währung]]></de>
+            <en><![CDATA[Currency]]></en>
+        </locale>
+        <locale name="panel.order.currency.label">
+            <de><![CDATA[Währung]]></de>
+            <en><![CDATA[Currency]]></en>
+        </locale>
 
         <locale name="customerData">
             <de><![CDATA[Kundendaten]]></de>

@@ -509,8 +509,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
             $acData = [
                 'accountingCurrency' => $AccountingCurrency->toArray(),
-                'baseCurrency'       => $this->Currency->toArray(),
-                'rate'               => $AccountingCurrency->getExchangeRate($this->Currency)
+                'currency'           => $this->Currency->toArray(),
+                'rate'               => $this->Currency->getExchangeRate($AccountingCurrency)
             ];
 
             $Order->setData('accountingCurrencyData', $acData);

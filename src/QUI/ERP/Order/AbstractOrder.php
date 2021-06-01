@@ -449,7 +449,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         } catch (\Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
         }
-        
+
 
         if ($this->isApproved()) {
             QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
@@ -633,6 +633,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'customer'    => $this->getCustomer()->getAttributes(),
             'comments'    => $this->getComments()->toArray(),
             'statusMails' => $this->getStatusMails()->toArray(),
+            'currency'    => $this->getCurrency()->toArray(),
 
             'articles'           => $articles,
             'hasDeliveryAddress' => $this->hasDeliveryAddress(),

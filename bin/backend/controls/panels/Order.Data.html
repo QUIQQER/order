@@ -313,3 +313,29 @@
         </tbody>
     </table>
 </form>
+
+<form name="currency-form" style="display: inline-block; width: 100%;">
+    <table class="data-table data-table-flexbox order-currency">
+        <thead>
+        <tr>
+            <th>{{textCurrencyTitle}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textCurrency}}">
+                        {{textCurrency}}
+                    </span>
+                    <input type="hidden"
+                           name="currency"
+                           data-qui="package/quiqqer/currency/bin/settings/CurrencyList"
+                    />
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
