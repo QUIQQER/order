@@ -150,6 +150,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('hash', data.hash);
                     self.setAttribute('addressInvoice', data.addressInvoice);
                     self.setAttribute('addressDelivery', data.addressDelivery);
+                    self.setAttribute('currency', data.currency.code);
 
                     if (data.addressDelivery &&
                         (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
@@ -201,6 +202,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             var data = {
                 customerId     : this.getAttribute('customerId'),
                 customer       : this.getAttribute('customer'),
+                currency       : this.getAttribute('currency'),
                 addressInvoice : this.getAttribute('addressInvoice'),
                 addressDelivery: this.getAttribute('addressDelivery'),
                 data           : this.getAttribute('data'),
@@ -613,6 +615,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textShippingStatus      : QUILocale.get(lg, 'panel.order.shipping.data.status'),
                         textShippingStatusTitle : QUILocale.get(lg, 'panel.order.shipping.data.title'),
 
+                        textCurrencyTitle: QUILocale.get(lg, 'panel.order.currency.title'),
+                        textCurrency     : QUILocale.get(lg, 'panel.order.currency.label'),
+
                         messageDifferentDeliveryAddress: QUILocale.get(lg, 'message.different,delivery.address')
                     })
                 });
@@ -629,6 +634,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 var OrderedByField = Content.getElement('[name="orderedBy"]');
 
                 var customer = self.getAttribute('customer');
+
+                var Currency   = Content.getElement('[name="currency"]');
+                Currency.value = self.getAttribute('currency');
 
                 if (customer) {
                     TaxId.value = '';
@@ -734,8 +742,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                        .getElements('.closable')
-                        .setStyle('display', null);
+                                  .getElements('.closable')
+                                  .setStyle('display', null);
                 }
 
                 if (self.getAttribute('cDate')) {
@@ -950,7 +958,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         Container.setStyle('height', '100%');
 
                         self.$ArticleList = new ArticleList({
-                            styles: {
+                            currency: self.getAttribute('currency'),
+                            styles  : {
                                 height: 'calc(100% - 120px)'
                             }
                         }).inject(Container);
@@ -960,8 +969,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
 
                         self.$ArticleListSummary = new Summary({
-                            List  : self.$ArticleList,
-                            styles: {
+                            currency: self.getAttribute('currency'),
+                            List    : self.$ArticleList,
+                            styles  : {
                                 bottom  : -20,
                                 left    : 0,
                                 opacity : 0,
@@ -1260,7 +1270,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 deliverAddress   = Content.getElement('[name="differentDeliveryAddress"]'),
                 PaymentForm      = Content.getElement('form[name="payment"]'),
                 ProcessingStatus = Content.getElement('[name="status"]'),
-                ShippingStatus   = Content.getElement('[name="shippingStatus"]');
+                ShippingStatus   = Content.getElement('[name="shippingStatus"]'),
+                Currency         = Content.getElement('[name="currency"]');
 
             if (this.$AddressInvoice) {
                 this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
@@ -1292,6 +1303,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             // payments
             if (PaymentForm) {
                 this.setAttribute('paymentId', PaymentForm.elements.paymentId.value);
+            }
+
+            if (Currency) {
+                this.setAttribute('currency', Currency.value);
             }
 
             // customer
