@@ -130,7 +130,7 @@
     <tr class="quiqqer-order-basket-total-subSum">
         <td class="quiqqer-order-basket-total-firstCell">
             <span class="quiqqer-order-basket-total-subSum-text">
-                {locale group="quiqqer/products" var="product.list.products.subtotal"}
+                {locale group="quiqqer/order" var="control.order.overview.subSum"}
             </span>
         </td>
         <td class="quiqqer-order-basket-total-secondCell">
@@ -168,16 +168,42 @@
     </tr>
     {/foreach}
 
+
+    {if isset($data.grandTotalFactors) && count($data.grandTotalFactors)}
+    <tr class="quiqqer-order-basket-total-grandSubSum">
+        <td class="quiqqer-order-basket-total-firstCell">
+            <span class="quiqqer-order-basket-total-grandSubSum-text">
+                {locale group="quiqqer/order" var="control.order.overview.grandSubSum"}
+            </span>
+        </td>
+        <td class="quiqqer-order-basket-total-secondCell">
+            <span class="quiqqer-order-basket-total-grandSubSum-value">
+                {$data.grandSubSum}
+            </span>
+        </td>
+    </tr>
+    {foreach $data.grandTotalFactors as $attribute}
+    <tr>
+        <td>
+            {$attribute.title} {if !empty($attribute.valueText) && $attribute.valueText !== '-'}({$attribute.valueText}){/if}
+        </td>
+        <td>
+            {$attribute.value}
+        </td>
+    </tr>
+    {/foreach}
+    {/if}
+
+
     {if count($data.attributes)}
     <tr>
         <td colspan="2"><br/></td>
     </tr>
     {/if}
-
     <tr class="quiqqer-order-basket-total-sum">
         <td>
             <span class="quiqqer-order-basket-total-sum-text">
-                {locale group="quiqqer/products" var="product.list.products.sumtotal"}
+                {locale group="quiqqer/order" var="control.order.overview.sum"}
             </span>
         </td>
         <td>
