@@ -40,6 +40,10 @@ class Product extends UniqueProduct
         }
 
         foreach ($fields as $fieldId => $fieldValue) {
+            if (isset($fieldValue['id'])) {
+                $fieldId = $fieldValue['id'];
+            }
+
             $Field = $this->importFieldData($fieldId, $fieldValue);
 
             if ($Field instanceof UniqueField) {
@@ -107,6 +111,13 @@ class Product extends UniqueProduct
             if (\is_array($fieldValue) && isset($fieldValue['value'])) {
                 $Field = Fields::getField($fieldValue['id']);
                 $Field->setValue($fieldValue['value']);
+
+                if (!empty($fieldValue['userinput'])) {
+                    $Field->setValue(json_encode([
+                        $fieldValue['value'],
+                        $fieldValue['userinput']
+                    ]));
+                }
             } elseif (Fields::isField($fieldValue)) {
                 /* @var $fieldValue QUI\ERP\Products\Interfaces\FieldInterface */
                 $Field = Fields::getField($fieldValue->getId());
