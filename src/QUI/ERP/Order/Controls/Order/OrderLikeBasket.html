@@ -165,6 +165,8 @@
                         <span>{$field.title}:</span>
                         {if isset($field.custom_calc) && isset($field.custom_calc.valueText)}
                         <span>{$field.custom_calc.valueText}</span>
+                        {else}
+                        <span>{$field.valueText}</span>
                         {/if}
                     </li>
                     {/foreach}
