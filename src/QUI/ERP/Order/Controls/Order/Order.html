@@ -171,7 +171,11 @@
                     {foreach $customFields as $field}
                     <li class="quiqqer-order-profile-orders-order-articles-article-description-customFields-field">
                         <span>{$field.title}:</span>
+                        {if isset($field.custom_calc) && isset($field.custom_calc.valueText)}
                         <span>{$field.custom_calc.valueText}</span>
+                        {else}
+                        <span>{$field.valueText}</span>
+                        {/if}
                     </li>
                     {/foreach}
                 </ul>

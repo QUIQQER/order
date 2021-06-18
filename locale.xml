@@ -955,6 +955,10 @@
         </locale>
         <locale name="control.order.overview.sum">
             <de><![CDATA[Gesamtsumme]]></de>
+            <en><![CDATA[Grand total]]></en>
+        </locale>
+        <locale name="control.order.overview.grandSubSum">
+            <de><![CDATA[Summe]]></de>
             <en><![CDATA[Total]]></en>
         </locale>
         <locale name="control.order.article.title">

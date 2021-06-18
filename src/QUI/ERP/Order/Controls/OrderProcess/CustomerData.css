@@ -58,6 +58,17 @@
     width: 60%
 }
 
+.quiqqer-order-customerData label [name="street"] {
+    float: left;
+    width: 45%;
+}
+
+.quiqqer-order-customerData label [name="street_number"] {
+    float: left;
+    margin-left: 10px;
+    width: calc(15% - 10px);
+}
+
 .quiqqer-order-customerData .qui-select,
 .quiqqer-order-customerData .qui-select .drop-icon {
     height: 38px;
@@ -172,7 +183,7 @@ address .fa {
 }
 
 @media screen and (max-width: 500px) {
-    .quiqqer-order-customerData [name="open-edit"] .quiqqer-order-customerData-edit-text{
+    .quiqqer-order-customerData [name="open-edit"] .quiqqer-order-customerData-edit-text {
         display: none;
     }
 }
