@@ -186,12 +186,17 @@
                 {locale group="quiqqer/frontend-users" var="street_no"}
                 {if $settings.street_no.required}*{/if}
             </span>
+            {if empty($Address->getAttribute('street_no'))}
+            <input type="text" name="street" value="" autocomplete="shipping street-address" {$r}>
+            <input type="text" name="street_number" value="">
+            {else}
             <input type="text"
                    name="street_no"
                    autocomplete="address-line1"
                    value="{$Address->getAttribute('street_no')|escape:'html'}"
                    {$r}
             />
+            {/if}
         </label>
         {/if}
 

@@ -351,6 +351,22 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'country'
         ];
 
+        if (isset($_REQUEST['street']) || isset($_REQUEST['street_number'])) {
+            $street = '';
+
+            if (isset($_REQUEST['street'])) {
+                $street = \trim($_REQUEST['street']);
+            }
+
+            if (isset($_REQUEST['street_number'])) {
+                $street = $street.' '.\trim($_REQUEST['street_number']);
+            }
+
+            $street = \trim($street);
+
+            $_REQUEST['street_no'] = $street;
+        }
+
         foreach ($fields as $field) {
             if (isset($_REQUEST[$field])) {
                 $Address->setAttribute($field, $_REQUEST[$field]);
