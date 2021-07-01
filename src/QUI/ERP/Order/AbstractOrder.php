@@ -68,6 +68,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     const STATUS_STORNO = QUI\ERP\Constants::ORDER_STATUS_STORNO; // Bestellung ist storniert
 
     /**
+     * Article types
+     */
+    const ARTICLE_TYPE_PHYSICAL = 1;
+    const ARTICLE_TYPE_DIGITAL  = 2;
+    const ARTICLE_TYPE_MIXED    = 3;
+
+    /**
      * order id
      *
      * @var integer
@@ -1564,6 +1571,47 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function count()
     {
         return $this->Articles->count();
+    }
+
+    /**
+     * Get the type of articles that are in the order.
+     *
+     * @return int - see self::ARTICLE_TYPE_*
+     */
+    public function getArticleType(): int
+    {
+        $digital  = false;
+        $physical = false;
+
+        foreach ($this->Articles->getArticles() as $Article) {
+            $articleId = $Article->getId();
+
+            if (empty($articleId) || !\is_numeric($articleId)) {
+                continue;
+            }
+
+            try {
+                $Product = QUI\ERP\Products\Handler\Products::getProduct($articleId);
+
+                if ($Product instanceof QUI\ERP\Products\Product\Types\DigitalProduct) {
+                    $digital = true;
+                } else {
+                    $physical = true;
+                }
+
+                if ($physical && $digital) {
+                    return self::ARTICLE_TYPE_MIXED;
+                }
+            } catch (\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
+        }
+
+        if ($digital) {
+            return self::ARTICLE_TYPE_DIGITAL;
+        }
+
+        return self::ARTICLE_TYPE_PHYSICAL;
     }
 
     //endregion
