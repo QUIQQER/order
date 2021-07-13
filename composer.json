@@ -30,8 +30,8 @@
         "quiqqer\/payment-transactions": "^1|dev-master|dev-dev",
         "quiqqer\/fontawesome": ">=4.5|dev-master|dev-dev",
         "ramsey\/uuid": "3.*",
-        "npm-asset\/navigo": "5.*",
-        "npm-asset\/history-events": "1.*"
+        "quiqqer-asset\/navigo": "5.*",
+        "quiqqer-asset\/history-events": "1.*"
     },
     "autoload": {
         "psr-4": {

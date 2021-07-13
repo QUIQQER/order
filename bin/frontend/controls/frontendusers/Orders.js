@@ -5,8 +5,8 @@
 
 require.config({
     paths: {
-        'Navigo'       : URL_OPT_DIR + 'bin/navigo/lib/navigo.min',
-        'HistoryEvents': URL_OPT_DIR + 'bin/history-events/dist/history-events.min'
+        'Navigo'       : URL_OPT_DIR + 'bin/quiqqer-asset/navigo/navigo/lib/navigo.min',
+        'HistoryEvents': URL_OPT_DIR + 'bin/quiqqer-asset/history-events/history-events/dist/history-events.min'
     }
 });
 
