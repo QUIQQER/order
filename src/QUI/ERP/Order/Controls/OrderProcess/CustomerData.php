@@ -140,6 +140,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $settings = [];
         }
 
+        if (empty($settings) || is_string($settings)) {
+            $settings = [];
+        }
+
         $settings                 = QUI\FrontendUsers\Controls\Address\Address::checkSettingsArray($settings);
         $businessTypeIsChangeable = !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B());
 
