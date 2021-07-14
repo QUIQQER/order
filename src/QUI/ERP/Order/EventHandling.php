@@ -350,11 +350,11 @@ class EventHandling
 
     /**
      * @param Collector $Collection
-     * @param QUI\ERP\Products\Product\Types\Product $Product
+     * @param QUI\ERP\Products\Product\Types\AbstractType $Product
      */
     public static function onDetailEquipmentButtons(
         Collector $Collection,
-        QUI\ERP\Products\Product\Types\Product $Product
+        QUI\ERP\Products\Product\Types\AbstractType $Product
     ) {
         // add to basket -> only for complete products
         // variant products cant be added directly
