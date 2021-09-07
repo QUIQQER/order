@@ -70,6 +70,10 @@ class Product extends UniqueProduct
 
         if (isset($attributes['customFields'])) {
             foreach ($attributes['customFields'] as $fieldId => $fieldValue) {
+                if (!is_numeric($fieldId)) {
+                    continue;
+                }
+                
                 $Field = $this->importFieldData($fieldId, $fieldValue);
 
                 if ($Field instanceof UniqueField) {
