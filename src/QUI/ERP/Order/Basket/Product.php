@@ -70,6 +70,10 @@ class Product extends UniqueProduct
 
         if (isset($attributes['customFields'])) {
             foreach ($attributes['customFields'] as $fieldId => $fieldValue) {
+                if (!is_numeric($fieldId)) {
+                    continue;
+                }
+
                 $Field = $this->importFieldData($fieldId, $fieldValue);
 
                 if ($Field instanceof UniqueField) {
@@ -136,5 +140,37 @@ class Product extends UniqueProduct
         }
 
         return $Field;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories()
+    {
+        if (!$this->categories) {
+            try {
+                $Real             = QUI\ERP\Products\Handler\Products::getProduct($this->getId());
+                $this->categories = $Real->getCategories();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        return $this->categories;
+    }
+
+    /**
+     * @return QUI\ERP\Products\Category\Category|null
+     */
+    public function getCategory()
+    {
+        if (!$this->Category) {
+            try {
+                $Real           = QUI\ERP\Products\Handler\Products::getProduct($this->getId());
+                $this->Category = $Real->getCategory();
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        return $this->Category;
     }
 }

@@ -665,7 +665,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                 // events
                 self.$Customer.addEvent('change', function (Select) {
-                    var userId = parseInt(Select.getValue());
+                    var currentCustomerId = parseInt(self.getAttribute('customerId'));
+                    var userId            = parseInt(Select.getValue());
+
+                    if (currentCustomerId === userId) {
+                        return;
+                    }
 
                     self.$AddressInvoice.setAttribute('userId', userId);
                     self.$AddressDelivery.setAttribute('userId', userId);
@@ -732,18 +737,31 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     });
                 }
 
+                // Set addresses
+                var currentCustomerId = parseInt(self.getAttribute('customerId'));
+
                 if (self.getAttribute('addressInvoice')) {
-                    self.$AddressInvoice.setValue(self.getAttribute('addressInvoice'));
+                    var AddressInvoice = self.getAttribute('addressInvoice');
+
+                    AddressInvoice.uid = currentCustomerId;
+                    self.$AddressInvoice.setValue(AddressInvoice);
+                } else {
+                    self.$AddressInvoice.setAttribute('userId', currentCustomerId);
                 }
 
                 if (self.getAttribute('addressDelivery') && self.getAttribute('hasDeliveryAddress')) {
-                    self.$AddressDelivery.setValue(self.getAttribute('addressDelivery'));
+                    var AddressDelivery = self.getAttribute('addressDelivery');
+
+                    AddressDelivery.uid = currentCustomerId;
+                    self.$AddressDelivery.setValue(AddressDelivery);
 
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                                  .getElements('.closable')
-                                  .setStyle('display', null);
+                        .getElements('.closable')
+                        .setStyle('display', null);
+                } else {
+                    self.$AddressDelivery.setAttribute('userId', currentCustomerId);
                 }
 
                 if (self.getAttribute('cDate')) {

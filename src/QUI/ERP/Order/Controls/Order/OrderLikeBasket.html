@@ -50,7 +50,7 @@
         {assign var=Customer value=$Order->getCustomer()}
         {/if}
 
-        {assign var=Address value=$Customer->getAddress()}
+        {assign var=Address value=$Order->getInvoiceAddress()}
         {$Address->render(['tel' => false, 'mail' => false])}
     </section>
 

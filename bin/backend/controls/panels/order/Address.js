@@ -105,6 +105,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          */
         getValue: function () {
             return {
+                id       : this.$Addresses.value,
                 aid      : this.$Addresses.value,
                 uid      : this.$userId,
                 firstname: this.$firstname,
@@ -161,7 +162,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
 
             if ("uid" in value) {
                 this.$userId = value.uid;
-                this.loadAddresses().catch(function () {
+                this.loadAddresses().then(() => {
+                    if ("id" in value) {
+                        this.$Addresses.value = value.id;
+                    }
+                }).catch(function () {
                     this.$Addresses.disabled = true;
                 }.bind(this));
             }
