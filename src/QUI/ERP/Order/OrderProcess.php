@@ -343,7 +343,7 @@ class OrderProcess extends QUI\Control
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        if (\method_exists($this->Basket, 'successful')) {
+        if ($this->Basket && \method_exists($this->Basket, 'successful')) {
             $this->Basket->successful();
             $this->Basket->save();
         } else {
