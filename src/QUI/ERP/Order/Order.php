@@ -216,7 +216,10 @@ class Order extends AbstractOrder implements OrderInterface
 
             $TemporaryInvoice->validate();
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
+            if (QUI::isFrontend()) {
+                QUI\System\Log::writeException($Exception);
+            }
+            
             throw $Exception;
         }
 
