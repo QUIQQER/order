@@ -423,9 +423,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             // order.xml panel api
             QUIAjax.get('package_quiqqer_order_ajax_backend_panel_getCategories', (categories) => {
-                console.warn(categories);
-
                 let cat, title;
+
+                if (typeOf(categories) === 'array' && !categories.length) {
+                    return;
+                }
 
                 for (let category in categories) {
                     cat = categories[category];
