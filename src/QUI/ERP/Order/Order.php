@@ -132,10 +132,10 @@ class Order extends AbstractOrder implements OrderInterface
         // set the data to the temporary invoice
         $payment = '';
 
-        $invoiceAddress   = '';
+        $invoiceAddress = '';
         $invoiceAddressId = '';
 
-        $deliveryAddress   = '';
+        $deliveryAddress = '';
         $deliveryAddressId = '';
 
         if ($this->getPayment()) {
@@ -143,7 +143,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if ($this->getInvoiceAddress()) {
-            $invoiceAddress   = $this->getInvoiceAddress()->toJSON();
+            $invoiceAddress = $this->getInvoiceAddress()->toJSON();
             $invoiceAddressId = $this->getInvoiceAddress()->getId();
         }
 
@@ -152,7 +152,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if ($this->getDeliveryAddress()) {
-            $deliveryAddress   = $this->getDeliveryAddress()->toJSON();
+            $deliveryAddress = $this->getDeliveryAddress()->toJSON();
             $deliveryAddressId = $this->getDeliveryAddress()->getId();
         }
 
@@ -216,7 +216,10 @@ class Order extends AbstractOrder implements OrderInterface
 
             $TemporaryInvoice->validate();
         } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
+            if (QUI::isFrontend()) {
+                QUI\System\Log::writeException($Exception);
+            }
+
             throw $Exception;
         }
 
@@ -305,7 +308,7 @@ class Order extends AbstractOrder implements OrderInterface
      */
     protected function getDataForSaving()
     {
-        $InvoiceAddress  = $this->getInvoiceAddress();
+        $InvoiceAddress = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
         $deliveryAddress = '';
 
@@ -315,8 +318,8 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($this->getShipping()) {
             $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
-            $Shipping        = $ShippingHandler->getShippingByObject($this);
-            $Address         = $Shipping->getAddress();
+            $Shipping = $ShippingHandler->getShippingByObject($this);
+            $Address = $Shipping->getAddress();
 
             $deliveryAddress = $Address->toJSON();
         }
@@ -328,14 +331,14 @@ class Order extends AbstractOrder implements OrderInterface
         $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
         //payment
-        $idPrefix      = '';
-        $paymentId     = null;
+        $idPrefix = '';
+        $paymentId = null;
         $paymentMethod = null;
 
         $Payment = $this->getPayment();
 
         if ($Payment) {
-            $paymentId     = $Payment->getId();
+            $paymentId = $Payment->getId();
             $paymentMethod = $Payment->getPaymentType()->getTitle();
         }
 
@@ -362,14 +365,14 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         //shipping
-        $shippingId     = null;
-        $shippingData   = '';
+        $shippingId = null;
+        $shippingData = '';
         $shippingStatus = null;
 
         $Shipping = $this->getShipping();
 
         if ($Shipping) {
-            $shippingId   = $Shipping->getId();
+            $shippingId = $Shipping->getId();
             $shippingData = $Shipping->toJSON();
         }
 
@@ -380,7 +383,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         return [
             'id_prefix'    => $idPrefix,
-            'id_str'       => $idPrefix.$this->getId(),
+            'id_str'       => $idPrefix . $this->getId(),
             'parent_order' => null,
             'invoice_id'   => $invoiceId,
             'status'       => $this->status,
@@ -407,7 +410,8 @@ class Order extends AbstractOrder implements OrderInterface
             'payment_data'    => QUI\Security\Encryption::encrypt(
                 \json_encode($this->paymentData)
             ),
-            'payment_address' => '',  // verschlüsselt
+            'payment_address' => '',
+            // verschlüsselt
 
             'shipping_id'     => $shippingId,
             'shipping_data'   => $shippingData,
@@ -439,7 +443,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($this->statusChanged) {
             $fireStatusChangedEvent = true;
-            $status                 = $this->status;
+            $status = $this->status;
 
             try {
                 $Status = QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($status);
@@ -487,7 +491,10 @@ class Order extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderUpdateBegin',
-            [$this, $data]
+            [
+                $this,
+                $data
+            ]
         );
 
         QUI::getDataBase()->update(
@@ -508,7 +515,10 @@ class Order extends AbstractOrder implements OrderInterface
             }
         }
 
-        QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [$this, $data]);
+        QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [
+            $this,
+            $data
+        ]);
     }
 
     /**
@@ -535,6 +545,10 @@ class Order extends AbstractOrder implements OrderInterface
     {
         $oldPaidStatus = $this->getAttribute('paid_status');
 
+        if ($this->getAttribute('old_paid_status') !== false) {
+            $oldPaidStatus = $this->getAttribute('old_paid_status');
+        }
+
         if ($oldPaidStatus == $status && $force === false) {
             return;
         }
@@ -546,19 +560,27 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'Order:: Paid Status changed to '.$status
+            'Order:: Paid Status changed to ' . $status
         );
 
         // Payment Status has changed
         if ($oldPaidStatus != $status) {
             QUI::getEvents()->fireEvent(
                 'onQuiqqerOrderPaymentChanged',
-                [$this, $status, $oldPaidStatus]
+                [
+                    $this,
+                    $status,
+                    $oldPaidStatus
+                ]
             );
 
             QUI::getEvents()->fireEvent(
                 'onQuiqqerOrderPaidStatusChanged',
-                [$this, $status, $oldPaidStatus]
+                [
+                    $this,
+                    $status,
+                    $oldPaidStatus
+                ]
             );
 
             if ($this->isApproved()) {
@@ -583,7 +605,7 @@ class Order extends AbstractOrder implements OrderInterface
         // old status
         try {
             $oldPaidStatus = $this->getAttribute('paid_status');
-            $calculation   = QUI\ERP\Accounting\Calc::calculatePayments($this);
+            $calculation = QUI\ERP\Accounting\Calc::calculatePayments($this);
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
@@ -647,6 +669,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if ($oldPaidStatus !== $calculation['paidStatus']) {
+            $this->setAttribute('old_paid_status', $oldPaidStatus);
             $this->setPaymentStatus($calculation['paidStatus'], true);
         }
     }
