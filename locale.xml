@@ -502,12 +502,12 @@
             <en><![CDATA[Type of transaction]]></en>
         </locale>
         <locale name="ordering.step.title.CustomerData.businessType.b2c">
-            <de><![CDATA[privat]]></de>
-            <en><![CDATA[private]]></en>
+            <de><![CDATA[Privatkunde]]></de>
+            <en><![CDATA[Private customer]]></en>
         </locale>
         <locale name="ordering.step.title.CustomerData.businessType.b2b">
-            <de><![CDATA[gewerblich]]></de>
-            <en><![CDATA[business]]></en>
+            <de><![CDATA[Geschäftskunde]]></de>
+            <en><![CDATA[Business customer]]></en>
         </locale>
         <locale name="ordering.step.title.CustomerData.requiredField.text">
             <de><![CDATA[Felder mit einem * sind Pflichtfelder. Bitte füllen Sie alle diese Felder korrekt aus.]]></de>
