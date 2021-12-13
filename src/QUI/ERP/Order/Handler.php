@@ -309,6 +309,13 @@ class Handler extends Singleton
      */
     public function getOrderData($orderId)
     {
+        if (!\is_numeric($orderId)) {
+            throw new Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
+                self::ERROR_ORDER_NOT_FOUND
+            );
+        }
+
         $result = QUI::getDataBase()->fetch([
             'from'  => $this->table(),
             'where' => [
