@@ -545,6 +545,10 @@ class Order extends AbstractOrder implements OrderInterface
     {
         $oldPaidStatus = $this->getAttribute('paid_status');
 
+        if ($this->getAttribute('old_paid_status') !== false) {
+            $oldPaidStatus = $this->getAttribute('old_paid_status');
+        }
+
         if ($oldPaidStatus == $status && $force === false) {
             return;
         }
@@ -656,15 +660,7 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         if ($calculation['paidStatus'] === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
-            // approved must be fired
-            // if successful status is already true, setSuccessfulStatus doesn't fire onQuiqqerOrderApproved
-            $fireApproved = $this->successful;
-
             $this->setSuccessfulStatus();
-
-            if ($fireApproved && $this->isApproved()) {
-                QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
-            }
 
             // create invoice?
             if (Settings::getInstance()->createInvoiceOnPaid()) {
@@ -673,6 +669,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if ($oldPaidStatus !== $calculation['paidStatus']) {
+            $this->setAttribute('old_paid_status', $oldPaidStatus);
             $this->setPaymentStatus($calculation['paidStatus'], true);
         }
     }
