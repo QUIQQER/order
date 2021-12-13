@@ -43,7 +43,6 @@ class Panel
         }
 
         return $list;
-
     }
 
     /**
