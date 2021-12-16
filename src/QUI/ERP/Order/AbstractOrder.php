@@ -451,6 +451,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
+        $this->successful = 1;
+
         try {
             QUI::getEvents()->fireEvent('quiqqerOrderSuccessful', [$this]);
         } catch (\Exception $Exception) {
@@ -468,7 +470,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             )
         );
 
-        $this->successful = 1;
         $this->update();
     }
 
