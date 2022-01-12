@@ -7,8 +7,11 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
+use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
 use QUI\ERP\Order\Utils\Utils as OrderProductUtils;
+
+use function boolval;
 
 /**
  * Class BasketOrder
@@ -49,7 +52,7 @@ class BasketOrder
     /**
      * @var QUI\ERP\Comments|null
      */
-    protected $FrontendMessages = null;
+    protected ?QUI\ERP\Comments $FrontendMessages = null;
 
     /**
      * Basket constructor.
@@ -117,12 +120,12 @@ class BasketOrder
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
         $this->Order->refresh();
 
-        $data         = $this->Order->getArticles()->toArray();
+        $data = $this->Order->getArticles()->toArray();
         $priceFactors = $this->Order->getArticles()->getPriceFactors()->toArray();
 
         $articles = $data['articles'];
 
-        $this->List            = new ProductList();
+        $this->List = new ProductList();
         $this->List->duplicate = true;
 
         $this->List->setOrder($this->Order);
@@ -188,8 +191,8 @@ class BasketOrder
     public function addProduct(Product $Product)
     {
         $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
-        $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+        $Config = $Package->getConfig();
+        $merge = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if (!$merge) {
             $this->List->addProduct($Product);
@@ -202,7 +205,7 @@ class BasketOrder
         }
 
 
-        $Products     = $this->List->getProducts();
+        $Products = $this->List->getProducts();
         $foundProduct = false;
 
         foreach ($Products as $key => $P) {
@@ -211,8 +214,8 @@ class BasketOrder
 
             if ($p1 == $p2) {
                 $foundProduct = true;
-                $quantity     = $P->getQuantity();
-                $quantity     = $quantity + $Product->getQuantity();
+                $quantity = $P->getQuantity();
+                $quantity = $quantity + $Product->getQuantity();
 
                 $P->setQuantity($quantity);
                 break;
@@ -257,7 +260,7 @@ class BasketOrder
      *
      * @param array $products
      */
-    public function import($products = [])
+    public function import(array $products = [])
     {
         $this->clear();
 
@@ -266,8 +269,8 @@ class BasketOrder
         }
 
         $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
-        $merge   = \boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+        $Config = $Package->getConfig();
+        $merge = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if ($merge) {
             $products = OrderProductUtils::getMergedProductList($products);
@@ -337,13 +340,13 @@ class BasketOrder
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = [];
+        $result = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
             $fields = [];
 
-            /* @var $Field \QUI\ERP\Products\Field\UniqueField */
+            /* @var $Field UniqueField */
             foreach ($Product->getFields() as $Field) {
                 if (!$Field->isPublic()) {
                     continue;
