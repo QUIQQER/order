@@ -921,7 +921,7 @@
             <en><![CDATA[The status of the order has been changed to: [status]]]></en>
         </locale>
         <locale name="message.change.order.shipping.status">
-            <de><![CDATA[Der Versandtatus der Bestellung wurde geändert in: [status]]]></de>
+            <de><![CDATA[Der Versandstatus der Bestellung wurde geändert in: [status]]]></de>
             <en><![CDATA[The shipping status of the order has been changed to: [status]]]></en>
         </locale>
 

@@ -417,6 +417,17 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $User->setAttribute('quiqqer.erp.euVatId', $_REQUEST['vatId']);
         }
 
+        // firstname lastname
+        // because user makes an update to the address object
+        if (!empty($_REQUEST['firstname']) && $User->getAttribute('firstname') === '') {
+            $User->setAttribute('firstname', $_REQUEST['firstname']);
+        }
+
+        if (!empty($_REQUEST['lastname']) && $User->getAttribute('lastname') === '') {
+            $User->setAttribute('lastname', $_REQUEST['lastname']);
+        }
+
+
         $User->save();
         $Address->save();
 
