@@ -6,7 +6,16 @@
 
 namespace QUI\ERP\Order;
 
+use IntlDateFormatter;
 use QUI;
+use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Payments\Types\Payment;
+use QUI\ERP\Address;
+use QUI\ERP\Comments;
+use QUI\ERP\Currency\Currency;
+use QUI\ERP\Shipping\Api\ShippingInterface;
+
+use function strtotime;
 
 /**
  * Class OrderView
@@ -26,7 +35,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     protected $Order;
 
     /**
-     * @var \QUI\ERP\Accounting\ArticleList
+     * @var ArticleList
      */
     protected $Articles;
 
@@ -47,7 +56,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->Order->toArray();
     }
@@ -55,7 +64,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return string
      */
-    public function getHash()
+    public function getHash(): string
     {
         return $this->Order->getHash();
     }
@@ -63,15 +72,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
-        return $this->Order->getIdPrefix().$this->Order->getId();
+        return $this->Order->getIdPrefix() . $this->Order->getId();
     }
 
     /**
      * @return ProcessingStatus\Status
      */
-    public function getProcessingStatus()
+    public function getProcessingStatus(): ProcessingStatus\Status
     {
         return $this->Order->getProcessingStatus();
     }
@@ -79,39 +88,39 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return int
      */
-    public function getCleanedId()
+    public function getCleanedId(): int
     {
         return $this->Order->getId();
     }
 
     /**
-     * @return \QUI\ERP\User
+     * @return QUI\ERP\User
      */
-    public function getCustomer()
+    public function getCustomer(): QUI\ERP\User
     {
         return $this->Order->getCustomer();
     }
 
     /**
-     * @return null|\QUI\ERP\Comments
+     * @return null|Comments
      */
-    public function getComments()
+    public function getComments(): ?Comments
     {
         return $this->Order->getComments();
     }
 
     /**
-     * @return null|\QUI\ERP\Comments
+     * @return null|Comments
      */
-    public function getHistory()
+    public function getHistory(): ?Comments
     {
         return $this->Order->getHistory();
     }
 
     /**
-     * @return \QUI\ERP\Currency\Currency
+     * @return Currency
      */
-    public function getCurrency()
+    public function getCurrency(): Currency
     {
         return $this->Order->getCurrency();
     }
@@ -119,7 +128,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return array
      */
-    public function getTransactions()
+    public function getTransactions(): array
     {
         return $this->Order->getTransactions();
     }
@@ -127,14 +136,14 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return string
      */
-    public function getCreateDate()
+    public function getCreateDate(): string
     {
         $createDate = $this->Order->getCreateDate();
-        $createDate = \strtotime($createDate);
+        $createDate = strtotime($createDate);
 
         $DateFormatter = QUI::getLocale()->getDateFormatter(
-            \IntlDateFormatter::SHORT,
-            \IntlDateFormatter::NONE
+            IntlDateFormatter::SHORT,
+            IntlDateFormatter::NONE
         );
 
         return $DateFormatter->format($createDate);
@@ -151,7 +160,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return int
      */
-    public function isSuccessful()
+    public function isSuccessful(): int
     {
         return $this->Order->isSuccessful();
     }
@@ -159,7 +168,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return bool
      */
-    public function isPosted()
+    public function isPosted(): bool
     {
         return $this->Order->isPosted();
     }
@@ -167,7 +176,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->Order->getData();
     }
@@ -177,7 +186,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @throws QUI\ERP\Exception
      * @throws QUI\Exception
      */
-    public function getPriceCalculation()
+    public function getPriceCalculation(): QUI\ERP\Accounting\Calculations
     {
         return $this->Order->getPriceCalculation();
     }
@@ -186,7 +195,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @param string $key
      * @return mixed|null
      */
-    public function getDataEntry($key)
+    public function getDataEntry(string $key)
     {
         return $this->Order->getDataEntry($key);
     }
@@ -194,9 +203,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     //region delivery address
 
     /**
-     * @return \QUI\ERP\Address
+     * @return Address
      */
-    public function getDeliveryAddress()
+    public function getDeliveryAddress(): QUI\ERP\Address
     {
         return $this->Order->getDeliveryAddress();
     }
@@ -204,7 +213,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return bool
      */
-    public function hasDeliveryAddress()
+    public function hasDeliveryAddress(): bool
     {
         return $this->Order->hasDeliveryAddress();
     }
@@ -214,9 +223,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     //region payment
 
     /**
-     * @return null|\QUI\ERP\Accounting\Payments\Types\Payment
+     * @return null|Payment
      */
-    public function getPayment()
+    public function getPayment(): ?Payment
     {
         return $this->Order->getPayment();
     }
@@ -225,7 +234,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @return array
      * @throws \QUI\ERP\Exception
      */
-    public function getPaidStatusInformation()
+    public function getPaidStatusInformation(): array
     {
         return $this->Order->getPaidStatusInformation();
     }
@@ -233,7 +242,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return bool
      */
-    public function isPaid()
+    public function isPaid(): bool
     {
         return $this->Order->isPaid();
     }
@@ -243,15 +252,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     //region invoice
 
     /**
-     * @return \QUI\ERP\Address
+     * @return Address
      */
-    public function getInvoiceAddress()
+    public function getInvoiceAddress(): Address
     {
         return $this->Order->getInvoiceAddress();
     }
 
     /**
-     * @return \QUI\ERP\Accounting\Invoice\Invoice
+     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
@@ -264,7 +273,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return bool
      */
-    public function hasInvoice()
+    public function hasInvoice(): bool
     {
         return $this->Order->hasInvoice();
     }
@@ -273,15 +282,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     //region articles
 
-    public function count()
+    public function count(): int
     {
         return $this->Articles->count();
     }
 
     /**
-     * @return \QUI\ERP\Accounting\ArticleList
+     * @return ArticleList
      */
-    public function getArticles()
+    public function getArticles(): ArticleList
     {
         return $this->Articles;
     }
@@ -293,14 +302,14 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * do nothing, its a view
      */
-    public function setShipping(\QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    public function setShipping(ShippingInterface $Shipping)
     {
     }
 
     /**
      * @return QUI\ERP\Shipping\Types\ShippingEntry|null
      */
-    public function getShipping()
+    public function getShipping(): ?QUI\ERP\Shipping\Types\ShippingEntry
     {
         return $this->Order->getShipping();
     }
@@ -329,15 +338,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return QUI\ERP\Comments|null
+     * @return Comments|null
      */
-    public function getFrontendMessages()
+    public function getFrontendMessages(): ?Comments
     {
         return $this->Order->getFrontendMessages();
     }
 
     /**
-     * do nothing, its a view
+     * do nothing, it's a view
      */
     public function clearFrontendMessages()
     {

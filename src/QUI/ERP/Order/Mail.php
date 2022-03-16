@@ -6,8 +6,15 @@
 
 namespace QUI\ERP\Order;
 
+use IntlDateFormatter;
 use QUI;
-use QUI\Projects\Site\Utils as SiteUtils;
+
+use function dirname;
+use function pathinfo;
+use function rename;
+use function strtotime;
+use function time;
+use function trim;
 
 /**
  * Class Mail
@@ -48,7 +55,7 @@ class Mail
         $Customer = $Order->getCustomer();
 
         $user = $Customer->getName();
-        $user = \trim($user);
+        $user = trim($user);
 
         if (empty($user)) {
             $Address = $Customer->getAddress();
@@ -88,26 +95,26 @@ class Mail
             if ($DeliveryAddress) {
                 $DeliveryAddress->setAttribute(
                     'template',
-                    \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+                    dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
                 );
             }
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
-        $InvoiceAddress->setAttribute('template', \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html');
+        $InvoiceAddress->setAttribute('template', dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html');
 
         // comment
         $comment = '';
 
         if (QUI::getSession()->get('comment-customer')) {
-            $comment .= QUI::getSession()->get('comment-customer')."\n";
+            $comment .= QUI::getSession()->get('comment-customer') . "\n";
         }
 
         if (QUI::getSession()->get('comment-message')) {
             $comment .= QUI::getSession()->get('comment-message');
         }
 
-        $comment = \trim($comment);
+        $comment = trim($comment);
 
 
         $Engine->assign([
@@ -129,7 +136,7 @@ class Mail
         ]);
 
         $Mailer->setBody(
-            $Engine->fetch(\dirname(__FILE__).'/MailTemplates/orderConfirmation.html')
+            $Engine->fetch(dirname(__FILE__) . '/MailTemplates/orderConfirmation.html')
         );
 
         $Mailer->send();
@@ -169,7 +176,7 @@ class Mail
         $comments = $Order->getComments()->toArray();
 
         $user = $Customer->getName();
-        $user = \trim($user);
+        $user = trim($user);
 
         if (empty($user)) {
             $Address = $Customer->getAddress();
@@ -217,14 +224,14 @@ class Mail
             $DeliveryAddress = $Shipping->getAddress();
             $DeliveryAddress->setAttribute(
                 'template',
-                \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+                dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
             );
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
         $InvoiceAddress->setAttribute(
             'template',
-            \dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+            dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
         );
 
         $Engine->assign([
@@ -246,7 +253,7 @@ class Mail
         ]);
 
         $Mailer->setBody(
-            $Engine->fetch(\dirname(__FILE__).'/MailTemplates/orderConfirmationAdmin.html')
+            $Engine->fetch(dirname(__FILE__) . '/MailTemplates/orderConfirmationAdmin.html')
         );
 
         try {
@@ -334,7 +341,7 @@ class Mail
                     $Item = $Media->get($attachment);
                     $Mail->addAttachment($Item->getFullPath());
                 } catch (\Exception $Exception) {
-                    QUI\System\Log::addAlert('Order mail attachment file error :: '.$Exception->getMessage());
+                    QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
                 }
             }
         }
@@ -360,10 +367,10 @@ class Mail
         // rename for attachment
         $title = $Site->getAttribute('title');
 
-        ['dirname' => $dirname, 'extension' => $extension] = \pathinfo($file);
-        $newFile = $dirname.'/'.$title.'.'.$extension;
+        ['dirname' => $dirname, 'extension' => $extension] = pathinfo($file);
+        $newFile = $dirname . '/' . $title . '.' . $extension;
 
-        \rename($file, $newFile);
+        rename($file, $newFile);
 
         return $newFile;
     }
@@ -402,7 +409,7 @@ class Mail
 
         // customer name
         $user = $Customer->getName();
-        $user = \trim($user);
+        $user = trim($user);
 
         if (empty($user)) {
             $user = $Address->getName();
@@ -448,16 +455,16 @@ class Mail
             QUI::getLocale()->getCurrent()
         );
 
-        $Formatter = new \IntlDateFormatter(
+        $Formatter = new IntlDateFormatter(
             $localeCode[0],
-            \IntlDateFormatter::SHORT,
-            \IntlDateFormatter::NONE
+            IntlDateFormatter::SHORT,
+            IntlDateFormatter::NONE
         );
 
         if (!$date) {
-            $date = \time();
+            $date = time();
         } else {
-            $date = \strtotime($date);
+            $date = strtotime($date);
         }
 
         return $Formatter->format($date);

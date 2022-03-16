@@ -8,6 +8,12 @@ namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
 
+use QUI\Users\User;
+
+use function dirname;
+use function json_decode;
+use function trim;
+
 /**
  * Class CustomerData
  *
@@ -33,7 +39,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         ]);
 
         $this->addCSSClass('quiqqer-order-customerData-container');
-        $this->addCSSFile(\dirname(__FILE__).'/CustomerData.css');
+        $this->addCSSFile(dirname(__FILE__) . '/CustomerData.css');
     }
 
     /**
@@ -67,7 +73,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         if (!$Address) {
             try {
-                /* @var $User \QUI\Users\User */
+                /* @var $User User */
                 $Address = $User->getStandardAddress();
             } catch (QUI\Users\Exception $Exception) {
                 // user has no address
@@ -134,7 +140,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $settings = $Conf->getValue('profile', 'addressFields');
 
             if (!empty($settings)) {
-                $settings = \json_decode($settings, true);
+                $settings = json_decode($settings, true);
             }
         } catch (QUI\Exception $Exception) {
             $settings = [];
@@ -168,7 +174,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'isOnlyB2C'                => $isOnlyB2C,
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/CustomerData.html');
+        return $Engine->fetch(dirname(__FILE__) . '/CustomerData.html');
     }
 
     /**
@@ -272,7 +278,6 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 QUI::getLocale()->get('quiqqer/order', 'country')
             );
         }
-
         // @todo validate company
     }
 
@@ -359,14 +364,14 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $street = '';
 
             if (isset($_REQUEST['street'])) {
-                $street = \trim($_REQUEST['street']);
+                $street = trim($_REQUEST['street']);
             }
 
             if (isset($_REQUEST['street_number'])) {
-                $street = $street.' '.\trim($_REQUEST['street_number']);
+                $street = $street . ' ' . trim($_REQUEST['street_number']);
             }
 
-            $street = \trim($street);
+            $street = trim($street);
 
             $_REQUEST['street_no'] = $street;
         }
@@ -463,7 +468,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
         }
 
-        if ($Address === null && $User instanceof QUI\Users\User) {
+        if ($Address === null && $User instanceof User) {
             try {
                 $Address = $User->getStandardAddress();
             } catch (QUI\Users\Exception $Exception) {
@@ -514,7 +519,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         try {
-            /* @var $User QUI\Users\User */
+            /* @var $User User */
             return $User->getStandardAddress();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -533,14 +538,14 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $message = '';
 
         if (QUI::getSession()->get('comment-customer')) {
-            $message .= QUI::getSession()->get('comment-customer')."\n";
+            $message .= QUI::getSession()->get('comment-customer') . "\n";
         }
 
         if (QUI::getSession()->get('comment-message')) {
             $message .= QUI::getSession()->get('comment-message');
         }
 
-        $message = \trim($message);
+        $message = trim($message);
 
         if (empty($message)) {
             return;

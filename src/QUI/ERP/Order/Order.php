@@ -9,6 +9,11 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 
+use function array_merge;
+use function is_array;
+use function json_decode;
+use function json_encode;
+
 /**
  * Class OrderBooked
  * - This order was ordered by the user
@@ -132,10 +137,10 @@ class Order extends AbstractOrder implements OrderInterface
         // set the data to the temporary invoice
         $payment = '';
 
-        $invoiceAddress = '';
+        $invoiceAddress   = '';
         $invoiceAddressId = '';
 
-        $deliveryAddress = '';
+        $deliveryAddress   = '';
         $deliveryAddressId = '';
 
         if ($this->getPayment()) {
@@ -143,7 +148,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if ($this->getInvoiceAddress()) {
-            $invoiceAddress = $this->getInvoiceAddress()->toJSON();
+            $invoiceAddress   = $this->getInvoiceAddress()->toJSON();
             $invoiceAddressId = $this->getInvoiceAddress()->getId();
         }
 
@@ -152,7 +157,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         if ($this->getDeliveryAddress()) {
-            $deliveryAddress = $this->getDeliveryAddress()->toJSON();
+            $deliveryAddress   = $this->getDeliveryAddress()->toJSON();
             $deliveryAddressId = $this->getDeliveryAddress()->getId();
         }
 
@@ -169,7 +174,7 @@ class Order extends AbstractOrder implements OrderInterface
         ]);
 
         // pass data to the invoice
-        if (!\is_array($this->data)) {
+        if (!is_array($this->data)) {
             $this->data = [];
         }
 
@@ -198,8 +203,8 @@ class Order extends AbstractOrder implements OrderInterface
             [
                 'shipping_id'   => $this->shippingId,
                 'paid_status'   => $this->getAttribute('paid_status'),
-                'payment_data'  => QUI\Security\Encryption::encrypt(\json_encode($this->paymentData)),
-                'currency_data' => \json_encode($this->getCurrency()->toArray()),
+                'payment_data'  => QUI\Security\Encryption::encrypt(json_encode($this->paymentData)),
+                'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency'      => $this->getCurrency()->getCode(),
             ],
             ['id' => $TemporaryInvoice->getCleanId()]
@@ -246,7 +251,7 @@ class Order extends AbstractOrder implements OrderInterface
      *
      * @return bool
      */
-    public function isPosted()
+    public function isPosted(): bool
     {
         if (!$this->invoiceId && !$this->getAttribute('temporary_invoice_id')) {
             return false;
@@ -280,7 +285,7 @@ class Order extends AbstractOrder implements OrderInterface
      *
      * @return bool
      */
-    public function hasInvoice()
+    public function hasInvoice(): bool
     {
         return $this->isPosted();
     }
@@ -308,7 +313,7 @@ class Order extends AbstractOrder implements OrderInterface
      */
     protected function getDataForSaving()
     {
-        $InvoiceAddress = $this->getInvoiceAddress();
+        $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
         $deliveryAddress = '';
 
@@ -318,8 +323,8 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($this->getShipping()) {
             $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
-            $Shipping = $ShippingHandler->getShippingByObject($this);
-            $Address = $Shipping->getAddress();
+            $Shipping        = $ShippingHandler->getShippingByObject($this);
+            $Address         = $Shipping->getAddress();
 
             $deliveryAddress = $Address->toJSON();
         }
@@ -331,14 +336,14 @@ class Order extends AbstractOrder implements OrderInterface
         $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
         //payment
-        $idPrefix = '';
-        $paymentId = null;
+        $idPrefix      = '';
+        $paymentId     = null;
         $paymentMethod = null;
 
         $Payment = $this->getPayment();
 
         if ($Payment) {
-            $paymentId = $Payment->getId();
+            $paymentId     = $Payment->getId();
             $paymentMethod = $Payment->getPaymentType()->getTitle();
         }
 
@@ -365,14 +370,14 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         //shipping
-        $shippingId = null;
-        $shippingData = '';
+        $shippingId     = null;
+        $shippingData   = '';
         $shippingStatus = null;
 
         $Shipping = $this->getShipping();
 
         if ($Shipping) {
-            $shippingId = $Shipping->getId();
+            $shippingId   = $Shipping->getId();
             $shippingData = $Shipping->toJSON();
         }
 
@@ -391,7 +396,7 @@ class Order extends AbstractOrder implements OrderInterface
             'c_date'       => $this->getCreateDate(),
 
             'customerId'      => $this->customerId,
-            'customer'        => \json_encode($customer),
+            'customer'        => json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
@@ -400,15 +405,15 @@ class Order extends AbstractOrder implements OrderInterface
             'status_mails'     => $this->StatusMails->toJSON(),
             'history'          => $this->History->toJSON(),
             'frontendMessages' => $this->FrontendMessage->toJSON(),
-            'data'             => \json_encode($this->data),
-            'currency_data'    => \json_encode($this->getCurrency()->toArray()),
+            'data'             => json_encode($this->data),
+            'currency_data'    => json_encode($this->getCurrency()->toArray()),
             'currency'         => $this->getCurrency()->getCode(),
 
             'payment_id'      => $paymentId,
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
             'payment_data'    => QUI\Security\Encryption::encrypt(
-                \json_encode($this->paymentData)
+                json_encode($this->paymentData)
             ),
             'payment_address' => '',
             // verschlüsselt
@@ -443,7 +448,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         if ($this->statusChanged) {
             $fireStatusChangedEvent = true;
-            $status = $this->status;
+            $status                 = $this->status;
 
             try {
                 $Status = QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($status);
@@ -605,7 +610,7 @@ class Order extends AbstractOrder implements OrderInterface
         // old status
         try {
             $oldPaidStatus = $this->getAttribute('paid_status');
-            $calculation = QUI\ERP\Accounting\Calc::calculatePayments($this);
+            $calculation   = QUI\ERP\Accounting\Calc::calculatePayments($this);
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
@@ -642,18 +647,18 @@ class Order extends AbstractOrder implements OrderInterface
 
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
 
-        if (!\is_array($calculation['paidData'])) {
-            $calculation['paidData'] = \json_decode($calculation['paidData'], true);
+        if (!is_array($calculation['paidData'])) {
+            $calculation['paidData'] = json_decode($calculation['paidData'], true);
         }
 
-        if (!\is_array($calculation['paidData'])) {
+        if (!is_array($calculation['paidData'])) {
             $calculation['paidData'] = [];
         }
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             [
-                'paid_data' => \json_encode($calculation['paidData']),
+                'paid_data' => json_encode($calculation['paidData']),
                 'paid_date' => $calculation['paidDate']
             ],
             ['id' => $this->getId()]
@@ -698,7 +703,7 @@ class Order extends AbstractOrder implements OrderInterface
             'quiqqerOrderDelete',
             [
                 $this->getId(),
-                \array_merge(
+                array_merge(
                     [
                         'hash' => $this->getHash()
                     ],

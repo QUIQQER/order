@@ -7,6 +7,12 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\ERP\Accounting\Invoice\Invoice;
+
+use function defined;
+use function is_array;
+use function json_decode;
+use function json_encode;
 
 /**
  * Class OrderInProcess
@@ -21,7 +27,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     /**
      * @var null|integer
      */
-    protected $orderId = null;
+    protected ?int $orderId = null;
 
     /**
      * Order constructor.
@@ -78,11 +84,11 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         // update customer data
         if (isset($data['customer'])) {
             try {
-                $customer = \json_decode($data['customer'], true);
+                $customer = json_decode($data['customer'], true);
                 $User     = QUI::getUsers()->get($customer['id']);
 
                 $customer['lang'] = $User->getLang();
-                $data['customer'] = \json_encode($customer);
+                $data['customer'] = json_encode($customer);
             } catch (\Exception $Exception) {
             }
         }
@@ -93,7 +99,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     /**
      * @return int|null
      */
-    public function getOrderId()
+    public function getOrderId(): ?int
     {
         return $this->orderId;
     }
@@ -104,7 +110,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      *
      * @return string
      */
-    public function getPrefixedId()
+    public function getPrefixedId(): string
     {
         if ($this->orderId) {
             try {
@@ -132,12 +138,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
-     * @param null $PermissionUser
+     * @param null|QUI\Interfaces\Users\User $PermissionUser
      *
      * @throws QUI\Permissions\Exception
      * @throws QUI\Exception
      */
-    public function update($PermissionUser = null)
+    public function update(QUI\Interfaces\Users\User $PermissionUser = null)
     {
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
@@ -215,7 +221,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @throws QUI\Exception
      * @throws Exception
      */
-    public function addPriceFactors($priceFactors = [])
+    public function addPriceFactors(array $priceFactors = [])
     {
         if ($this->orderId) {
             throw new Exception(
@@ -313,8 +319,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             )
         );
 
-        if (\is_array($calculations['paidData'])) {
-            $calculations['paidData'] = \json_encode($calculations['paidData']);
+        if (is_array($calculations['paidData'])) {
+            $calculations['paidData'] = json_encode($calculations['paidData']);
         }
 
         QUI::getDataBase()->update(
@@ -345,7 +351,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @throws QUI\Permissions\Exception
      * @throws QUI\Database\Exception
      */
-    public function delete($PermissionUser = null)
+    public function delete(QUI\Interfaces\Users\User $PermissionUser = null)
     {
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
@@ -365,7 +371,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      *
      * @return bool
      */
-    public function isPosted()
+    public function isPosted(): bool
     {
         if ($this->orderId) {
             try {
@@ -390,7 +396,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @throws QUI\Exception
      * @throws Exception
      */
-    public function createOrder($PermissionUser = null)
+    public function createOrder(QUI\Interfaces\Users\User $PermissionUser = null): Order
     {
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Create Order');
 
@@ -411,7 +417,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             $Order = Handler::getInstance()->getOrderByHash($this->getHash());
 
             if ($Order instanceof Order) {
-                QUI\System\Log::addInfo('Order->createOrder is already executed '.$Order->getHash());
+                QUI\System\Log::addInfo('Order->createOrder is already executed ' . $Order->getHash());
 
                 return $Order;
             }
@@ -448,8 +454,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             $data['paid_date'] = null;
         }
 
-        if (\is_array($data['paid_data'])) {
-            $data['paid_data'] = \json_encode($data['paid_data']);
+        if (is_array($data['paid_data'])) {
+            $data['paid_data'] = json_encode($data['paid_data']);
         }
 
         QUI::getDataBase()->update(
@@ -477,7 +483,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
                 $Order->save();
             }
         } catch (QUI\Exception $Exception) {
-            if (\defined('QUIQQER_DEBUG')) {
+            if (defined('QUIQQER_DEBUG')) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -558,7 +564,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @param null|QUI\Interfaces\Users\User $PermissionUser
      * @return bool
      */
-    protected function hasPermissions($PermissionUser = null)
+    protected function hasPermissions(QUI\Interfaces\Users\User $PermissionUser = null): bool
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -587,15 +593,11 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @return array
      * @throws QUI\Exception
      */
-    protected function getDataForSaving()
+    protected function getDataForSaving(): array
     {
         $InvoiceAddress  = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
-        $deliveryAddress = '';
-
-        if ($DeliveryAddress) {
-            $deliveryAddress = $DeliveryAddress->toJSON();
-        }
+        $deliveryAddress = $DeliveryAddress->toJSON();
 
         // customer
         $Customer = $this->getCustomer();
@@ -646,7 +648,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         return [
             'customerId'      => $this->customerId,
-            'customer'        => \json_encode($customer),
+            'customer'        => json_encode($customer),
             'addressInvoice'  => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
@@ -655,8 +657,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'status_mails'     => $this->StatusMails->toJSON(),
             'history'          => $this->History->toJSON(),
             'frontendMessages' => $this->FrontendMessage->toJSON(),
-            'data'             => \json_encode($this->data),
-            'currency_data'    => \json_encode($this->getCurrency()->toArray()),
+            'data'             => json_encode($this->data),
+            'currency_data'    => json_encode($this->getCurrency()->toArray()),
             'currency'         => $this->getCurrency()->getCode(),
             'status'           => $status,
             'successful'       => $this->successful,
@@ -665,12 +667,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'payment_method'  => $paymentMethod,
             'payment_time'    => null,
             'payment_data'    => QUI\Security\Encryption::encrypt(
-                \json_encode($this->paymentData)
+                json_encode($this->paymentData)
             ), // verschlüsselt
             'payment_address' => '',  // verschlüsselt
 
             'shipping_id'     => $shippingId,
-            'shipping_data'   => \json_encode($shippingData),
+            'shipping_data'   => json_encode($shippingData),
             'shipping_status' => $shippingStatus
         ];
     }
@@ -726,7 +728,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      *
      * @return bool
      */
-    public function hasInvoice()
+    public function hasInvoice(): bool
     {
         if ($this->orderId) {
             try {
@@ -744,18 +746,16 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     /**
      * Return the invoice if an invoice exists for the order
      *
-     * @return QUI\ERP\Accounting\Invoice\Invoice|void
+     * @return QUI\ERP\Accounting\Invoice\Invoice
      *
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice()
+    public function getInvoice(): Invoice
     {
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
-            $Order->getInvoice();
-
-            return;
+            return $Order->getInvoice();
         }
 
         throw new QUI\ERP\Accounting\Invoice\Exception(
@@ -785,10 +785,6 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             return;
         }
 
-        if ($this->orderId) {
-            return;
-        }
-
         parent::setSuccessfulStatus();
     }
 
@@ -801,7 +797,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @return void
      * @throws \QUI\Exception
      */
-    public function setPaymentStatus(int $status, $force = false)
+    public function setPaymentStatus(int $status, bool $force = false)
     {
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
@@ -823,7 +819,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'OrderInProcess:: Paid Status changed to '.$status
+            'OrderInProcess:: Paid Status changed to ' . $status
         );
 
         // Payment Status has changed
@@ -845,7 +841,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     }
 
     /**
-     * @return mixed|void
+     * @return void
      */
     protected function saveFrontendMessages()
     {
