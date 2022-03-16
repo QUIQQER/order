@@ -589,7 +589,7 @@ class Order extends AbstractOrder implements OrderInterface
             );
 
             if ($this->isApproved()) {
-                QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
+                $this->triggerApprovalEvent();
             }
         }
 

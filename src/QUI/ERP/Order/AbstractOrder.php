@@ -474,7 +474,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         if ($this->isApproved()) {
-            QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
+            $this->triggerApprovalEvent();
         }
 
         $this->addHistory(
@@ -1166,6 +1166,26 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->setAttribute('c_date', $date);
         $this->cDate = $date;
+    }
+
+    /**
+     * Fire the onQuiqqerOrderApproved event.
+     * This event is only fired once.
+     *
+     * @return void
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    protected function triggerApprovalEvent()
+    {
+        if ($this->getDataEntry('approvalSent')) {
+            return;
+        }
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderApproved', [$this]);
+
+        $this->setData('approvalSent', 1);
+        $this->update();
     }
 
     /**
