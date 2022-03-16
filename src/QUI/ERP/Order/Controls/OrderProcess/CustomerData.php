@@ -528,7 +528,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param QUI\ERP\Order\AbstractOrder $Order
      */
-    public static function onQuiqqerOrderSuccessful(QUI\ERP\Order\AbstractOrder $Order)
+    public static function parseSessionOrderCommentsToOrder(QUI\ERP\Order\AbstractOrder $Order)
     {
         $message = '';
 
