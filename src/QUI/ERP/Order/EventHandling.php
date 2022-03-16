@@ -9,6 +9,7 @@ namespace QUI\ERP\Order;
 use DusanKasan\Knapsack\Collection;
 use Quiqqer\Engine\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
 
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
@@ -286,6 +287,8 @@ class EventHandling
      */
     public static function onQuiqqerOrderCreated(Order $Order)
     {
+        CustomerData::parseSessionOrderCommentsToOrder($Order);
+
         if (Settings::getInstance()->get('order', 'sendAdminOrderConfirmation')) {
             Mail::sendAdminOrderConfirmationMail($Order);
         }
