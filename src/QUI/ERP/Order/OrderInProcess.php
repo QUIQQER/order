@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order;
 
 use QUI;
-use QUI\ERP\Accounting\Invoice\Invoice;
 
 use function defined;
 use function is_array;
@@ -746,12 +745,12 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
     /**
      * Return the invoice if an invoice exists for the order
      *
-     * @return QUI\ERP\Accounting\Invoice\Invoice
+     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice(): Invoice
+    public function getInvoice()
     {
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
