@@ -214,9 +214,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     protected ?int $paymentId = null;
 
     /**
-     * @var int
+     * @var string|null
      */
-    protected int $paymentMethod;
+    protected ?string $paymentMethod;
 
     /**
      * @var bool
