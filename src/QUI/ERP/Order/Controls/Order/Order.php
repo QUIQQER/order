@@ -8,6 +8,8 @@ namespace QUI\ERP\Order\Controls\Order;
 
 use QUI;
 
+use function dirname;
+
 /**
  * Class Order
  * - Displays an order
@@ -37,7 +39,7 @@ class Order extends QUI\Control
 
         parent::__construct($attributes);
 
-        $this->addCSSFile(\dirname(__FILE__).'/Order.css');
+        $this->addCSSFile(dirname(__FILE__) . '/Order.css');
         $this->addCSSClass('quiqqer-order-control-order');
     }
 
@@ -73,7 +75,7 @@ class Order extends QUI\Control
 
         $View->setAttribute(
             'downloadLink',
-            URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$View->getHash()
+            URL_OPT_DIR . 'quiqqer/order/bin/frontend/order.pdf.php?order=' . $View->getHash()
         );
 
         // invoice
@@ -95,13 +97,13 @@ class Order extends QUI\Control
 
         switch ($this->getAttribute('template')) {
             case 'Order':
-                $template = \dirname(__FILE__).'/Order.html';
+                $template = dirname(__FILE__) . '/Order.html';
                 break;
 
             case 'OrderLikeBasket':
-                $template = \dirname(__FILE__).'/OrderLikeBasket.html';
+                $template = dirname(__FILE__) . '/OrderLikeBasket.html';
 
-                $this->addCSSFile(\dirname(__FILE__).'/OrderLikeBasket.css');
+                $this->addCSSFile(dirname(__FILE__) . '/OrderLikeBasket.css');
                 $this->addCSSClass('quiqqer-order-control-orderLikeBasket');
                 break;
 

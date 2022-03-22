@@ -7,12 +7,23 @@
 namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
-use Quiqqer\Engine\Collector;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
-
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
+use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
+use Quiqqer\Engine\Collector;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+use function array_flip;
+use function array_keys;
+use function count;
+use function defined;
+use function explode;
+use function ltrim;
+use function mb_strpos;
+use function parse_url;
+use function strpos;
+use function strtotime;
+use function trim;
 
 /**
  * Class EventHandling
@@ -55,18 +66,18 @@ class EventHandling
      */
     public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
     {
-        if (\defined('QUIQQER_AJAX')) {
+        if (defined('QUIQQER_AJAX')) {
             return;
         }
 
         try {
             $Project      = $Rewrite->getProject();
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-            $path         = \trim($CheckoutSite->getUrlRewritten(), '/');
+            $path         = trim($CheckoutSite->getUrlRewritten(), '/');
 
-            if (\mb_strpos($path, 'http') === 0) {
-                $path = \parse_url($path);
-                $path = \ltrim($path['path'], '/');
+            if (mb_strpos($path, 'http') === 0) {
+                $path = parse_url($path);
+                $path = ltrim($path['path'], '/');
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -74,18 +85,18 @@ class EventHandling
             return;
         }
 
-        if (\strpos($requestedUrl, $path) === false) {
+        if (strpos($requestedUrl, $path) === false) {
             return;
         }
 
-        if (\strpos($requestedUrl, $path) !== 0) {
+        if (strpos($requestedUrl, $path) !== 0) {
             return;
         }
 
         // order hash
-        $parts = \explode('/', $requestedUrl);
+        $parts = explode('/', $requestedUrl);
 
-        if (\count($parts) > 2) {
+        if (count($parts) > 2) {
             // load order
             $orderHash = $parts[2];
 
@@ -126,10 +137,10 @@ class EventHandling
 
             $Processing = new Controls\OrderProcess\Processing();
 
-            $steps   = \array_keys($OrderProcess->getSteps());
+            $steps   = array_keys($OrderProcess->getSteps());
             $steps[] = 'Order';
             $steps[] = $Processing->getName();
-            $steps   = \array_flip($steps);
+            $steps   = array_flip($steps);
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
@@ -148,7 +159,6 @@ class EventHandling
                 $CheckoutSite->setAttribute('order::hash', $Order->getHash());
             } catch (QUI\Exception $Exception) {
                 QUI::getGlobalResponse()->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
-
                 // @todo weiterleiten zu fehler seite
             }
 
@@ -380,7 +390,7 @@ class EventHandling
             $url = $Product->getUrl();
 
             $Collection->append(
-                '<a href="'.$url.'"><span class="fa fa-chevron-right"></span></a>'
+                '<a href="' . $url . '"><span class="fa fa-chevron-right"></span></a>'
             );
         } catch (QUI\Exception $Exception) {
         }
@@ -452,7 +462,7 @@ class EventHandling
                 QUI::getLocale()->get('quiqqer/order', 'erp.comment.order.created', [
                     'orderId' => $Order->getId()
                 ]),
-                \strtotime($Order->getAttribute('c_date'))
+                strtotime($Order->getAttribute('c_date'))
             );
         }
     }

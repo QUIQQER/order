@@ -2,6 +2,17 @@
 
 namespace QUI\ERP\Order;
 
+use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Invoice\Invoice;
+use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
+use QUI\ERP\Accounting\Payments\Types\Payment;
+use QUI\ERP\Address;
+use QUI\ERP\Comments;
+use QUI\ERP\Currency\Currency;
+use QUI\ERP\Shipping\Api\ShippingInterface;
+use QUI\ERP\Shipping\Types\ShippingEntry;
+use QUI\ERP\User;
+
 /**
  * Interface OrderInterface
  *
@@ -12,7 +23,7 @@ interface OrderInterface
     /**
      * It return the invoice, if an invoice exist for the order
      *
-     * @return \QUI\ERP\Accounting\Invoice\Invoice
+     * @return Invoice|InvoiceTemporary
      * @throws \QUI\ERP\Accounting\Invoice\Exception
      */
     public function getInvoice();
@@ -22,14 +33,14 @@ interface OrderInterface
      *
      * @return bool
      */
-    public function isPosted();
+    public function isPosted(): bool;
 
     /**
      * Alias for isPosted
      *
      * @return bool
      */
-    public function hasInvoice();
+    public function hasInvoice(): bool;
 
 
     /**
@@ -37,12 +48,12 @@ interface OrderInterface
      *
      * @return array
      */
-    public function toArray();
+    public function toArray(): array;
 
     /**
      * Return the order id
      *
-     * @return integer
+     * @return int|string
      */
     public function getId();
 
@@ -52,35 +63,35 @@ interface OrderInterface
      *
      * @return int
      */
-    public function isSuccessful();
+    public function isSuccessful(): int;
 
     /**
      * Return invoice address
      *
-     * @return \QUI\ERP\Address
+     * @return Address
      */
-    public function getInvoiceAddress();
+    public function getInvoiceAddress(): Address;
 
     /**
      * Return delivery address
      *
-     * @return \QUI\ERP\Address
+     * @return Address
      */
-    public function getDeliveryAddress();
+    public function getDeliveryAddress(): Address;
 
     /**
      * Return the order create date
      *
-     * @return integer
+     * @return string
      */
-    public function getCreateDate();
+    public function getCreateDate(): string;
 
     /**
      * Return extra data array
      *
      * @return array
      */
-    public function getData();
+    public function getData(): array;
 
     /**
      * Return a data entry
@@ -88,37 +99,37 @@ interface OrderInterface
      * @param string $key
      * @return mixed|null
      */
-    public function getDataEntry($key);
+    public function getDataEntry(string $key);
 
     /**
      * Return the hash
      *
      * @return string
      */
-    public function getHash();
+    public function getHash(): string;
 
     /**
      * Return the customer of the order
      *
-     * @return \QUI\ERP\User
+     * @return User
      */
-    public function getCustomer();
+    public function getCustomer(): User;
 
     /**
      * Return the currency of the order
      * - At the moment its the default currency of the system
      * - If we want to have different currencies, this can be implemented here
      *
-     * @return \QUI\ERP\Currency\Currency
+     * @return Currency
      */
-    public function getCurrency();
+    public function getCurrency(): Currency;
 
     /**
      * Has the order a delivery address?
      *
      * @return bool
      */
-    public function hasDeliveryAddress();
+    public function hasDeliveryAddress(): bool;
 
     //region articles
 
@@ -127,14 +138,14 @@ interface OrderInterface
      *
      * @return int
      */
-    public function count();
+    public function count(): int;
 
     /**
      * Return the order articles list
      *
-     * @return \QUI\ERP\Accounting\ArticleList
+     * @return ArticleList
      */
-    public function getArticles();
+    public function getArticles(): ArticleList;
 
     //endregion
 
@@ -143,9 +154,9 @@ interface OrderInterface
     /**
      * Return the payment
      *
-     * @return null|\QUI\ERP\Accounting\Payments\Types\Payment
+     * @return null|Payment
      */
-    public function getPayment();
+    public function getPayment(): ?Payment;
 
     /**
      * Return the payment paid status information
@@ -156,21 +167,21 @@ interface OrderInterface
      *
      * @throws \QUI\ERP\Exception
      */
-    public function getPaidStatusInformation();
+    public function getPaidStatusInformation(): array;
 
     /**
      * Is the order already paid?
      *
      * @return bool
      */
-    public function isPaid();
+    public function isPaid(): bool;
 
     /**
      * Return all transactions related to the order
      *
      * @return array
      */
-    public function getTransactions();
+    public function getTransactions(): array;
 
     //endregion
 
@@ -179,16 +190,16 @@ interface OrderInterface
     /**
      * Return the shipping from the order
      *
-     * @return \QUI\ERP\Shipping\Types\ShippingEntry|null
+     * @return ShippingEntry|null
      */
-    public function getShipping();
+    public function getShipping(): ?ShippingEntry;
 
     /**
      * Set a shipping to the order
      *
-     * @param \QUI\ERP\Shipping\Api\ShippingInterface $Shipping
+     * @param ShippingInterface $Shipping
      */
-    public function setShipping(\QUI\ERP\Shipping\Api\ShippingInterface $Shipping);
+    public function setShipping(ShippingInterface $Shipping);
 
     /**
      * Remove the shipping from the order
@@ -202,9 +213,9 @@ interface OrderInterface
     /**
      * Return the comments
      *
-     * @return null|\QUI\ERP\Comments
+     * @return null|Comments
      */
-    public function getComments();
+    public function getComments(): ?Comments;
 
     //endregion
 
@@ -213,18 +224,18 @@ interface OrderInterface
     /**
      * Return the history object
      *
-     * @return null|\QUI\ERP\Comments
+     * @return null|Comments
      */
-    public function getHistory();
+    public function getHistory(): ?Comments;
 
     //endregion
 
     //region frontend messages
 
     /**
-     * @return null|\QUI\ERP\Comments
+     * @return null|Comments
      */
-    public function getFrontendMessages();
+    public function getFrontendMessages(): ?Comments;
 
     /**
      * @param string $message
