@@ -11,5 +11,14 @@
         <params>
             <param name="days" type="integer"/>
         </params>
+
+        <autocreate>
+            <interval>0 0 * * *</interval>
+            <active>1</active>
+
+            <params>
+                <param name="days">7</param>
+            </params>
+        </autocreate>
     </cron>
 </crons>
