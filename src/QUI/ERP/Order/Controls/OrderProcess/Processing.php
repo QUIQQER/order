@@ -101,7 +101,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order   = $this->getOrder();
         $Payment = $Order->getPayment();
 
-        if (QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
+        if ($Payment && QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
             return '';
         }
 
