@@ -80,6 +80,11 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getBody()
     {
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderOrderProcessCheckoutOutputBefore',
+            [$this]
+        );
+
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order  = $this->getOrder();
 
