@@ -39,7 +39,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         ]);
 
         $this->addCSSClass('quiqqer-order-customerData-container');
-        $this->addCSSFile(dirname(__FILE__) . '/CustomerData.css');
+        $this->addCSSFile(dirname(__FILE__).'/CustomerData.css');
     }
 
     /**
@@ -174,7 +174,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'isOnlyB2C'                => $isOnlyB2C,
         ]);
 
-        return $Engine->fetch(dirname(__FILE__) . '/CustomerData.html');
+        return $Engine->fetch(dirname(__FILE__).'/CustomerData.html');
     }
 
     /**
@@ -368,7 +368,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             }
 
             if (isset($_REQUEST['street_number'])) {
-                $street = $street . ' ' . trim($_REQUEST['street_number']);
+                $street = $street.' '.trim($_REQUEST['street_number']);
             }
 
             $street = trim($street);
@@ -406,6 +406,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 $User->setAttribute('quiqqer.erp.isNettoUser', QUI\ERP\Utils\User::IS_BRUTTO_USER);
                 $User->setCompanyStatus(false);
             }
+        } else {
+            $User->setCompanyStatus(!empty($Address->getAttribute('company')));
         }
 
         $addressId = $User->getAttribute('quiqqer.erp.address');
@@ -538,7 +540,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $message = '';
 
         if (QUI::getSession()->get('comment-customer')) {
-            $message .= QUI::getSession()->get('comment-customer') . "\n";
+            $message .= QUI::getSession()->get('comment-customer')."\n";
         }
 
         if (QUI::getSession()->get('comment-message')) {
