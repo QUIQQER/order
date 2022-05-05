@@ -1852,6 +1852,14 @@
             ]]></en>
         </locale>
 
+        <locale name="customer.data.vat.chaning.not.allowed">
+            <de><![CDATA[
+            Die Umsatzsteuer-ID muss bei Änderungen geprüft werden, daher kannst du diese nicht ändern. Bitte wende dich an den Shop Betreiber diesbezüglich.
+            ]]></de>
+            <en><![CDATA[
+            The VAT ID must be checked in case of changes, therefore you cannot change it. Please contact the store owner about this.
+            ]]></en>
+        </locale>
     </groups>
 
 </locales>
