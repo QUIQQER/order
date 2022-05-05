@@ -7,10 +7,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
     'qui/QUI',
     'qui/controls/Control',
     'package/quiqqer/order/bin/frontend/Orders',
-    'Ajax'
+    'Ajax',
+    'Locale'
 
-], function (QUI, QUIControl, Orders, QUIAjax) {
+], function (QUI, QUIControl, Orders, QUIAjax, QUILocale) {
     "use strict";
+
+    const lg = 'quiqqer/order';
 
     return new Class({
 
@@ -29,8 +32,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             this.parent(options);
 
             this.$CheckTimeout = null;
-            this.$Close        = null;
-            this.EditButton    = null;
+            this.$Close = null;
+            this.EditButton = null;
 
             this.addEvents({
                 onImport: this.$onImport
@@ -86,14 +89,14 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             if (Country.get('data-qui') && !Country.get('data-quiid')) {
                 QUI.parse(this.getElm()).then(function () {
                     QUI.Controls
-                        .getById(Country.get('data-quiid'))
-                        .addEvent('onCountryChange', self.$onCountryChange);
+                       .getById(Country.get('data-quiid'))
+                       .addEvent('onCountryChange', self.$onCountryChange);
                 });
             } else {
                 if (Country.get('data-quiid')) {
                     QUI.Controls
-                        .getById(Country.get('data-quiid'))
-                        .addEvent('onCountryChange', self.$onCountryChange);
+                       .getById(Country.get('data-quiid'))
+                       .addEvent('onCountryChange', self.$onCountryChange);
                 } else {
                     Country.addEvent('change', self.$onCountryChange);
                 }
@@ -109,9 +112,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          */
         save: function () {
             // address data
-            var Parent   = this.getElm().getElement('.quiqqer-order-customerData-edit');
+            var Parent = this.getElm().getElement('.quiqqer-order-customerData-edit');
             var formElms = Parent.getElements('input,select');
-            var address  = {};
+            var address = {};
 
             var i, len, forElement;
 
@@ -136,7 +139,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             if (OrderProcessNode) {
                 OrderProcess = QUI.Controls.getById(OrderProcessNode.get('data-quiid'));
-                Loader       = OrderProcess.Loader;
+                Loader = OrderProcess.Loader;
             }
 
             if (OrderProcess) {
@@ -372,8 +375,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             }
 
             var businessType = Target.value;
-            var Company      = this.getElm().getElement('.quiqqer-order-customerData-edit-company');
-            var VatId        = this.getElm().getElement('.quiqqer-order-customerData-edit-vatId');
+            var Company = this.getElm().getElement('.quiqqer-order-customerData-edit-company');
+            var VatId = this.getElm().getElement('.quiqqer-order-customerData-edit-vatId');
 
             var styles = {
                 display : 'inline-block',
@@ -389,8 +392,16 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             Company.setStyles(styles);
             VatId.setStyles(styles);
 
-            function show () {
-                moofx([VatId, Company]).animate({
+            function show() {
+                if (VatId.getElement('input').value !== '') {
+                    VatId.getElement('input').disabled = true;
+                    VatId.getElement('input').title = QUILocale.get(lg, 'customer.data.vat.chaning.not.allowed');
+                }
+
+                moofx([
+                    VatId,
+                    Company
+                ]).animate({
                     height      : Company.getScrollSize().y,
                     marginBottom: 10,
                     opacity     : 1
@@ -399,8 +410,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 });
             }
 
-            function hide () {
-                moofx([VatId, Company]).animate({
+            function hide() {
+                moofx([
+                    VatId,
+                    Company
+                ]).animate({
                     height : 0,
                     margin : 0,
                     padding: 0,
@@ -458,7 +472,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          * @param options
          */
         $fx: function (Node, styles, options) {
-            options      = options || {};
+            options = options || {};
             var duration = options.duration || 250;
 
             return new Promise(function (resolve) {
