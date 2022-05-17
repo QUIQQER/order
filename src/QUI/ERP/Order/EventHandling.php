@@ -300,11 +300,19 @@ class EventHandling
         CustomerData::parseSessionOrderCommentsToOrder($Order);
 
         if (Settings::getInstance()->get('order', 'sendAdminOrderConfirmation')) {
-            Mail::sendAdminOrderConfirmationMail($Order);
+            try {
+                Mail::sendAdminOrderConfirmationMail($Order);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+            }
         }
 
         if (Settings::getInstance()->get('order', 'sendOrderConfirmation')) {
-            Mail::sendOrderConfirmationMail($Order);
+            try {
+                Mail::sendOrderConfirmationMail($Order);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+            }
         }
     }
 
@@ -390,7 +398,7 @@ class EventHandling
             $url = $Product->getUrl();
 
             $Collection->append(
-                '<a href="' . $url . '"><span class="fa fa-chevron-right"></span></a>'
+                '<a href="'.$url.'"><span class="fa fa-chevron-right"></span></a>'
             );
         } catch (QUI\Exception $Exception) {
         }
