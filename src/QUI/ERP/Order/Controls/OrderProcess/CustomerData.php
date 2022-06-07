@@ -438,6 +438,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $User->save();
         $Address->save();
 
+        $User->refresh();
+
         $this->getOrder()->setInvoiceAddress($Address);
         $this->getOrder()->setCustomer($User);
         $this->getOrder()->save();
