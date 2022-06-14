@@ -283,7 +283,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      * @throws QUI\ERP\Exception
      * @throws QUI\Permissions\Exception
      */
-    protected function calculatePayments()
+    public function calculatePayments()
     {
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Calculate Payments');
 
