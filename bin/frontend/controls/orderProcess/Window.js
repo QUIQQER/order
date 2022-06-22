@@ -35,6 +35,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
         ],
 
         initialize: function (options) {
+            this.$isFinished = false;
+
             // default
             this.setAttributes({
                 title        : false,
@@ -55,15 +57,15 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
             this.$Order = null;
 
             // nodes
-            this.$Header     = null;
+            this.$Header = null;
             this.$OrderTitle = null;
-            this.$OrderIcon  = null;
-            this.$Container  = null;
+            this.$OrderIcon = null;
+            this.$Container = null;
 
             // buttons
             this.$Previous = null;
-            this.$Next     = null;
-            this.$Submit   = null;
+            this.$Next = null;
+            this.$Submit = null;
 
             this.addEvents({
                 onOpen  : this.$onOpen,
@@ -83,6 +85,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 Content = this.getContent();
 
             self.getElm().addClass('quiqqer-order-window');
+            self.getElm().set('data-qui', 'package/quiqqer/order/bin/frontend/controls/orderProcess/Window');
 
             Content.set({
                 html  : Mustache.render(template, {
@@ -95,9 +98,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
 
             Content.addClass('quiqqer-order-window');
 
-            this.$Container  = Content.getElement('.quiqqer-order-window-container');
-            this.$Header     = Content.getElement('.quiqqer-order-window-header');
-            this.$OrderIcon  = this.$Header.getElement('.fa');
+            this.$Container = Content.getElement('.quiqqer-order-window-container');
+            this.$Header = Content.getElement('.quiqqer-order-window-header');
+            this.$OrderIcon = this.$Header.getElement('.fa');
             this.$OrderTitle = this.$Header.getElement('.quiqqer-order-window-header-text-title');
 
             var onOrderChange = function (OrderProcess) {
@@ -124,6 +127,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                 }
 
                 if (step === 'Finish') {
+                    self.$isFinished = true;
+
                     var Parent = null;
 
                     if (self.$Next && self.$Next.getElm()) {
@@ -178,9 +183,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
                     }.bind(this),
 
                     onChange: onOrderChange,
-                    
+
                     onInject: function () {
-                        
+
                     }
                 }
             }).inject(this.$Container);
@@ -310,6 +315,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Window', [
          * window event : on close
          */
         $onClose: function () {
+            // check if at last step
+            if (this.$isFinished) {
+                window.location.reload();
+                return;
+            }
+
             if (this.$Order) {
                 this.$Order.destroy();
             }
