@@ -8,6 +8,8 @@ namespace QUI\ERP\Order\Utils;
 
 use QUI;
 
+use function is_array;
+
 /**
  * Class Utils
  * Helper to get some stuff (urls and information's) easier for the the order
@@ -104,7 +106,7 @@ class Utils
 
         if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
             $url = self::$url;
-            $url = $url.'/'.$Step->getName();
+            $url = $url . '/' . $Step->getName();
 
             return $url;
         }
@@ -124,7 +126,7 @@ class Utils
     {
         $url = self::getOrderProcessUrl($Project);
 
-        return $url.'/Order/'.$hash;
+        return $url . '/Order/' . $hash;
     }
 
     /**
@@ -192,7 +194,7 @@ class Utils
         }
 
         // parse the frontend users category
-        $url .= '/erp/erp-order#'.$Order->getHash();
+        $url .= '/erp/erp-order#' . $Order->getHash();
 
         if ($ending) {
             $url .= '.html';
@@ -215,11 +217,11 @@ class Utils
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
-            return \date('Y').'-';
+            return \date('Y') . '-';
         }
 
         if ($setting === false) {
-            return \date('Y').'-';
+            return \date('Y') . '-';
         }
 
         $prefix = \strftime($setting);
@@ -254,10 +256,10 @@ class Utils
      */
     public static function importProductsToBasketList(
         QUI\ERP\Products\Product\ProductList $List,
-        $products = [],
+        array $products = [],
         $Order = null
     ): QUI\ERP\Products\Product\ProductList {
-        if (!\is_array($products)) {
+        if (!is_array($products)) {
             $products = [];
         }
 
@@ -309,7 +311,8 @@ class Utils
                         'order.process.product.not.available',
                         [
                             'title'     => $Real->getTitle(),
-                            'articleNo' => $Real->getField(QUI\ERP\Products\Handler\Fields::FIELD_PRODUCT_NO)->getValue()
+                            'articleNo' => $Real->getField(QUI\ERP\Products\Handler\Fields::FIELD_PRODUCT_NO)->getValue(
+                            )
                         ]
                     );
 
@@ -333,7 +336,6 @@ class Utils
                 $List->addProduct($Product);
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
-
                 // @todo produkt existiert nicht, dummy product
             }
         }

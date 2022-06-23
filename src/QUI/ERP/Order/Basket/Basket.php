@@ -7,9 +7,13 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
-use QUI\ERP\Products\Product\ProductList;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
+use QUI\ERP\Products\Product\ProductList;
+
+use function is_array;
+use function json_decode;
+use function json_encode;
 
 /**
  * Class Basket
@@ -31,7 +35,7 @@ class Basket
      *
      * @var QUI\ERP\Products\Product\ProductList|null
      */
-    protected $List = null;
+    protected ?ProductList $List = null;
 
     /**
      * @var QUI\Interfaces\Users\User
@@ -44,9 +48,9 @@ class Basket
     protected $hash = null;
 
     /**
-     * @var QUI\ERP\Comments
+     * @var QUI\ERP\Comments|null
      */
-    protected $FrontendMessages = null;
+    protected ?QUI\ERP\Comments $FrontendMessages = null;
 
     /**
      * Basket constructor.
@@ -66,9 +70,12 @@ class Basket
             return;
         }
 
-        $this->List             = new ProductList();
-        $this->List->duplicate  = true;
+        $this->List            = new ProductList();
+        $this->List->duplicate = true;
+        $this->List->setUser($User);
+
         $this->FrontendMessages = new QUI\ERP\Comments();
+
 
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
@@ -96,7 +103,7 @@ class Basket
         $this->User = $User;
         $this->hash = $data['hash'];
 
-        $this->import(\json_decode($data['products'], true));
+        $this->import(json_decode($data['products'], true));
         $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
@@ -174,11 +181,11 @@ class Basket
      *
      * @param array $products
      */
-    public function import($products = [])
+    public function import(array $products = [])
     {
         $this->clear();
 
-        if (!\is_array($products)) {
+        if (!is_array($products)) {
             $products = [];
         }
 
@@ -247,7 +254,7 @@ class Basket
             QUI::getDataBase()->update(
                 QUI\ERP\Order\Handler::getInstance()->tableBasket(),
                 [
-                    'products' => \json_encode($result),
+                    'products' => json_encode($result),
                     'hash'     => $this->hash
                 ],
                 [
@@ -369,7 +376,7 @@ class Basket
      */
     public function getOrder()
     {
-        if ($this->hash === null || empty($this->hash)) {
+        if (empty($this->hash)) {
             throw new Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 QUI\ERP\Order\Handler::ERROR_ORDER_NOT_FOUND
