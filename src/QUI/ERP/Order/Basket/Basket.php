@@ -103,7 +103,10 @@ class Basket
         $this->User = $User;
         $this->hash = $data['hash'];
 
-        $this->import(json_decode($data['products'], true));
+        if (!empty($data['products'])) {
+            $this->import(json_decode($data['products'], true));
+        }
+
         $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
