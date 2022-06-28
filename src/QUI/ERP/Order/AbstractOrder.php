@@ -383,6 +383,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->paymentId  = $data['payment_id'];
         $this->successful = (int)$data['successful'];
 
+        if ($data['paid_data'] === null) {
+            $data['paid_data'] = '';
+        }
+
         $this->setAttributes([
             'paid_status'          => (int)$data['paid_status'],
             'paid_data'            => json_decode($data['paid_data'], true),
