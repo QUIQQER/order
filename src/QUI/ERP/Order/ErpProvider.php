@@ -90,6 +90,15 @@ class ErpProvider extends AbstractErpProvider
 
                 'subject.description' => ['quiqqer/order', 'order.confirmation.subject.description'],
                 'content.description' => ['quiqqer/order', 'order.confirmation.body.description']
+            ],
+            [
+                'title'       => QUI::getLocale()->get('quiqqer/order', 'mail.text.orderPaymentSuccess.title'),
+                'description' => QUI::getLocale()->get('quiqqer/order', 'mail.text.orderPaymentSuccess.description'),
+                'subject'     => ['quiqqer/order', 'mail.payment_success.body'],
+                'content'     => ['quiqqer/order', 'mail.payment_success.body'],
+
+                'subject.description' => ['quiqqer/order', 'mail.description.orderPaymentSuccess.subject'],
+                'content.description' => ['quiqqer/order', 'mail.description.orderPaymentSuccess.body']
             ]
         ];
     }

@@ -1188,8 +1188,8 @@
         </locale>
 
         <locale name="mail.text.orderConfirmation.title">
-            <de><![CDATA[Bestellbestätigung]]></de>
-            <en><![CDATA[Order confirmation]]></en>
+            <de><![CDATA[Bestellungen - Bestellbestätigung]]></de>
+            <en><![CDATA[Orders - Order confirmation]]></en>
         </locale>
         <locale name="mail.text.orderConfirmation.description">
             <de><![CDATA[
@@ -1199,6 +1199,36 @@
             An order confirmation is sent to the customer when they have placed an order.
             ]]></en>
         </locale>
+        <locale name="mail.text.orderPaymentSuccess.title">
+            <de><![CDATA[Bestellungen - Zahlungsbestätigung]]></de>
+            <en><![CDATA[Orders - Payment confirmation]]></en>
+        </locale>
+        <locale name="mail.text.orderPaymentSuccess.description">
+            <de><![CDATA[
+            Kann versandt werden, wenn eine Bestellung vollständig bezahlt wurde. Wird aktuell nur manuell getriggert (programmiertechnisch).
+            ]]></de>
+            <en><![CDATA[
+            Can be sent when an order has been paid in full. Currently only triggered manually (by code).
+            ]]></en>
+        </locale>
+        <locale name="mail.payment_success.subject">
+            <de><![CDATA[Ihre Bestellung #[orderId] wurde bezahlt]]></de>
+            <en><![CDATA[Your order #[orderId] has been paid]]></en>
+        </locale>
+        <locale name="mail.payment_success.body" html="true">
+            <de><![CDATA[<h3>Hallo [contactPersonOrName],</h3>
+<p>der Zahlungseingang für Ihre Bestellung mit der Nr. <b>[orderId]</b> vom [date] wurde erfolgreich verbucht. Ihre Bestellung gilt hiermit als bezahlt. Wir werden Ihre Bestellung so schnell wie möglich bearbeiten.</p>
+<p>Beste Grüße,<br/>
+[systemCompany]
+</p>]]></de>
+            <en><![CDATA[<h3>Hello [contactPersonOrName],</h3>
+<p>the receipt of payment for your order with the no. <b>[orderId]</b> from [date] was successfully booked. Your order is hereby considered paid. We will process your order as soon as possible.</p>
+<p>Best regards,<br/>
+[systemCompany]
+</p>]]></en>
+        </locale>
+
+
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
@@ -1844,6 +1874,82 @@
                 <li><b>[user]:</b> - Name of the customer</li>
                 <li><b>[company]:</b> - Company of the customer</li>
                 <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - Firstname of the customer/li>
+                <li><b>[lastname]:</b> - Lastname of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.orderPaymentSuccess.subject">
+            <de><![CDATA[
+            <p>Betreff der Zahlungsbestätigungs-Mail. Verfügbare Platzhalter:</p>
+            <ul>
+                <li><b>[orderId]:</b> Bestell-Nr.</li>
+                <li><b>[hash]:</b> Bestell-Hash</li>
+                <li><b>[date]:</b> Bestelldatum</li>
+                <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
+                <li><b>[user]:</b> - Name des Kunden</li>
+                <li><b>[company]:</b> - Firma des Kunden</li>
+                <li><b>[companyOrName]:</b> - Firma des Kunden, falls diese leer ist wird Vor- und Nachname des Kunden verwendet</li>
+                <li><b>[contactPerson]:</b> - Ansprechpartner</li>
+                <li><b>[contactPersonOrName]:</b> - Ansprechpartner, falls diese leer ist wird Vor- und Nachname des Kunden verwendet</li>
+                <li><b>[email]:</b> - E-Mail des Kunden</li>
+                <li><b>[salutation]:</b> - Anrede des Kunden</li>
+                <li><b>[firstname]:</b> - Vorname des Kunden</li>
+                <li><b>[lastname]:</b> - Nachname des Kunden</li>
+            </ul>
+            ]]></de>
+            <en><![CDATA[
+            <p>Subject of the payment confirmation mail. Available placeholders:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order no.</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty customer first and last name is used</li>
+                <li><b>[contactPerson]:</b> - Contact person</li>
+                <li><b>[contactPersonOrName]:</b> - Contact person, if this is empty customer first and last name is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - Firstname of the customer/li>
+                <li><b>[lastname]:</b> - Lastname of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.orderPaymentSuccess.body">
+            <de><![CDATA[
+            <p>Inhalt der Zahlungsbestätigungs-Mail. Verfügbare Platzhalter:</p>
+            <ul>
+                <li><b>[orderId]:</b> Bestell-Nr.</li>
+                <li><b>[hash]:</b> Bestell-Hash</li>
+                <li><b>[date]:</b> Bestelldatum</li>
+                <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
+                <li><b>[user]:</b> - Name des Kunden</li>
+                <li><b>[company]:</b> - Firma des Kunden</li>
+                <li><b>[companyOrName]:</b> - Firma des Kunden, falls diese leer ist wird Vor- und Nachname des Kunden verwendet</li>
+                <li><b>[contactPerson]:</b> - Ansprechpartner</li>
+                <li><b>[contactPersonOrName]:</b> - Ansprechpartner, falls diese leer ist wird Vor- und Nachname des Kunden verwendet</li>
+                <li><b>[email]:</b> - E-Mail des Kunden</li>
+                <li><b>[salutation]:</b> - Anrede des Kunden</li>
+                <li><b>[firstname]:</b> - Vorname des Kunden</li>
+                <li><b>[lastname]:</b> - Nachname des Kunden</li>
+            </ul>
+            ]]></de>
+            <en><![CDATA[
+            <p>Content of the payment confirmation mail. Available placeholders:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order no.</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty customer first and last name is used</li>
+                <li><b>[contactPerson]:</b> - Contact person</li>
+                <li><b>[contactPersonOrName]:</b> - Contact person, if this is empty customer first and last name is used</li>
                 <li><b>[email]:</b> - Customer email</li>
                 <li><b>[salutation]:</b> - Salutation of the customer</li>
                 <li><b>[firstname]:</b> - Firstname of the customer/li>
