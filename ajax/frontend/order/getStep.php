@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
             $OrderProcess = new QUI\ERP\Order\OrderProcess([
                 'orderId'        => (int)$orderId,
                 'orderHash'      => $orderHash,
-                'basketEditable' => \boolval($basketEditable)
+                'basketEditable' => boolval($basketEditable)
             ]);
 
             $Current = $OrderProcess->getCurrentStep();
@@ -34,7 +34,7 @@ QUI::$Ajax->registerFunction(
             }
 
             $OrderProcess->setAttribute('step', $Current->getName());
-
+            
             $html    = $OrderProcess->create();
             $current = $OrderProcess->getCurrentStep()->getName();
 

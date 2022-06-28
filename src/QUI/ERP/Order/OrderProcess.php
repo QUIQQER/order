@@ -232,7 +232,7 @@ class OrderProcess extends QUI\Control
     }
 
     /**
-     * Check if the success full status is ok
+     * Check if the successful status is ok
      */
     protected function checkSuccessfulStatus()
     {

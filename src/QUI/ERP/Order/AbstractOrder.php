@@ -954,7 +954,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function hasDeliveryAddress(): bool
     {
-        return !empty($this->addressDelivery);
+        if (empty($this->addressDelivery)) {
+            return false;
+        }
+
+        if (isset($this->addressDelivery['id']) && $this->addressDelivery['id'] === 0) {
+            return false;
+        }
+
+        return true;
     }
 
     //endregion
