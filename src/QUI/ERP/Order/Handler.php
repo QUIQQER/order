@@ -8,6 +8,7 @@ namespace QUI\ERP\Order;
 
 use QUI;
 use QUI\Utils\Singleton;
+use QUI\ERP\Customer\Utils as CustomerUtils;
 
 /**
  * Class Handler
@@ -415,6 +416,149 @@ class Handler extends Singleton
         }
 
         return 0;
+    }
+
+    /**
+     * Sends email to an order customer with successful (full) payment info.
+     *
+     * @param AbstractOrder $Order
+     * @return void
+     */
+    public function sendOrderPaymentSuccessMail(AbstractOrder $Order): void
+    {
+        $Customer       = $Order->getCustomer();
+        $CustomerLocale = $Customer->getLocale();
+
+        $subject = $CustomerLocale->get(
+            'quiqqer/order',
+            'mail.payment_success.subject',
+            $this->getLocaleVarsForOrderMail($Order)
+        );
+
+        $body = $CustomerLocale->get(
+            'quiqqer/order',
+            'mail.payment_success.body',
+            $this->getLocaleVarsForOrderMail($Order)
+        );
+
+        $Mailer = QUI::getMailManager()->getMailer();
+
+        $Mailer->setSubject($subject);
+        $Mailer->setBody($body);
+
+        $Mailer->addRecipient(CustomerUtils::getInstance()->getEmailByCustomer($Customer));
+
+        try {
+            $Mailer->send();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+    }
+
+    /**
+     * Get all placeholder variables for order mails.
+     *
+     * @param AbstractOrder $Order
+     * @return array
+     */
+    protected function getLocaleVarsForOrderMail(AbstractOrder $Order): array
+    {
+        $Customer        = $Order->getCustomer();
+        $CustomerLocale  = $Customer->getLocale();
+        $CustomerAddress = $Customer->getAddress();
+        $user            = $CustomerAddress->getAttribute('contactPerson');
+
+        if (empty($user)) {
+            $user = $Customer->getName();
+        }
+
+        if (empty($user)) {
+            $user = $Customer->getAddress()->getName();
+        }
+
+        $user = \trim($user);
+
+        // contact person
+        $ContactPersonAddress = CustomerUtils::getInstance()->getContactPersonAddress($Customer);
+
+        if ($ContactPersonAddress) {
+            $contactPerson = $ContactPersonAddress->getName();
+        }
+
+        if (empty($contactPerson)) {
+            $contactPerson = $user;
+        }
+
+        $contactPersonOrName = $contactPerson;
+
+        if (empty($contactPersonOrName)) {
+            $contactPersonOrName = $user;
+        }
+
+        // Customer
+        $Address = $Order->getInvoiceAddress();
+
+        // customer name
+        $user = $Address->getAttribute('contactPerson');
+
+        if (empty($user)) {
+            $user = $Customer->getName();
+        }
+
+        if (empty($user)) {
+            $user = $Address->getName();
+        }
+
+        $user = \trim($user);
+
+        // email
+        $email = $Customer->getAttribute('email');
+
+        if (empty($email)) {
+            $mailList = $Address->getMailList();
+
+            if (isset($mailList[0])) {
+                $email = $mailList[0];
+            }
+        }
+
+        // Customer company
+        $customerCompany = $Address->getAttribute('company');
+        $companyOrName   = $customerCompany;
+
+        if (empty($companyOrName)) {
+            $companyOrName = $user;
+        }
+
+        // Shop company
+        $company = '';
+
+        try {
+            $Conf    = QUI::getPackage('quiqqer/erp')->getConfig();
+            $company = $Conf->get('company', 'name');
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+
+        return [
+            'orderId'       => $Order->getPrefixedId(),
+            'hash'          => $Order->getHash(),
+            'date'          => $CustomerLocale->formatDate(\strtotime($Order->getCreateDate())),
+            'systemCompany' => $company,
+
+            'contactPerson'       => $contactPerson,
+            'contactPersonOrName' => $contactPersonOrName,
+
+            'user'          => $user,
+            'name'          => $user,
+            'company'       => $Address->getAttribute('company'),
+            'companyOrName' => $companyOrName,
+            'address'       => $Address->render(),
+            'email'         => $email,
+            'salutation'    => $Address->getAttribute('salutation'),
+            'firstname'     => $Address->getAttribute('firstname'),
+            'lastname'      => $Address->getAttribute('lastname')
+        ];
     }
 
     //endregion
