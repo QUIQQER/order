@@ -657,7 +657,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $shipping = $this->getShipping()->getId();
         }
 
-
         return [
             'id'          => $this->id,
             'invoiceId'   => $this->invoiceId,
@@ -680,7 +679,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'status'             => $status,
             'paidStatus'         => $paidStatus,
             'shippingStatus'     => $shippingStatus,
-            'shipping'           => $shipping
+            'shipping'           => $shipping,
+            'shippingTracking'   => $this->getDataEntry('shippingTracking')
         ];
     }
 

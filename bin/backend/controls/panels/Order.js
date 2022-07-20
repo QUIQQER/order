@@ -153,6 +153,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('addressDelivery', data.addressDelivery);
                     self.setAttribute('currency', data.currency.code);
                     self.setAttribute('shipping', data.shipping);
+                    self.setAttribute('shippingTracking', data.shippingTracking);
 
                     if (data.addressDelivery &&
                         (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
@@ -202,19 +203,20 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.$unLoadCategory();
 
             const data = {
-                customerId     : this.getAttribute('customerId'),
-                customer       : this.getAttribute('customer'),
-                currency       : this.getAttribute('currency'),
-                addressInvoice : this.getAttribute('addressInvoice'),
-                addressDelivery: this.getAttribute('addressDelivery'),
-                data           : this.getAttribute('data'),
-                articles       : this.getAttribute('articles'),
-                paymentId      : this.getAttribute('paymentId'),
-                status         : this.getAttribute('status'),
-                shippingStatus : this.getAttribute('shippingStatus'),
-                shipping       : this.getAttribute('shipping'),
-                cDate          : this.getAttribute('cDate'),
-                priceFactors   : this.$serializedList.priceFactors
+                customerId      : this.getAttribute('customerId'),
+                customer        : this.getAttribute('customer'),
+                currency        : this.getAttribute('currency'),
+                addressInvoice  : this.getAttribute('addressInvoice'),
+                addressDelivery : this.getAttribute('addressDelivery'),
+                data            : this.getAttribute('data'),
+                articles        : this.getAttribute('articles'),
+                paymentId       : this.getAttribute('paymentId'),
+                status          : this.getAttribute('status'),
+                shippingStatus  : this.getAttribute('shippingStatus'),
+                shipping        : this.getAttribute('shipping'),
+                shippingTracking: this.getAttribute('shippingTracking'),
+                cDate           : this.getAttribute('cDate'),
+                priceFactors    : this.$serializedList.priceFactors
             };
 
             return new Promise(function (resolve) {
@@ -518,9 +520,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getButtons('actions').disable();
             this.getButtons('lock').show();
 
-            var categories = this.getCategoryBar().getChildren();
+            const categories = this.getCategoryBar().getChildren();
 
-            for (var i = 0, len = categories.length; i < len; i++) {
+            for (let i = 0, len = categories.length; i < len; i++) {
                 if (categories[i].getAttribute('name') === 'info') {
                     continue;
                 }
@@ -622,7 +624,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Open the information category
          */
         openInfo: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
             this.getCategory('info').setActive();
@@ -703,8 +705,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                 // events
                 self.$Customer.addEvent('change', function (Select) {
-                    var currentCustomerId = parseInt(self.getAttribute('customerId'));
-                    var userId = parseInt(Select.getValue());
+                    const currentCustomerId = parseInt(self.getAttribute('customerId'));
+                    const userId = parseInt(Select.getValue());
 
                     if (currentCustomerId === userId) {
                         return;
@@ -1341,6 +1343,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 ProcessingStatus = Content.getElement('[name="status"]'),
                 ShippingStatus   = Content.getElement('[name="shippingStatus"]'),
                 Shipping         = Content.getElement('[name="shipping"]'),
+                ShippingTracking = Content.getElement('[name="shippingTracking"]'),
                 Currency         = Content.getElement('[name="currency"]');
 
             if (this.$AddressInvoice) {
@@ -1368,6 +1371,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             // shipping stuff
             if (ShippingStatus) {
                 this.setAttribute('shippingStatus', parseInt(ShippingStatus.value));
+            }
+
+            if (ShippingTracking) {
+                this.setAttribute('shippingTracking', ShippingTracking.value);
             }
 
             if (Shipping) {
@@ -1700,6 +1707,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         return Shipping.getShippingList();
                     }).then(function (shippingList) {
                         const ShippingSelect = self.getContent().getElement('[name="shipping"]');
+                        const ShippingTracking = self.getContent().getElement('[name="shippingTracking"]');
 
                         new Element('option', {
                             html : '---',
@@ -1715,6 +1723,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
 
                         ShippingSelect.value = self.getAttribute('shipping');
+                        ShippingTracking.value = self.getAttribute('shippingTracking');
+
+                        if (ShippingTracking.get('data-quiid')) {
+                            QUI.Controls
+                               .getById(ShippingTracking.get('data-quiid'))
+                               .setValue(self.getAttribute('shippingTracking'));
+                        }
                     }).then(resolve);
                 });
             });

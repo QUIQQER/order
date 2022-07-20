@@ -164,6 +164,10 @@ QUI::$Ajax->registerFunction(
             }
         }
 
+        if (!empty($data['shippingTracking'])) {
+            $Order->setData('shippingTracking', $data['shippingTracking']);
+        }
+
         if (!empty($data['shipping'])) {
             try {
                 if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {

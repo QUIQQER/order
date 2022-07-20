@@ -277,7 +277,7 @@
         <tr>
             <td>
                 <label class="field-container">
-                    <span class="field-container-item" title="{{textShipping}}">
+                    <span class="field-container-item" title="{{textShippingStatus}}">
                         {{textShippingStatus}}
                     </span>
                     <span class="field-container-field field-container-field-no-padding order-data-shipping-status-field">
@@ -303,7 +303,11 @@
                     <span class="field-container-item" title="{{textShippingTracking}}">
                         {{textShippingTracking}}
                     </span>
-                    <input type="text" class="field-container-field" name="shippingTracking"/>
+                    <input type="text"
+                           class="field-container-field"
+                           name="shippingTracking"
+                           data-qui="package/quiqqer/shipping/bin/backend/controls/TrackingInput"
+                    />
                 </label>
             </td>
         </tr>
