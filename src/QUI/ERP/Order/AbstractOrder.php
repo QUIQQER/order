@@ -21,6 +21,7 @@ use function is_numeric;
 use function is_string;
 use function json_decode;
 use function json_encode;
+use function method_exists;
 use function preg_replace;
 use function round;
 use function strip_tags;
@@ -425,17 +426,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->Articles->setCurrency($this->Currency);
 
         // shipping
-        if (is_numeric($data['shipping_id']) && $this->Articles->count()) {
+        if (is_numeric($data['shipping_id'])) {
             $this->shippingId = (int)$data['shipping_id'];
 
             // validate shipping
-            $Shipping = $this->getShipping();
-            $Shipping->setOrder($this);
-
-            if (!$Shipping->isValid()
-                || !$Shipping->canUsedInOrder($this)
-                || !$Shipping->canUsedBy($this->getCustomer(), $this)) {
-                $this->shippingId = false;
+            try {
+                $this->validateShipping($this->getShipping());
+            } catch (QUI\Exception $Exception) {
+                $this->shippingId = null;
             }
         }
 
@@ -653,6 +651,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $shippingStatus = $this->getShippingStatus()->getId();
         }
 
+        $shipping = '';
+
+        if ($this->getShipping()) {
+            $shipping = $this->getShipping()->getId();
+        }
+
 
         return [
             'id'          => $this->id,
@@ -675,7 +679,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'paymentId'          => $paymentId,
             'status'             => $status,
             'paidStatus'         => $paidStatus,
-            'shippingStatus'     => $shippingStatus
+            'shippingStatus'     => $shippingStatus,
+            'shipping'           => $shipping
         ];
     }
 
@@ -1169,6 +1174,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @return void
+     */
+    public function removeCustomer()
+    {
+        $this->Customer   = null;
+        $this->customerId = 0;
+    }
+
+    /**
      * @param $date
      */
     public function setCreationDate($date)
@@ -1547,9 +1561,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * Set a shipping to the order
      *
      * @param QUI\ERP\Shipping\Api\ShippingInterface $Shipping
+     * @throws \QUI\Exception
      */
     public function setShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
     {
+        $this->validateShipping($Shipping);
         $this->shippingId = $Shipping->getId();
     }
 
@@ -1559,6 +1575,51 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function removeShipping()
     {
         $this->shippingId = null;
+    }
+
+    /**
+     * Shipping validation is only for the frontend
+     *
+     * @param null|QUI\ERP\Shipping\Api\ShippingInterface $Shipping
+     * @throws \QUI\Exception
+     */
+    public function validateShipping(?QUI\ERP\Shipping\Api\ShippingInterface $Shipping)
+    {
+        // no validation for the backend, shipping validation is only for the frontend
+        if (QUI::isBackend()) {
+            return;
+        }
+
+        if ($Shipping === null) {
+            return;
+        }
+
+        if (!$this->Articles->count()) {
+            throw new QUI\Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.shipping.is.not.valid.no.articles')
+            );
+        }
+
+        if (!method_exists($Shipping, 'setOrder')
+            || !method_exists($Shipping, 'isValid')
+            || !method_exists($Shipping, 'canUsedInOrder')
+            || !method_exists($Shipping, 'canUsedBy')
+        ) {
+            return;
+        }
+
+        // validate shipping
+        $Shipping->setOrder($this);
+
+        if (!$Shipping->isValid()
+            || !$Shipping->canUsedInOrder($this)
+            || !$Shipping->canUsedBy($this->getCustomer(), $this)) {
+            $this->shippingId = false;
+
+            throw new QUI\Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.shipping.is.not.valid')
+            );
+        }
     }
 
     //endregion
