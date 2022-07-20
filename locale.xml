@@ -1228,6 +1228,22 @@
 </p>]]></en>
         </locale>
 
+        <locale name="exception.shipping.is.not.valid.no.articles">
+            <de><![CDATA[
+            Der Bestellung kann keine Versandmethode zugewiesen werden, da die Bestellung noch keine Artikel besitzt.
+            ]]></de>
+            <en><![CDATA[
+            A shipping method cannot be assigned to the order because the order does not yet have any items.
+            ]]></en>
+        </locale>
+        <locale name="exception.shipping.is.not.valid">
+            <de><![CDATA[
+            Diese Versandmethode kann für diese Bestellung nicht verwendet werden, bitte wähle eine andere Versandmethode aus.
+            ]]></de>
+            <en><![CDATA[
+            This shipping method cannot be used for this order, please select a different shipping method.
+            ]]></en>
+        </locale>
 
     </groups>
 
@@ -1325,13 +1341,21 @@
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
         </locale>
+        <locale name="panel.order.shipping">
+            <de><![CDATA[Versandart]]></de>
+            <en><![CDATA[Shipping type]]></en>
+        </locale>
         <locale name="panel.order.shipping.data.title">
-            <de><![CDATA[Versandstatus]]></de>
-            <en><![CDATA[Shipping status]]></en>
+            <de><![CDATA[Versand]]></de>
+            <en><![CDATA[Shipping]]></en>
         </locale>
         <locale name="panel.order.shipping.data.status">
             <de><![CDATA[Status]]></de>
             <en><![CDATA[Status]]></en>
+        </locale>
+        <locale name="panel.order.shipping.tracking">
+            <de><![CDATA[Tracking ID]]></de>
+            <en><![CDATA[Tracking ID]]></en>
         </locale>
 
         <locale name="panel.orders.contextMenu.open.order">

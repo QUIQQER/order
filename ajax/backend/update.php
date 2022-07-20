@@ -4,9 +4,10 @@
  * This file contains package_quiqqer_order_ajax_backend_update
  */
 
-use QUI\ERP\Order\ProcessingStatus\Handler;
-use QUI\ERP\Accounting\PriceFactors\FactorList;
 use QUI\ERP\Accounting\PriceFactors\Factor;
+use QUI\ERP\Accounting\PriceFactors\FactorList;
+use QUI\ERP\Order\ProcessingStatus\Handler;
+use QUI\ERP\Shipping\Shipping;
 
 /**
  * Update an order
@@ -20,7 +21,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
         $Order = QUI\ERP\Order\Handler::getInstance()->get((int)$orderId);
-        $data  = \json_decode($data, true);
+        $data  = json_decode($data, true);
 
         // customer
         $Customer = null;
@@ -83,17 +84,19 @@ QUI::$Ajax->registerFunction(
                 $data['customer']['isCompany'] = false;
             }
 
-            $Customer = new QUI\ERP\User($data['customer']);
+            try {
+                $Customer = new QUI\ERP\User($data['customer']);
+            } catch (QUI\Exception $Eception) {
+            }
 
-
-            if (isset($data['customer']['quiqqer.erp.taxId'])) {
+            if ($Customer && isset($data['customer']['quiqqer.erp.taxId'])) {
                 $Customer->setAttribute(
                     'quiqqer.erp.taxId',
                     $data['customer']['quiqqer.erp.taxId']
                 );
             }
 
-            if (isset($data['customer']['quiqqer.erp.euVatId'])) {
+            if ($Customer && isset($data['customer']['quiqqer.erp.euVatId'])) {
                 $Customer->setAttribute(
                     'quiqqer.erp.euVatId',
                     $data['customer']['quiqqer.erp.euVatId']
@@ -103,6 +106,9 @@ QUI::$Ajax->registerFunction(
 
         if ($Customer) {
             $Order->setCustomer($Customer);
+        } else {
+            $Order->removeCustomer();
+            unset($data['customer']);
         }
 
 
@@ -156,6 +162,22 @@ QUI::$Ajax->registerFunction(
             } catch (QUI\ERP\Order\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
+        }
+
+        if (!empty($data['shipping'])) {
+            try {
+                if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+                    $Order->setShipping(
+                        Shipping::getInstance()->getShippingEntry($data['shipping'])
+                    );
+                }
+            } catch (QUI\Exception $Exception) {
+                QUI::getMessagesHandler()->addError(
+                    $Exception->getMessage()
+                );
+            }
+        } else {
+            $Order->removeShipping();
         }
 
         $Order->setAttribute('userSave', true);
