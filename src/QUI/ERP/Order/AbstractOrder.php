@@ -671,16 +671,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             'statusMails' => $this->getStatusMails()->toArray(),
             'currency'    => $this->getCurrency()->toArray(),
 
-            'articles'           => $articles,
-            'hasDeliveryAddress' => $this->hasDeliveryAddress(),
-            'addressDelivery'    => $this->getDeliveryAddress()->getAttributes(),
-            'addressInvoice'     => $this->getInvoiceAddress()->getAttributes(),
-            'paymentId'          => $paymentId,
-            'status'             => $status,
-            'paidStatus'         => $paidStatus,
-            'shippingStatus'     => $shippingStatus,
-            'shipping'           => $shipping,
-            'shippingTracking'   => $this->getDataEntry('shippingTracking')
+            'articles'             => $articles,
+            'hasDeliveryAddress'   => $this->hasDeliveryAddress(),
+            'addressDelivery'      => $this->getDeliveryAddress()->getAttributes(),
+            'addressInvoice'       => $this->getInvoiceAddress()->getAttributes(),
+            'paymentId'            => $paymentId,
+            'status'               => $status,
+            'paidStatus'           => $paidStatus,
+            'shippingStatus'       => $shippingStatus,
+            'shipping'             => $shipping,
+            'shippingTracking'     => $this->getDataEntry('shippingTracking'),
+            'shippingConfirmation' => $this->getDataEntry('shippingConfirmation')
         ];
     }
 
@@ -1620,6 +1621,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 QUI::getLocale()->get('quiqqer/order', 'exception.shipping.is.not.valid')
             );
         }
+    }
+
+    /**
+     * @return void
+     * @throws \QUI\Exception
+     */
+    public function sendShippingConfirmation()
+    {
+        Mail::sendOrderShippingConfirmation($this);
     }
 
     //endregion
