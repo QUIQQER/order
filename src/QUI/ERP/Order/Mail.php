@@ -10,6 +10,9 @@ use IntlDateFormatter;
 use QUI;
 
 use function dirname;
+use function is_array;
+use function is_string;
+use function json_decode;
 use function pathinfo;
 use function rename;
 use function strtotime;
@@ -268,6 +271,119 @@ class Mail
 
             return;
         }
+    }
+
+    /**
+     * Sends a shipping confirmation to the customer
+     *
+     * @param \QUI\ERP\Order\AbstractOrder $Order
+     * @return void
+     *
+     * @throws \QUI\Exception
+     */
+    public static function sendOrderShippingConfirmation(AbstractOrder $Order)
+    {
+        $Customer = $Order->getCustomer();
+        $Address  = $Customer->getAddress();
+        $email    = $Customer->getAttribute('email');
+        $Country  = $Customer->getCountry();
+
+        if (empty($email)) {
+            $mailList = $Address->getMailList();
+
+            if (isset($mailList[0])) {
+                $email = $mailList[0];
+            }
+        }
+
+        if (empty($email)) {
+            try {
+                $User = QUI::getUsers()->get($Customer->getId());
+
+                if ($User->getAttribute('email')) {
+                    $email = $User->getAttribute('email');
+                }
+            } catch (QUI\Exception $Exception) {
+            }
+        }
+
+        if (empty($email)) {
+            throw new QUI\Exception(
+                QUI::getLocale()->get('quiqqer/order', 'exception.shipping.order.no.customer.mail')
+            );
+        }
+
+        $shippingConfirmation = $Order->getDataEntry('shippingConfirmation');
+        $shippingTracking     = $Order->getDataEntry('shippingTracking');
+
+        if (is_string($shippingTracking)) {
+            $shippingTracking = json_decode($shippingTracking, true);
+        }
+
+        if (!is_array($shippingConfirmation)) {
+            $shippingConfirmation = [];
+        }
+
+        $shippingConfirmation[] = [
+            'time'  => time(),
+            'email' => $email
+        ];
+
+        $localeVar = self::getOrderLocaleVar($Order, $Customer);
+
+        $localeVar['trackingInfo'] = '';
+
+        if (!empty($shippingTracking) && isset($shippingTracking['type']) && isset($shippingTracking['number'])) {
+            $localeVar['trackingInfo'] = QUI::getLocale()->get(
+                'quiqqer/order',
+                'shipping.order.mail.body.shippingInformation',
+                [
+                    'trackingLink'   => QUI\ERP\Shipping\Tracking\Tracking::getUrl(
+                        $shippingTracking['number'],
+                        $shippingTracking['type'],
+                        $Country
+                    ),
+                    'trackingNumber' => $shippingTracking['number']
+                ]
+            );
+        }
+
+
+        // mail
+        $Mailer = QUI::getMailManager()->getMailer();
+        $Mailer->addRecipient($email);
+
+        $Mailer->setSubject(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'shipping.order.mail.subject',
+                $localeVar
+            )
+        );
+
+        $Mailer->setBody(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'shipping.order.mail.body',
+                $localeVar
+            )
+        );
+
+        try {
+            $Mailer->send();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addAlert(
+                QUI::getLocale()->get('quiqqer/shipping', 'exception.shipping.order.mail', [
+                    'orderId' => $Order->getPrefixedId(),
+                    'message' => $Exception->getMessage()
+                ])
+            );
+
+            return;
+        }
+
+        $Order->setData('shippingConfirmation', $shippingConfirmation);
+        $Order->update(QUI::getUsers()->getSystemUser());
     }
 
     /**

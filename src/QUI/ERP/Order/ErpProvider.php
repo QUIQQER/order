@@ -7,9 +7,9 @@
 namespace QUI\ERP\Order;
 
 use QUI;
-use QUI\ERP\Api\AbstractErpProvider;
-use QUI\Controls\Sitemap\Map;
 use QUI\Controls\Sitemap\Item;
+use QUI\Controls\Sitemap\Map;
+use QUI\ERP\Api\AbstractErpProvider;
 
 /**
  * Class ErpProvider
@@ -99,6 +99,15 @@ class ErpProvider extends AbstractErpProvider
 
                 'subject.description' => ['quiqqer/order', 'mail.description.orderPaymentSuccess.subject'],
                 'content.description' => ['quiqqer/order', 'mail.description.orderPaymentSuccess.body']
+            ],
+            [
+                'title'       => QUI::getLocale()->get('quiqqer/order', 'shipping.confirmation.title'),
+                'description' => QUI::getLocale()->get('quiqqer/order', 'shipping.confirmation.description'),
+                'subject'     => ['quiqqer/order', 'shipping.order.mail.subject'],
+                'content'     => ['quiqqer/order', 'shipping.order.mail.body'],
+
+                'subject.description' => ['quiqqer/order', 'mail.description.shipping.confirmation.subject'],
+                'content.description' => ['quiqqer/order', 'mail.description.shipping.confirmation.body']
             ]
         ];
     }

@@ -323,6 +323,15 @@
             <de><![CDATA[Status: [status]]]></de>
             <en><![CDATA[Status: [status]]]></en>
         </locale>
+
+        <locale name="shipping.confirmation.title">
+            <de><![CDATA[Bestellungen - Versandbestätigung]]></de>
+            <en><![CDATA[Orders - Shipping confirmation]]></en>
+        </locale>
+        <locale name="shipping.confirmation.description">
+            <de><![CDATA[Versandbestätigungs E-Mail]]></de>
+            <en><![CDATA[Shipping confirmation E-mail]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -1245,6 +1254,57 @@
             ]]></en>
         </locale>
 
+        <locale name="exception.shipping.order.no.customer.mail">
+            <de><![CDATA[
+            Es konnte keine Versandbestätigung gesendet werden, für den Kunden konnte keine E-Mail gefunden werden.
+            ]]></de>
+            <en><![CDATA[
+            No shipping confirmation could be sent, no email could be found for the customer.
+            ]]></en>
+        </locale>
+        <locale name="exception.shipping.order.mail">
+            <de><![CDATA[
+            Beim versenden der Versandbestätigung der Bestellung [orderId] ist ein Fehler aufgetreten.
+            [message]
+            ]]></de>
+            <en><![CDATA[
+            An error occurred while sending the shipping confirmation of the order [orderId].
+            [message]
+            ]]></en>
+        </locale>
+        <locale name="shipping.order.mail.subject">
+            <de><![CDATA[Deine Bestellung #[orderId] wurde versendet.]]></de>
+            <en><![CDATA[Your order #[orderId] has been shipped.]]></en>
+        </locale>
+        <locale name="shipping.order.mail.body" html="true">
+            <de><![CDATA[
+            <p>Hallo [name],</p>
+            <p>vielen Dank für Deine Bestellung bei uns am [date]. Diese ist unter der Bestellnummer '[orderId]' bei uns eingegangen.</p>
+            <p>Bitte kontrolliere die übermittelten Daten und beachten dazu auch die AGB und Widerrufsbelehrung
+            und setze Dich bei Änderungswünschen frühzeitig mit uns in Verbindung.</p>
+            [trackingInfo]
+
+            <p>Viele Grüße</p>
+            ]]></de>
+            <en><![CDATA[
+            <p>Hello [name],</p>
+            <p>Thank you for placing your order with us on [date]. We have received your order under the order number '[orderId]'.
+            <p>Please check the transmitted data and also note the terms and conditions and cancellation policy.
+            and get in touch with us early in case of change requests.</p>
+            [trackingInfo]
+
+            <p>Many greetings</p>
+            ]]></en>
+        </locale>
+
+        <locale name="shipping.order.mail.body.shippingInformation" html="true">
+            <de><![CDATA[
+            <p>Du kannst den Versandstatus deiner Bestellunter unter [trackingLink] verfolgen.</p>
+            ]]></de>
+            <en><![CDATA[
+            <p>You can track the shipping status of your order under [trackingLink]</p>.
+            ]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
@@ -1356,6 +1416,28 @@
         <locale name="panel.order.shipping.tracking">
             <de><![CDATA[Tracking ID]]></de>
             <en><![CDATA[Tracking ID]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.button">
+            <de><![CDATA[Versandbestätigung versenden]]></de>
+            <en><![CDATA[Send shipping confirmation]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.title">
+            <de><![CDATA[Versandbestätigung versenden?]]></de>
+            <en><![CDATA[Send shipping confirmation?]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.text">
+            <de><![CDATA[Möchtest du eine Versandbestätigung versenden?]]></de>
+            <en><![CDATA[Do you want to send a shipping confirmation?]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.information">
+            <de><![CDATA[
+            Sende eine Versandbestätigung an den Kunden und markiere diese Bestellung als versendet.
+            Diese Versandbestätigung ändert nicht den Bestell- oder Versandstatus.
+            ]]></de>
+            <en><![CDATA[
+            Send a shipping confirmation to the customer and mark this order as shipped.
+            This shipping confirmation does not change the order or shipping status.
+            ]]></en>
         </locale>
 
         <locale name="panel.orders.contextMenu.open.order">
@@ -1981,6 +2063,76 @@
             </ul>
             ]]></en>
         </locale>
+        <locale name="mail.description.shipping.confirmation.subject">
+            <de><![CDATA[
+            Betreff der Versandbestätigungsmail. Verfügbare Variablen:
+            <ul>
+                <li><b>[orderId]:</b> Bestell-ID</li>
+                <li><b>[hash]:</b> Bestellungs-Hash</li>
+                <li><b>[date]:</b> Bestellungsdatum</li>
+                <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
+                <li><b>[user]:</b> - Name des Kunden</li>
+                <li><b>[company]:</b> - Firma des Kunden</li>
+                <li><b>[companyOrName]:</b> - Firma des Kunden, falls diese leer ist wird [name] verwendet</li>
+                <li><b>[email]:</b> - E-Mail des Kunden</li>
+                <li><b>[salutation]:</b> - Anrede des Kunden</li>
+                <li><b>[firstname]:</b> - Vorname des Kunden</li>
+                <li><b>[lastname]:</b> - Nachname des Kunden</li>
+            </ul>
+            ]]></de>
+            <en><![CDATA[
+            <p>Subject of the order shipping confirmation E-mail. Available variables:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - Firstname of the customer/li>
+                <li><b>[lastname]:</b> - Lastname of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.shipping.confirmation.body">
+            <de><![CDATA[
+            Inhalt der Versandbestätigungsmail. Verfügbare Variablen:
+            <ul>
+                <li><b>[orderId]:</b> Bestell-ID</li>
+                <li><b>[hash]:</b> Bestellungs-Hash</li>
+                <li><b>[date]:</b> Bestellungsdatum</li>
+                <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
+                <li><b>[user]:</b> - Name des Kunden</li>
+                <li><b>[company]:</b> - Firma des Kunden</li>
+                <li><b>[companyOrName]:</b> - Firma des Kunden, falls diese leer ist wird [name] verwendet</li>
+                <li><b>[email]:</b> - E-Mail des Kunden</li>
+                <li><b>[salutation]:</b> - Anrede des Kunden</li>
+                <li><b>[firstname]:</b> - Vorname des Kunden</li>
+                <li><b>[lastname]:</b> - Nachname des Kunden</li>
+                <li><b>[trackingInfo]:</b> - Wenn es ein Tracking Info gibt, wird der Tracking Info Text verwendet</li>
+            </ul>
+            ]]></de>
+            <en><![CDATA[
+            <p>Body of the order shipping confirmation E-mail. Available variables:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - Firstname of the customer/li>
+                <li><b>[lastname]:</b> - Lastname of the customer</li>
+                <li><b>[trackingInfo]:</b> - If there is a tracking info, the tracking info text is used</li>
+            </ul>
+            ]]></en>
+        </locale>
 
         <locale name="customer.data.vat.chaning.not.allowed">
             <de><![CDATA[
@@ -1990,6 +2142,11 @@
             The VAT ID must be checked in case of changes, therefore you cannot change it. Please contact the store owner about this.
             ]]></en>
         </locale>
+        <locale name="shipping.confirmation.list.message">
+            <de><![CDATA[Eine Bestellbestätigung wurde am [date] an [email] gesendet.]]></de>
+            <en><![CDATA[An order confirmation was sent to [email] on [date].]]></en>
+        </locale>
+
     </groups>
 
 </locales>
