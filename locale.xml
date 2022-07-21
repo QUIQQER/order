@@ -2143,8 +2143,8 @@
             ]]></en>
         </locale>
         <locale name="shipping.confirmation.list.message">
-            <de><![CDATA[Eine Bestellbestätigung wurde am [date] an [email] gesendet.]]></de>
-            <en><![CDATA[An order confirmation was sent to [email] on [date].]]></en>
+            <de><![CDATA[Eine Versandbestätigung wurde am [date] an [email] gesendet.]]></de>
+            <en><![CDATA[An shipping confirmation was sent to [email] on [date].]]></en>
         </locale>
 
     </groups>
