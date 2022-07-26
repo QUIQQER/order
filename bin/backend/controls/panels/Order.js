@@ -1744,7 +1744,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                             const confirmations = self.getAttribute('shippingConfirmation');
 
-                            if (confirmations.length) {
+                            if (confirmations && confirmations.length) {
                                 let i, len, D;
                                 let Formatter = QUILocale.getDateTimeFormatter();
                                 const Ul = new Element('ul');
