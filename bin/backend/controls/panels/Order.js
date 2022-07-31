@@ -629,7 +629,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             this.Loader.show();
             this.getCategory('info').setActive();
-
+            
             return this.$closeCategory().then(function (Container) {
                 Container.set({
                     html: Mustache.render(templateData, {
@@ -657,11 +657,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textShippingTracking          : QUILocale.get(lg, 'panel.order.shipping.tracking'),
                         textShippingStatusTitle       : QUILocale.get(lg, 'panel.order.shipping.data.title'),
                         textShippingConfirmationButton: QUILocale.get(lg, 'panel.order.shipping.confirmation.button'),
+                        isShippingInstalled           : shippingInstalled,
 
                         textCurrencyTitle: QUILocale.get(lg, 'panel.order.currency.title'),
                         textCurrency     : QUILocale.get(lg, 'panel.order.currency.label'),
 
                         messageDifferentDeliveryAddress: QUILocale.get(lg, 'message.different,delivery.address')
+
                     })
                 });
 

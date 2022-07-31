@@ -306,7 +306,9 @@
                     <input type="text"
                            class="field-container-field"
                            name="shippingTracking"
+                           {{#isShippingInstalled}}
                            data-qui="package/quiqqer/shipping/bin/backend/controls/TrackingInput"
+                           {{/isShippingInstalled}}
                     />
                 </label>
             </td>
