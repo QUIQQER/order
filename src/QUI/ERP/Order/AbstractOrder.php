@@ -84,8 +84,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      * Article types
      */
     const ARTICLE_TYPE_PHYSICAL = 1;
-    const ARTICLE_TYPE_DIGITAL = 2;
-    const ARTICLE_TYPE_MIXED = 3;
+    const ARTICLE_TYPE_DIGITAL  = 2;
+    const ARTICLE_TYPE_MIXED    = 3;
 
     /**
      * order id
@@ -659,6 +659,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         return [
             'id'          => $this->id,
+            'prefixedId'  => $this->getPrefixedId(),
             'invoiceId'   => $this->invoiceId,
             'hash'        => $this->hash,
             'cDate'       => $this->cDate,
@@ -714,7 +715,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getPrefixedId(): string
     {
-        return $this->getIdPrefix() . $this->getId();
+        return $this->getIdPrefix().$this->getId();
     }
 
     /**
@@ -1438,8 +1439,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $isValidTimeStamp = function ($timestamp) {
             return ((string)(int)$timestamp === $timestamp)
-                && ($timestamp <= PHP_INT_MAX)
-                && ($timestamp >= ~PHP_INT_MAX);
+                   && ($timestamp <= PHP_INT_MAX)
+                   && ($timestamp >= ~PHP_INT_MAX);
         };
 
         if ($isValidTimeStamp($date) === false) {

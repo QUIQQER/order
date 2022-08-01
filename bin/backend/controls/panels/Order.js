@@ -154,6 +154,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('currency', data.currency.code);
                     self.setAttribute('shipping', data.shipping);
                     self.setAttribute('shippingTracking', data.shippingTracking);
+                    self.setAttribute('prefixedId', data.prefixedId);
 
                     if (data.addressDelivery &&
                         (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
@@ -377,6 +378,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
             });
 
+            QUI.fireEvent('quiqqerOrderActionButtonCreate', [
+                this,
+                Actions
+            ]);
 
             this.addButton(Actions);
 
