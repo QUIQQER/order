@@ -11,7 +11,6 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 
-
 /**
  * Class OrderBooked
  * - This order was ordered by the user
