@@ -8,11 +8,9 @@ namespace QUI\ERP\Order;
 
 use QUI;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
+use QUI\ERP\SalesOrders\SalesOrder;
+use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 
-use function array_merge;
-use function is_array;
-use function json_decode;
-use function json_encode;
 
 /**
  * Class OrderBooked
@@ -247,6 +245,107 @@ class Order extends AbstractOrder implements OrderInterface
     }
 
     /**
+     * Create an a sales order from this order.
+     *
+     * @return SalesOrder
+     * @throws QUI\Exception
+     */
+    public function createSalesOrder(): SalesOrder
+    {
+        if (!QUI::getPackageManager()->isInstalled('quiqqer/salesorders')) {
+            throw new QUI\Exception([
+                'quiqqer/order',
+                'exception.createSalesOrder.package_not_installed'
+            ]);
+        }
+
+        $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getHash());
+
+        // set the data to the temporary invoice
+        $payment = '';
+
+        $invoiceAddress   = '';
+        $invoiceAddressId = '';
+
+        $deliveryAddress   = '';
+        $deliveryAddressId = '';
+
+        if ($this->getPayment()) {
+            $payment = $this->getPayment()->getId();
+        }
+
+        $InvoiceAddress   = $this->getInvoiceAddress();
+        $invoiceAddress   = \json_decode($InvoiceAddress->toJSON(), true);
+        $invoiceAddressId = $InvoiceAddress->getId();
+
+        if (empty($invoiceAddressId)) {
+            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getId();
+        }
+
+        $DeliveryAddress = $this->getDeliveryAddress();
+
+        if ($InvoiceAddress->toJSON() !== $DeliveryAddress->toJSON()) {
+            $deliveryAddress   = \json_decode($DeliveryAddress->toJSON(), true);
+            $deliveryAddressId = $DeliveryAddress->getId();
+        }
+
+        $Customer             = $this->getCustomer();
+        $ContactPersonAddress = QUI\ERP\Customer\Utils::getInstance()->getContactPersonAddress($Customer);
+
+        $SalesOrder->setAttributes([
+            'contact_person'      => $ContactPersonAddress ? $ContactPersonAddress->getName() : null,
+            'order_date'          => $this->getCreateDate(),
+            'customer_id'         => $Customer->getId(),
+            'payment_method'      => $payment,
+            'customer_address_id' => $invoiceAddressId,
+            'customer_address'    => $invoiceAddress,
+            'delivery_address'    => $deliveryAddress,
+            'delivery_address_id' => $deliveryAddressId
+        ]);
+
+        // pass data to the sales order
+        if (!\is_array($this->data)) {
+            $this->data = [];
+        }
+
+        foreach ($this->data as $key => $value) {
+            $SalesOrder->setData($key, $value);
+        }
+
+        // Set articles
+        $articles = $this->getArticles()->getArticles();
+
+        $SalesOrder->getArticles()->setUser($this->getCustomer());
+        $SalesOrder->getArticles()->setCurrency($this->getCurrency());
+
+        foreach ($articles as $Article) {
+            $SalesOrder->getArticles()->addArticle($Article);
+        }
+
+        $SalesOrder->getArticles()->importPriceFactors(
+            $this->getArticles()->getPriceFactors()
+        );
+
+        $SessionUser = QUI::getUserBySession();
+
+        $SalesOrder->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.SalesOrder.created_from_order',
+                [
+                    'id'     => $this->getPrefixedId(),
+                    'user'   => $SessionUser->getName(),
+                    'userId' => $SessionUser->getId()
+                ]
+            )
+        );
+
+        $SalesOrder->update();
+
+        return $SalesOrder;
+    }
+
+    /**
      * Exists an invoice for the order? is the order already posted?
      *
      * @return bool
@@ -388,7 +487,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         return [
             'id_prefix'    => $idPrefix,
-            'id_str'       => $idPrefix . $this->getId(),
+            'id_str'       => $idPrefix.$this->getId(),
             'parent_order' => null,
             'invoice_id'   => $invoiceId,
             'status'       => $this->status,
@@ -565,7 +664,7 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'Order:: Paid Status changed to ' . $status
+            'Order:: Paid Status changed to '.$status
         );
 
         // Payment Status has changed

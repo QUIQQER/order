@@ -98,19 +98,19 @@ class Mail
             if ($DeliveryAddress) {
                 $DeliveryAddress->setAttribute(
                     'template',
-                    dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
+                    dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
                 );
             }
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
-        $InvoiceAddress->setAttribute('template', dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html');
+        $InvoiceAddress->setAttribute('template', dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html');
 
         // comment
         $comment = '';
 
         if (QUI::getSession()->get('comment-customer')) {
-            $comment .= QUI::getSession()->get('comment-customer') . "\n";
+            $comment .= QUI::getSession()->get('comment-customer')."\n";
         }
 
         if (QUI::getSession()->get('comment-message')) {
@@ -139,7 +139,7 @@ class Mail
         ]);
 
         $Mailer->setBody(
-            $Engine->fetch(dirname(__FILE__) . '/MailTemplates/orderConfirmation.html')
+            $Engine->fetch(dirname(__FILE__).'/MailTemplates/orderConfirmation.html')
         );
 
         $Mailer->send();
@@ -227,14 +227,14 @@ class Mail
             $DeliveryAddress = $Shipping->getAddress();
             $DeliveryAddress->setAttribute(
                 'template',
-                dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
+                dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
             );
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
         $InvoiceAddress->setAttribute(
             'template',
-            dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
+            dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
         );
 
         $Engine->assign([
@@ -256,7 +256,7 @@ class Mail
         ]);
 
         $Mailer->setBody(
-            $Engine->fetch(dirname(__FILE__) . '/MailTemplates/orderConfirmationAdmin.html')
+            $Engine->fetch(dirname(__FILE__).'/MailTemplates/orderConfirmationAdmin.html')
         );
 
         try {
@@ -457,7 +457,7 @@ class Mail
                     $Item = $Media->get($attachment);
                     $Mail->addAttachment($Item->getFullPath());
                 } catch (\Exception $Exception) {
-                    QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
+                    QUI\System\Log::addAlert('Order mail attachment file error :: '.$Exception->getMessage());
                 }
             }
         }
@@ -484,7 +484,7 @@ class Mail
         $title = $Site->getAttribute('title');
 
         ['dirname' => $dirname, 'extension' => $extension] = pathinfo($file);
-        $newFile = $dirname . '/' . $title . '.' . $extension;
+        $newFile = $dirname.'/'.$title.'.'.$extension;
 
         rename($file, $newFile);
 
@@ -544,19 +544,20 @@ class Mail
 
 
         return [
-            'orderId'       => $Order->getId(),
-            'hash'          => $Order->getAttribute('hash'),
-            'date'          => self::dateFormat($Order->getAttribute('date')),
-            'systemCompany' => self::getCompanyName(),
-            'user'          => $user,
-            'name'          => $user,
-            'company'       => $Customer->getStandardAddress()->getAttribute('company'),
-            'companyOrName' => self::getCompanyOrName($Customer),
-            'address'       => $Address->render(),
-            'email'         => $email,
-            'salutation'    => $Address->getAttribute('salutation'),
-            'firstname'     => $Address->getAttribute('firstname'),
-            'lastname'      => $Address->getAttribute('lastname')
+            'orderId'         => $Order->getId(),
+            'orderPrefixedId' => $Order->getPrefixedId(),
+            'hash'            => $Order->getAttribute('hash'),
+            'date'            => self::dateFormat($Order->getAttribute('date')),
+            'systemCompany'   => self::getCompanyName(),
+            'user'            => $user,
+            'name'            => $user,
+            'company'         => $Customer->getStandardAddress()->getAttribute('company'),
+            'companyOrName'   => self::getCompanyOrName($Customer),
+            'address'         => $Address->render(),
+            'email'           => $email,
+            'salutation'      => $Address->getAttribute('salutation'),
+            'firstname'       => $Address->getAttribute('firstname'),
+            'lastname'        => $Address->getAttribute('lastname')
         ];
     }
 

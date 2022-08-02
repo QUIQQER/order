@@ -336,6 +336,15 @@
 
     <groups name="quiqqer/order" datatype="php">
 
+        <locale name="history.SalesOrder.created_from_order">
+            <de><![CDATA[Erstellt aus Bestellung "[id]" durch [user] (#[userId]).]]></de>
+            <en><![CDATA[Created from order "[id]" by [user] (#[userId]).]]></en>
+        </locale>
+        <locale name="exception.createSalesOrder.package_not_installed">
+            <de><![CDATA[Es kann kein Auftrag aus einer Bestellung erzeugt werden, da das Auftrags-Modul (quiqqer/salesorders) nicht installiert ist.]]></de>
+            <en><![CDATA[No sales order can be created from an order since the sales order package (quiqqer/salesoders) is not installed.]]></en>
+        </locale>
+
         <locale name="PaymentReceiver.Order.title">
             <de><![CDATA[Bestellung]]></de>
             <en><![CDATA[Order]]></en>
@@ -1273,27 +1282,28 @@
             ]]></en>
         </locale>
         <locale name="shipping.order.mail.subject">
-            <de><![CDATA[Deine Bestellung #[orderId] wurde versendet.]]></de>
-            <en><![CDATA[Your order #[orderId] has been shipped.]]></en>
+            <de><![CDATA[Deine Bestellung #[orderPrefixedId] wurde versendet.]]></de>
+            <en><![CDATA[Your order #[orderPrefixedId] has been shipped.]]></en>
         </locale>
         <locale name="shipping.order.mail.body" html="true">
             <de><![CDATA[
             <p>Hallo [name],</p>
-            <p>vielen Dank für Deine Bestellung bei uns am [date]. Diese ist unter der Bestellnummer '[orderId]' bei uns eingegangen.</p>
-            <p>Bitte kontrolliere die übermittelten Daten und beachten dazu auch die AGB und Widerrufsbelehrung
-            und setze Dich bei Änderungswünschen frühzeitig mit uns in Verbindung.</p>
+            <p>deine Bestellung mit der Bestellnummer "[orderPrefixedId]" vom [date] wurde soeben versendet.</p>
             [trackingInfo]
 
-            <p>Viele Grüße</p>
+            <p>Solltest du Fragen zu deiner Bestellung haben, setze dich bitte mit uns in Verbindung.</p>
+            <p>Viele Grüße,<br/>
+            [company]
+            </p>
             ]]></de>
             <en><![CDATA[
             <p>Hello [name],</p>
-            <p>Thank you for placing your order with us on [date]. We have received your order under the order number '[orderId]'.
-            <p>Please check the transmitted data and also note the terms and conditions and cancellation policy.
-            and get in touch with us early in case of change requests.</p>
+            <p>your order with order no. "[orderPrefixedId]" from [date] has just been shipped.</p>
             [trackingInfo]
 
-            <p>Many greetings</p>
+            <p>If you have any questions about your order, please contact us.</p>
+            <p>Best regards<br/>
+            [company]</p>
             ]]></en>
         </locale>
 
@@ -1324,6 +1334,10 @@
         <locale name="panel.btn.createInvoice">
             <de><![CDATA[Rechnung erstellen]]></de>
             <en><![CDATA[Create invoice]]></en>
+        </locale>
+        <locale name="panel.btn.createSalesOrder">
+            <de><![CDATA[Auftrag erstellen]]></de>
+            <en><![CDATA[Create sales order]]></en>
         </locale>
         <locale name="panel.btn.createOrder">
             <de><![CDATA[Bestellung anlegen]]></de>
@@ -1732,6 +1746,29 @@
             <br /><br />
             A temporary invoice is created from the purchase order.
             This calculation is still customizable and can be edited.
+            ]]></en>
+        </locale>
+
+        <locale name="dialog.order.createSalesOrder.title">
+            <de><![CDATA[Auftrag erstellen]]></de>
+            <en><![CDATA[Create sales order]]></en>
+        </locale>
+        <locale name="dialog.order.createSalesOrder.text">
+            <de><![CDATA[Auftrag erstellen]]></de>
+            <en><![CDATA[Create sales order]]></en>
+        </locale>
+        <locale name="dialog.order.createSalesOrder.information" html="true">
+            <de><![CDATA[
+            Soll aus Bestellung "[id]" ein Auftrag erstellt werden?
+            <br /><br />
+            Aus der Bestellung wird ein Auftrag im Entwurfs-Zustand erstellt.
+            Der Auftrag kann im Anschluss direkt bearbeitet werden.
+            ]]></de>
+            <en><![CDATA[
+            Shall a sales order be created from order "[id]"?
+            <br /><br />
+            A sales order in draft state is created from the order.
+            The sales order can be edited directly afterwards.
             ]]></en>
         </locale>
 

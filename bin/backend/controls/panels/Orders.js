@@ -18,6 +18,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
     'Locale',
     'Ajax',
     'Mustache',
+    'Packages',
 
     'text!package/quiqqer/order/bin/backend/controls/panels/Orders.Total.html',
 
@@ -26,7 +27,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
 ], function (QUI, QUIPanel, QUIButton, QUISelect, QUIConfirm, QUIContextMenuItem,
              Grid, Orders, TimeFilter, ProcessingStatus, QUILocale, QUIAjax,
-             Mustache, templateTotal) {
+             Mustache, QUIPackages, templateTotal) {
     "use strict";
 
     var lg                = 'quiqqer/order';
@@ -53,7 +54,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$onClickOrderDetails',
             '$clickCreateInvoice',
             '$onSearchKeyUp',
-            '$onAddPaymentButtonClick'
+            '$onAddPaymentButtonClick',
+            '$clickCreateSalesOrder'
         ],
 
         initialize: function (options) {
@@ -71,6 +73,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$Currency   = null;
             this.$Actions    = null;
             this.$Status     = null;
+            this.$installed  = {};  // list of installed packages related to orders
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -373,6 +376,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
+            console.log(2);
+
             QUI.fireEvent('quiqqerOrderActionButtonCreate', [
                 this,
                 this.$Actions
@@ -455,20 +460,23 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 ContextMenu.setAttribute('showIcons', false);
             });
 
-            require(['Packages'], function (Packages) {
-                Packages.isInstalled('quiqqer/shipping').then(function (isInstalled) {
-                    shippingInstalled = isInstalled;
+            Promise.all([
+                QUIPackages.isInstalled('quiqqer/shipping'),
+                QUIPackages.isInstalled('quiqqer/salesorders')
+            ]).then((result) => {
+                shippingInstalled = result[0];
 
-                    self.$createGrid();
-                    self.$onResize();
+                this.$installed['quiqqer/salesorders'] = result[1];
 
-                    self.$Total = new Element('div', {
-                        'class': 'order-total'
-                    }).inject(self.getContent());
+                this.$createGrid();
+                this.$onResize();
 
-                    self.refresh().catch(function (err) {
-                        console.error(err);
-                    });
+                this.$Total = new Element('div', {
+                    'class': 'order-total'
+                }).inject(self.getContent());
+
+                this.refresh().catch(function (err) {
+                    console.error(err);
                 });
             });
         },
@@ -720,6 +728,61 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                                 HelperPanel.openInvoice(newInvoiceId);
                                 HelperPanel.destroy();
+                            });
+                        }).catch(function (err) {
+                            Win.Loader.hide();
+
+                            if (typeof err === 'undefined') {
+                                return;
+                            }
+
+                            QUI.getMessageHandler().then(function (MH) {
+                                MH.addError(err.getMessage());
+                            });
+                        });
+                    }
+                }
+            }).open();
+        },
+
+        /**
+         * open the create sales order dialog
+         */
+        $clickCreateSalesOrder: function () {
+            const selected = this.$Grid.getSelectedData();
+
+            if (!selected.length) {
+                return;
+            }
+
+            const Row = selected[0];
+
+            new QUIConfirm({
+                title      : QUILocale.get(lg, 'dialog.order.createSalesOrder.title'),
+                text       : QUILocale.get(lg, 'dialog.order.createSalesOrder.text'),
+                information: QUILocale.get(lg, 'dialog.order.createSalesOrder.information', {
+                    id: Row['prefixed-id']
+                }),
+                icon       : 'fa fa-suitcase',
+                texticon   : 'fa fa-suitcase',
+                maxHeight  : 400,
+                maxWidth   : 600,
+                autoclose  : false,
+                ok_button  : {
+                    text     : QUILocale.get('quiqqer/quiqqer', 'create'),
+                    textimage: 'fa fa-suitcase'
+                },
+                events     : {
+                    onSubmit: function (Win) {
+                        Win.Loader.show();
+
+                        Orders.createSalesOrder(Row.id).then(function (salesOrderHash) {
+                            Win.close();
+
+                            require([
+                                'package/quiqqer/salesorders/bin/js/backend/utils/Panels'
+                            ], function (SalesOrderPanelUtils) {
+                                SalesOrderPanelUtils.openSalesOrder(salesOrderHash);
                             });
                         }).catch(function (err) {
                             Win.Loader.hide();
@@ -1065,6 +1128,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             // Grid
             var Container = new Element('div').inject(this.getContent());
+
+            // Add additional actions based on isntalled packages
+            if (this.$installed['quiqqer/salesorders']) {
+                this.$Actions.appendChild({
+                    name  : 'createSalesOrder',
+                    text  : QUILocale.get(lg, 'panel.btn.createSalesOrder'),
+                    icon  : 'fa fa-suitcase',
+                    events: {
+                        onClick: this.$clickCreateSalesOrder
+                    }
+                });
+            }
 
             this.$Grid = new Grid(Container, {
                 accordion            : true,
