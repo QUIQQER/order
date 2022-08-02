@@ -376,8 +376,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
             });
 
-            console.log(2);
-
             QUI.fireEvent('quiqqerOrderActionButtonCreate', [
                 this,
                 this.$Actions
