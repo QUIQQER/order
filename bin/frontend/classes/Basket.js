@@ -26,7 +26,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 ], function (QUI, QUIDOM, Orders, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg          = 'quiqqer/order';
+    var lg = 'quiqqer/order';
     var STORAGE_KEY = 'quiqqer-basket-products';
 
     return new Class({
@@ -45,13 +45,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$products  = [];
-            this.$basketId  = null;
+            this.$products = [];
+            this.$basketId = null;
             this.$orderHash = null;
 
-            this.$isLoaded       = false;
+            this.$isLoaded = false;
             this.$mergeIsRunning = false;
-            this.$saveDelay      = null;
+            this.$saveDelay = null;
 
             this.$calculations = {};
 
@@ -217,7 +217,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            var self     = this;
+            var self = this;
             var products = data.products;
 
             return new Promise(function (resolve) {
@@ -237,7 +237,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * check if the locale storage has to be considered and integrated into the basket
          */
         $checkLocalBasketLoading: function () {
-            var self            = this;
+            var self = this;
             var storageProducts = [];
 
             try {
@@ -356,11 +356,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @param {Object} [fields]
          */
         addProduct: function (product, quantity, fields) {
-            var self      = this;
-            var productId = product;
+            const self = this;
+            let productId = product;
 
             quantity = parseInt(quantity) || 1;
-            fields   = fields || {};
+            fields = fields || {};
 
             if (!quantity) {
                 quantity = 1;
@@ -368,11 +368,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             if (typeOf(product) === 'package/quiqqer/order/bin/frontend/classes/Product') {
                 productId = parseInt(product.getId());
-                fields    = product.getFields();
-                quantity  = product.getQuantity();
+                fields = product.getFields();
+                quantity = product.getQuantity();
             }
 
-            return this.existsProduct(productId).then(function (available) {
+            return this.existsProduct(productId).then((available) => {
                 if (!available) {
                     self.setAttribute('productsNotExists', true);
                     return Promise.resolve();
@@ -382,8 +382,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 self.fireEvent('addBegin');
 
                 return new Promise(function (resolve) {
-                    require(['package/quiqqer/order/bin/frontend/classes/Product'], function (ProductCls) {
-                        var Product = product;
+                    require(['package/quiqqer/order/bin/frontend/classes/Product'], (ProductCls) => {
+                        let Product = product;
 
                         if (typeOf(productId) === 'string') {
                             productId = parseInt(productId);
@@ -399,7 +399,53 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }
 
                         // normal basket
-                        Product.setQuantity(quantity).then(function () {
+                        Product.refresh().then((productData) => {
+                            const fields = productData.$data.fields;
+
+                            // check BasketConditions
+                            let basketConditionValue = 1;
+
+                            for (let i = 0, len = fields.length; i < len; i++) {
+                                if (fields[i].type === 'BasketConditions') {
+                                    basketConditionValue = fields[i].value;
+                                    break;
+                                }
+                            }
+
+                            if (basketConditionValue === 1) {
+                                return Product.setQuantity(quantity);
+                            }
+
+                            // create a new order
+                            if (basketConditionValue === 2) {
+                                // 2 = Kann nur alleine in den Warenkorb
+                                // daher neue order in process
+                                let newHash;
+
+                                return self.addProductToOrderInProcess(
+                                    productId,
+                                    fields,
+                                    quantity
+                                ).then(function (orderHash) {
+                                    newHash = orderHash;
+                                    return Orders.getOrderProcessUrl();
+                                }).then(function (processUrl) {
+                                    window.location = processUrl + '/' + newHash;
+
+                                    // workaround, holt promises
+                                    return new Promise(function (resolve, reject) {
+                                    });
+                                });
+                            }
+
+                            // 3 = Kann mit anderen Produkten einmalig in den Warenkorb
+                            // 4 = Kann mit anderen Produkten diesen Typs nicht in den Warenkorb
+                            // 5 = Kann mit anderen Produkten diesen Typs einmalig in den Warenkorb
+
+                            console.error(basketConditionValue);
+
+                            return Product.setQuantity(quantity);
+                        }).then(function () {
                             return Product.setFieldValues(fields);
                         }).then(function () {
                             self.$products.push(Product);
@@ -407,7 +453,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }).then(function () {
                             resolve();
                             self.fireEvent('refresh', [self]);
-                            self.fireEvent('add', [self, Product]);
+                            self.fireEvent('add', [
+                                self,
+                                Product
+                            ]);
                         }).catch(function (err) {
                             console.error(err);
 
@@ -604,7 +653,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     data.products = {};
                 }
 
-                data.currentList              = this.$basketId;
+                data.currentList = this.$basketId;
                 data.products[this.$basketId] = products;
 
                 QUI.Storage.set(STORAGE_KEY, JSON.encode(data));
@@ -664,6 +713,25 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     orderHash: orderHash,
                     basketId : self.$basketId,
                     onError  : reject
+                });
+            });
+        },
+
+        /**
+         * @returns {*}
+         */
+        addProductToOrderInProcess: function (productId, fields, quantity) {
+            if (typeof quantity === 'undefined') {
+                quantity = 1;
+            }
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_addProductToOrderInProcess', resolve, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    productId: productId,
+                    fields   : JSON.encode(fields),
+                    quantity : quantity
                 });
             });
         }
