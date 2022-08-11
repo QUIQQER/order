@@ -23,7 +23,7 @@ QUI::$Ajax->registerFunction(
             return;
         }
 
-        $products = \json_decode($products, true);
+        $products = json_decode($products, true);
 
         foreach ($products as $product) {
             if (!isset($product['id'])) {
@@ -33,10 +33,6 @@ QUI::$Ajax->registerFunction(
             $productId = $product['id'];
             $fields    = [];
             $quantity  = 1;
-
-            if (isset($product['fields']) && \is_array($fields)) {
-                $fields = [];
-            }
 
             if (isset($product['quantity'])) {
                 $quantity = (int)$product['quantity'];
@@ -58,7 +54,6 @@ QUI::$Ajax->registerFunction(
                 $OrderBasket->addProduct($Product);
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
-
                 // @todo message an benutzer - Product konnte nicht aufgenommen werden
             }
         }

@@ -76,7 +76,7 @@
             {assign var=maxQuantity value=(int)$product.maximumQuantity}
             {/if}
 
-            {if $this->getAttribute('editable') && $maxQuantity != 1}
+            {if $Utils->isBasketProductEditable($product) && $this->getAttribute('editable') && $maxQuantity != 1}
             <label>
                 <input type="number"
                        name="quantity"
@@ -185,7 +185,8 @@
     {foreach $data.grandTotalFactors as $attribute}
     <tr>
         <td>
-            {$attribute.title} {if !empty($attribute.valueText) && $attribute.valueText !== '-'}({$attribute.valueText}){/if}
+            {$attribute.title} {if !empty($attribute.valueText) && $attribute.valueText !==
+            '-'}({$attribute.valueText}){/if}
         </td>
         <td>
             {$attribute.value}

@@ -26,8 +26,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 ], function (QUI, QUIDOM, Orders, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg          = 'quiqqer/order';
-    var STORAGE_KEY = 'quiqqer-basket-products';
+    const lg = 'quiqqer/order';
+    const STORAGE_KEY = 'quiqqer-basket-products';
 
     return new Class({
 
@@ -45,13 +45,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$products  = [];
-            this.$basketId  = null;
+            this.$products = [];
+            this.$basketId = null;
             this.$orderHash = null;
 
-            this.$isLoaded       = false;
+            this.$isLoaded = false;
             this.$mergeIsRunning = false;
-            this.$saveDelay      = null;
+            this.$saveDelay = null;
 
             this.$calculations = {};
 
@@ -72,8 +72,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 });
             }
 
-            var self     = this,
-                products = [],
+            const self = this;
+
+            let products = [],
                 data     = QUI.Storage.get(STORAGE_KEY);
 
             this.$basketId = String.uniqueID();
@@ -104,9 +105,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 products = data.products[this.$basketId];
             }
 
-            var proms = [];
+            const proms = [];
 
-            for (var i = 0, len = products.length; i < len; i++) {
+            for (let i = 0, len = products.length; i < len; i++) {
                 proms.push(
                     this.addProduct(
                         products[i].id,
@@ -169,9 +170,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @returns {Number}
          */
         getQuantity: function () {
-            var quantity = 0;
+            let quantity = 0;
 
-            for (var i in this.$products) {
+            for (let i in this.$products) {
                 if (this.$products.hasOwnProperty(i)) {
                     quantity = parseInt(quantity) + parseInt(this.$products[i].getQuantity());
                 }
@@ -186,7 +187,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         loadBasket: function () {
-            var self = this;
+            const self = this;
 
             return self.getBasket().then(function (basket) {
                 self.$calculations = basket;
@@ -217,18 +218,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            var self     = this;
-            var products = data.products;
+            const self = this;
+            const products = data.products;
 
             return new Promise(function (resolve) {
                 require(['package/quiqqer/order/bin/frontend/classes/Product'], function (ProductCls) {
-                    for (var i = 0, len = products.length; i < len; i++) {
+                    for (let i = 0, len = products.length; i < len; i++) {
                         self.$products.push(
                             new ProductCls(products[i])
                         );
                     }
 
-                    resolve();
+                    const productLoading = self.$products.map(function (Product) {
+                        return Product.refresh();
+                    });
+
+                    Promise.all(productLoading).then(resolve);
                 });
             });
         },
@@ -237,15 +242,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * check if the locale storage has to be considered and integrated into the basket
          */
         $checkLocalBasketLoading: function () {
-            var self            = this;
-            var storageProducts = [];
+            const self = this;
+            let storageProducts = [];
 
             try {
-                var storageData = JSON.decode(
+                const storageData = JSON.decode(
                     QUI.Storage.get(STORAGE_KEY)
                 );
 
-                var currentList = storageData.currentList;
+                const currentList = storageData.currentList;
 
                 if (typeof storageData.products !== 'undefined' &&
                     typeof storageData.products[currentList] !== 'undefined') {
@@ -269,10 +274,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 self.$basketId = basket.id;
                 self.$products = [];
 
-                var addStorageProducts = function () {
-                    var proms = [];
+                const addStorageProducts = function () {
+                    const proms = [];
 
-                    for (var i = 0, len = storageProducts.length; i < len; i++) {
+                    for (let i = 0, len = storageProducts.length; i < len; i++) {
                         proms.push(
                             self.addProduct(
                                 storageProducts[i].id,
@@ -356,11 +361,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @param {Object} [fields]
          */
         addProduct: function (product, quantity, fields) {
-            var self      = this;
-            var productId = product;
+            const self = this;
+            let productId = product;
 
             quantity = parseInt(quantity) || 1;
-            fields   = fields || {};
+            fields = fields || {};
 
             if (!quantity) {
                 quantity = 1;
@@ -368,11 +373,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             if (typeOf(product) === 'package/quiqqer/order/bin/frontend/classes/Product') {
                 productId = parseInt(product.getId());
-                fields    = product.getFields();
-                quantity  = product.getQuantity();
+                fields = product.getFields();
+                quantity = product.getQuantity();
             }
 
-            return this.existsProduct(productId).then(function (available) {
+            return this.existsProduct(productId).then((available) => {
                 if (!available) {
                     self.setAttribute('productsNotExists', true);
                     return Promise.resolve();
@@ -382,8 +387,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 self.fireEvent('addBegin');
 
                 return new Promise(function (resolve) {
-                    require(['package/quiqqer/order/bin/frontend/classes/Product'], function (ProductCls) {
-                        var Product = product;
+                    require(['package/quiqqer/order/bin/frontend/classes/Product'], (ProductCls) => {
+                        let Product = product;
 
                         if (typeOf(productId) === 'string') {
                             productId = parseInt(productId);
@@ -399,7 +404,75 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }
 
                         // normal basket
-                        Product.setQuantity(quantity).then(function () {
+                        Product.refresh().then((productData) => {
+                            const fields = productData.$data.fields;
+                            const productType = productData.calc.type;
+
+                            // check & get BasketConditions
+                            let basketConditionValue = 1;
+
+                            for (let i = 0, len = fields.length; i < len; i++) {
+                                if (fields[i].type === 'BasketConditions') {
+                                    basketConditionValue = fields[i].value;
+                                    break;
+                                }
+                            }
+
+                            if (basketConditionValue === 1) {
+                                return Product.setQuantity(quantity);
+                            }
+
+                            // create a new order
+                            if (basketConditionValue === 2) {
+                                // 2 = Kann nur alleine in den Warenkorb
+                                // daher neue order in process
+                                let newHash;
+
+                                return self.addProductToOrderInProcess(
+                                    productId,
+                                    fields,
+                                    quantity
+                                ).then(function (orderHash) {
+                                    newHash = orderHash;
+                                    return Orders.getOrderProcessUrl();
+                                }).then(function (processUrl) {
+                                    window.location = processUrl + '/' + newHash;
+
+                                    // workaround, to halt promises
+                                    return new Promise(function (resolve, reject) {
+                                    });
+                                });
+                            }
+
+                            // 4 = Kann mit anderen Produkten diesen Typs nicht in den Warenkorb
+                            if (basketConditionValue === 4 && self.$products.length) {
+                                let p, pLen, product;
+
+                                for (p = 0, pLen = self.$products.length; p < pLen; p++) {
+                                    product = self.$products[p];
+
+                                    if (productType === product.calc.type) {
+                                        //throw new Error('BASKET_CONDITION_PRODUCT_NOT_ALLOWED');
+                                        console.info(
+                                            'BASKET_CONDITION_PRODUCT_NOT_ALLOWED',
+                                            'REPLACED WITH ARTICLE POS ' + (p + 1)
+                                        );
+                                        
+                                        return self.removeProductPos(p + 1).then(() => {
+                                            return Product.setQuantity(quantity);
+                                        });
+                                    }
+                                }
+                            }
+
+                            // 3 = Kann mit anderen Produkten einmalig in den Warenkorb
+                            // 5 = Kann mit anderen Produkten diesen Typs einmalig in den Warenkorb
+                            if (basketConditionValue === 3 || basketConditionValue === 5) {
+                                quantity = 1;
+                            }
+
+                            return Product.setQuantity(quantity);
+                        }).then(function () {
                             return Product.setFieldValues(fields);
                         }).then(function () {
                             self.$products.push(Product);
@@ -407,10 +480,19 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }).then(function () {
                             resolve();
                             self.fireEvent('refresh', [self]);
-                            self.fireEvent('add', [self, Product]);
+                            self.fireEvent('add', [
+                                self,
+                                Product
+                            ]);
                         }).catch(function (err) {
+                            /*
+                            if (typeof err.message !== 'undefined' &&
+                                err.message === 'BASKET_CONDITION_PRODUCT_NOT_ALLOWED') {
+                                resolve();
+                                return;
+                            }
+                            */
                             console.error(err);
-
                             resolve();
                         });
                     });
@@ -427,8 +509,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         removeProductPos: function (pos) {
-            var self  = this,
-                index = pos - 1;
+            const self  = this,
+                  index = pos - 1;
 
             return new Promise(function (resolve) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_removePos', function () {
@@ -458,7 +540,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         clear: function () {
-            var self = this;
+            const self = this;
 
             this.fireEvent('clearBegin', [this]);
 
@@ -481,7 +563,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         refresh: function () {
-            var self = this;
+            const self = this;
 
             return this.loadBasket().then(function () {
                 self.fireEvent('refresh', [self]);
@@ -506,8 +588,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            var self    = this,
-                Product = this.$products[pos];
+            const self    = this,
+                  Product = this.$products[pos];
 
             return Product.setQuantity(quantity).then(function () {
                 self.$products[pos] = Product;
@@ -544,7 +626,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            var self = this;
+            const self = this;
 
             force = force || false;
 
@@ -567,9 +649,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     return;
                 }
 
-                var products = [];
+                const products = [];
 
-                for (var i = 0, len = this.$products.length; i < len; i++) {
+                for (let i = 0, len = this.$products.length; i < len; i++) {
                     products.push(this.$products[i].getAttributes());
                 }
 
@@ -588,7 +670,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 }
 
                 // locale storage
-                var data = QUI.Storage.get(STORAGE_KEY);
+                let data = QUI.Storage.get(STORAGE_KEY);
 
                 if (!data) {
                     data = {};
@@ -604,7 +686,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     data.products = {};
                 }
 
-                data.currentList              = this.$basketId;
+                data.currentList = this.$basketId;
                 data.products[this.$basketId] = products;
 
                 QUI.Storage.set(STORAGE_KEY, JSON.encode(data));
@@ -652,7 +734,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         toOrder: function (orderHash) {
-            var self = this;
+            const self = this;
 
             if (typeof orderHash === 'undefined') {
                 orderHash = '';
@@ -664,6 +746,25 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     orderHash: orderHash,
                     basketId : self.$basketId,
                     onError  : reject
+                });
+            });
+        },
+
+        /**
+         * @returns {*}
+         */
+        addProductToOrderInProcess: function (productId, fields, quantity) {
+            if (typeof quantity === 'undefined') {
+                quantity = 1;
+            }
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_addProductToOrderInProcess', resolve, {
+                    'package': 'quiqqer/order',
+                    onError  : reject,
+                    productId: productId,
+                    fields   : JSON.encode(fields),
+                    quantity : quantity
                 });
             });
         }

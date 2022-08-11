@@ -6,7 +6,12 @@
 
 namespace QUI\ERP\Order\Cron;
 
+use Exception;
+use PDO;
 use QUI;
+
+use function date;
+use function strtotime;
 
 /**
  * Class CleanupOrderInProcess
@@ -25,7 +30,7 @@ class CleanupOrderInProcess
      * @param array $params - cron parameter
      * @throws QUI\Exception
      */
-    public static function run($params = [])
+    public static function run(array $params = [])
     {
         $days = 14; // 14 days
 
@@ -38,8 +43,8 @@ class CleanupOrderInProcess
         }
 
         $days   = $days * -1;
-        $c_date = \strtotime($days.' day');
-        $c_date = \date('Y-m-d H:i:s', $c_date);
+        $c_date = strtotime($days . ' day');
+        $c_date = date('Y-m-d H:i:s', $c_date);
 
         $Handler = QUI\ERP\Order\Handler::getInstance();
         $table   = $Handler->tableOrderProcess();
@@ -58,6 +63,32 @@ class CleanupOrderInProcess
             QUI::getDataBase()->delete($table, [
                 'id' => $order['id']
             ]);
+        }
+
+        // unique orders deletion
+        // BasketConditions::TYPE_2 orders
+        $PDO    = QUI::getDataBase()->getPDO();
+        $c_date = strtotime('-1 day');
+        $c_date = date('Y-m-d H:i:s', $c_date);
+
+        $query     = "SELECT * FROM {$table} where data LIKE :search AND c_date <= :date";
+        $Statement = $PDO->prepare($query);
+
+        $Statement->bindValue('search', '%"basketConditionOrder":2%');
+        $Statement->bindValue('date', $c_date);
+        $Statement->execute();
+
+        try {
+            $result = $Statement->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($result as $orderData) {
+                QUI::getDataBase()->delete($table, [
+                    'id' => $orderData['id']
+                ]);
+            }
+        } catch (Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            QUI\System\Log::writeRecursive($query);
         }
     }
 }
