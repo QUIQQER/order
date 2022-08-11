@@ -244,7 +244,7 @@ class Order extends AbstractOrder implements OrderInterface
     }
 
     /**
-     * Create an a sales order from this order.
+     * Create a sales order from this order.
      *
      * @return SalesOrder
      * @throws QUI\Exception
@@ -262,9 +262,6 @@ class Order extends AbstractOrder implements OrderInterface
 
         // set the data to the temporary invoice
         $payment = '';
-
-        $invoiceAddress   = '';
-        $invoiceAddressId = '';
 
         $deliveryAddress   = '';
         $deliveryAddressId = '';
@@ -338,6 +335,8 @@ class Order extends AbstractOrder implements OrderInterface
                 ]
             )
         );
+
+        $SalesOrder->setData('orderId', $this->getCleanId());
 
         $SalesOrder->update();
 
