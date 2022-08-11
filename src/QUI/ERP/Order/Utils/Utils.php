@@ -21,7 +21,7 @@ class Utils
     /**
      * @var null|string
      */
-    protected static $url = null;
+    protected static ?string $url = null;
 
     /**
      * Return the url to the checkout / order process
@@ -408,5 +408,33 @@ class Utils
         }
 
         return $newProductList;
+    }
+
+    /**
+     * @param $product
+     * @return bool
+     * @throws \QUI\ERP\Products\Product\Exception
+     * @throws \QUI\Exception
+     */
+    public static function isBasketProductEditable($product): bool
+    {
+        $productId = $product['id'];
+        $Product   = QUI\ERP\Products\Handler\Products::getProduct($productId);
+        $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
+
+        // TYPE_1 Kann ohne Einschränkung in den Warenkorb
+        // TYPE_2 Kann nur alleine in den Warenkorb
+        // TYPE_3 Kann mit anderen Produkten einmalig in den Warenkorb
+        // TYPE_4 Kann mit anderen Produkten diesen Typs nicht in den Warenkorb
+        // TYPE_5 Kann mit anderen Produkten diesen Typs einmalig in den Warenkorb
+
+        if ($condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_2
+            || $condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_3
+            || $condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_5
+        ) {
+            return false;
+        }
+
+        return true;
     }
 }

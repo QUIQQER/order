@@ -8,6 +8,9 @@ namespace QUI\ERP\Order\Controls\Basket;
 
 use QUI;
 
+use function dirname;
+use function is_array;
+
 /**
  * Class Basket
  * - The main Basket control - display a basket
@@ -24,9 +27,9 @@ class Basket extends QUI\Control
     protected $Basket;
 
     /**
-     * @var
+     * @var QUI\Projects\Project|null
      */
-    protected $Project;
+    protected ?QUI\Projects\Project $Project = null;
 
     /**
      * Basket constructor.
@@ -89,10 +92,11 @@ class Basket extends QUI\Control
             'Products'          => $View,
             'products'          => $View->getProducts(),
             'this'              => $this,
-            'showArticleNumber' => $showArticleNumber
+            'showArticleNumber' => $showArticleNumber,
+            'Utils'             => new QUI\ERP\Order\Utils\Utils()
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/Basket.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Basket.html');
     }
 
     /**
@@ -103,7 +107,7 @@ class Basket extends QUI\Control
     {
         $current = QUI::getLocale()->getCurrent();
 
-        if (!\is_array($fieldValueText)) {
+        if (!is_array($fieldValueText)) {
             return $fieldValueText;
         }
 
