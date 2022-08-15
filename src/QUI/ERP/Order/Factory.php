@@ -21,13 +21,14 @@ class Factory extends QUI\Utils\Singleton
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      * @param string|bool $hash - optional
+     * @param int|null $id (optional) - Fixed ID for the new order. Throws an exception if the ID is already taken.
      * @return Order
      *
      * @throws Exception
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    public function create($PermissionUser = null, $hash = false)
+    public function create($PermissionUser = null, $hash = false, ?int $id = null)
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -38,12 +39,33 @@ class Factory extends QUI\Utils\Singleton
             $PermissionUser
         );
 
+        $Orders = Handler::getInstance();
+
+        if ($id) {
+            // Check if ID already exists
+            try {
+                $Orders->getOrderById($id);
+
+                throw new Exception([
+                    'quiqqer/order',
+                    'exception.Factory.order_id_already_exists',
+                    [
+                        'id' => $id
+                    ]
+                ], $Orders::ERROR_ORDER_ID_ALREADY_EXISTS);
+            } catch (\Exception $Exception) {
+                if ($Exception->getCode() !== $Orders::ERROR_ORDER_NOT_FOUND) {
+                    QUI\System\Log::writeException($Exception);
+                    throw $Exception;
+                }
+            }
+        }
+
         if ($hash === false) {
             $hash = QUI\Utils\Uuid::get();
         }
 
         $User   = QUI::getUserBySession();
-        $Orders = Handler::getInstance();
         $table  = $Orders->table();
         $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
@@ -51,7 +73,7 @@ class Factory extends QUI\Utils\Singleton
             $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
         }
 
-        QUI::getDataBase()->insert($table, [
+        $orderData = [
             'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user'      => $User->getId() ? $User->getId() : 0,
             'c_date'      => \date('Y-m-d H:i:s'),
@@ -60,7 +82,13 @@ class Factory extends QUI\Utils\Singleton
             'customerId'  => 0,
             'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
             'successful'  => 0
-        ]);
+        ];
+
+        if ($id) {
+            $orderData['id'] = $id;
+        }
+
+        QUI::getDataBase()->insert($table, $orderData);
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
 

@@ -344,6 +344,10 @@
             <de><![CDATA[Es kann kein Auftrag aus einer Bestellung erzeugt werden, da das Auftrags-Modul (quiqqer/salesorders) nicht installiert ist.]]></de>
             <en><![CDATA[No sales order can be created from an order since the sales order package (quiqqer/salesoders) is not installed.]]></en>
         </locale>
+        <locale name="exception.Factory.order_id_already_exists">
+            <de><![CDATA[Es kann keine Bestellung mit ID #[id] angelegt werden, da diese ID bereits vergeben ist.]]></de>
+            <en><![CDATA[An order with ID #[id] cannot be created since this ID is already taken.]]></en>
+        </locale>
 
         <locale name="PaymentReceiver.Order.title">
             <de><![CDATA[Bestellung]]></de>

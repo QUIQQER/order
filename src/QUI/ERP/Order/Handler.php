@@ -18,8 +18,9 @@ use QUI\ERP\Customer\Utils as CustomerUtils;
  */
 class Handler extends Singleton
 {
-    const ERROR_ORDER_NOT_FOUND = 604; // a specific order wasn't found
-    const ERROR_NO_ORDERS_FOUND = 605; // Search or last orders don't get results
+    const ERROR_ORDER_NOT_FOUND         = 604; // a specific order wasn't found
+    const ERROR_NO_ORDERS_FOUND         = 605; // Search or last orders don't get results
+    const ERROR_ORDER_ID_ALREADY_EXISTS = 606; // attempt to create a new order with an already existing id
 
     /**
      * Default empty value (placeholder for empty values)
