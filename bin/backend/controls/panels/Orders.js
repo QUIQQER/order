@@ -934,6 +934,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 new AddPaymentWindow({
                     entityId  : selectedData[0]['prefixed-id'],
                     entityType: 'Order',
+                    paymentId : selectedData[0].paymentId,
                     events    : {
                         onSubmit: function (Win, data) {
                             Win.Loader.show();
@@ -1113,6 +1114,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 dataIndex: 'id',
                 dataType : 'integer',
                 width    : 80
+            }, {
+                dataIndex: 'paymentId',
+                dataType : 'integer',
+                hidden   : true
             }]);
 
             return columns;

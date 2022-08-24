@@ -447,7 +447,7 @@ class Search extends Singleton
         $Transactions        = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
         $shippingIsInstalled = QUI::getPackageManager()->isInstalled('quiqqer/shipping');
         $defaultTimeFormat   = QUI\ERP\Defaults::getTimestampFormat();
-        
+
         // helper
         $needleFields = [
             'invoice_id',
@@ -589,8 +589,11 @@ class Search extends Singleton
             $Payment  = $Order->getPayment();
             $Currency = $Order->getCurrency();
 
+            $orderData['paymentId'] = false;
+
             if ($Payment) {
                 $orderData['payment_title'] = $Payment->getTitle($Locale);
+                $orderData['paymentId']     = $Payment->getId();
             }
 
             // articles
