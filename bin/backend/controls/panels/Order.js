@@ -34,7 +34,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
     const lg = 'quiqqer/order';
 
-    let shippingInstalled   = false;
+    let shippingInstalled = false;
     let salesOrderInstalled = false;
 
     return new Class({
@@ -93,22 +93,22 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             this.$locked = false;
 
-            this.$Customer        = null;
-            this.$AddressInvoice  = null;
+            this.$Customer = null;
+            this.$AddressInvoice = null;
             this.$AddressDelivery = null;
 
-            this.$ArticleList        = null;
+            this.$ArticleList = null;
             this.$ArticleListSummary = null;
 
-            this.$Actions       = null;
-            this.$AddProduct    = null;
-            this.$ArticleSort   = null;
-            this.$AddSeparator  = null;
+            this.$Actions = null;
+            this.$AddProduct = null;
+            this.$ArticleSort = null;
+            this.$AddSeparator = null;
             this.$SortSeparator = null;
 
-            this.$priceFactors          = null;
-            this.$serializedList        = {};
-            this.$initialStatus         = false;
+            this.$priceFactors = null;
+            this.$serializedList = {};
+            this.$initialStatus = false;
             this.$initialShippingStatus = false;
 
             this.addEvents({
@@ -175,7 +175,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.setAttribute('shippingStatus', data.shippingStatus);
                     self.setAttribute('shippingConfirmation', data.shippingConfirmation);
 
-                    self.$initialStatus         = parseInt(data.status);
+                    self.$initialStatus = parseInt(data.status);
                     self.$initialShippingStatus = parseInt(data.shippingStatus);
 
                     if (data.articles) {
@@ -299,7 +299,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
             });
 
-            this.$AddSeparator  = new QUISeparator();
+            this.$AddSeparator = new QUISeparator();
             this.$SortSeparator = new QUISeparator();
 
             this.$ArticleSort = new QUIButton({
@@ -451,7 +451,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 for (let category in categories) {
-                    cat   = categories[category];
+                    cat = categories[category];
                     title = cat.title;
 
                     this.addCategory({
@@ -488,7 +488,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * event: on inject
          */
         $onInject: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
 
@@ -560,7 +560,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @return {*|Promise|void}
          */
         unlockPanel: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
 
@@ -588,9 +588,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     QUILocale.get(lg, 'message.invoice.is.locked', isLocked)
                 );
 
-                var categories = self.getCategoryBar().getChildren();
+                const categories = self.getCategoryBar().getChildren();
 
-                for (var i = 0, len = categories.length; i < len; i++) {
+                for (let i = 0, len = categories.length; i < len; i++) {
                     categories[i].enable();
                 }
 
@@ -604,8 +604,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * show the lock message window
          */
         $showLockMessage: function () {
-            var self    = this,
-                btnText = QUILocale.get('quiqqer/quiqqer', 'submit');
+            const self = this;
+            let btnText = QUILocale.get('quiqqer/quiqqer', 'submit');
 
             if (window.USER.isSU) {
                 btnText = QUILocale.get(lg, 'button.unlock.order.is.locked');
@@ -663,6 +663,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textAddresses           : QUILocale.get(lg, 'address'),
                         textCustomer            : QUILocale.get(lg, 'customer'),
                         textCompany             : QUILocale.get('quiqqer/system', 'company'),
+                        textFirstname           : QUILocale.get('quiqqer/system', 'firstname'),
+                        textLastname            : QUILocale.get('quiqqer/system', 'lastname'),
                         textStreet              : QUILocale.get('quiqqer/system', 'street'),
                         textZip                 : QUILocale.get('quiqqer/system', 'zip'),
                         textCity                : QUILocale.get('quiqqer/system', 'city'),
@@ -694,12 +696,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 const Content        = self.getContent(),
                       deliverAddress = Content.getElement('[name="differentDeliveryAddress"]');
 
-                const TaxId          = Content.getElement('[name="quiqqer.erp.taxId"]');
-                const EUVAT          = Content.getElement('[name="quiqqer.erp.euVatId"]');
-                const DateField      = Content.getElement('[name="date"]');
-                const DateEdit       = Content.getElement('[name="edit-date"]');
+                const TaxId = Content.getElement('[name="quiqqer.erp.taxId"]');
+                const EUVAT = Content.getElement('[name="quiqqer.erp.euVatId"]');
+                const DateField = Content.getElement('[name="date"]');
+                const DateEdit = Content.getElement('[name="edit-date"]');
                 const OrderedByField = Content.getElement('[name="orderedBy"]');
-                const customer       = self.getAttribute('customer');
+                const customer = self.getAttribute('customer');
 
                 const Currency = Content.getElement('[name="currency"]');
                 Currency.value = self.getAttribute('currency');
@@ -732,7 +734,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 // events
                 self.$Customer.addEvent('change', function (Select) {
                     const currentCustomerId = parseInt(self.getAttribute('customerId'));
-                    const userId            = parseInt(Select.getValue());
+                    const userId = parseInt(Select.getValue());
 
                     if (currentCustomerId === userId) {
                         return;
@@ -817,10 +819,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 // Set addresses
-                var currentCustomerId = parseInt(self.getAttribute('customerId'));
+                const currentCustomerId = parseInt(self.getAttribute('customerId'));
 
                 if (self.getAttribute('addressInvoice')) {
-                    var AddressInvoice = self.getAttribute('addressInvoice');
+                    const AddressInvoice = self.getAttribute('addressInvoice');
 
                     AddressInvoice.uid = currentCustomerId;
                     self.$AddressInvoice.setValue(AddressInvoice);
@@ -829,7 +831,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 if (self.getAttribute('addressDelivery') && self.getAttribute('hasDeliveryAddress')) {
-                    var AddressDelivery = self.getAttribute('addressDelivery');
+                    const AddressDelivery = self.getAttribute('addressDelivery');
 
                     AddressDelivery.uid = currentCustomerId;
                     self.$AddressDelivery.setValue(AddressDelivery);
@@ -837,8 +839,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     deliverAddress.checked = true;
 
                     deliverAddress.getParent('table')
-                        .getElements('.closable')
-                        .setStyle('display', null);
+                                  .getElements('.closable')
+                                  .setStyle('display', null);
                 } else {
                     self.$AddressDelivery.setAttribute('userId', currentCustomerId);
                 }
@@ -872,7 +874,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         value: ''
                     }).inject(Select);
 
-                    var i, len, title;
+                    let i, len, title;
 
                     for (i = 0, len = payments.length; i < len; i++) {
                         title = payments[i].title;
@@ -888,15 +890,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
 
                     Select.disabled = false;
-                    Select.value    = self.getAttribute('paymentId');
+                    Select.value = self.getAttribute('paymentId');
                 });
             }).then(function () {
                 // order status
-                var StatusSelect = self.getContent().getElement('.order-data-status-field-select');
-                var StatusColor  = self.getContent().getElement('.order-data-status-field-colorPreview');
+                const StatusSelect = self.getContent().getElement('.order-data-status-field-select');
+                const StatusColor = self.getContent().getElement('.order-data-status-field-colorPreview');
 
                 StatusSelect.addEvent('change', function () {
-                    var Option = StatusSelect.getElement('[value="' + this.value + '"]');
+                    const Option = StatusSelect.getElement('[value="' + this.value + '"]');
 
                     if (Option) {
                         StatusColor.setStyle('backgroundColor', Option.get('data-color'));
@@ -914,7 +916,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         'data-color': ''
                     }).inject(StatusSelect);
 
-                    for (var i = 0, len = statusList.length; i < len; i++) {
+                    for (let i = 0, len = statusList.length; i < len; i++) {
                         new Element('option', {
                             html        : statusList[i].title,
                             value       : statusList[i].id,
@@ -923,7 +925,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
 
                     StatusSelect.disabled = false;
-                    StatusSelect.value    = self.getAttribute('status');
+                    StatusSelect.value = self.getAttribute('status');
                     StatusSelect.fireEvent('change');
 
                     if (self.$initialStatus === false) {
@@ -941,7 +943,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Open payments list
          */
         openPayments: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
             this.getCategory('payments').setActive();
@@ -986,7 +988,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @return {Promise<T>}
          */
         openCommunication: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
             this.getCategory('communication').setActive();
@@ -1017,7 +1019,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @return {Promise<T>}
          */
         openHistory: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
             this.getCategory('history').setActive();
@@ -1042,7 +1044,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Open articles
          */
         openArticles: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
             this.getCategory('articles').setActive();
@@ -1101,7 +1103,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Open the post / invoice creation dialog
          */
         openPostDialog: function () {
-            var self = this;
+            const self = this;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.order.post.title'),
@@ -1131,7 +1133,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             ], function (InvoicePanel, TemporaryInvoice, Invoices, PanelUtils) {
                                 // invoiceId
                                 Invoices.get(invoiceId).then(function (invoice) {
-                                    var Panel;
+                                    let Panel;
                                     if (invoice.type === 2) {
                                         Panel = new TemporaryInvoice({
                                             invoiceId: invoiceId
@@ -1169,7 +1171,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Opens the delete dialog
          */
         openDeleteDialog: function () {
-            var self = this;
+            const self = this;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.order.delete.title'),
@@ -1204,7 +1206,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Copy the order and opens the new copy
          */
         openCopyDialog: function () {
-            var self = this;
+            const self = this;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.order.copy.title'),
@@ -1225,14 +1227,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     onSubmit: function (Win) {
                         Win.Loader.show();
 
-                        var orderId = self.getAttribute('orderId');
+                        const orderId = self.getAttribute('orderId');
 
                         Orders.copyOrder(orderId).then(function (newOrderId) {
                             require([
                                 'package/quiqqer/order/bin/backend/controls/panels/Order',
                                 'utils/Panels'
                             ], function (Order, PanelUtils) {
-                                var Panel = new Order({
+                                const Panel = new Order({
                                     orderId: newOrderId,
                                     '#id'  : newOrderId
                                 });
@@ -1312,10 +1314,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @returns {Promise}
          */
         $openCategory: function () {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve) {
-                var Container = self.getContent().getElement('.container');
+                const Container = self.getContent().getElement('.container');
 
                 if (!Container) {
                     resolve();
@@ -1338,7 +1340,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * @returns {Promise}
          */
         $closeCategory: function () {
-            var self = this;
+            const self = this;
 
             this.getContent().setStyle('padding', 0);
 
@@ -1371,7 +1373,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }
 
             return new Promise(function (resolve) {
-                var Container = this.getContent().getElement('.container');
+                let Container = this.getContent().getElement('.container');
 
                 if (!Container) {
                     Container = new Element('div', {
@@ -1413,14 +1415,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * drop the data into the order
          */
         $unLoadCategory: function () {
-            var Content          = this.getContent(),
-                deliverAddress   = Content.getElement('[name="differentDeliveryAddress"]'),
-                PaymentForm      = Content.getElement('form[name="payment"]'),
-                ProcessingStatus = Content.getElement('[name="status"]'),
-                ShippingStatus   = Content.getElement('[name="shippingStatus"]'),
-                Shipping         = Content.getElement('[name="shipping"]'),
-                ShippingTracking = Content.getElement('[name="shippingTracking"]'),
-                Currency         = Content.getElement('[name="currency"]');
+            const Content          = this.getContent(),
+                  deliverAddress   = Content.getElement('[name="differentDeliveryAddress"]'),
+                  PaymentForm      = Content.getElement('form[name="payment"]'),
+                  ProcessingStatus = Content.getElement('[name="status"]'),
+                  ShippingStatus   = Content.getElement('[name="shippingStatus"]'),
+                  Shipping         = Content.getElement('[name="shipping"]'),
+                  ShippingTracking = Content.getElement('[name="shippingTracking"]'),
+                  Currency         = Content.getElement('[name="currency"]');
 
             if (this.$AddressInvoice) {
                 this.setAttribute('addressInvoice', this.$AddressInvoice.getValue());
@@ -1468,7 +1470,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             // customer
             if (this.$Customer) {
-                var customer = this.getAttribute('customer'),
+                let customer = this.getAttribute('customer'),
                     EUVAT    = Content.getElement('[name="quiqqer.erp.euVatId"]'),
                     TaxNo    = Content.getElement('[name="quiqqer.erp.taxId"]');
 
@@ -1492,14 +1494,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     customer['quiqqer.erp.taxId'] = TaxNo.value;
                 }
 
-                var customerId = parseInt(this.$Customer.getValue()),
-                    User       = Users.get(customerId);
+                const customerId = parseInt(this.$Customer.getValue()),
+                      User       = Users.get(customerId);
 
                 customer.id = customerId;
 
                 if (User.isLoaded()) {
                     customer.username = User.getUsername();
-                    customer.name     = User.getName();
+                    customer.name = User.getName();
 
                     if (customer['quiqqer.erp.euVatId'] === '') {
                         customer['quiqqer.erp.euVatId'] = User.getAttribute('quiqqer.erp.euVatId');
@@ -1549,7 +1551,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         user  : self.$AddressInvoice.getValue(),
                         events: {
                             onSubmit: function (Win, article) {
-                                var Instance = new Article(article);
+                                const Instance = new Article(article);
 
                                 if ("calculated_vatArray" in article) {
                                     Instance.setVat(article.calculated_vatArray.vat);
@@ -1577,12 +1579,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return Promise.resolve(false);
             }
 
-            var NotifyTextEditor;
-            var self                      = this;
-            var notificationConfirmOpened = false;
+            let NotifyTextEditor;
+            const self = this;
+            let notificationConfirmOpened = false;
 
             return new Promise(function (resolve) {
-                var onNotifyConfirmSubmit = function (Win) {
+                const onNotifyConfirmSubmit = function (Win) {
                     if (notificationConfirmOpened) {
                         resolve(NotifyTextEditor.getContent());
                         Win.close();
@@ -1593,7 +1595,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                     Win.Loader.show();
 
-                    var SubmitBtn = Win.getButton('submit');
+                    const SubmitBtn = Win.getButton('submit');
                     SubmitBtn.disable();
 
                     ProcessingStatus.getNotificationText(statusId, self.getAttribute('orderId')).then(
@@ -1615,11 +1617,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                                     SubmitBtn.enable();
 
-                                    var NotificationElm = new Element('div', {
+                                    const NotificationElm = new Element('div', {
                                         'class': 'order-notification',
                                         html   : '<span>' +
-                                            QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') +
-                                            '</span>'
+                                                 QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') +
+                                                 '</span>'
                                     }).inject(Win.getContent());
 
                                     Editor.inject(NotificationElm);
@@ -1652,7 +1654,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     events       : {
                         onOpen  : function (Win) {
                             // get current status title
-                            var statusTitle = self.$Elm.getElement(
+                            const statusTitle = self.$Elm.getElement(
                                 'select[name="status"] option[value="' + statusId + '"]'
                             ).innerHTML;
 
@@ -1673,7 +1675,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * Edit the ordered date
          */
         $editDate: function () {
-            var self = this;
+            const self = this;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.edit.date.title'),
@@ -1685,14 +1687,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 maxWidth   : 600,
                 events     : {
                     onOpen  : function (Win) {
-                        var Content = Win.getContent();
+                        const Content = Win.getContent();
 
                         Content.addClass('order-edit-date');
                         Content.set('html', Mustache.render(templateChangeDate, {
                             text: QUILocale.get(lg, 'dialog.edit.date.text')
                         }));
 
-                        var D = new Date(self.getAttribute('cDate'));
+                        const D = new Date(self.getAttribute('cDate'));
                         D.setMinutes(D.getMinutes() - D.getTimezoneOffset());
 
                         Content.getElement('input').value = D.toISOString().slice(0, 16);
@@ -1701,12 +1703,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         });
                     },
                     onSubmit: function (Win) {
-                        var Content = Win.getContent();
-                        var value   = Content.getElement('input').value;
+                        const Content = Win.getContent();
+                        const value = Content.getElement('input').value;
 
-                        var D = new Date(value);
-                        var p = D.toISOString().split('T');
-                        var d = p[0] + ' ' + p[1].split('.')[0];
+                        const D = new Date(value);
+                        const p = D.toISOString().split('T');
+                        const d = p[0] + ' ' + p[1].split('.')[0];
 
                         self.setAttribute('cDate', d);
                         self.getBody().getElements('[name="date"]').set('value', d);
@@ -1738,7 +1740,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             // order status
             const StatusSelect = Content.getElement('[name="shippingStatus"]');
-            const StatusColor  = Content.getElement('.order-data-shipping-status-field-colorPreview');
+            const StatusColor = Content.getElement('.order-data-shipping-status-field-colorPreview');
 
             StatusSelect.addEvent('change', function () {
                 const Option = StatusSelect.getElement('[value="' + this.value + '"]');
@@ -1773,7 +1775,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
 
                         StatusSelect.disabled = false;
-                        StatusSelect.value    = self.getAttribute('shippingStatus');
+                        StatusSelect.value = self.getAttribute('shippingStatus');
                         StatusSelect.fireEvent('change');
 
                         if (self.$initialShippingStatus === false) {
@@ -1782,8 +1784,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                         return Shipping.getShippingList();
                     }).then(function (shippingList) {
-                        const ShippingSelect       = self.getContent().getElement('[name="shipping"]');
-                        const ShippingTracking     = self.getContent().getElement('[name="shippingTracking"]');
+                        const ShippingSelect = self.getContent().getElement('[name="shipping"]');
+                        const ShippingTracking = self.getContent().getElement('[name="shippingTracking"]');
                         const ShippingConfirmation = self.getContent().getElement('[name="shippingConfirmationButton"]');
 
                         new Element('option', {
@@ -1794,18 +1796,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         for (let i = 0, len = shippingList.length; i < len; i++) {
                             new Element('option', {
                                 html : shippingList[i].currentTitle +
-                                    ' (' + shippingList[i].currentWorkingTitle + ')',
+                                       ' (' + shippingList[i].currentWorkingTitle + ')',
                                 value: shippingList[i].id
                             }).inject(ShippingSelect);
                         }
 
-                        ShippingSelect.value   = self.getAttribute('shipping');
+                        ShippingSelect.value = self.getAttribute('shipping');
                         ShippingTracking.value = self.getAttribute('shippingTracking');
 
                         if (ShippingTracking.get('data-quiid')) {
                             QUI.Controls
-                                .getById(ShippingTracking.get('data-quiid'))
-                                .setValue(self.getAttribute('shippingTracking'));
+                               .getById(ShippingTracking.get('data-quiid'))
+                               .setValue(self.getAttribute('shippingTracking'));
                         }
 
                         if (ShippingConfirmation) {
@@ -1821,7 +1823,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             if (confirmations && confirmations.length) {
                                 let i, len, D;
                                 let Formatter = QUILocale.getDateTimeFormatter();
-                                const Ul      = new Element('ul');
+                                const Ul = new Element('ul');
 
                                 for (i = 0, len = confirmations.length; i < len; i++) {
                                     D = new Date(confirmations[i].time * 1000);
@@ -1858,7 +1860,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return Promise.resolve(false);
             }
 
-            const self                    = this;
+            const self = this;
             let NotifyTextEditor;
             let notificationConfirmOpened = false;
 
@@ -1892,11 +1894,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 Win.setAttribute('maxWidth', 800);
 
                                 Win.resize().then(function () {
-                                    var NotificationElm = new Element('div', {
+                                    const NotificationElm = new Element('div', {
                                         'class': 'order-notification',
                                         html   : '<span>' +
-                                            QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') +
-                                            '</span>'
+                                                 QUILocale.get(lg, 'dialog.statusChangeNotification.notification.label') +
+                                                 '</span>'
                                     }).inject(Win.getContent());
 
                                     Editor.setHeight(400);
@@ -1937,7 +1939,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     events       : {
                         onOpen  : function (Win) {
                             // get current status title
-                            var statusTitle = self.$Elm.getElement(
+                            const statusTitle = self.$Elm.getElement(
                                 'select[name="status"] option[value="' + statusId + '"]'
                             ).innerHTML;
 
