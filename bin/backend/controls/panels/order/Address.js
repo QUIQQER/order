@@ -33,14 +33,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             this.parent(options);
 
             this.$Addresses = null;
-            this.$Company   = null;
-            this.$Street    = null;
-            this.$ZIP       = null;
-            this.$City      = null;
-            this.$Country   = null;
+            this.$Company = null;
+            this.$Street = null;
+            this.$ZIP = null;
+            this.$City = null;
+            this.$Country = null;
 
-            this.$firstname = null;
-            this.$lastname  = null;
+            this.$Firstname = null;
+            this.$Lastname = null;
 
             this.$loaded = false;
             this.$userId = this.getAttribute('userId');
@@ -55,22 +55,34 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          * event: on import
          */
         $onImport: function () {
-            var self = this,
-                Elm  = this.getElm();
+            const self = this,
+                  Elm  = this.getElm();
 
+            this.$Firstname = Elm.getElement('[name="firstname"]');
+            this.$Lastname = Elm.getElement('[name="lastname"]');
             this.$Company = Elm.getElement('[name="company"]');
-            this.$Street  = Elm.getElement('[name="street_no"]');
-            this.$ZIP     = Elm.getElement('[name="zip"]');
-            this.$City    = Elm.getElement('[name="city"]');
+            this.$Street = Elm.getElement('[name="street_no"]');
+            this.$ZIP = Elm.getElement('[name="zip"]');
+            this.$City = Elm.getElement('[name="city"]');
             this.$Country = Elm.getElement('[name="country"]');
+
+            if (!this.$Firstname) {
+                this.$Firstname = new Element('input');
+            }
+
+            if (!this.$Lastname) {
+                this.$Lastname = new Element('input');
+            }
 
             this.$Addresses = Elm.getElement('[name="addresses"]');
             this.$Addresses.addEvent('change', this.$onSelectChange);
 
+            this.$Firstname.disabled = false;
+            this.$Lastname.disabled = false;
             this.$Company.disabled = false;
-            this.$Street.disabled  = false;
-            this.$ZIP.disabled     = false;
-            this.$City.disabled    = false;
+            this.$Street.disabled = false;
+            this.$ZIP.disabled = false;
+            this.$City.disabled = false;
 
             Countries.getCountries().then(function (result) {
                 new Element('option', {
@@ -78,7 +90,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                     html : ''
                 }).inject(self.$Country);
 
-                for (var code in result) {
+                for (let code in result) {
                     if (!result.hasOwnProperty(code)) {
                         continue;
                     }
@@ -94,7 +106,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                 }
 
                 self.$Country.disabled = false;
-                self.$loaded           = true;
+                self.$loaded = true;
             });
         },
 
@@ -108,8 +120,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                 id       : this.$Addresses.value,
                 aid      : this.$Addresses.value,
                 uid      : this.$userId,
-                firstname: this.$firstname,
-                lastname : this.$lastname,
+                firstname: this.$Firstname.value,
+                lastname : this.$Lastname.value,
                 company  : this.$Company.value,
                 street_no: this.$Street.value,
                 zip      : this.$ZIP.value,
@@ -145,11 +157,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             }
 
             if ("firstname" in value) {
-                this.$firstname = value.firstname;
+                this.$Firstname.value = value.firstname;
             }
 
             if ("lastname" in value) {
-                this.$lastname = value.lastname;
+                this.$Lastname.value = value.lastname;
             }
 
             if ("country" in value) {
@@ -182,7 +194,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                 return Promise.reject('No User-ID');
             }
 
-            var User = Users.get(this.$userId);
+            const User = Users.get(this.$userId);
 
             if (User.isLoaded()) {
                 return Promise.resolve(User);
@@ -197,7 +209,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          * @return {Promise}
          */
         refresh: function () {
-            var self = this;
+            const self = this;
 
             this.$Addresses.set('html', '');
 
@@ -216,7 +228,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          * Load the addresses
          */
         loadAddresses: function () {
-            var self = this;
+            const self = this;
 
             this.$Addresses.set('html', '');
             this.$Addresses.disabled = true;
@@ -234,7 +246,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                     'data-value': ''
                 }).inject(self.$Addresses);
 
-                for (var i = 0, len = addresses.length; i < len; i++) {
+                for (let i = 0, len = addresses.length; i < len; i++) {
                     new Element('option', {
                         value       : addresses[i].id,
                         html        : addresses[i].text,
@@ -256,9 +268,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          * event : on select change
          */
         $onSelectChange: function () {
-            var Select = this.$Addresses;
+            const Select = this.$Addresses;
 
-            var options = Select.getElements('option').filter(function (Option) {
+            const options = Select.getElements('option').filter(function (Option) {
                 return Option.value === Select.value;
             });
 
@@ -266,14 +278,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
                 return;
             }
 
-            var data = JSON.decode(options[0].get('data-value'));
+            const data = JSON.decode(options[0].get('data-value'));
 
             this.$Company.value = data.company;
-            this.$Street.value  = data.street_no;
-            this.$ZIP.value     = data.zip;
-            this.$City.value    = data.city;
-            this.$firstname     = data.firstname;
-            this.$lastname      = data.lastname;
+            this.$Street.value = data.street_no;
+            this.$ZIP.value = data.zip;
+            this.$City.value = data.city;
+            this.$Firstname.value = data.firstname;
+            this.$Lastname.value = data.lastname;
             this.$Country.value = data.country;
         },
 
@@ -284,7 +296,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
          * @param {String} value
          */
         $onSetAttribute: function (key, value) {
-            var self = this;
+            const self = this;
 
             if (key === 'userId') {
                 this.$userId = value;
