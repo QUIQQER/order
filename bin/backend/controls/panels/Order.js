@@ -770,9 +770,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
 
                         const Customer = QUI.Controls.getById(
-                            Content.getElement('[name="customer"]').get('data-quiid')
+                            Content.getElement('input[name="customer"]').get('data-quiid')
                         );
-
+                        
                         this.checked = false;
 
                         QUI.getMessageHandler().then(function (MH) {
@@ -795,7 +795,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
 
                 // values
-                if (self.getAttribute('customerId') !== false) {
+                if (self.getAttribute('customerId') !== false && self.getAttribute('customerId') !== 0) {
                     self.$Customer.addItem(self.getAttribute('customerId'));
 
                     const User = Users.get(self.getAttribute('customerId'));
