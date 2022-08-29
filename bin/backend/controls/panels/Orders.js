@@ -30,8 +30,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
              Mustache, QUIPackages, templateTotal) {
     "use strict";
 
-    var lg                = 'quiqqer/order';
-    var shippingInstalled = false;
+    const lg = 'quiqqer/order';
+    let shippingInstalled = false;
 
     return new Class({
 
@@ -66,14 +66,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 title: QUILocale.get(lg, 'orders.panel.title')
             });
 
-            this.$Grid       = null;
-            this.$Total      = null;
+            this.$Grid = null;
+            this.$Total = null;
             this.$TimeFilter = null;
-            this.$Search     = null;
-            this.$Currency   = null;
-            this.$Actions    = null;
-            this.$Status     = null;
-            this.$installed  = {};  // list of installed packages related to orders
+            this.$Search = null;
+            this.$Currency = null;
+            this.$Actions = null;
+            this.$Status = null;
+            this.$installed = {};  // list of installed packages related to orders
 
             this.addEvents({
                 onCreate : this.$onCreate,
@@ -100,12 +100,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return Promise.resolve();
             }
 
-            var self = this;
+            const self = this;
 
             this.Loader.show();
 
             // db mapping
-            var sortOn = self.$Grid.options.sortOn;
+            let sortOn = self.$Grid.options.sortOn;
 
             switch (sortOn) {
                 case 'customer_id':
@@ -127,7 +127,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 currency: this.$Currency.getAttribute('value'),
                 status  : this.$Status.getValue()
             }).then(function (result) {
-                var gridData = result.grid;
+                const gridData = result.grid;
 
                 gridData.data = gridData.data.map(function (entry) {
                     entry.opener = '&nbsp;';
@@ -183,7 +183,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            var selected = this.$Grid.getSelectedData();
+            const selected = this.$Grid.getSelectedData();
 
             if (selected.length) {
                 if (selected[0].paid_status === 1 ||
@@ -201,7 +201,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event : on create
          */
         $onCreate: function () {
-            var self = this;
+            const self = this;
 
             // panel buttons
             this.getContent().setStyles({
@@ -251,9 +251,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             );
 
             ProcessingStatus.getList().then(function (list) {
-                var data = list.data;
+                const data = list.data;
 
-                for (var i = 0, len = data.length; i < len; i++) {
+                for (let i = 0, len = data.length; i < len; i++) {
                     self.$Status.appendChild(
                         QUILocale.get(lg, 'filter.status', {
                             status: data[i].title
@@ -393,13 +393,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            var Body = this.getContent();
+            const Body = this.getContent();
 
             if (!Body) {
                 return;
             }
 
-            var size = Body.getSize();
+            const size = Body.getSize();
 
             this.$Grid.setHeight(size.y - 20);
             this.$Grid.setWidth(size.x - 20);
@@ -409,7 +409,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: on panel inject
          */
         $onInject: function () {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
 
@@ -417,7 +417,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 'package_quiqqer_currency_ajax_getAllowedCurrencies',
                 'package_quiqqer_currency_ajax_getDefault'
             ], function (currencies, currency) {
-                var i, len, entry, text;
+                let i, len, entry, text;
 
                 if (!currencies.length || currencies.length === 1) {
                     self.$Currency.hide();
@@ -512,7 +512,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     'package/quiqqer/order/bin/backend/controls/panels/Order',
                     'utils/Panels'
                 ], function (Order, PanelUtils) {
-                    var Panel = new Order({
+                    const Panel = new Order({
                         orderId: orderId,
                         '#id'  : orderId
                     });
@@ -527,7 +527,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: create click
          */
         $clickCreateOrder: function () {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve) {
                 new QUIConfirm({
@@ -566,13 +566,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: copy click
          */
         $clickCopyOrder: function () {
-            var selected = this.$Grid.getSelectedData();
+            const selected = this.$Grid.getSelectedData();
 
             if (!selected.length) {
                 return;
             }
 
-            var orderId = selected[0].id;
+            const orderId = selected[0].id;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.order.copy.title'),
@@ -598,7 +598,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 'package/quiqqer/order/bin/backend/controls/panels/Order',
                                 'utils/Panels'
                             ], function (Order, PanelUtils) {
-                                var Panel = new Order({
+                                const Panel = new Order({
                                     orderId: newOrderId,
                                     '#id'  : newOrderId
                                 });
@@ -618,14 +618,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: delete click
          */
         $clickDeleteOrder: function () {
-            var selected = this.$Grid.getSelectedData();
+            const selected = this.$Grid.getSelectedData();
 
             if (!selected.length) {
                 return;
             }
 
-            var self    = this,
-                orderId = selected[0].id;
+            const self    = this,
+                  orderId = selected[0].id;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.order.delete.title'),
@@ -673,7 +673,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * Open the order
          */
         $clickOpenOrder: function () {
-            var selected = this.$Grid.getSelectedData();
+            const selected = this.$Grid.getSelectedData();
 
             if (!selected.length) {
                 return;
@@ -686,13 +686,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * open the create invoice dialog
          */
         $clickCreateInvoice: function () {
-            var selected = this.$Grid.getSelectedData();
+            const selected = this.$Grid.getSelectedData();
 
             if (!selected.length) {
                 return;
             }
 
-            var orderId = selected[0].id;
+            const orderId = selected[0].id;
 
             new QUIConfirm({
                 title      : QUILocale.get(lg, 'dialog.order.createInvoice.title'),
@@ -720,9 +720,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 'package/quiqqer/invoice/bin/Invoices',
                                 'package/quiqqer/invoice/bin/backend/controls/panels/TemporaryInvoices'
                             ], function (Invoices, Panel) {
-                                var HelperPanel = new Panel();
+                                const HelperPanel = new Panel();
 
-                                Invoices.fireEvent('createInvoice', [Invoices, newInvoiceId]);
+                                Invoices.fireEvent('createInvoice', [
+                                    Invoices,
+                                    newInvoiceId
+                                ]);
 
                                 HelperPanel.openInvoice(newInvoiceId);
                                 HelperPanel.destroy();
@@ -808,8 +811,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            var row        = data.row,
-                ParentNode = data.parent;
+            const row        = data.row,
+                  ParentNode = data.parent;
 
             ParentNode.setStyle('padding', 10);
             ParentNode.set('html', '<div class="fa fa-spinner fa-spin"></div>');
@@ -870,7 +873,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * Hide the total display
          */
         hideTotal: function () {
-            var self = this;
+            const self = this;
 
             this.getButtons('total').setNormal();
 
@@ -917,8 +920,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event : on payment add button click
          */
         $onAddPaymentButtonClick: function (Button) {
-            var self         = this,
-                selectedData = this.$Grid.getSelectedData();
+            const self         = this,
+                  selectedData = this.$Grid.getSelectedData();
 
             if (!selectedData.length) {
                 return;
@@ -926,7 +929,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             Button.setAttribute('textimage', 'fa fa-spinner fa-spin');
 
-            var hash = selectedData[0].hash;
+            const hash = selectedData[0].hash;
 
             require([
                 'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/AddPaymentWindow'
@@ -966,7 +969,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @return {Promise}
          */
         addPayment: function (hash, amount, paymentMethod, date) {
-            var self = this;
+            const self = this;
 
             this.Loader.show();
 
@@ -990,78 +993,91 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @return {({dataIndex: string, dataType: string, showNotInExport: boolean, width: number, header: string}|{dataIndex: string, dataType: string, width: number, header: *}|{dataIndex: string, dataType: string, width: number, header: *})[]}
          */
         $getGridColumnModel: function () {
-            var columns = [{
-                header         : '&nbsp;',
-                dataIndex      : 'opener',
-                dataType       : 'int',
-                width          : 30,
-                showNotInExport: true
-            }, {
-                header   : QUILocale.get(lg, 'grid.orderStatus'),
-                dataIndex: 'status',
-                dataType : 'node',
-                width    : 100,
-                className: 'grid-align-center'
-            }, {
-                header   : QUILocale.get(lg, 'grid.orderNo'),
-                dataIndex: 'prefixed-id',
-                dataType : 'string',
-                width    : 80
-            }];
+            let columns = [
+                {
+                    header         : '&nbsp;',
+                    dataIndex      : 'opener',
+                    dataType       : 'int',
+                    width          : 30,
+                    showNotInExport: true
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.orderStatus'),
+                    dataIndex: 'status',
+                    dataType : 'node',
+                    width    : 100,
+                    className: 'grid-align-center clickable'
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.orderNo'),
+                    dataIndex: 'prefixed-id',
+                    dataType : 'string',
+                    width    : 80
+                }
+            ];
 
-            columns = columns.concat([{
-                header   : QUILocale.get('quiqqer/system', 'name'),
-                dataIndex: 'customer_name',
-                dataType : 'string',
-                width    : 200,
-                className: 'clickable',
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.customerNo'),
-                dataIndex: 'customer_id',
-                dataType : 'integer',
-                width    : 90,
-                className: 'clickable'
-            }, {
-                header   : QUILocale.get(lg, 'grid.orderDate'),
-                dataIndex: 'c_date',
-                dataType : 'date',
-                width    : 140
-            }, {
-                header   : QUILocale.get(lg, 'grid.sum'),
-                dataIndex: 'display_sum',
-                dataType : 'currency',
-                width    : 100,
-                className: 'payment-status-amountCell',
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.netto'),
-                dataIndex: 'display_nettosum',
-                dataType : 'currency',
-                width    : 100,
-                className: 'payment-status-amountCell',
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.vat'),
-                dataIndex: 'display_vatsum',
-                dataType : 'currency',
-                width    : 100,
-                className: 'payment-status-amountCell',
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.paymentMethod'),
-                dataIndex: 'payment_title',
-                dataType : 'string',
-                width    : 180,
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.paymentStatus'),
-                dataIndex: 'paid_status_display',
-                dataType : 'string',
-                width    : 100,
-                sortable : false,
-                className: 'grid-align-center'
-            }]);
+            columns = columns.concat([
+                {
+                    header   : QUILocale.get('quiqqer/system', 'name'),
+                    dataIndex: 'customer_name',
+                    dataType : 'string',
+                    width    : 200,
+                    className: 'clickable',
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.customerNo'),
+                    dataIndex: 'customer_id',
+                    dataType : 'integer',
+                    width    : 90,
+                    className: 'clickable'
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.orderDate'),
+                    dataIndex: 'c_date',
+                    dataType : 'date',
+                    width    : 140
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.sum'),
+                    dataIndex: 'display_sum',
+                    dataType : 'currency',
+                    width    : 100,
+                    className: 'payment-status-amountCell',
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.netto'),
+                    dataIndex: 'display_nettosum',
+                    dataType : 'currency',
+                    width    : 100,
+                    className: 'payment-status-amountCell',
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.vat'),
+                    dataIndex: 'display_vatsum',
+                    dataType : 'currency',
+                    width    : 100,
+                    className: 'payment-status-amountCell',
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.paymentMethod'),
+                    dataIndex: 'payment_title',
+                    dataType : 'string',
+                    width    : 180,
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.paymentStatus'),
+                    dataIndex: 'paid_status_display',
+                    dataType : 'string',
+                    width    : 100,
+                    sortable : false,
+                    className: 'grid-align-center'
+                }
+            ]);
 
 
             if (shippingInstalled) {
@@ -1074,51 +1090,60 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 });
             }
 
-            columns = columns.concat([{
-                header   : QUILocale.get(lg, 'grid.taxId'),
-                dataIndex: 'taxId',
-                dataType : 'string',
-                width    : 120,
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.euVatId'),
-                dataIndex: 'euVatId',
-                dataType : 'string',
-                width    : 120,
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.processingStatus'),
-                dataIndex: 'processing',
-                dataType : 'string',
-                width    : 150,
-                sortable : false
-            }, {
-                header   : QUILocale.get(lg, 'grid.invoiceNo'),
-                dataIndex: 'invoice_id',
-                dataType : 'integer',
-                width    : 100,
-                className: 'clickable'
-            }, {
-                header   : QUILocale.get(lg, 'grid.brutto'),
-                dataIndex: 'isbrutto',
-                dataType : 'integer',
-                width    : 50
-            }, {
-                header   : QUILocale.get(lg, 'grid.hash'),
-                dataIndex: 'hash',
-                dataType : 'string',
-                width    : 280,
-                className: 'monospace'
-            }, {
-                header   : QUILocale.get('quiqqer/system', 'id'),
-                dataIndex: 'id',
-                dataType : 'integer',
-                width    : 80
-            }, {
-                dataIndex: 'paymentId',
-                dataType : 'integer',
-                hidden   : true
-            }]);
+            columns = columns.concat([
+                {
+                    header   : QUILocale.get(lg, 'grid.taxId'),
+                    dataIndex: 'taxId',
+                    dataType : 'string',
+                    width    : 120,
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.euVatId'),
+                    dataIndex: 'euVatId',
+                    dataType : 'string',
+                    width    : 120,
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.processingStatus'),
+                    dataIndex: 'processing',
+                    dataType : 'string',
+                    width    : 150,
+                    sortable : false
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.invoiceNo'),
+                    dataIndex: 'invoice_id',
+                    dataType : 'integer',
+                    width    : 100,
+                    className: 'clickable'
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.brutto'),
+                    dataIndex: 'isbrutto',
+                    dataType : 'integer',
+                    width    : 50
+                },
+                {
+                    header   : QUILocale.get(lg, 'grid.hash'),
+                    dataIndex: 'hash',
+                    dataType : 'string',
+                    width    : 280,
+                    className: 'monospace'
+                },
+                {
+                    header   : QUILocale.get('quiqqer/system', 'id'),
+                    dataIndex: 'id',
+                    dataType : 'integer',
+                    width    : 80
+                },
+                {
+                    dataIndex: 'paymentId',
+                    dataType : 'integer',
+                    hidden   : true
+                }
+            ]);
 
             return columns;
         },
@@ -1127,10 +1152,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * Create / render the grid
          */
         $createGrid: function () {
-            var self = this;
+            const self = this;
 
             // Grid
-            var Container = new Element('div').inject(this.getContent());
+            const Container = new Element('div').inject(this.getContent());
 
             // Add additional actions based on isntalled packages
             if (this.$installed['quiqqer/salesorders']) {
@@ -1160,42 +1185,45 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 },
 
                 columnModel: this.$getGridColumnModel(),
-                buttons    : [this.$Actions, {
-                    name     : 'create',
-                    text     : QUILocale.get(lg, 'panel.btn.createOrder'),
-                    textimage: 'fa fa-plus',
-                    events   : {
-                        onClick: function (Btn) {
-                            Btn.setAttribute('textimage', 'fa fa-spinner fa-spin');
+                buttons    : [
+                    this.$Actions,
+                    {
+                        name     : 'create',
+                        text     : QUILocale.get(lg, 'panel.btn.createOrder'),
+                        textimage: 'fa fa-plus',
+                        events   : {
+                            onClick: function (Btn) {
+                                Btn.setAttribute('textimage', 'fa fa-spinner fa-spin');
 
-                            self.$clickCreateOrder(Btn).then(function () {
-                                Btn.setAttribute('textimage', 'fa fa-plus');
-                            }).catch(function () {
-                                Btn.setAttribute('textimage', 'fa fa-plus');
-                            });
+                                self.$clickCreateOrder(Btn).then(function () {
+                                    Btn.setAttribute('textimage', 'fa fa-plus');
+                                }).catch(function () {
+                                    Btn.setAttribute('textimage', 'fa fa-plus');
+                                });
+                            }
                         }
                     }
-                }]
+                ]
             });
 
             this.$Grid.addEvents({
                 onRefresh : this.refresh,
                 onClick   : this.$refreshButtonStatus,
                 onDblClick: function (data) {
-                    var Cell     = data.cell,
-                        position = Cell.getPosition(),
-                        rowData  = self.$Grid.getDataByRow(data.row);
-
+                    const Cell     = data.cell,
+                          position = Cell.getPosition(),
+                          rowData  = self.$Grid.getDataByRow(data.row);
 
                     if (Cell.get('data-index') === 'customer_id' ||
                         Cell.get('data-index') === 'customer_name' ||
-                        Cell.get('data-index') === 'invoice_id') {
+                        Cell.get('data-index') === 'invoice_id' ||
+                        Cell.get('data-index') === 'status') {
 
                         require([
                             'qui/controls/contextmenu/Menu',
                             'qui/controls/contextmenu/Item'
                         ], function (QUIMenu, QUIMenuItem) {
-                            var Menu = new QUIMenu({
+                            const Menu = new QUIMenu({
                                 events: {
                                     onBlur: function () {
                                         Menu.hide();
@@ -1248,7 +1276,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                                     'utils/Panels',
                                                     'package/quiqqer/invoice/bin/backend/controls/panels/Invoice'
                                                 ], function (PanelUtils, InvoicePanel) {
-                                                    var Panel = new InvoicePanel({
+                                                    const Panel = new InvoicePanel({
                                                         invoiceId: rowData.invoice_id
                                                     });
 
@@ -1260,6 +1288,29 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 );
                             }
 
+                            Menu.appendChild(
+                                new QUIMenuItem({
+                                    icon  : 'fa fa-check',
+                                    text  : QUILocale.get(lg, 'panel.orders.contextMenu.change.status'),
+                                    events: {
+                                        onClick: function () {
+                                            require([
+                                                'package/quiqqer/order/bin/backend/controls/panels/order/StatusWindow'
+                                            ], function (StatusWindow) {
+                                                new StatusWindow({
+                                                    orderId: rowData.id,
+                                                    events : {
+                                                        statusChanged: function () {
+                                                            self.refresh();
+                                                        }
+                                                    }
+                                                }).open();
+                                            });
+                                        }
+                                    }
+                                })
+                            );
+
                             Menu.inject(document.body);
                             Menu.setPosition(position.x, position.y + 30);
                             Menu.setTitle(rowData['prefixed-id']);
@@ -1270,7 +1321,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         return;
                     }
 
-                    var selected = self.$Grid.getSelectedData();
+                    const selected = self.$Grid.getSelectedData();
 
                     if (selected.length) {
                         self.openOrder(selected[0].id).catch(function (err) {

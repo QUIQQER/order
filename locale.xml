@@ -341,11 +341,14 @@
             <en><![CDATA[Created from order "[id]" by [user] (#[userId]).]]></en>
         </locale>
         <locale name="exception.createSalesOrder.package_not_installed">
-            <de><![CDATA[Es kann kein Auftrag aus einer Bestellung erzeugt werden, da das Auftrags-Modul (quiqqer/salesorders) nicht installiert ist.]]></de>
-            <en><![CDATA[No sales order can be created from an order since the sales order package (quiqqer/salesoders) is not installed.]]></en>
+            <de>
+                <![CDATA[Es kann kein Auftrag aus einer Bestellung erzeugt werden, da das Auftrags-Modul (quiqqer/salesorders) nicht installiert ist.]]></de>
+            <en>
+                <![CDATA[No sales order can be created from an order since the sales order package (quiqqer/salesoders) is not installed.]]></en>
         </locale>
         <locale name="exception.Factory.order_id_already_exists">
-            <de><![CDATA[Es kann keine Bestellung mit ID #[id] angelegt werden, da diese ID bereits vergeben ist.]]></de>
+            <de>
+                <![CDATA[Es kann keine Bestellung mit ID #[id] angelegt werden, da diese ID bereits vergeben ist.]]></de>
             <en><![CDATA[An order with ID #[id] cannot be created since this ID is already taken.]]></en>
         </locale>
 
@@ -1470,6 +1473,10 @@
             <de><![CDATA[Rechnung öffnen]]></de>
             <en><![CDATA[Open invoice]]></en>
         </locale>
+        <locale name="panel.orders.contextMenu.change.status">
+            <de><![CDATA[Bestellstatus ändern]]></de>
+            <en><![CDATA[Change order status]]></en>
+        </locale>
 
         <locale name="grid.orderNo">
             <de><![CDATA[Bestell-Nr]]></de>
@@ -2186,6 +2193,21 @@
         <locale name="shipping.confirmation.list.message">
             <de><![CDATA[Eine Versandbestätigung wurde am [date] an [email] gesendet.]]></de>
             <en><![CDATA[An shipping confirmation was sent to [email] on [date].]]></en>
+        </locale>
+
+        <locale name="window.status.title">
+            <de><![CDATA[Status Änderung für Bestellung #[orderId]]]></de>
+            <en><![CDATA[Status change for order #[orderId]]]></en>
+        </locale>
+        <locale name="window.status.text">
+            <de><![CDATA[
+            Wechsel den Status der Bestellung #[orderId].
+            Beachte, Statusänderungen können verschiedene Aktionen auslösen.
+            ]]></de>
+            <en><![CDATA[
+            Change the status of the order #[orderId].
+            Note, status changes can trigger different actions.
+            ]]></en>
         </locale>
 
     </groups>
