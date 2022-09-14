@@ -418,10 +418,14 @@ class Utils
      */
     public static function isBasketProductEditable($product): bool
     {
-        $productId = $product['id'];
-        $Product   = QUI\ERP\Products\Handler\Products::getProduct($productId);
-        $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
-
+        try {
+            $productId = $product['id'];
+            $Product   = QUI\ERP\Products\Handler\Products::getProduct($productId);
+            $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
+        } catch (QUI\Exception $Exception) {
+            return false;
+        }
+        
         // TYPE_1 Kann ohne Einschränkung in den Warenkorb
         // TYPE_2 Kann nur alleine in den Warenkorb
         // TYPE_3 Kann mit anderen Produkten einmalig in den Warenkorb
