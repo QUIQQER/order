@@ -98,19 +98,19 @@ class Mail
             if ($DeliveryAddress) {
                 $DeliveryAddress->setAttribute(
                     'template',
-                    dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+                    dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
                 );
             }
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
-        $InvoiceAddress->setAttribute('template', dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html');
+        $InvoiceAddress->setAttribute('template', dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html');
 
         // comment
         $comment = '';
 
         if (QUI::getSession()->get('comment-customer')) {
-            $comment .= QUI::getSession()->get('comment-customer')."\n";
+            $comment .= QUI::getSession()->get('comment-customer') . "\n";
         }
 
         if (QUI::getSession()->get('comment-message')) {
@@ -139,7 +139,7 @@ class Mail
         ]);
 
         $Mailer->setBody(
-            $Engine->fetch(dirname(__FILE__).'/MailTemplates/orderConfirmation.html')
+            $Engine->fetch(dirname(__FILE__) . '/MailTemplates/orderConfirmation.html')
         );
 
         $Mailer->send();
@@ -227,14 +227,14 @@ class Mail
             $DeliveryAddress = $Shipping->getAddress();
             $DeliveryAddress->setAttribute(
                 'template',
-                dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+                dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
             );
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
         $InvoiceAddress->setAttribute(
             'template',
-            dirname(__FILE__).'/MailTemplates/orderConfirmationAddress.html'
+            dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
         );
 
         $Engine->assign([
@@ -256,7 +256,7 @@ class Mail
         ]);
 
         $Mailer->setBody(
-            $Engine->fetch(dirname(__FILE__).'/MailTemplates/orderConfirmationAdmin.html')
+            $Engine->fetch(dirname(__FILE__) . '/MailTemplates/orderConfirmationAdmin.html')
         );
 
         try {
@@ -331,7 +331,9 @@ class Mail
 
         $localeVar = self::getOrderLocaleVar($Order, $Customer);
 
-        $localeVar['trackingInfo'] = '';
+        $localeVar['trackingInfo']   = '';
+        $localeVar['trackingNumber'] = '';
+        $localeVar['trackingLink']   = '';
 
         if (!empty($shippingTracking) && isset($shippingTracking['type']) && isset($shippingTracking['number'])) {
             $localeVar['trackingInfo'] = QUI::getLocale()->get(
@@ -345,6 +347,13 @@ class Mail
                     ),
                     'trackingNumber' => $shippingTracking['number']
                 ]
+            );
+
+            $localeVar['trackingNumber'] = $shippingTracking['number'];
+            $localeVar['trackingLink']   = QUI\ERP\Shipping\Tracking\Tracking::getUrl(
+                $shippingTracking['number'],
+                $shippingTracking['type'],
+                $Country
             );
         }
 
@@ -457,7 +466,7 @@ class Mail
                     $Item = $Media->get($attachment);
                     $Mail->addAttachment($Item->getFullPath());
                 } catch (\Exception $Exception) {
-                    QUI\System\Log::addAlert('Order mail attachment file error :: '.$Exception->getMessage());
+                    QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
                 }
             }
         }
@@ -484,7 +493,7 @@ class Mail
         $title = $Site->getAttribute('title');
 
         ['dirname' => $dirname, 'extension' => $extension] = pathinfo($file);
-        $newFile = $dirname.'/'.$title.'.'.$extension;
+        $newFile = $dirname . '/' . $title . '.' . $extension;
 
         rename($file, $newFile);
 

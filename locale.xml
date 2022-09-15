@@ -2126,6 +2126,9 @@
                 <li><b>[salutation]:</b> - Anrede des Kunden</li>
                 <li><b>[firstname]:</b> - Vorname des Kunden</li>
                 <li><b>[lastname]:</b> - Nachname des Kunden</li>
+                <li><b>[trackingInfo]:</b> - Tracking Info (Hierzu wird die Sprachvariable [quiqqer/order] shipping.order.mail.body.shippingInformation verwendet)</li>
+                <li><b>[trackingNumber]:</b> - Tracking Nummer (Falls eine existiert)</li>
+                <li><b>[trackingLink]:</b> - Tracking Link (Falls einer existiert)</li>
             </ul>
             ]]></de>
             <en><![CDATA[
@@ -2142,6 +2145,9 @@
                 <li><b>[salutation]:</b> - Salutation of the customer</li>
                 <li><b>[firstname]:</b> - Firstname of the customer/li>
                 <li><b>[lastname]:</b> - Lastname of the customer</li>
+                <li><b>[trackingInfo]:</b> - Tracking Info (The [quiqqer/order] shipping.order.mail.body.shippingInformation language variable is used for this).</li>
+                <li><b>[trackingNumber]:</b> - Tracking Number (If one exists)</li>
+                <li><b>[trackingLink]:</b> - Tracking Link (If one exists)</li>
             </ul>
             ]]></en>
         </locale>
@@ -2160,7 +2166,9 @@
                 <li><b>[salutation]:</b> - Anrede des Kunden</li>
                 <li><b>[firstname]:</b> - Vorname des Kunden</li>
                 <li><b>[lastname]:</b> - Nachname des Kunden</li>
-                <li><b>[trackingInfo]:</b> - Wenn es ein Tracking Info gibt, wird der Tracking Info Text verwendet</li>
+                <li><b>[trackingInfo]:</b> - Tracking Info (Hierzu wird die Sprachvariable [quiqqer/order] shipping.order.mail.body.shippingInformation verwendet)</li>
+                <li><b>[trackingNumber]:</b> - Tracking Nummer (Falls eine existiert)</li>
+                <li><b>[trackingLink]:</b> - Tracking Link (Falls einer existiert)</li>
             </ul>
             ]]></de>
             <en><![CDATA[
@@ -2177,7 +2185,9 @@
                 <li><b>[salutation]:</b> - Salutation of the customer</li>
                 <li><b>[firstname]:</b> - Firstname of the customer/li>
                 <li><b>[lastname]:</b> - Lastname of the customer</li>
-                <li><b>[trackingInfo]:</b> - If there is a tracking info, the tracking info text is used</li>
+                <li><b>[trackingInfo]:</b> - Tracking Info (The [quiqqer/order] shipping.order.mail.body.shippingInformation language variable is used for this).</li>
+                <li><b>[trackingNumber]:</b> - Tracking Number (If one exists)</li>
+                <li><b>[trackingLink]:</b> - Tracking Link (If one exists)</li>
             </ul>
             ]]></en>
         </locale>
