@@ -1559,6 +1559,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             QUI\System\Log::writeDebugException($Exception);
         }
 
+        try {
+            QUI::getEvents()->fireEvent('quiqqerOrderShippingOnEmpty', [$this]);
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::addInfo($Exception->getMessage());
+            QUI\System\Log::addInfo($Exception->getTraceAsString());
+        }
+
         return null;
     }
 
