@@ -264,6 +264,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         $this->cUser = (int)$data['c_user'];
 
         $this->setDataBaseData($data);
+
+        try {
+            QUI::getEvents()->fireEvent('quiqqerOrderInit', [$this]);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage());
+        }
     }
 
     /**
