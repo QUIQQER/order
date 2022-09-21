@@ -119,11 +119,14 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         createOrder: function () {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_create', function (newId) {
-                    self.fireEvent('orderCreate', [self, newId]);
+                    self.fireEvent('orderCreate', [
+                        self,
+                        newId
+                    ]);
                     resolve(newId);
                 }, {
                     'package': 'quiqqer/order',
@@ -140,11 +143,14 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         deleteOrder: function (orderId) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_delete', function () {
-                    self.fireEvent('orderDelete', [self, orderId]);
+                    self.fireEvent('orderDelete', [
+                        self,
+                        orderId
+                    ]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
@@ -162,11 +168,15 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         copyOrder: function (orderId) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_copy', function (newOrderId) {
-                    self.fireEvent('orderCopy', [self, newOrderId, orderId]);
+                    self.fireEvent('orderCopy', [
+                        self,
+                        newOrderId,
+                        orderId
+                    ]);
                     resolve(newOrderId, orderId);
                 }, {
                     'package': 'quiqqer/order',
@@ -196,12 +206,17 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         updateOrder: function (orderId, data) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_order_ajax_backend_update', function () {
-                    self.fireEvent('orderSave', [self, orderId, data]);
-                    resolve();
+                QUIAjax.post('package_quiqqer_order_ajax_backend_update', function (result) {
+                    self.fireEvent('orderSave', [
+                        self,
+                        orderId,
+                        data
+                    ]);
+
+                    resolve(result);
                 }, {
                     'package': 'quiqqer/order',
                     orderId  : orderId,
@@ -218,11 +233,14 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         postOrder: function (orderId) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_post', function (invoiceId) {
-                    self.fireEvent('orderPost', [self, orderId]);
+                    self.fireEvent('orderPost', [
+                        self,
+                        orderId
+                    ]);
                     resolve(invoiceId);
                 }, {
                     'package': 'quiqqer/order',
@@ -241,11 +259,15 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         addComment: function (orderId, message) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_addComment', function () {
-                    self.fireEvent('orderAddComment', [self, orderId, message]);
+                    self.fireEvent('orderAddComment', [
+                        self,
+                        orderId,
+                        message
+                    ]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
@@ -264,11 +286,14 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         createInvoice: function (orderId) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_createInvoice', function (newInvoiceId) {
-                    self.fireEvent('orderInvoiceCreate', [self, newInvoiceId]);
+                    self.fireEvent('orderInvoiceCreate', [
+                        self,
+                        newInvoiceId
+                    ]);
                     resolve(newInvoiceId);
                 }, {
                     'package': 'quiqqer/order',
@@ -286,11 +311,14 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @returns {Promise}
          */
         createSalesOrder: function (orderId) {
-            var self = this;
+            const self = this;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_createSalesOrder', function (salesOrderHash) {
-                    self.fireEvent('orderSalesOrderCreate', [self, salesOrderHash]);
+                    self.fireEvent('orderSalesOrderCreate', [
+                        self,
+                        salesOrderHash
+                    ]);
                     resolve(salesOrderHash);
                 }, {
                     'package': 'quiqqer/order',
@@ -310,13 +338,17 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
          * @param {Number|String} [date]
          */
         addPaymentToOrder: function (orderId, amount, paymentMethod, date) {
-            var self = this;
+            const self = this;
 
             date = date || false;
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_backend_addPayment', function (id) {
-                    self.fireEvent('addPaymentToOrder', [self, orderId, id]);
+                    self.fireEvent('addPaymentToOrder', [
+                        self,
+                        orderId,
+                        id
+                    ]);
                     resolve(id);
                 }, {
                     'package'    : 'quiqqer/order',

@@ -226,6 +226,8 @@ QUI::$Ajax->registerFunction(
                 ]
             )
         );
+
+        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($Order->getHash())->toArray();
     },
     ['orderId', 'data'],
     'Permission::checkAdminUser'

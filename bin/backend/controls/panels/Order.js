@@ -142,47 +142,58 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
         /**
          * Refresh the grid
          */
-        refresh: function () {
-            const self    = this,
-                  orderId = this.getAttribute('orderId');
+        refresh: function (data) {
+            const orderId = this.getAttribute('orderId');
 
-            return new Promise(function (resolve, reject) {
-                Orders.get(orderId).then(function (data) {
-                    self.setAttribute('customerId', data.customerId);
-                    self.setAttribute('customer', data.customer);
-                    self.setAttribute('data', data.data);
-                    self.setAttribute('hash', data.hash);
-                    self.setAttribute('addressInvoice', data.addressInvoice);
-                    self.setAttribute('addressDelivery', data.addressDelivery);
-                    self.setAttribute('currency', data.currency.code);
-                    self.setAttribute('shipping', data.shipping);
-                    self.setAttribute('shippingTracking', data.shippingTracking);
-                    self.setAttribute('prefixedId', data.prefixedId);
+            return new Promise((resolve, reject) => {
+                let OrderData;
+
+                if (typeof data === 'undefined') {
+                    OrderData = Orders.get(orderId);
+                } else {
+                    OrderData = Promise.resolve(data);
+                }
+
+                OrderData.then((data) => {
+                    this.setAttribute('customerId', data.customerId);
+                    this.setAttribute('customer', data.customer);
+                    this.setAttribute('data', data.data);
+                    this.setAttribute('hash', data.hash);
+                    this.setAttribute('addressInvoice', data.addressInvoice);
+                    this.setAttribute('addressDelivery', data.addressDelivery);
+                    this.setAttribute('currency', data.currency.code);
+                    this.setAttribute('shipping', data.shipping);
+                    this.setAttribute('shippingTracking', data.shippingTracking);
+                    this.setAttribute('prefixedId', data.prefixedId);
 
                     if (data.addressDelivery &&
                         (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
                         JSON.stringify(data.addressDelivery) !== JSON.stringify(data.addressInvoice)) {
-                        self.setAttribute('hasDeliveryAddress', true);
+                        this.setAttribute('hasDeliveryAddress', true);
                     }
 
-                    self.setAttribute('cDate', data.cDate);
-                    self.setAttribute('cUser', data.cUser);
-                    self.setAttribute('cUsername', data.cUsername);
+                    this.setAttribute('cDate', data.cDate);
+                    this.setAttribute('cUser', data.cUser);
+                    this.setAttribute('cUsername', data.cUsername);
 
-                    self.setAttribute('paymentId', data.paymentId);
-                    self.setAttribute('paymentMethod', data.paymentMethod);
-                    self.setAttribute('status', data.status);
-                    self.setAttribute('shippingStatus', data.shippingStatus);
-                    self.setAttribute('shippingConfirmation', data.shippingConfirmation);
+                    this.setAttribute('paymentId', data.paymentId);
+                    this.setAttribute('paymentMethod', data.paymentMethod);
+                    this.setAttribute('status', data.status);
+                    this.setAttribute('shippingStatus', data.shippingStatus);
+                    this.setAttribute('shippingConfirmation', data.shippingConfirmation);
 
-                    self.$initialStatus = parseInt(data.status);
-                    self.$initialShippingStatus = parseInt(data.shippingStatus);
+                    this.$initialStatus = parseInt(data.status);
+                    this.$initialShippingStatus = parseInt(data.shippingStatus);
 
                     if (data.articles) {
-                        self.$serializedList = data.articles;
+                        this.$serializedList = data.articles;
 
-                        if (typeof self.$serializedList.articles !== 'undefined') {
-                            self.setAttribute('articles', self.$serializedList.articles);
+                        if (typeof this.$serializedList.articles !== 'undefined') {
+                            this.setAttribute('articles', this.$serializedList.articles);
+                        }
+
+                        if (this.$ArticleList) {
+                            this.$ArticleList.unserialize(this.$serializedList);
                         }
                     }
 
@@ -233,6 +244,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     data.notificationShipping = notificationShippingText;
 
                     return Orders.updateOrder(orderId, data);
+                }).then(function (orderData) {
+                    return self.refresh(orderData);
                 }).then(function () {
                     resolve();
                     self.Loader.hide();
@@ -772,7 +785,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         const Customer = QUI.Controls.getById(
                             Content.getElement('input[name="customer"]').get('data-quiid')
                         );
-                        
+
                         this.checked = false;
 
                         QUI.getMessageHandler().then(function (MH) {
@@ -1063,7 +1076,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 height: 'calc(100% - 120px)'
                             }
                         }).inject(Container);
-
+                        
                         if (self.$serializedList) {
                             self.$ArticleList.unserialize(self.$serializedList);
                         }
