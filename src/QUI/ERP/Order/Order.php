@@ -8,8 +8,8 @@ namespace QUI\ERP\Order;
 
 use QUI;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
-use QUI\ERP\SalesOrders\SalesOrder;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
+use QUI\ERP\SalesOrders\SalesOrder;
 
 /**
  * Class OrderBooked
@@ -485,7 +485,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         return [
             'id_prefix'    => $idPrefix,
-            'id_str'       => $idPrefix.$this->getId(),
+            'id_str'       => $idPrefix . $this->getId(),
             'parent_order' => null,
             'invoice_id'   => $invoiceId,
             'status'       => $this->status,
@@ -595,7 +595,7 @@ class Order extends AbstractOrder implements OrderInterface
             'quiqqerOrderUpdateBegin',
             [
                 $this,
-                $data
+                &$data
             ]
         );
 
@@ -619,7 +619,7 @@ class Order extends AbstractOrder implements OrderInterface
 
         QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [
             $this,
-            $data
+            &$data
         ]);
     }
 
@@ -662,7 +662,7 @@ class Order extends AbstractOrder implements OrderInterface
         );
 
         QUI\ERP\Debug::getInstance()->log(
-            'Order:: Paid Status changed to '.$status
+            'Order:: Paid Status changed to ' . $status
         );
 
         // Payment Status has changed
