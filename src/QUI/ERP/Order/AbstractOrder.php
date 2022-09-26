@@ -405,7 +405,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $paymentData = QUI\Security\Encryption::decrypt($data['payment_data']);
             $paymentData = json_decode($paymentData, true);
 
-            $this->paymentData = $paymentData;
+            if (is_array($paymentData)) {
+                $this->paymentData = $paymentData;
+            }
         }
 
         // currency
