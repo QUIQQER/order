@@ -91,8 +91,15 @@ class Factory extends QUI\Utils\Singleton
         QUI::getDataBase()->insert($table, $orderData);
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
+        $Order   = $Orders->get($orderId);
 
-        return $Orders->get($orderId);
+        try {
+            QUI::getEvents()->fireEvent('onQuiqqerOrderFactoryCreate', [$Order]);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage());
+        }
+
+        return $Order;
     }
 
     /**
