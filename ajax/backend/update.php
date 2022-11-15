@@ -106,9 +106,6 @@ QUI::$Ajax->registerFunction(
 
         if ($Customer) {
             $Order->setCustomer($Customer);
-        } else {
-            $Order->removeCustomer();
-            unset($data['customer']);
         }
 
 
