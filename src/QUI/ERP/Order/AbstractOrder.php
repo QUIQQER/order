@@ -14,6 +14,7 @@ use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\ProcessingStatus\Handler as ProcessingHandler;
 use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
 
+use function array_filter;
 use function array_flip;
 use function date;
 use function is_array;
@@ -805,6 +806,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     public function getDeliveryAddress(): QUI\ERP\Address
     {
         $delivery = $this->addressDelivery;
+
+        // quiqqer/order#156
+        // cleanup, to check the delivery address
+        $delivery = array_filter($delivery);
 
         if (isset($delivery['id'])) {
             unset($delivery['id']);
