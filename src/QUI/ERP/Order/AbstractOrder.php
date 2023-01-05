@@ -809,7 +809,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         // quiqqer/order#156
         // cleanup, to check the delivery address
-        $delivery = array_filter($delivery);
+        if (is_array($delivery)) {
+            $delivery = array_filter($delivery);
+        }
 
         if (isset($delivery['id'])) {
             unset($delivery['id']);
