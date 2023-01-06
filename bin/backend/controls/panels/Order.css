@@ -82,3 +82,30 @@
 .order-edit-date input {
     margin-top: 1rem;
 }
+
+
+/** Order preview
+ ================================================= */
+
+.quiqqer-order-backend-previewContainer {
+    background-color: #efefef;
+    height: 100%;
+    overflow: auto;
+    padding: 20px;
+}
+
+.quiqqer-order-backend-order-preview {
+    background: #fff;
+    box-shadow: 0 0 0 0.75pt #d1d1d1, 0 0 3pt 0.75pt #ccc;
+    border: none;
+    display: block;
+    margin: 0 auto;
+}
+
+.quiqqer-order-backend-order-statusContainer {
+    background: rgba(0, 0, 0, 0.015);
+    display: flex;
+    height: 40px;
+    padding: 5px;
+    width: 100%;
+}

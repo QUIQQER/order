@@ -1,6 +1,5 @@
 <quiqqer>
     <package>
-
         <title>
             <locale group="quiqqer/order" var="package.title"/>
         </title>
@@ -12,7 +11,7 @@
         <provider>
             <erp src="\QUI\ERP\Order\ErpProvider"/>
             <paymentReceiver src="\QUI\ERP\Order\PaymentReceiver"/>
+            <erpOutput src="\QUI\ERP\Order\Output\OutputProviderOrder"/>
         </provider>
-
     </package>
 </quiqqer>

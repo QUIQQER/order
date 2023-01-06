@@ -95,6 +95,34 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
         },
 
         /**
+         * Return a preview of an order (html)
+         *
+         * @param orderId
+         * @param onlyArticles
+         * @return {*}
+         */
+        getOrderPreview: function (orderId, onlyArticles) {
+            if (typeof onlyArticles === 'undefined') {
+                onlyArticles = 0;
+            }
+
+            if (onlyArticles) {
+                onlyArticles = 1;
+            }
+
+
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_preview', resolve, {
+                    'package'   : 'quiqqer/order',
+                    orderId     : orderId,
+                    onlyArticles: onlyArticles,
+                    onError     : reject,
+                    showError   : false
+                });
+            });
+        },
+
+        /**
          * Search orders
          *
          * @param {Object} params - Grid Query Params

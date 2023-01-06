@@ -11,6 +11,11 @@
             <en><![CDATA[]]></en>
         </locale>
 
+        <locale name="OutputProvider.entity.title.Order">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
+
         <locale name="erp.panel.accounting.text">
             <de><![CDATA[Buchhaltung]]></de>
             <en><![CDATA[Accounting]]></en>
@@ -1404,6 +1409,10 @@
         <locale name="panel.order.category.history">
             <de><![CDATA[Verlauf]]></de>
             <en><![CDATA[History]]></en>
+        </locale>
+        <locale name="panel.order.category.preview">
+            <de><![CDATA[Vorschau]]></de>
+            <en><![CDATA[Preview]]></en>
         </locale>
 
         <locale name="panel.order.data.title">
