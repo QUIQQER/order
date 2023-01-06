@@ -13,8 +13,15 @@ use QUI\ERP\Accounting\Payments\Types\Payment;
 use QUI\ERP\Address;
 use QUI\ERP\Comments;
 use QUI\ERP\Currency\Currency;
+use QUI\ERP\Output\Output as ERPOutput;
 use QUI\ERP\Shipping\Api\ShippingInterface;
 
+use function array_pop;
+use function class_exists;
+use function date;
+use function dirname;
+use function file_get_contents;
+use function get_class;
 use function strtotime;
 
 /**
@@ -25,19 +32,19 @@ use function strtotime;
 class OrderView extends QUI\QDOM implements OrderInterface
 {
     /**
-     * @var
+     * @var string
      */
-    protected $prefix;
+    protected string $prefix;
 
     /**
      * @var Order
      */
-    protected $Order;
+    protected Order $Order;
 
     /**
      * @var ArticleList
      */
-    protected $Articles;
+    protected ArticleList $Articles;
 
     /**
      * OrderView constructor.
@@ -182,6 +189,22 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @param null|QUI\Locale $Locale
+     * @return mixed
+     */
+    public function getDate(QUI\Locale $Locale = null)
+    {
+        if ($Locale === null) {
+            $Locale = QUI::getLocale();
+        }
+
+        $date      = $this->Order->getCreateDate();
+        $Formatter = $Locale->getDateFormatter();
+
+        return $Formatter->format(strtotime($date));
+    }
+
+    /**
      * @return QUI\ERP\Accounting\Calculations
      * @throws QUI\ERP\Exception
      * @throws QUI\Exception
@@ -297,6 +320,176 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     //endregion
 
+    //region preview
+
+    /**
+     * Get type string used for Order output (i.e. PDF / print)
+     *
+     * @return string
+     */
+    protected function getOutputType(): string
+    {
+        return 'Order';
+    }
+
+    /**
+     * Return preview HTML
+     * Like HTML or PDF with extra stylesheets to preview the view in DIN A4
+     *
+     * @return string
+     */
+    public function previewHTML(): string
+    {
+        try {
+            $previewHtml = ERPOutput::getDocumentHtml(
+                $this->Order->getCleanId(),
+                $this->getOutputType(),
+                null,
+                null,
+                null,
+                true
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            $previewHtml = '';
+        }
+
+        QUI::getLocale()->resetCurrent();
+
+        return $previewHtml;
+    }
+
+    /**
+     * return string
+     */
+    public function previewOnlyArticles(): string
+    {
+        try {
+            $output = '';
+            $output .= '<style>';
+            $output .= file_get_contents(dirname(__FILE__) . '/Utils/Template.Articles.Preview.css');
+            $output .= '</style>';
+            $output .= $this->getArticles()->toHTML();
+
+            $previewHtml = $output;
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            $previewHtml = '';
+        }
+
+        QUI::getLocale()->resetCurrent();
+
+        return $previewHtml;
+    }
+
+    /**
+     * Output the invoice as HTML
+     *
+     * @return string
+     */
+    public function toHTML(): string
+    {
+        try {
+            return QUI\ERP\Output\Output::getDocumentHtml($this->Order->getCleanId(), $this->getOutputType());
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+
+        return '';
+    }
+
+    /**
+     * Get text descriping the transaction
+     *
+     * This may be a payment date or a "successfull payment" text, depening on the
+     * existing invoice transactions.
+     *
+     * @return string
+     * @throws \QUI\ERP\Accounting\Payments\Exception
+     */
+    public function getTransactionText(): string
+    {
+        $PaymentType = $this->Order->getPayment()->getPaymentType();
+
+        if (class_exists('QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment')
+            && get_class($PaymentType) === QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment::class) {
+            return '';
+        }
+
+        try {
+            $Locale = QUI::getLocale();
+
+            if ($this->Order->getCustomer()) {
+                $Locale = $this->Order->getCustomer()->getLocale();
+            }
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            return '';
+        }
+
+        // Temporary invoice (draft)
+        $Transactions = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
+        $transactions = $Transactions->getTransactionsByHash($this->Order->getHash());
+
+        if (empty($transactions)) {
+            // Time for payment text
+            $Formatter      = $Locale->getDateFormatter();
+            $timeForPayment = $this->Order->getAttribute('time_for_payment');
+
+            // temporary invoice, the time for payment are days
+            $timeForPayment = strtotime($timeForPayment);
+
+            if (date('Y-m-d') === date('Y-m-d', $timeForPayment)) {
+                $timeForPayment = $Locale->get('quiqqer/order', 'additional.order.text.timeForPayment.0');
+            } else {
+                $timeForPayment = $Formatter->format($timeForPayment);
+            }
+
+            return $Locale->get(
+                'quiqqer/order',
+                'additional.order.text.timeForPayment.inclVar',
+                [
+                    'timeForPayment' => $timeForPayment
+                ]
+            );
+        }
+
+        /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
+        $Transaction = array_pop($transactions);
+        $Payment     = $Transaction->getPayment(); // payment method
+        $PaymentType = $this->getPayment()->getPaymentType(); // payment method
+
+        $payment   = $Payment->getTitle();
+        $Formatter = $Locale->getDateFormatter();
+
+        if (get_class($PaymentType) === $Payment->getClass()) {
+            $payment = $PaymentType->getTitle($Locale);
+        }
+
+        return $Locale->get('quiqqer/order', 'order.view.payment.transaction.text', [
+            'date'    => $Formatter->format(strtotime($Transaction->getDate())),
+            'payment' => $payment
+        ]);
+    }
+
+    /**
+     * Output the order as PDF Document
+     *
+     * @return QUI\HtmlToPdf\Document
+     *
+     * @throws QUI\Exception
+     */
+    public function toPDF(): QUI\HtmlToPdf\Document
+    {
+        return QUI\ERP\Output\Output::getDocumentPdf(
+            $this->Order->getCleanId(),
+            $this->getOutputType()
+        );
+    }
+
+    //endregion
+
     //region shipping
 
     /**
@@ -324,14 +517,14 @@ class OrderView extends QUI\QDOM implements OrderInterface
     //endregion
 
     /**
-     * do nothing, its a view
+     * do nothing, it's a view
      */
     protected function saveFrontendMessages()
     {
     }
 
     /**
-     * do nothing, its a view
+     * do nothing, it's a view
      */
     public function addFrontendMessage($message)
     {

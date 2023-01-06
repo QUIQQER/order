@@ -45,7 +45,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         $this->orderId = (int)$data['order_id'];
 
-        // check if a order for the processing order exists
+        // check if an order for the processing order exists
         try {
             Handler::getInstance()->get($this->orderId);
         } catch (QUI\Exception $Exception) {

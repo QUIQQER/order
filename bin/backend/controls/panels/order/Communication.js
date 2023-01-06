@@ -20,7 +20,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
              QUILocale, Mustache, Editors, template) {
     "use strict";
 
-    var lg = 'quiqqer/order';
+    const lg = 'quiqqer/order';
 
     return new Class({
 
@@ -39,8 +39,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
         initialize: function (options) {
             this.parent(options);
 
-            this.$Comments    = null;
-            this.$StatusMails = null;
+            this.$Comments = null;
+            //this.$StatusMails = null;
 
             this.addEvents({
                 onInject: this.$onInject
@@ -51,7 +51,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
          * Create the DOMNode Element
          */
         create: function () {
-            var Elm = this.parent();
+            const Elm = this.parent();
 
             Elm.set('html', Mustache.render(template, {
                 textMailsTitle   : QUILocale.get(lg, 'statusMailsTitle'),
@@ -62,9 +62,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
                 comments: []
             }).inject(Elm.getElement('.quiqqer-order-comments'));
 
+            /*
             this.$StatusMails = new Comments({
                 comments: []
             }).inject(Elm.getElement('.quiqqer-order-statusmails'));
+            */
 
             new QUIButton({
                 textimage: 'fa fa-plus',
@@ -81,11 +83,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
          * Refresh the data
          */
         refresh: function () {
-            var self = this;
+            const self = this;
 
             Orders.get(this.getAttribute('orderId')).then(function (data) {
                 self.$Comments.unserialize(data.comments);
-                self.$StatusMails.unserialize(data.statusMails);
+                //self.$StatusMails.unserialize(data.statusMails);
 
                 self.fireEvent('load', [self]);
             });
@@ -102,7 +104,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Communication', 
          * Open the add dialog window
          */
         openAddCommentDialog: function () {
-            var self = this;
+            const self = this;
 
             new QUIConfirm({
                 title    : QUILocale.get(lg, 'dialog.add.comment.title'),

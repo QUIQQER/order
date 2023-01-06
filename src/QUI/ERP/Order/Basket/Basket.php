@@ -435,6 +435,9 @@ class Basket
         // update the data
         $products = $Products->getProducts();
 
+        $InvoiceAddress  = $Order->getInvoiceAddress();
+        $DeliveryAddress = $Order->getDeliveryAddress();
+
         $Order->clear();
 
         foreach ($products as $Product) {
@@ -446,6 +449,8 @@ class Basket
             }
         }
 
+        $Order->setInvoiceAddress($InvoiceAddress);
+        $Order->setDeliveryAddress($DeliveryAddress);
         $Order->save();
 
         QUI::getEvents()->fireEvent(

@@ -324,7 +324,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 QUI\System\Log::addWarning($Exception->getMessage());
             }
 
-            if (isset($customerData['address']['id']) && $customerData['address']['id']) {
+            if (isset($this->addressInvoice['id']) && $this->addressInvoice['id'] >= 0) {
+                $this->Customer->setAddress($this->getInvoiceAddress());
+            } elseif (isset($customerData['address']['id']) && $customerData['address']['id']) {
                 $this->Customer->setAddress($this->getInvoiceAddress());
             } elseif (isset($customerData['quiqqer.erp.address'])) {
                 try {
@@ -807,6 +809,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         $delivery = $this->addressDelivery;
 
+        if (isset($delivery['id']) && $delivery['id'] === -1) { // quiqqer/order#156
+            return $this->getInvoiceAddress();
+        }
+
         // quiqqer/order#156
         // cleanup, to check the delivery address
         if (is_array($delivery)) {
@@ -1003,7 +1009,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         if ($address instanceof QUI\ERP\Address) {
             $this->addressDelivery = $address->getAttributes();
-
             return;
         }
 
@@ -1013,7 +1018,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * Clear up / remove the deliver address from the order
+     * Clear up / remove the delivery address from the order
      */
     public function removeDeliveryAddress()
     {

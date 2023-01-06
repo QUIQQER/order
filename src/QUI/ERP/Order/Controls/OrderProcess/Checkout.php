@@ -8,6 +8,10 @@ namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
 
+use function dirname;
+use function json_decode;
+use function trim;
+
 /**
  * Class Address
  * - Tab / Panel for the address
@@ -30,7 +34,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         parent::__construct($attributes);
 
-        $this->addCSSFile(\dirname(__FILE__).'/Checkout.css');
+        $this->addCSSFile(dirname(__FILE__) . '/Checkout.css');
     }
 
     /**
@@ -61,7 +65,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                     $Order = $this->getOrder();
 
                     QUI::getSession()->set(
-                        'termsAndConditions-'.$Order->getHash(),
+                        'termsAndConditions-' . $Order->getHash(),
                         0
                     );
                 } catch (QUI\Exception $Exception) {
@@ -78,7 +82,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
         QUI::getEvents()->fireEvent(
             'quiqqerOrderOrderProcessCheckoutOutputBefore',
@@ -118,7 +122,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $comment .= QUI::getSession()->get('comment-message');
         }
 
-        $comment = \trim($comment);
+        $comment = trim($comment);
 
         $Engine->assign([
             'User'            => $Order->getCustomer(),
@@ -132,14 +136,14 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'text'            => $text
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/Checkout.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Checkout.html');
     }
 
     /**
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null)
+    public function getName($Locale = null): string
     {
         return 'Checkout';
     }
@@ -147,7 +151,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'fa-shopping-cart';
     }
@@ -175,7 +179,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return;
         }
 
-        if (!QUI::getSession()->get('termsAndConditions-'.$Order->getHash())) {
+        if (!QUI::getSession()->get('termsAndConditions-' . $Order->getHash())) {
             throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',
                 'exception.order.termsAndConditions.missing'
@@ -197,7 +201,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Order = $this->getOrder();
 
             QUI::getSession()->set(
-                'termsAndConditions-'.$Order->getHash(),
+                'termsAndConditions-' . $Order->getHash(),
                 (int)$_REQUEST['termsAndConditions']
             );
         }
@@ -240,7 +244,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param string $config
      * @return string
      */
-    public function getLinkOf($config)
+    public function getLinkOf(string $config): string
     {
         try {
             $Config  = QUI::getPackage('quiqqer/erp')->getConfig();
@@ -255,9 +259,9 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $lang   = $Project->getLang();
-        $values = \json_decode($values, true);
+        $values = json_decode($values, true);
 
-        if (!isset($values[$lang]) || empty($values[$lang])) {
+        if (empty($values[$lang])) {
             return '';
         }
 
@@ -276,9 +280,9 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        return '<a href="'.$url.'" target="_blank" 
-            data-project="'.$project.'" 
-            data-lang="'.$lang.'" 
-            data-id="'.$id.'">'.$title.'</a>';
+        return '<a href="' . $url . '" target="_blank" 
+            data-project="' . $project . '" 
+            data-lang="' . $lang . '" 
+            data-id="' . $id . '">' . $title . '</a>';
     }
 }

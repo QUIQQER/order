@@ -10,6 +10,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'qui/controls/buttons/ButtonMultiple',
     'qui/controls/buttons/Separator',
     'qui/controls/windows/Confirm',
+    'qui/controls/elements/Sandbox',
+
     'package/quiqqer/order/bin/backend/Orders',
     'package/quiqqer/order/bin/backend/ProcessingStatus',
     'package/quiqqer/payments/bin/backend/Payments',
@@ -26,7 +28,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     'text!package/quiqqer/order/bin/backend/controls/panels/Order.ChangeDate.html',
     'css!package/quiqqer/order/bin/backend/controls/panels/Order.css'
 
-], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm,
+], function (QUI, QUIPanel, QUIButton, QUIButtonMultiple, QUISeparator, QUIConfirm, Sandbox,
              Orders, ProcessingStatus, Payments, Comments, TextArticle, Locker,
              QUIAjax, QUILocale, Mustache, Users, Packages,
              templateData, templateChangeDate) {
@@ -48,6 +50,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'refresh',
             'openInfo',
             'openHistory',
+            'openPreview',
             'openCommunication',
             'openArticles',
             'openDeleteDialog',
@@ -165,6 +168,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     this.setAttribute('shipping', data.shipping);
                     this.setAttribute('shippingTracking', data.shippingTracking);
                     this.setAttribute('prefixedId', data.prefixedId);
+                    this.setAttribute('statusMails', data.statusMails);
 
                     if (data.addressDelivery &&
                         (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
@@ -438,8 +442,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.addCategory({
                 icon  : 'fa fa-comments-o',
                 name  : 'communication',
-                title : QUILocale.get(lg, 'panel.order.category.details'),
-                text  : QUILocale.get(lg, 'panel.order.category.details'),
+                title : QUILocale.get(lg, 'commentsTitle'),
+                text  : QUILocale.get(lg, 'commentsTitle'),
                 events: {
                     onClick: this.openCommunication
                 }
@@ -452,6 +456,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 text  : QUILocale.get(lg, 'panel.order.category.history'),
                 events: {
                     onClick: this.openHistory
+                }
+            });
+
+            this.addCategory({
+                icon  : 'fa fa fa-eye',
+                name  : 'preview',
+                title : QUILocale.get(lg, 'panel.order.category.preview'),
+                text  : QUILocale.get(lg, 'panel.order.category.preview'),
+                events: {
+                    onClick: this.openPreview
                 }
             });
 
@@ -1042,7 +1056,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     Orders.getOrderHistory(self.getAttribute('orderId')),
                     Container
                 ]);
-            }).then(function (result) {
+            }).then((result) => {
+                // quiqqer/order#154
+                result[0] = result[0].concat(this.getAttribute('statusMails'));
+
                 new Comments({
                     comments: result[0]
                 }).inject(result[1]);
@@ -1050,6 +1067,46 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return self.$openCategory();
             }).then(function () {
                 self.Loader.hide();
+            });
+        },
+
+        openPreview: function () {
+            this.Loader.show();
+            this.getCategory('preview').setActive();
+
+            return this.$closeCategory().then((Container) => {
+                const FrameContainer = new Element('div', {
+                    'class': 'quiqqer-order-backend-previewContainer',
+                    styles : {
+                        height: '100%'
+                    }
+                }).inject(Container);
+
+                Container.setStyle('overflow', 'hidden');
+                Container.setStyle('padding', 0);
+                Container.setStyle('height', '100%');
+                
+                return Orders.getOrderPreview(this.getAttribute('hash')).then((html) => {
+                    new Sandbox({
+                        content: html,
+                        styles : {
+                            height : '100%',
+                            padding: 20,
+                            width  : '100%'
+                        },
+                        events : {
+                            onLoad: function (Box) {
+                                Box.getElm().addClass('quiqqer-order-backend-order-preview');
+                            }
+                        }
+                    }).inject(FrameContainer);
+                });
+            }).then(() => {
+                return this.$openCategory();
+            }).then(() => {
+                this.Loader.hide();
+            }).catch(() => {
+                this.Loader.hide();
             });
         },
 
@@ -1076,7 +1133,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                 height: 'calc(100% - 120px)'
                             }
                         }).inject(Container);
-                        
+
                         if (self.$serializedList) {
                             self.$ArticleList.unserialize(self.$serializedList);
                         }
