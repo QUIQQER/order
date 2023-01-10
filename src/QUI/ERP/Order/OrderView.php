@@ -409,6 +409,10 @@ class OrderView extends QUI\QDOM implements OrderInterface
      */
     public function getTransactionText(): string
     {
+        if (!$this->Order->getPayment()) {
+            return '';
+        }
+
         $PaymentType = $this->Order->getPayment()->getPaymentType();
 
         if (class_exists('QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment')

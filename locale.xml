@@ -165,6 +165,61 @@
             <de><![CDATA[Preis]]></de>
             <en><![CDATA[Price]]></en>
         </locale>
+        <locale name="order.btn.pdf">
+            <de><![CDATA[Drucken / PDF]]></de>
+            <en><![CDATA[Print / PDF]]></en>
+        </locale>
+        <locale name="order.send.mail.subject">
+            <de><![CDATA[Ihre Bestellung - [orderId]]]></de>
+            <en><![CDATA[Your order - [orderId]]]></en>
+        </locale>
+        <locale name="order.send.mail.title">
+            <de><![CDATA[Bestellmail]]></de>
+            <en><![CDATA[Order e-mail]]></en>
+        </locale>
+        <locale name="order.send.mail.description">
+            <de><![CDATA[]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+        <locale name="order.send.mail.message ">
+            <de><![CDATA[
+            <h1>Hallo [user],</h1>
+            <p>mit dieser E-Mail erhalten Sie Ihre Bestellung mit Bestellnummer [orderId].
+            Klicken Sie auf die angehängte PDF-Datei, um die Bestellung zu öffnen.</p>
+
+            <p>Für die Anzeige der Bestellung wird ein PDF-Reader benötigt, beispielsweise der Acrobat Reader von Adobe.
+            Falls Sie keinen PDF-Reader installiert haben sollten, so können Sie dies einfach nachholen:
+            Auf der Downloadseite von Adobe können Sie den Acrobat Reader kostenfrei herunterladen.</p>
+
+            <p>Ihre Bestellungen sind auch online in Ihrem Profil unter dem Punkt
+            "Meine Bestellungen" jederzeit für Sie einsehbar.</p>
+
+            <p>Falls Sie Fragen oder Anmerkungen haben, antworten Sie einfach auf diese E-Mail.
+            Unser Supportteam wird sich bald mit Ihnen in Verbindung setzen.</p>
+            <p>Viele Grüße,<br />
+            [systemCompany]</p>
+            ]]></de>
+            <en><![CDATA[
+            <h1>Hello [user],</h1>
+            <p>Your order (reference ID [orderId]) is attached to this e-mail as a PDF;
+            just click on the attachment to access it.</p>
+
+            <p>You will need a PDF reader such as Adobe Acrobat Reader to view this order.
+            If you do not yet have a reader installed, you can download one quickly, easily,
+            and at no cost at all. To install the Acrobat Reader, just go to Acrobat's free download site or copy
+            the following URL to your browser's address bar:<br />
+            http://get.adobe.com/reader/</p>
+
+            <p>Your order is also available online in your account. Just click on "My orders" to access them.</p>
+
+            <p>If you have any questions or remarks, please contact us by answering this e-mail.
+            Our support team will contact you shortly.</p>
+
+            <p>All best wishes,<br />
+            [systemCompany]
+            </p>
+            ]]></en>
+        </locale>
 
         <locale name="message.copy.from">
             <de><![CDATA[Kopie von Bestellung #[orderId]]]></de>
