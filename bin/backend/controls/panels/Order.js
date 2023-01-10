@@ -58,6 +58,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openCopyDialog',
             'openPostDialog',
             'toggleSort',
+            'print',
             '$onCreate',
             '$onDestroy',
             '$onInject',
@@ -361,7 +362,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             this.getButtons('lock').hide();
 
-
             const Actions = new QUIButton({
                 name      : 'actions',
                 text      : QUILocale.get(lg, 'panel.btn.actions'),
@@ -406,6 +406,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             ]);
 
             this.addButton(Actions);
+
+            this.addButton({
+                name     : 'pdf',
+                textimage: 'fa fa-print',
+                text     : QUILocale.get(lg, 'order.btn.pdf'),
+                styles   : {
+                    'float': 'right'
+                },
+                events   : {
+                    onClick: this.print
+                }
+            });
 
 
             // categories
@@ -624,6 +636,22 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return self.refresh();
             }).then(function () {
                 return self.openInfo();
+            });
+        },
+
+        print: function () {
+            return new Promise((resolve) => {
+                require([
+                    'package/quiqqer/erp/bin/backend/controls/OutputDialog'
+                ], (OutputDialog) => {
+                    new OutputDialog({
+                        entityId  : this.getAttribute('hash'),
+                        entityType: 'Order',
+                        comments  : false
+                    }).open();
+
+                    resolve();
+                });
             });
         },
 
@@ -1085,7 +1113,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 Container.setStyle('overflow', 'hidden');
                 Container.setStyle('padding', 0);
                 Container.setStyle('height', '100%');
-                
+
                 return Orders.getOrderPreview(this.getAttribute('hash')).then((html) => {
                     new Sandbox({
                         content: html,
@@ -1456,6 +1484,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
                     }).inject(this.getContent());
                 }
+
+                Container.setStyle('overflow', null);
+                Container.setStyle('padding', null);
+                Container.setStyle('height', null);
 
                 moofx(Container).animate({
                     opacity: 0,
