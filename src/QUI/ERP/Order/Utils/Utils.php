@@ -7,8 +7,16 @@
 namespace QUI\ERP\Order\Utils;
 
 use QUI;
+use QUI\ERP\Products\Field\Types\BasketConditions;
 
+use function date;
 use function is_array;
+use function mb_strlen;
+use function mb_substr;
+use function method_exists;
+use function str_replace;
+use function strftime;
+use function strpos;
 
 /**
  * Class Utils
@@ -188,8 +196,8 @@ class Utils
 
         $ending = false;
 
-        if (\strpos($url, '.html')) {
-            $url    = \str_replace('.html', '', $url);
+        if (strpos($url, '.html')) {
+            $url    = str_replace('.html', '', $url);
             $ending = true;
         }
 
@@ -217,20 +225,20 @@ class Utils
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
-            return \date('Y') . '-';
+            return date('Y') . '-';
         }
 
         if ($setting === false) {
-            return \date('Y') . '-';
+            return date('Y') . '-';
         }
 
-        $prefix = \strftime($setting);
+        $prefix = strftime($setting);
 
-        if (\mb_strlen($prefix) < 100) {
+        if (mb_strlen($prefix) < 100) {
             return $prefix;
         }
 
-        return \mb_substr($prefix, 0, 100);
+        return mb_substr($prefix, 0, 100);
     }
 
     /**
@@ -262,6 +270,8 @@ class Utils
         if (!is_array($products)) {
             $products = [];
         }
+
+        $count = count($products);
 
         foreach ($products as $productData) {
             if (!isset($productData['id'])) {
@@ -316,7 +326,7 @@ class Utils
                         ]
                     );
 
-                    if ($Order && \method_exists($Order, 'addFrontendMessage')) {
+                    if ($Order && method_exists($Order, 'addFrontendMessage')) {
                         $Order->addFrontendMessage($message);
                     } else {
                         if (!QUI::getUsers()->isSystemUser(QUI::getUserBySession())) {
@@ -327,16 +337,31 @@ class Utils
                     continue;
                 }
 
-                $Product = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
+                $Product   = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
+                $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
 
-                if (isset($productData['quantity'])) {
+                if ($condition === BasketConditions::TYPE_2 ||
+                    $condition === BasketConditions::TYPE_6) {
+                    // if several products are to be imported and a Type2 and Type6 are to be imported.
+                    // this product is ignored and not imported
+                    if ($count >= 2) {
+                        continue;
+                    }
+                }
+
+                if ($condition === BasketConditions::TYPE_2 ||
+                    $condition === BasketConditions::TYPE_3 ||
+                    $condition === BasketConditions::TYPE_5
+                ) {
+                    // quantity stays at 1
+                    $Product->setQuantity(1);
+                } elseif (isset($productData['quantity'])) {
                     $Product->setQuantity($productData['quantity']);
                 }
 
                 $List->addProduct($Product);
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
-                // @todo produkt existiert nicht, dummy product
             }
         }
 
@@ -425,12 +450,13 @@ class Utils
         } catch (QUI\Exception $Exception) {
             return false;
         }
-        
+
         // TYPE_1 Kann ohne Einschränkung in den Warenkorb
-        // TYPE_2 Kann nur alleine in den Warenkorb
+        // TYPE_2 Kann nur alleine und nur einmalig in den Warenkorb
         // TYPE_3 Kann mit anderen Produkten einmalig in den Warenkorb
         // TYPE_4 Kann mit anderen Produkten diesen Typs nicht in den Warenkorb
         // TYPE_5 Kann mit anderen Produkten diesen Typs einmalig in den Warenkorb
+        // TYPE_6 Kann nur alleine und mehrmalig in den Warenkorb
 
         if ($condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_2
             || $condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_3

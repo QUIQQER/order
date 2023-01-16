@@ -37,10 +37,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 this.getAttribute('basketId', Basket.getId());
             }
 
-            this.$Loader    = new QUILoader();
+            this.$Loader = new QUILoader();
             this.$isInOrder = null;
-            this.$Order     = null;
-            this.$isLoaded  = false;
+            this.$Order = null;
+            this.$isLoaded = false;
 
             this.addEvents({
                 onInject : this.$onInject,
@@ -104,7 +104,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                 }
 
                 Loaded.then(function () {
-                    var products       = [];
+                    var products = [];
                     var basketProducts = Basket.getProducts();
 
                     for (var i = 0, len = basketProducts.length; i < len; i++) {
@@ -158,20 +158,20 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          * - article changing
          */
         $setEvents: function () {
-            var self  = this,
-                Order = this.getOrderProcess();
+            const self  = this,
+                  Order = this.getOrderProcess();
 
             // remove
             this.getElm().getElements('.fa-trash').getParent('button').addEvent('click', function (event) {
                 event.stop();
                 self.$Loader.show();
 
-                var Article = this.getParent('.quiqqer-order-basket-small-articles-article');
+                let Article = this.getParent('.quiqqer-order-basket-small-articles-article');
 
                 // big basket
                 if (!Article) {
-                    var Node = this;
-                    Article  = Node.getParent('.quiqqer-order-basket-articles-article');
+                    let Node = this;
+                    Article = Node.getParent('.quiqqer-order-basket-articles-article');
 
                     if (Node.nodeName !== 'BUTTON') {
                         Node = Node.getParent('button');
@@ -205,7 +205,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             this.getElm().getElements('[name="quantity"]').addEvent('focus', function () {
                 this.set('data-quantity', parseInt(this.value));
 
-                var Parent = this.parentNode;
+                const Parent = this.parentNode;
 
                 if (!Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh')) {
                     new Element('button', {
@@ -220,11 +220,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
             });
 
             this.getElm().getElements('[name="quantity"]').addEvent('blur', function () {
-                var Article     = this.getParent('.quiqqer-order-basket-small-articles-article');
-                var quantity    = this.value;
-                var oldQuantity = this.get('data-quantity');
-                var Parent      = this.parentNode;
-                var Refresh     = Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh');
+                const Parent = this.parentNode;
+                const Refresh = Parent.getElement('.quiqqer-order-basket-articles-article-quantity-refresh');
+
+                let Article = this.getParent('.quiqqer-order-basket-small-articles-article');
+                let quantity = this.value;
+                let oldQuantity = this.get('data-quantity');
 
                 if (Refresh) {
                     Refresh.destroy();
@@ -245,25 +246,57 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
                     Article = this.getParent('.quiqqer-order-basket-articles-article');
                 }
 
-                var pos = Article.get('data-pos');
+                let pos = Article.get('data-pos');
                 this.set('data-quantity', quantity);
 
-                Basket.setQuantity(pos, quantity).then(function () {
-                    if (self.isInOrderProcess()) {
-                        return Basket.toOrder(self.getOrderHash()).then(function () {
-                            if (Order) {
-                                Order.enable();
-                            }
-
-                            self.refresh();
-                        });
+                // check if basket is an order in process
+                // check if the order in process has no basket
+                self.$hasBasketEquivalent().then((status) => {
+                    if (status === false) {
+                        return self.$setQuantity(pos, quantity);
                     }
 
+                    return Basket.setQuantity(pos, quantity).then(function () {
+                        if (self.isInOrderProcess()) {
+                            return Basket.toOrder(self.getOrderHash()).then(function () {
+                                if (Order) {
+                                    Order.enable();
+                                }
+
+                                self.refresh();
+                            });
+                        }
+                    });
+                }).then(() => {
                     self.refresh();
 
                     if (Order) {
                         Order.enable();
                     }
+                });
+            });
+        },
+
+        $hasBasketEquivalent: function () {
+            console.log('$hasBasketEquivalent');
+
+            return new Promise((resolve) => {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_hasBasketEquivalent', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: this.getOrderHash(),
+                });
+            });
+        },
+
+        $setQuantity: function (pos, quantity) {
+            console.log('$setQuantity');
+
+            return new Promise((resolve) => {
+                QUIAjax.get('package_quiqqer_order_ajax_frontend_order_setQuantity', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: this.getOrderHash(),
+                    pos      : pos,
+                    quantity : quantity
                 });
             });
         },
