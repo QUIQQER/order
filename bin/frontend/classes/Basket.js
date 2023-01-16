@@ -423,8 +423,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                             }
 
                             // create a new order
-                            if (basketConditionValue === 2) {
+                            if (basketConditionValue === 2 || basketConditionValue === 6) {
                                 // 2 = Kann nur alleine in den Warenkorb
+                                // 6 = Kann nur alleine in den Warenkorb
                                 // daher neue order in process
                                 let newHash;
 
@@ -457,7 +458,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                             'BASKET_CONDITION_PRODUCT_NOT_ALLOWED',
                                             'REPLACED WITH ARTICLE POS ' + (p + 1)
                                         );
-                                        
+
                                         return self.removeProductPos(p + 1).then(() => {
                                             return Product.setQuantity(quantity);
                                         });

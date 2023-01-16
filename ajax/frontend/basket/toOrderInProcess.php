@@ -20,9 +20,9 @@ QUI::$Ajax->registerFunction(
             return false;
         }
 
-        $Basket       = new QUI\ERP\Order\Basket\Basket($basketId, $User);
+        $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
         $OrderHandler = QUI\ERP\Order\Handler::getInstance();
-        $Order        = null;
+        $Order = null;
 
         if (!empty($orderHash)) {
             try {
@@ -43,6 +43,7 @@ QUI::$Ajax->registerFunction(
         if ($Order) {
             $Basket->toOrder($Order);
         }
+
 
         return $Order->getHash();
     },
