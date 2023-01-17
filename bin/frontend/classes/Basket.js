@@ -54,7 +54,6 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             this.$saveDelay = null;
 
             this.$calculations = {};
-
         },
 
         /**
@@ -245,6 +244,31 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             const self = this;
             let storageProducts = [];
 
+            // if a condition product exists, then we continue the process here
+            if (QUI.Storage.get('condition-product')) {
+                let newHash;
+                let product = JSON.decode(QUI.Storage.get('condition-product'));
+
+                QUI.Storage.remove('condition-product');
+
+                if (product && "id" in product && "quantity" in product) {
+                    return self.addProductToOrderInProcess(
+                        product.id,
+                        {},
+                        product.quantity
+                    ).then(function (orderHash) {
+                        newHash = orderHash;
+                        return Orders.getOrderProcessUrl();
+                    }).then(function (processUrl) {
+                        window.location = processUrl + '/' + newHash;
+
+                        // workaround, to halt promises
+                        return new Promise(function (resolve, reject) {
+                        });
+                    });
+                }
+            }
+
             try {
                 const storageData = JSON.decode(
                     QUI.Storage.get(STORAGE_KEY)
@@ -428,6 +452,22 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                 // 6 = Kann nur alleine in den Warenkorb
                                 // daher neue order in process
                                 let newHash;
+
+                                // nobody
+                                if (!QUIQQER_USER.id) {
+                                    QUI.Storage.set('condition-product', JSON.encode({
+                                        id      : productId,
+                                        quantity: quantity
+                                    }));
+
+                                    return Orders.getOrderProcessUrl().then(function (processUrl) {
+                                        window.location = processUrl;
+
+                                        // workaround, to halt promises
+                                        return new Promise(function (resolve, reject) {
+                                        });
+                                    });
+                                }
 
                                 return self.addProductToOrderInProcess(
                                     productId,
