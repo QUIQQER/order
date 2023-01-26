@@ -1,6 +1,7 @@
 {
     "name": "quiqqer\/order",
     "type": "quiqqer-module",
+    "version": "1.5.0",
     "description": "QUIQQER ERP Order",
     "license": [
         "GPL-3.0+",
