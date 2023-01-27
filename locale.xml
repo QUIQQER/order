@@ -181,7 +181,7 @@
             <de><![CDATA[ ]]></de>
             <en><![CDATA[ ]]></en>
         </locale>
-        <locale name="order.send.mail.message ">
+        <locale name="order.send.mail.message">
             <de><![CDATA[
             <h1>Hallo [user],</h1>
             <p>mit dieser E-Mail erhalten Sie Ihre Bestellung mit Bestellnummer [orderId].
