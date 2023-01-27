@@ -7,8 +7,8 @@
             <en><![CDATA[QUIQQER - Shop - Orders]]></en>
         </locale>
         <locale name="package.description">
-            <de><![CDATA[]]></de>
-            <en><![CDATA[]]></en>
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
         </locale>
 
         <locale name="OutputProvider.entity.title.Order">
@@ -178,8 +178,8 @@
             <en><![CDATA[Order e-mail]]></en>
         </locale>
         <locale name="order.send.mail.description">
-            <de><![CDATA[]]></de>
-            <en><![CDATA[]]></en>
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
         </locale>
         <locale name="order.send.mail.message ">
             <de><![CDATA[
@@ -1175,8 +1175,8 @@
             <en><![CDATA[Invoice address]]></en>
         </locale>
         <locale name="mail.order.confirmation.details" html="true">
-            <de><![CDATA[]]></de>
-            <en><![CDATA[]]></en>
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
         </locale>
         <locale name="mail.order.confirmation.comments.title">
             <de><![CDATA[Kommentar]]></de>
