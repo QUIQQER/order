@@ -1178,6 +1178,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 accordionLiveRenderer: this.$onClickOrderDetails,
                 pagination           : true,
                 exportData           : true,
+                storageKey           : 'quiqqer-orders-panel',
                 exportTypes          : {
                     csv : true,
                     json: true,
