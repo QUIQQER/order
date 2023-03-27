@@ -791,6 +791,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @return string
+     */
+    public function getInvoiceType(): string
+    {
+        try {
+            return $this->getInvoice()->getType();
+        } catch (QUI\Exception $Exception) {
+            return '';
+        }
+    }
+
+    /**
      * Return invoice address
      *
      * @return QUI\ERP\Address

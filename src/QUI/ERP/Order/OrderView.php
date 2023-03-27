@@ -294,6 +294,14 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @return string
+     */
+    public function getInvoiceType(): string
+    {
+        return $this->Order->getInvoiceType();
+    }
+
+    /**
      * @return bool
      */
     public function hasInvoice(): bool
