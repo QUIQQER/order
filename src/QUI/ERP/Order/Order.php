@@ -11,6 +11,8 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
 
+use function json_decode;
+
 /**
  * Class OrderBooked
  * - This order was ordered by the user
@@ -53,7 +55,7 @@ class Order extends AbstractOrder implements OrderInterface
     }
 
     /**
-     * It return the invoice, if an invoice exist for the order
+     * It returns the invoice, if an invoice exist for the order
      *
      * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
@@ -84,8 +86,6 @@ class Order extends AbstractOrder implements OrderInterface
      * Return the view object
      *
      * @return OrderView
-     *
-     * @throws QUI\Exception
      */
     public function getView()
     {
@@ -271,7 +271,7 @@ class Order extends AbstractOrder implements OrderInterface
         }
 
         $InvoiceAddress   = $this->getInvoiceAddress();
-        $invoiceAddress   = \json_decode($InvoiceAddress->toJSON(), true);
+        $invoiceAddress   = json_decode($InvoiceAddress->toJSON(), true);
         $invoiceAddressId = $InvoiceAddress->getId();
 
         if (empty($invoiceAddressId)) {
@@ -281,7 +281,7 @@ class Order extends AbstractOrder implements OrderInterface
         $DeliveryAddress = $this->getDeliveryAddress();
 
         if ($InvoiceAddress->toJSON() !== $DeliveryAddress->toJSON()) {
-            $deliveryAddress   = \json_decode($DeliveryAddress->toJSON(), true);
+            $deliveryAddress   = json_decode($DeliveryAddress->toJSON(), true);
             $deliveryAddressId = $DeliveryAddress->getId();
         }
 
