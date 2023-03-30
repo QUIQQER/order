@@ -29,6 +29,13 @@ interface OrderInterface
     public function getInvoice();
 
     /**
+     * Returns the invoice type, if the order has an invoice
+     * - if no invoice is assigned, return is empty ('')
+     * @return string
+     */
+    public function getInvoiceType(): string;
+
+    /**
      * Exists an invoice for the order? is the order already posted?
      *
      * @return bool

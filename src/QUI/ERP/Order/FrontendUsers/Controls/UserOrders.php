@@ -25,7 +25,7 @@ class UserOrders extends Control implements ControlInterface
     public function __construct(array $attributes = [])
     {
         $this->addCSSClass('quiqqer-order-profile-orders');
-        $this->addCSSFile(\dirname(__FILE__).'/UserOrders.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/UserOrders.css');
 
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/frontendusers/Orders',
@@ -70,17 +70,17 @@ class UserOrders extends Control implements ControlInterface
 
         $result = $Orders->getOrdersByUser($User, [
             'order' => 'c_date DESC',
-            'limit' => $start.','.$limit
+            'limit' => $start . ',' . $limit
         ]);
 
         foreach ($result as $Order) {
             /* @var $Order QUI\ERP\Order\Order */
             /* @var $View QUI\ERP\Order\OrderView */
             $View = $Order->getView();
-
+            
             $View->setAttribute(
                 'downloadLink',
-                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$View->getHash()
+                URL_OPT_DIR . 'quiqqer/order/bin/frontend/order.pdf.php?order=' . $View->getHash()
             );
 
             $orders[] = $View;
@@ -100,7 +100,7 @@ class UserOrders extends Control implements ControlInterface
             'sheetCount'   => $count
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.html');
     }
 
     /**
@@ -200,7 +200,7 @@ class UserOrders extends Control implements ControlInterface
             )
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.Order.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.Order.html');
     }
 
     /**
@@ -240,7 +240,7 @@ class UserOrders extends Control implements ControlInterface
             'Project' => QUI::getProjectManager()->get()
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.Article.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.Article.html');
     }
 
     /**

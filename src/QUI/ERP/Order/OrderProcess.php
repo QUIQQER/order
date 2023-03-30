@@ -17,6 +17,7 @@ use function array_keys;
 use function array_search;
 use function array_values;
 use function call_user_func;
+use function class_exists;
 use function count;
 use function current;
 use function dirname;
@@ -270,11 +271,18 @@ class OrderProcess extends QUI\Control
         $steps     = $this->getSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
+        // #locale quiqqer/order#158
+        if (class_exists('QUI\ERP\Products\Handler\Products')) {
+            QUI\ERP\Products\Handler\Products::setLocale(QUI::getLocale());
+        }
+
         // check all previous steps
         // is one invalid, go to them
         foreach ($steps as $name => $Step) {
             /* @var $Step AbstractOrderingStep */
-            if ($Step->getName() === 'Checkout' || $Step->getName() === 'Finish') {
+            if ($Step->getName() === 'Basket'
+                || $Step->getName() === 'Checkout'
+                || $Step->getName() === 'Finish') {
                 continue;
             }
 
@@ -612,6 +620,11 @@ class OrderProcess extends QUI\Control
         if (!$FrontendMessages->isEmpty()) {
             $frontendMessages = $FrontendMessages->toArray();
             $Order->clearFrontendMessages();
+        }
+
+        // #locale quiqqer/order#158
+        if (class_exists('QUI\ERP\Products\Handler\Products')) {
+            QUI\ERP\Products\Handler\Products::setLocale(QUI::getLocale());
         }
 
         $Engine->assign([
