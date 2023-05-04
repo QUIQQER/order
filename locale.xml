@@ -1097,12 +1097,12 @@
             <h3>Hallo [user],</h3>
             vielen Dank für Ihre Bestellung.
             Hier sind die Details zu Ihrer Bestellung:<br />
-            <h4 style="margin-bottom: 10px;">Bestellnummer</h4> [orderId]
+            <h4 style="margin-bottom: 10px;">Bestellnummer</h4> [orderPrefixedId]
             ]]></de>
             <en><![CDATA[
             Dear [user],<br />
             Thank you for your order. Here are the details:<br />
-            <h4>Order ID</h4> [orderId]
+            <h4 style="margin-bottom: 10px;">Order no.</h4> [orderPrefixedId]
             ]]></en>
         </locale>
 
