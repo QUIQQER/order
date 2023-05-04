@@ -170,8 +170,8 @@
             <en><![CDATA[Print / PDF]]></en>
         </locale>
         <locale name="order.send.mail.subject">
-            <de><![CDATA[Ihre Bestellung - [orderId]]]></de>
-            <en><![CDATA[Your order - [orderId]]]></en>
+            <de><![CDATA[Ihre Bestellung - [orderPrefixedId]]]></de>
+            <en><![CDATA[Your order - [orderPrefixedId]]]></en>
         </locale>
         <locale name="order.send.mail.title">
             <de><![CDATA[Bestellmail]]></de>
@@ -184,7 +184,7 @@
         <locale name="order.send.mail.message">
             <de><![CDATA[
             <h1>Hallo [user],</h1>
-            <p>mit dieser E-Mail erhalten Sie Ihre Bestellung mit Bestellnummer [orderId].
+            <p>mit dieser E-Mail erhalten Sie Ihre Bestellung mit Bestellnummer [orderPrefixedId].
             Klicken Sie auf die angehängte PDF-Datei, um die Bestellung zu öffnen.</p>
 
             <p>Für die Anzeige der Bestellung wird ein PDF-Reader benötigt, beispielsweise der Acrobat Reader von Adobe.
@@ -201,7 +201,7 @@
             ]]></de>
             <en><![CDATA[
             <h1>Hello [user],</h1>
-            <p>Your order (reference ID [orderId]) is attached to this e-mail as a PDF;
+            <p>Your order ([orderPrefixedId]) is attached to this e-mail as a PDF;
             just click on the attachment to access it.</p>
 
             <p>You will need a PDF reader such as Adobe Acrobat Reader to view this order.
@@ -2108,6 +2108,7 @@
             <p>Betreff der Zahlungsbestätigungs-Mail. Verfügbare Platzhalter:</p>
             <ul>
                 <li><b>[orderId]:</b> Bestell-Nr.</li>
+                <li><b>[orderPrefixedId]:</b> Vollständige Bestellnummer</li>
                 <li><b>[hash]:</b> Bestell-Hash</li>
                 <li><b>[date]:</b> Bestelldatum</li>
                 <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
@@ -2126,6 +2127,7 @@
             <p>Subject of the payment confirmation mail. Available placeholders:</p>
             <ul>
                 <li><b>[orderId]:</b> Order no.</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
                 <li><b>[hash]:</b> Order hash</li>
                 <li><b>[date]:</b> Order date</li>
                 <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
@@ -2146,6 +2148,7 @@
             <p>Inhalt der Zahlungsbestätigungs-Mail. Verfügbare Platzhalter:</p>
             <ul>
                 <li><b>[orderId]:</b> Bestell-Nr.</li>
+                <li><b>[orderPrefixedId]:</b> Vollständige Bestellnummer</li>
                 <li><b>[hash]:</b> Bestell-Hash</li>
                 <li><b>[date]:</b> Bestelldatum</li>
                 <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
@@ -2164,6 +2167,7 @@
             <p>Content of the payment confirmation mail. Available placeholders:</p>
             <ul>
                 <li><b>[orderId]:</b> Order no.</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
                 <li><b>[hash]:</b> Order hash</li>
                 <li><b>[date]:</b> Order date</li>
                 <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
