@@ -1089,8 +1089,8 @@
         </locale>
 
         <locale name="order.confirmation.subject">
-            <de><![CDATA[Vielen Dank für Ihre Bestellung - [orderId]]]></de>
-            <en><![CDATA[Thank you for your order - [orderId]]]></en>
+            <de><![CDATA[Vielen Dank für Ihre Bestellung - [orderPrefixedId]]]></de>
+            <en><![CDATA[Thank you for your order - [orderPrefixedId]]]></en>
         </locale>
         <locale name="order.confirmation.body" html="true">
             <de><![CDATA[
@@ -2036,6 +2036,7 @@
             <p>Betreff der Bestellmail. Verfügbare Variablen:</p>
             <ul>
                 <li><b>[orderId]:</b> Bestell-ID</li>
+                <li><b>[orderPrefixedId]:</b> Vollständige Bestellnummer</li>
                 <li><b>[hash]:</b> Bestellungs-Hash</li>
                 <li><b>[date]:</b> Bestellungsdatum</li>
                 <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
@@ -2052,6 +2053,7 @@
             <p>Subject of the order E-mail. Available variables:</p>
             <ul>
                 <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
                 <li><b>[hash]:</b> Order hash</li>
                 <li><b>[date]:</b> Order date</li>
                 <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
@@ -2070,6 +2072,7 @@
             <p>Inhalt der Bestellmail. Verfügbare Variablen:</p>
             <ul>
                 <li><b>[orderId]:</b> Bestell-ID</li>
+                <li><b>[orderPrefixedId]:</b> Vollständige Bestellnummer</li>
                 <li><b>[hash]:</b> Bestellungs-Hash</li>
                 <li><b>[date]:</b> Bestellungsdatum</li>
                 <li><b>[systemCompany]:</b> Company Name des QUIQQER Systems</li>
@@ -2086,6 +2089,7 @@
             <p>Content of the order E-mail. Available variables:</p>
             <ul>
                 <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
                 <li><b>[hash]:</b> Order hash</li>
                 <li><b>[date]:</b> Order date</li>
                 <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
