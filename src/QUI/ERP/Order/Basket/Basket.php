@@ -222,6 +222,10 @@ class Basket
      */
     public function save()
     {
+        if (!$this->List) {
+            return;
+        }
+
         // save only product ids with custom fields, we need not more
         $result   = [];
         $products = $this->List->getProducts();
