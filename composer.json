@@ -1,42 +1,42 @@
 {
-    "name": "quiqqer\/order",
-    "type": "quiqqer-module",
-    "description": "QUIQQER ERP Order",
-    "license": [
-        "GPL-3.0+",
-        "PCSG QEL-1.0"
-    ],
-    "authors": [
-        {
-            "name": "Henning Leutz",
-            "email": "support@pcsg.de",
-            "homepage": "http:\/\/www.pcsg.de",
-            "role": "Developer"
-        }
-    ],
-    "support": {
-        "email": "support@pcsg.de",
-        "url": "http:\/\/www.pcsg.de"
-    },
-    "require": {
-        "php": ">=7.2",
-        "quiqqer\/quiqqer": ">=1.5|dev-master|dev-dev",
-        "quiqqer\/erp": ">=1.3|dev-master|dev-dev",
-        "quiqqer\/countries": "*",
-        "quiqqer\/areas": "*",
-        "quiqqer\/products": "^1.6.2|*@dev",
-        "quiqqer\/payments": "*",
-        "quiqqer\/tax": "*",
-        "quiqqer\/payment-transactions": "^1|dev-master|dev-dev",
-        "quiqqer\/fontawesome": ">=4.5|dev-master|dev-dev",
-        "ramsey\/uuid": "3.*",
-        "quiqqer-asset\/navigo": "5.*",
-        "quiqqer-asset\/history-events": "1.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "QUI\\ERP\\Order\\": "src\/QUI\/ERP\/Order",
-            "QUITests\\ERP\\Order\\": "tests\/QUITests\/ERP\/Order"
-        }
+  "name": "quiqqer\/order",
+  "type": "quiqqer-module",
+  "description": "QUIQQER ERP Order",
+  "license": [
+    "GPL-3.0+",
+    "PCSG QEL-1.0"
+  ],
+  "authors": [
+    {
+      "name": "Henning Leutz",
+      "email": "support@pcsg.de",
+      "homepage": "http:\/\/www.pcsg.de",
+      "role": "Developer"
     }
+  ],
+  "support": {
+    "email": "support@pcsg.de",
+    "url": "http:\/\/www.pcsg.de"
+  },
+  "require": {
+    "php": ">=7.2",
+    "quiqqer\/quiqqer": ">=1.5|dev-master|dev-dev",
+    "quiqqer\/erp": ">=1.3|dev-master|dev-dev",
+    "quiqqer\/countries": "*",
+    "quiqqer\/areas": "*",
+    "quiqqer\/products": "^1.6.3|*@dev",
+    "quiqqer\/payments": "*",
+    "quiqqer\/tax": "*",
+    "quiqqer\/payment-transactions": "^1|dev-master|dev-dev",
+    "quiqqer\/fontawesome": ">=4.5|dev-master|dev-dev",
+    "ramsey\/uuid": "3.*",
+    "quiqqer-asset\/navigo": "5.*",
+    "quiqqer-asset\/history-events": "1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "QUI\\ERP\\Order\\": "src\/QUI\/ERP\/Order",
+      "QUITests\\ERP\\Order\\": "tests\/QUITests\/ERP\/Order"
+    }
+  }
 }
