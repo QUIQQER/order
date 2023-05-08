@@ -12,7 +12,7 @@
 
     <div class="quiqqer-order-control-order-header-id">
         <span>{locale group="quiqqer/order" var="control.order.details.orderNo"}</span>
-        <span>{$Order->getPrefixedId()}</span>
+        <span>{$Order->getId()}</span>
     </div>
 
     {if $Order->getAttribute('downloadLink') || $Order->isSuccessful() === false}
