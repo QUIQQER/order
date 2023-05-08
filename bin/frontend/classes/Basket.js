@@ -554,16 +554,16 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                   index = pos - 1;
 
             return new Promise(function (resolve) {
-                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_removePos', function () {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_removePos', function (basket) {
                     if (typeof self.$products[index] === 'undefined') {
                         return resolve();
                     }
 
                     self.fireEvent('refreshBegin', [self]);
                     self.fireEvent('removeBegin', [self]);
-
-                    self.$products.splice(index, 1);
-                    self.save().then(resolve);
+                    console.log(basket);
+                    self.$calculations = basket;
+                    self.$loadData(basket).then(resolve);
                 }, {
                     'package': 'quiqqer/order',
                     basketId : self.$basketId,
