@@ -398,7 +398,7 @@ class EventHandling
             $url = $Product->getUrl();
 
             $Collection->append(
-                '<a href="'.$url.'"><span class="fa fa-chevron-right"></span></a>'
+                '<a href="' . $url . '"><span class="fa fa-chevron-right"></span></a>'
             );
         } catch (QUI\Exception $Exception) {
         }
@@ -409,6 +409,21 @@ class EventHandling
      */
     public static function onTemplateGetHeader(QUI\Template $Template)
     {
+        $merge = 0;
+
+        try {
+            $Package = QUI::getPackage('quiqqer/order');
+            $Config  = $Package->getConfig();
+            $merge   = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
+        } catch (QUI\Exception $Exception) {
+        }
+
+        $header = '<script type="text/javascript">';
+        $header .= 'window.QUIQQER_ORDER_ORDER_PROCESS_MERGE = ' . $merge . ';';
+        $header .= '</script>';
+        $Template->extendHeader($header);
+
+
         $Template->extendFooter(
             '<script>
                 (function() {
