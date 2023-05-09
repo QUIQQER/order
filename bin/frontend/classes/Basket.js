@@ -516,7 +516,31 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }).then(function () {
                             return Product.setFieldValues(fields);
                         }).then(function () {
-                            self.$products.push(Product);
+                            if (window.QUIQQER_ORDER_ORDER_PROCESS_MERGE === 0) {
+                                self.$products.push(Product);
+                            } else {
+                                let added = false;
+
+                                for (let i = 0, len = self.$products.length; i < len; i++) {
+                                    if (self.$products[i].$data.id !== Product.$data.id) {
+                                        continue;
+                                    }
+
+                                    if (JSON.encode(self.$products[i].$data) !== JSON.encode(Product.$data) &&
+                                        JSON.encode(self.$products[i].options) !== JSON.encode(Product.options)
+                                    ) {
+                                        continue;
+                                    }
+
+                                    added = true;
+                                    self.$products[i].$quantity = self.$products[i].$quantity + Product.$quantity;
+                                }
+
+                                if (added === false) {
+                                    self.$products.push(Product);
+                                }
+                            }
+
                             return self.save();
                         }).then(function () {
                             resolve();

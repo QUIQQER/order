@@ -13,12 +13,12 @@ define('package/quiqqer/order/bin/frontend/Basket', [
     "use strict";
 
     // storage test
-    var storageData = QUI.Storage.get('quiqqer-basket-products');
-    var storageProducts = [];
+    let storageData = QUI.Storage.get('quiqqer-basket-products');
+    let storageProducts = [];
 
     try {
         storageData = JSON.decode(storageData);
-        var currentList = storageData.currentList;
+        const currentList = storageData.currentList;
 
         if (typeof storageData.products !== 'undefined' &&
             typeof storageData.products[currentList] !== 'undefined') {
@@ -28,8 +28,8 @@ define('package/quiqqer/order/bin/frontend/Basket', [
         // nothing
     }
 
-    var lg = 'quiqqer/order';
-    var GlobalBasket = new Basket();
+    const lg = 'quiqqer/order';
+    const GlobalBasket = new Basket();
 
     // ask user to merge
     GlobalBasket.showMergeWindow = function () {
@@ -38,7 +38,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                 'qui/controls/windows/Confirm',
                 'css!package/quiqqer/order/bin/frontend/Basket.css'
             ], function (QUIConfirm) {
-                var height = 400,
+                let height = 400,
                     width  = 800;
 
                 if (QUI.getWindowSize().x < 800) {
@@ -63,9 +63,9 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                     },
                     events       : {
                         onOpen: function (Win) {
-                            var Buttons = this.getElm().getElement('.qui-window-popup-buttons');
-                            var Submit = Buttons.getElement('[name="submit"]');
-                            var Merge = Buttons.getElement('[name="cancel"]');
+                            const Buttons = this.getElm().getElement('.qui-window-popup-buttons');
+                            const Submit = Buttons.getElement('[name="submit"]');
+                            const Merge = Buttons.getElement('[name="cancel"]');
 
                             Win.getElm().addClass('window-basket-merge');
 
@@ -119,7 +119,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
 
     if (QUIQQER_USER && QUIQQER_USER.id && storageProducts.length) {
         GlobalBasket.getBasket().then(function (basket) {
-            var products = basket.products;
+            const products = basket.products;
 
             // if there are no products yet, merge without query
             if (!products.length) {
