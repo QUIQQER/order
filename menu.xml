@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu>
+    <item parent="/extras/"
+          name="erp"
+          icon="fa fa-sun-o"
+    >
+        <locale group="quiqqer/erp" var="menu.erp.title"/>
+    </item>
+    <item parent="/extras/erp/"
+          name="orders"
+          require="package/quiqqer/order/bin/backend/controls/panels/Orders"
+          icon="fa fa-shopping-basket"
+    >
+        <locale group="quiqqer/order" var="erp.panel.order.list.text"/>
+    </item>
+
+</menu>
