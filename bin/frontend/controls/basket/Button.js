@@ -17,13 +17,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
+    'package/quiqqer/currency/bin/Currency',
     'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
     'package/quiqqer/order/bin/frontend/Orders',
     'package/quiqqer/order/bin/frontend/Basket',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
-], function (QUI, QUIControl, QUILocale, BasketWindow, Orders, Basket) {
+], function (QUI, QUIControl, QUILocale, Currency, BasketWindow, Orders, Basket) {
     "use strict";
 
     var lg = 'quiqqer/order';
@@ -302,7 +303,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             );
 
             if (SumElm) {
-                SumElm.set('text', Basket.getCalculations().sum);
+                Currency.convertWithSign(
+                    Basket.getCalculations().sum
+                ).then((converted) => {
+                    SumElm.set('text', converted);
+                });
             }
 
             // subsum display
