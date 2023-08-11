@@ -31,7 +31,7 @@ class Product extends UniqueProduct
     {
         $fields    = [];
         $fieldList = [];
-        $Product   = QUI\ERP\Products\Handler\Products::getProduct($pid);
+        $Product   = QUI\ERP\Products\Handler\Products::getProduct((int)$pid);
 
         $this->maximumQuantity = $Product->getMaximumQuantity();
 

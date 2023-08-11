@@ -1777,7 +1777,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             }
 
             try {
-                $Product = QUI\ERP\Products\Handler\Products::getProduct($articleId);
+                $Product = QUI\ERP\Products\Handler\Products::getProduct((int)$articleId);
 
                 if ($Product instanceof QUI\ERP\Products\Product\Types\DigitalProduct) {
                     $digital = true;

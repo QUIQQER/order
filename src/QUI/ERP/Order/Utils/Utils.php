@@ -313,7 +313,7 @@ class Utils
 
             try {
                 // check if active
-                $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
+                $Real = QUI\ERP\Products\Handler\Products::getProduct((int)$productData['id']);
 
                 if (!$Real->isActive()) {
                     $message = QUI::getLocale()->get(
@@ -445,7 +445,7 @@ class Utils
     {
         try {
             $productId = $product['id'];
-            $Product   = QUI\ERP\Products\Handler\Products::getProduct($productId);
+            $Product   = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
             $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
         } catch (QUI\Exception $Exception) {
             return false;
