@@ -53,7 +53,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      */
     public function __construct(Order $Order)
     {
-        $this->Order    = $Order;
+        $this->Order = $Order;
         $this->Articles = $this->Order->getArticles();
         $this->Articles->setCurrency($Order->getCurrency());
 
@@ -87,7 +87,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return string
      */
-    public function getPrefixedId(): string {
+    public function getPrefixedId(): string
+    {
         return $this->getId();
     }
 
@@ -205,7 +206,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
             $Locale = QUI::getLocale();
         }
 
-        $date      = $this->Order->getCreateDate();
+        $date = $this->Order->getCreateDate();
         $Formatter = $Locale->getDateFormatter();
 
         return $Formatter->format(strtotime($date));
@@ -453,7 +454,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         if (empty($transactions)) {
             // Time for payment text
-            $Formatter      = $Locale->getDateFormatter();
+            $Formatter = $Locale->getDateFormatter();
             $timeForPayment = $this->Order->getAttribute('time_for_payment');
 
             // temporary invoice, the time for payment are days
@@ -476,10 +477,10 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
         $Transaction = array_pop($transactions);
-        $Payment     = $Transaction->getPayment(); // payment method
+        $Payment = $Transaction->getPayment(); // payment method
         $PaymentType = $this->getPayment()->getPaymentType(); // payment method
 
-        $payment   = $Payment->getTitle();
+        $payment = $Payment->getTitle();
         $Formatter = $Locale->getDateFormatter();
 
         if (get_class($PaymentType) === $Payment->getClass()) {
@@ -487,7 +488,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
         }
 
         return $Locale->get('quiqqer/order', 'order.view.payment.transaction.text', [
-            'date'    => $Formatter->format(strtotime($Transaction->getDate())),
+            'date' => $Formatter->format(strtotime($Transaction->getDate())),
             'payment' => $payment
         ]);
     }
