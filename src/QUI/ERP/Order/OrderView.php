@@ -85,6 +85,13 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
+     * @return string
+     */
+    public function getPrefixedId(): string {
+        return $this->getId();
+    }
+
+    /**
      * @return ProcessingStatus\Status
      */
     public function getProcessingStatus(): ProcessingStatus\Status
