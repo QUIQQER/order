@@ -100,7 +100,7 @@ class BasketGuest
                 $Product = new Product($productData['id'], $productData);
 
                 // check if active
-                $Real = QUI\ERP\Products\Handler\Products::getProduct($productData['id']);
+                $Real = QUI\ERP\Products\Handler\Products::getProduct((int)$productData['id']);
 
                 if (!$Real->isActive()) {
                     continue;
