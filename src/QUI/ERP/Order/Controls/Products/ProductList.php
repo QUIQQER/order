@@ -42,7 +42,7 @@ class ProductList extends QUI\Control
         if (\is_array($productIds)) {
             foreach ($productIds as $productId) {
                 try {
-                    $Product    = QUI\ERP\Products\Handler\Products::getProduct($productId);
+                    $Product    = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
                     $products[] = $Product->getView();
                 } catch (QUI\Exception $Exception) {
                     QUI\System\Log::writeException($Exception);

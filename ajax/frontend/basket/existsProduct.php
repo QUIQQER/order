@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_existsProduct',
     function ($productId) {
         try {
-            $Product = Products::getProduct($productId);
+            $Product = Products::getProduct((int)$productId);
             $Product->getView();
 
             return true;
