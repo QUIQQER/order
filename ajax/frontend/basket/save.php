@@ -4,8 +4,8 @@
  * This file contains package_quiqqer_order_ajax_frontend_basket_save
  */
 
-use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Factory;
+use QUI\ERP\Order\Handler;
 use QUI\System\Log;
 
 /**
@@ -19,7 +19,7 @@ use QUI\System\Log;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_save',
     function ($basketId, $products) {
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
 
         if (!QUI::getUsers()->isNobodyUser($User)) {
@@ -35,7 +35,7 @@ QUI::$Ajax->registerFunction(
             $BasketOrder->import(\json_decode($products, true));
 
             $productsCalc = $BasketOrder->getProducts()->toArray();
-            $products     = $productsCalc['products'];
+            $products = $productsCalc['products'];
 
             // set the order products to the basket
             $Basket->import($products);

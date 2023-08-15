@@ -12,7 +12,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_getLastOrder',
     function () {
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Orders = QUI\ERP\Order\Handler::getInstance();
 
         if (QUI::getUsers()->isNobodyUser($User)) {

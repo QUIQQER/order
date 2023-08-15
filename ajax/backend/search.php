@@ -17,15 +17,15 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_search',
     function ($params, $filter) {
         $Search = Search::getInstance();
-        $Grid   = new QUI\Utils\Grid();
-        $params = \json_decode($params, true);
+        $Grid = new QUI\Utils\Grid();
+        $params = json_decode($params, true);
 
         if (isset($params['sortOn']) && $params['sortOn'] === 'prefixed-id') {
             $params['sortOn'] = 'id';
         }
 
         // filter
-        $filter = \json_decode($filter);
+        $filter = json_decode($filter);
 
         foreach ($filter as $entry => $value) {
             $Search->setFilter($entry, $value);
@@ -35,7 +35,7 @@ QUI::$Ajax->registerFunction(
         $query = $Grid->parseDBParams($params);
 
         if (isset($query['limit'])) {
-            $limit = \explode(',', $query['limit']);
+            $limit = explode(',', $query['limit']);
 
             $Search->limit($limit[0], $limit[1]);
         }

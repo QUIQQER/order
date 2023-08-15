@@ -9,6 +9,8 @@ namespace QUI\ERP\Order\NumberRanges;
 use QUI;
 use QUI\ERP\Api\NumberRangeInterface;
 
+use function is_numeric;
+
 /**
  * Class Order
  * - Order range
@@ -38,7 +40,7 @@ class Order implements NumberRangeInterface
      */
     public function getRange()
     {
-        $Table   = QUI::getDataBase()->table();
+        $Table = QUI::getDataBase()->table();
         $Handler = QUI\ERP\Order\Handler::getInstance();
 
         return $Table->getAutoIncrementIndex($Handler->table());
@@ -49,16 +51,16 @@ class Order implements NumberRangeInterface
      */
     public function setRange($range)
     {
-        if (!\is_numeric($range)) {
+        if (!is_numeric($range)) {
             return;
         }
 
-        $PDO       = QUI::getDataBase()->getPDO();
-        $Handler   = QUI\ERP\Order\Handler::getInstance();
+        $PDO = QUI::getDataBase()->getPDO();
+        $Handler = QUI\ERP\Order\Handler::getInstance();
         $tableName = $Handler->table();
 
         $Statement = $PDO->prepare(
-            "ALTER TABLE {$tableName} AUTO_INCREMENT = ".(int)$range
+            "ALTER TABLE {$tableName} AUTO_INCREMENT = " . (int)$range
         );
 
         $Statement->execute();

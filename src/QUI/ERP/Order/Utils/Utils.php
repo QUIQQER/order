@@ -145,9 +145,11 @@ class Utils
      */
     public static function getOrderUrl(QUI\Projects\Project $Project, $Order): string
     {
-        if (!($Order instanceof QUI\ERP\Order\Order) &&
+        if (
+            !($Order instanceof QUI\ERP\Order\Order) &&
             !($Order instanceof QUI\ERP\Order\OrderView) &&
-            !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
+            !($Order instanceof QUI\ERP\Order\OrderInProcess)
+        ) {
             return '';
         }
 
@@ -168,9 +170,11 @@ class Utils
      */
     public static function getOrderProfileUrl(QUI\Projects\Project $Project, $Order): string
     {
-        if (!($Order instanceof QUI\ERP\Order\Order) &&
+        if (
+            !($Order instanceof QUI\ERP\Order\Order) &&
             !($Order instanceof QUI\ERP\Order\OrderView) &&
-            !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
+            !($Order instanceof QUI\ERP\Order\OrderInProcess)
+        ) {
             return '';
         }
 
@@ -197,7 +201,7 @@ class Utils
         $ending = false;
 
         if (strpos($url, '.html')) {
-            $url    = str_replace('.html', '', $url);
+            $url = str_replace('.html', '', $url);
             $ending = true;
         }
 
@@ -220,7 +224,7 @@ class Utils
     {
         try {
             $Package = QUI::getPackage('quiqqer/order');
-            $Config  = $Package->getConfig();
+            $Config = $Package->getConfig();
             $setting = $Config->getValue('order', 'prefix');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -278,7 +282,7 @@ class Utils
                 continue;
             }
 
-            $productId    = $productData['id'];
+            $productId = $productData['id'];
             $productClass = null;
 
             if (isset($productData['class'])) {
@@ -287,9 +291,11 @@ class Utils
 
 
             // bridge for text articles
-            if ($productClass === QUI\ERP\Accounting\Invoice\Articles\Text::class
+            if (
+                $productClass === QUI\ERP\Accounting\Invoice\Articles\Text::class
                 || empty($productId)
-                || $productId === '-') {
+                || $productId === '-'
+            ) {
                 $Product = new QUI\ERP\Products\Product\TextProduct($productData);
 
                 try {
@@ -302,8 +308,10 @@ class Utils
             }
 
 
-            if ($productClass !== QUI\ERP\Accounting\Article::class &&
-                $productClass !== null) {
+            if (
+                $productClass !== QUI\ERP\Accounting\Article::class &&
+                $productClass !== null
+            ) {
                 QUI\System\Log::writeRecursive('######### Basket product import');
                 QUI\System\Log::writeRecursive('######### unknown article class for product');
                 QUI\System\Log::writeRecursive($productData);
@@ -320,7 +328,7 @@ class Utils
                         'quiqqer/order',
                         'order.process.product.not.available',
                         [
-                            'title'     => $Real->getTitle(),
+                            'title' => $Real->getTitle(),
                             'articleNo' => $Real->getField(QUI\ERP\Products\Handler\Fields::FIELD_PRODUCT_NO)->getValue(
                             )
                         ]
@@ -337,11 +345,13 @@ class Utils
                     continue;
                 }
 
-                $Product   = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
+                $Product = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
                 $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
 
-                if ($condition === BasketConditions::TYPE_2 ||
-                    $condition === BasketConditions::TYPE_6) {
+                if (
+                    $condition === BasketConditions::TYPE_2 ||
+                    $condition === BasketConditions::TYPE_6
+                ) {
                     // if several products are to be imported and a Type2 and Type6 are to be imported.
                     // this product is ignored and not imported
                     if ($count >= 2) {
@@ -349,7 +359,8 @@ class Utils
                     }
                 }
 
-                if ($condition === BasketConditions::TYPE_2 ||
+                if (
+                    $condition === BasketConditions::TYPE_2 ||
                     $condition === BasketConditions::TYPE_3 ||
                     $condition === BasketConditions::TYPE_5
                 ) {
@@ -407,7 +418,7 @@ class Utils
      */
     public static function getMergedProductList($products): array
     {
-        $newProductList  = [];
+        $newProductList = [];
         $getProductIndex = function ($product) use (&$newProductList) {
             foreach ($newProductList as $index => $p) {
                 $p1 = \serialize(self::getCompareProductArray($product));
@@ -445,7 +456,7 @@ class Utils
     {
         try {
             $productId = $product['id'];
-            $Product   = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
+            $Product = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
             $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
         } catch (QUI\Exception $Exception) {
             return false;
@@ -458,7 +469,8 @@ class Utils
         // TYPE_5 Kann mit anderen Produkten diesen Typs einmalig in den Warenkorb
         // TYPE_6 Kann nur alleine und mehrmalig in den Warenkorb
 
-        if ($condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_2
+        if (
+            $condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_2
             || $condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_3
             || $condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_5
         ) {

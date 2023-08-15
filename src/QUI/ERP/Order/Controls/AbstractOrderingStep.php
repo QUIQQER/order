@@ -30,7 +30,7 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
 
         return $Locale->get(
             'quiqqer/order',
-            'ordering.step.title.'.$Reflection->getShortName()
+            'ordering.step.title.' . $Reflection->getShortName()
         );
     }
 

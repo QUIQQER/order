@@ -31,8 +31,8 @@ QUI::$Ajax->registerFunction(
             }
 
             $productId = $product['id'];
-            $fields    = [];
-            $quantity  = 1;
+            $fields = [];
+            $quantity = 1;
 
             if (isset($product['quantity'])) {
                 $quantity = (int)$product['quantity'];
@@ -41,7 +41,7 @@ QUI::$Ajax->registerFunction(
 
             try {
                 $Product = new QUI\ERP\Order\Basket\Product($productId, ['fields' => $fields]);
-                $Real    = QUI\ERP\Products\Handler\Products::getProduct((int)$productId); // check if active
+                $Real = QUI\ERP\Products\Handler\Products::getProduct((int)$productId); // check if active
 
                 if (!$Real->isActive()) {
                     return;

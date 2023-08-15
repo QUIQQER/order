@@ -29,8 +29,8 @@ class UserOrders extends Control implements ControlInterface
 
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/frontendusers/Orders',
-            'page'     => 1,
-            'limit'    => 5
+            'page' => 1,
+            'limit' => 5
         ]);
 
         parent::__construct($attributes);
@@ -45,7 +45,7 @@ class UserOrders extends Control implements ControlInterface
     {
         $Engine = QUI::getTemplateManager()->getEngine();
         $Orders = QUI\ERP\Order\Handler::getInstance();
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
 
         if ($this->getAttribute('User')) {
             $User = $this->getAttribute('User');
@@ -55,10 +55,10 @@ class UserOrders extends Control implements ControlInterface
             $this->setAttribute('limit', 5);
         }
 
-        $limit        = (int)$this->getAttribute('limit');
-        $sheetsMax    = 1;
+        $limit = (int)$this->getAttribute('limit');
+        $sheetsMax = 1;
         $sheetCurrent = (int)$this->getAttribute('page');
-        $start        = ($sheetCurrent - 1) * $limit;
+        $start = ($sheetCurrent - 1) * $limit;
 
         $count = $Orders->countOrdersByUser($User);
 
@@ -77,7 +77,7 @@ class UserOrders extends Control implements ControlInterface
             /* @var $Order QUI\ERP\Order\Order */
             /* @var $View QUI\ERP\Order\OrderView */
             $View = $Order->getView();
-            
+
             $View->setAttribute(
                 'downloadLink',
                 URL_OPT_DIR . 'quiqqer/order/bin/frontend/order.pdf.php?order=' . $View->getHash()
@@ -89,15 +89,15 @@ class UserOrders extends Control implements ControlInterface
         $this->setAttribute('data-qui-options-limit', $this->getAttribute('limit'));
 
         $Engine->assign([
-            'orders'  => $orders,
-            'this'    => $this,
+            'orders' => $orders,
+            'this' => $this,
             'Project' => $this->getProject(),
-            'Site'    => $this->getSite(),
+            'Site' => $this->getSite(),
 
-            'sheetsMax'    => $sheetsMax,
+            'sheetsMax' => $sheetsMax,
             'sheetCurrent' => $sheetCurrent,
-            'sheetLimit'   => $limit,
-            'sheetCount'   => $count
+            'sheetLimit' => $limit,
+            'sheetCount' => $count
         ]);
 
         return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.html');
@@ -110,25 +110,27 @@ class UserOrders extends Control implements ControlInterface
      */
     public function renderOrder($Order)
     {
-        if (!($Order instanceof QUI\ERP\Order\Order) &&
+        if (
+            !($Order instanceof QUI\ERP\Order\Order) &&
             !($Order instanceof QUI\ERP\Order\OrderView) &&
-            !($Order instanceof QUI\ERP\Order\OrderInProcess)) {
+            !($Order instanceof QUI\ERP\Order\OrderInProcess)
+        ) {
             return '';
         }
 
-        $Engine   = QUI::getTemplateManager()->getEngine();
+        $Engine = QUI::getTemplateManager()->getEngine();
         $Articles = $Order->getArticles();
-        $Invoice  = null;
+        $Invoice = null;
 
         $paidStatus = $Order->getAttribute('paid_status');
-        $paidDate   = $Order->getAttribute('paid_date');
+        $paidDate = $Order->getAttribute('paid_date');
 
         $Articles->calc();
 
         if ($Order->hasInvoice()) {
-            $Invoice    = $Order->getInvoice();
+            $Invoice = $Order->getInvoice();
             $paidStatus = $Invoice->getAttribute('paid_status');
-            $paidDate   = $Invoice->getAttribute('paid_date');
+            $paidDate = $Invoice->getAttribute('paid_date');
         }
 
         switch ((int)$paidStatus) {
@@ -138,7 +140,7 @@ class UserOrders extends Control implements ControlInterface
 
             case QUI\ERP\Constants::PAYMENT_STATUS_PAID:
                 $Formatter = QUI::getLocale()->getDateFormatter();
-                $date      = $Formatter->format($paidDate);
+                $date = $Formatter->format($paidDate);
 
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.paid.text', [
                     'date' => $date
@@ -157,44 +159,45 @@ class UserOrders extends Control implements ControlInterface
                 $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
         }
 
-        $PSHandler  = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
+        $PSHandler = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
         $statusList = $PSHandler->getProcessingStatusList();
 
-        $OrderStatus   = $Order->getProcessingStatus();
+        $OrderStatus = $Order->getProcessingStatus();
         $orderStatusId = 0;
-        $orderStatus   = $PSHandler->getProcessingStatus(0)->getTitle();
+        $orderStatus = $PSHandler->getProcessingStatus(0)->getTitle();
 
         foreach ($statusList as $Status) {
             if ($OrderStatus && $Status->getId() === $OrderStatus->getId()) {
                 $orderStatusId = $Status->getId();
-                $orderStatus   = $Status->getTitle();
+                $orderStatus = $Status->getTitle();
                 break;
             }
         }
 
         $shippingStatus = false;
 
-        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+        if (
+            QUI::getPackageManager()->isInstalled('quiqqer/shipping')
             && $Order->getShippingStatus()
         ) {
             $shippingStatus = $Order->getShippingStatus()->getTitle();
         }
 
         $Engine->assign([
-            'this'           => $this,
-            'Project'        => $this->getProject(),
-            'Order'          => $Order,
-            'Payment'        => $Order->getPayment(),
-            'Invoice'        => $Invoice,
-            'Articles'       => $Articles,
-            'articles'       => $Articles->getArticles(),
-            'order'          => $Articles->toArray(),
-            'paymentStatus'  => $paymentStatus,
-            'orderStatusId'  => $orderStatusId,
-            'orderStatus'    => $orderStatus,
+            'this' => $this,
+            'Project' => $this->getProject(),
+            'Order' => $Order,
+            'Payment' => $Order->getPayment(),
+            'Invoice' => $Invoice,
+            'Articles' => $Articles,
+            'articles' => $Articles->getArticles(),
+            'order' => $Articles->toArray(),
+            'paymentStatus' => $paymentStatus,
+            'orderStatusId' => $orderStatusId,
+            'orderStatus' => $orderStatus,
             'shippingStatus' => $shippingStatus,
-            'Utils'          => new QUI\ERP\Order\Utils\Utils(),
-            'orderUrl'       => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+            'Utils' => new QUI\ERP\Order\Utils\Utils(),
+            'orderUrl' => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
                 $this->getProject(),
                 $Order->getHash()
             )
@@ -211,9 +214,9 @@ class UserOrders extends Control implements ControlInterface
      */
     public function renderArticle(QUI\ERP\Accounting\Article $Article)
     {
-        $Engine  = QUI::getTemplateManager()->getEngine();
+        $Engine = QUI::getTemplateManager()->getEngine();
         $Product = null;
-        $Image   = null;
+        $Image = null;
 
         try {
             $Product = QUI\ERP\Products\Handler\Products::getProductByProductNo(
@@ -233,10 +236,10 @@ class UserOrders extends Control implements ControlInterface
         $Article->calc();
 
         $Engine->assign([
-            'this'    => $this,
+            'this' => $this,
             'Article' => $Article,
             'Product' => $Product,
-            'Image'   => $Image,
+            'Image' => $Image,
             'Project' => QUI::getProjectManager()->get()
         ]);
 

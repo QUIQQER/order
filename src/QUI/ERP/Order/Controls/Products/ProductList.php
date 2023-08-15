@@ -21,7 +21,7 @@ class ProductList extends QUI\Control
 
         $this->setAttribute('class', 'quiqqer-order-productList');
         $this->setAttribute('nodeName', 'section');
-        $this->addCSSFile(\dirname(__FILE__).'/ProductList.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/ProductList.css');
     }
 
     /**
@@ -31,9 +31,9 @@ class ProductList extends QUI\Control
      */
     public function getBody()
     {
-        $Engine     = QUI::getTemplateManager()->getEngine();
+        $Engine = QUI::getTemplateManager()->getEngine();
         $productIds = $this->getAttribute('productsIds');
-        $products   = [];
+        $products = [];
 
         if (!\is_array($productIds)) {
             $productIds = \json_decode($productIds, true);
@@ -42,7 +42,7 @@ class ProductList extends QUI\Control
         if (\is_array($productIds)) {
             foreach ($productIds as $productId) {
                 try {
-                    $Product    = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
+                    $Product = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
                     $products[] = $Product->getView();
                 } catch (QUI\Exception $Exception) {
                     QUI\System\Log::writeException($Exception);
@@ -54,6 +54,6 @@ class ProductList extends QUI\Control
             'products' => $products
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/ProductList.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/ProductList.html');
     }
 }

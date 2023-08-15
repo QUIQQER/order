@@ -15,15 +15,15 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_send',
     function ($current, $orderHash) {
         try {
-            $_REQUEST['current']        = $current;
+            $_REQUEST['current'] = $current;
             $_REQUEST['payableToOrder'] = true;
 
             $OrderProcess = new QUI\ERP\Order\OrderProcess([
                 'orderHash' => $orderHash,
-                'step'      => $current
+                'step' => $current
             ]);
 
-            $result  = $OrderProcess->create();
+            $result = $OrderProcess->create();
             $current = false;
 
             if ($OrderProcess->getCurrentStep()) {
@@ -33,7 +33,7 @@ QUI::$Ajax->registerFunction(
             return [
                 'html' => $result,
                 'step' => $current,
-                'url'  => $OrderProcess->getStepUrl($current),
+                'url' => $OrderProcess->getStepUrl($current),
                 'hash' => $OrderProcess->getStepHash()
             ];
         } catch (\Exception $Exception) {

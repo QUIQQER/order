@@ -33,7 +33,7 @@ QUI::$Ajax->registerFunction(
         $Step->save();
 
         $Order = $OrderProcess->getOrder();
-        $hash  = '';
+        $hash = '';
 
         if ($Order) {
             $hash = $Order->getHash();

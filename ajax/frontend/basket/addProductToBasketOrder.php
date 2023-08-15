@@ -31,7 +31,7 @@ QUI::$Ajax->registerFunction(
 
         try {
             $Product = new QUI\ERP\Order\Basket\Product($productId, ['fields' => $fields]);
-            $Real    = QUI\ERP\Products\Handler\Products::getProduct((int)$productId); // check if active
+            $Real = QUI\ERP\Products\Handler\Products::getProduct((int)$productId); // check if active
 
             if (!$Real->isActive()) {
                 return;
@@ -44,7 +44,6 @@ QUI::$Ajax->registerFunction(
             $OrderBasket->addProduct($Product);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
-
             // @todo message an benutzer - Product konnte nicht aufgenommen werden
         }
     },

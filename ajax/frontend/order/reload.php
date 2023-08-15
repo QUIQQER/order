@@ -17,12 +17,12 @@ QUI::$Ajax->registerFunction(
         $_REQUEST['current'] = $step;
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId'        => (int)$orderId,
-            'orderHash'      => $orderHash,
+            'orderId' => (int)$orderId,
+            'orderHash' => $orderHash,
             'basketEditable' => \boolval($basketEditable)
         ]);
 
-        $Order   = $OrderProcess->getOrder();
+        $Order = $OrderProcess->getOrder();
         $Current = $OrderProcess->getCurrentStep();
 
         if (!$Current) {
@@ -32,13 +32,13 @@ QUI::$Ajax->registerFunction(
         $OrderProcess->setAttribute('step', $Current->getName());
         $OrderProcess->setAttribute('orderHash', $Order->getHash());
 
-        $html    = $OrderProcess->create();
+        $html = $OrderProcess->create();
         $current = $OrderProcess->getCurrentStep()->getName();
 
         return [
             'html' => $html,
             'step' => $current,
-            'url'  => $OrderProcess->getStepUrl($Current->getName()),
+            'url' => $OrderProcess->getStepUrl($Current->getName()),
             'hash' => $Order->getHash()
         ];
     },

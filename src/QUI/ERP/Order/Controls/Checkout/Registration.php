@@ -40,10 +40,10 @@ class Registration extends QUI\Control
             return '';
         }
 
-        $this->addCSSFile(dirname(__FILE__).'/Registration.css');
+        $this->addCSSFile(dirname(__FILE__) . '/Registration.css');
 
         $Registration = new QUI\FrontendUsers\Controls\RegistrationSignUp([
-            'content'  => false,
+            'content' => false,
             'autofill' => $this->getAttribute('autofill')
         ]);
 
@@ -51,6 +51,6 @@ class Registration extends QUI\Control
             'Registration' => $Registration
         ]);
 
-        return $Engine->fetch(dirname(__FILE__).'/Registration.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Registration.html');
     }
 }

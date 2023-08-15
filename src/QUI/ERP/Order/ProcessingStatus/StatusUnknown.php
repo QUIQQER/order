@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
-use QUI\ERP\Order\AbstractOrder;
 
 /**
  * Class Exception

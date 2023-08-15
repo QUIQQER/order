@@ -10,7 +10,7 @@ use DusanKasan\Knapsack\Collection;
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
-use Quiqqer\Engine\Collector;
+use QUI\Smarty\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use function array_flip;
@@ -48,9 +48,11 @@ class EventHandling
             'Product' => $Product
         ]);
 
-        if ($ProductControl
+        if (
+            $ProductControl
             && $ProductControl->existsAttribute('data-qui-option-available')
-            && $ProductControl->getAttribute('data-qui-option-available') === false) {
+            && $ProductControl->getAttribute('data-qui-option-available') === false
+        ) {
             $Button->setAttribute('disabled', true);
         }
 
@@ -71,9 +73,9 @@ class EventHandling
         }
 
         try {
-            $Project      = $Rewrite->getProject();
+            $Project = $Rewrite->getProject();
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-            $path         = trim($CheckoutSite->getUrlRewritten(), '/');
+            $path = trim($CheckoutSite->getUrlRewritten(), '/');
 
             if (mb_strpos($path, 'http') === 0) {
                 $path = parse_url($path);
@@ -122,7 +124,7 @@ class EventHandling
                     // we need to create the order
                     if ($Order instanceof OrderInProcess && $Order->isSuccessful()) {
                         $OrderInProcess = $Order;
-                        $Order          = $Order->createOrder(QUI::getUsers()->getSystemUser());
+                        $Order = $Order->createOrder(QUI::getUsers()->getSystemUser());
 
                         $OrderInProcess->delete(QUI::getUsers()->getSystemUser());
                     }
@@ -137,10 +139,10 @@ class EventHandling
 
             $Processing = new Controls\OrderProcess\Processing();
 
-            $steps   = array_keys($OrderProcess->getSteps());
+            $steps = array_keys($OrderProcess->getSteps());
             $steps[] = 'Order';
             $steps[] = $Processing->getName();
-            $steps   = array_flip($steps);
+            $steps = array_flip($steps);
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
@@ -329,7 +331,7 @@ class EventHandling
         // create order status
         $Handler = ProcessingStatus\Handler::getInstance();
         $Factory = ProcessingStatus\Factory::getInstance();
-        $list    = $Handler->getList();
+        $list = $Handler->getList();
 
         // (Re-)create translations for status change notification
         foreach ([1, 2, 3, 4, 5] as $statusId) {
@@ -379,12 +381,14 @@ class EventHandling
     ) {
         // add to basket -> only for complete products
         // variant products cant be added directly
-        if ($Product instanceof QUI\ERP\Products\Product\Product
-            || $Product instanceof QUI\ERP\Products\Product\Types\VariantChild) {
+        if (
+            $Product instanceof QUI\ERP\Products\Product\Product
+            || $Product instanceof QUI\ERP\Products\Product\Types\VariantChild
+        ) {
             /* @var $Product QUI\ERP\Products\Product\Product */
             $AddToBasket = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
                 'Product' => $Product,
-                'input'   => false
+                'input' => false
             ]);
 
             $Collection->append(
@@ -413,8 +417,8 @@ class EventHandling
 
         try {
             $Package = QUI::getPackage('quiqqer/order');
-            $Config  = $Package->getConfig();
-            $merge   = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
+            $Config = $Package->getConfig();
+            $merge = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
         } catch (QUI\Exception $Exception) {
         }
 
@@ -475,7 +479,7 @@ class EventHandling
         QUI\ERP\Comments $Comments
     ) {
         $Handler = Handler::getInstance();
-        $orders  = $Handler->getOrdersByUser($User);
+        $orders = $Handler->getOrdersByUser($User);
 
         foreach ($orders as $Order) {
             $Comments->import($Order->getComments());
