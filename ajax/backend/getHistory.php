@@ -49,8 +49,8 @@ QUI::$Ajax->registerFunction(
             /* @var $Tx \QUI\ERP\Accounting\Payments\Transactions\Transaction */
             $history[] = [
                 'message' => $Tx->parseToText(),
-                'time'    => \strtotime($Tx->getDate()),
-                'type'    => 'transaction',
+                'time' => \strtotime($Tx->getDate()),
+                'type' => 'transaction',
             ];
         }
 

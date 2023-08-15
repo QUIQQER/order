@@ -17,7 +17,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_list',
     function ($params) {
         $Search = Search::getInstance();
-        $Grid   = new QUI\Utils\Grid();
+        $Grid = new QUI\Utils\Grid();
 
         // query params
         $query = $Grid->parseDBParams(json_decode($params, true));

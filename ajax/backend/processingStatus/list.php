@@ -14,10 +14,10 @@ use QUI\ERP\Order\ProcessingStatus\Handler;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_processingStatus_list',
     function () {
-        $Grid    = new QUI\Utils\Grid();
+        $Grid = new QUI\Utils\Grid();
         $Handler = Handler::getInstance();
 
-        $list   = $Handler->getProcessingStatusList();
+        $list = $Handler->getProcessingStatusList();
         $result = \array_map(function ($Status) {
             /* @var $Status \QUI\ERP\Accounting\Invoice\ProcessingStatus\Status */
             return $Status->toArray(QUI::getLocale());

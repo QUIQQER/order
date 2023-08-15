@@ -19,9 +19,9 @@ QUI::$Ajax->registerFunction(
         }
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId'        => (int)$orderId,
-            'orderHash'      => $orderHash,
-            'step'           => $current,
+            'orderId' => (int)$orderId,
+            'orderHash' => $orderHash,
+            'step' => $current,
             'basketEditable' => \boolval($basketEditable)
         ]);
 
@@ -36,7 +36,7 @@ QUI::$Ajax->registerFunction(
         return [
             'html' => $OrderProcess->create(),
             'step' => $Previous->getName(),
-            'url'  => $OrderProcess->getStepUrl($Previous->getName()),
+            'url' => $OrderProcess->getStepUrl($Previous->getName()),
             'hash' => $OrderProcess->getStepHash()
         ];
     },

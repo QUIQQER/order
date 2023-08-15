@@ -13,15 +13,15 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_processing_getPayments',
     function ($orderHash) {
-        $Processing   = new QUI\ERP\Order\Controls\OrderProcess\Processing();
+        $Processing = new QUI\ERP\Order\Controls\OrderProcess\Processing();
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
             'orderHash' => $orderHash,
-            'step'      => $Processing->getName()
+            'step' => $Processing->getName()
         ]);
 
         /* @var $Processing \QUI\ERP\Order\Controls\OrderProcess\Processing */
         $Processing = $OrderProcess->getCurrentStep();
-        $Order      = $OrderProcess->getOrder();
+        $Order = $OrderProcess->getOrder();
 
         $Processing->setAttribute('Order', $Order);
 

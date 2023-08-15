@@ -4,8 +4,8 @@
  * This file contains package_quiqqer_order_ajax_frontend_basket_getBasket
  */
 
-use QUI\ERP\Order\Handler as OrderHandler;
 use QUI\ERP\Order\Factory as OrderFactory;
+use QUI\ERP\Order\Handler as OrderHandler;
 
 /**
  * Return the basket from the user

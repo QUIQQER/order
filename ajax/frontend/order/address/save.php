@@ -14,9 +14,9 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_address_save',
     function ($addressId, $data) {
-        $User    = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Address = $User->getAddress((int)$addressId);
-        $data    = \json_decode($data, true);
+        $data = \json_decode($data, true);
 
         if ($Address === null) {
             return false;

@@ -15,7 +15,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_addProductToOrderInProcess',
     function ($productId, $fields, $quantity) {
         $fields = json_decode($fields, true);
-        $Order  = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+        $Order = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
         $Order->setData('basketConditionOrder', 2);
 
         if (!is_array($fields)) {
@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
 
         try {
             $Product = new QUI\ERP\Order\Basket\Product($productId, ['fields' => $fields]);
-            $Real    = QUI\ERP\Products\Handler\Products::getProduct((int)$productId); // check if active
+            $Real = QUI\ERP\Products\Handler\Products::getProduct((int)$productId); // check if active
 
             if (!$Real->isActive()) {
                 return false;

@@ -22,16 +22,16 @@ QUI::$Ajax->registerFunction(
         }
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderHash'      => $orderHash,
-            'basket'         => $basket,
+            'orderHash' => $orderHash,
+            'basket' => $basket,
             'basketEditable' => $basketEditable
         ]);
 
         $Output = new QUI\Output();
         $result = $OrderProcess->create();
-        $css    = QUI\Control\Manager::getCSS();
+        $css = QUI\Control\Manager::getCSS();
 
-        return $Output->parse($css.$result);
+        return $Output->parse($css . $result);
     },
     ['orderHash', 'basket', 'basketEditable']
 );

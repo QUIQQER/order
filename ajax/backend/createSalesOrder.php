@@ -12,8 +12,8 @@ QUI::$Ajax->registerFunction(
         // check if invoice is installed
         QUI::getPackage('quiqqer/salesorders');
 
-        $Handler    = QUI\ERP\Order\Handler::getInstance();
-        $Order      = $Handler->get($orderId);
+        $Handler = QUI\ERP\Order\Handler::getInstance();
+        $Order = $Handler->get($orderId);
         $SalesOrder = $Order->createSalesOrder();
 
         return $SalesOrder->getHash();

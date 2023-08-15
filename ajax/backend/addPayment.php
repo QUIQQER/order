@@ -18,7 +18,7 @@ use QUI\ERP\Accounting\Payments\Transactions\Factory as TransactionFactory;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_addPayment',
     function ($orderId, $amount, $paymentMethod, $date) {
-        $Orders  = QUI\ERP\Order\Handler::getInstance();
+        $Orders = QUI\ERP\Order\Handler::getInstance();
         $Payment = Payments::getInstance()->getPayment($paymentMethod);
 
         try {

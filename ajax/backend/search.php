@@ -17,7 +17,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_search',
     function ($params, $filter) {
         $Search = Search::getInstance();
-        $Grid   = new QUI\Utils\Grid();
+        $Grid = new QUI\Utils\Grid();
         $params = \json_decode($params, true);
 
         if (isset($params['sortOn']) && $params['sortOn'] === 'prefixed-id') {
