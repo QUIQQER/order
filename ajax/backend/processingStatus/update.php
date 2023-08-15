@@ -1,8 +1,5 @@
 <?php
 
-use QUI\ERP\Order\ProcessingStatus\Handler;
-use QUI\Utils\Security\Orthos;
-
 /**
  * Update a processing status
  *
@@ -11,6 +8,10 @@ use QUI\Utils\Security\Orthos;
  * @param array $title - (multilignual) titel
  * @param bool $notification - send auto-notification on status change
  */
+
+use QUI\ERP\Order\ProcessingStatus\Handler;
+use QUI\Utils\Security\Orthos;
+
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_processingStatus_update',
     function ($id, $color, $title, $notification) {

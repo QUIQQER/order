@@ -6,6 +6,7 @@
  * @param int $orderId
  * @return string
  */
+
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_createSalesOrder',
     function (int $orderId) {
