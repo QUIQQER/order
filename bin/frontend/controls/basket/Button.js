@@ -32,7 +32,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/quiqqer/order/bin/frontend/controls/basket/Button',
+        Type: 'package/quiqqer/order/bin/frontend/controls/basket/Button',
 
         Binds: [
             '$onImport',
@@ -42,12 +42,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         ],
 
         options: {
-            open                     : 2, // 0 = nothing, 1 = order window, 2 = order process
-            text                     : true,
-            styles                   : false,
-            batchPosition            : {
+            open: 2, // 0 = nothing, 1 = order window, 2 = order process
+            text: true,
+            styles: false,
+            batchPosition: {
                 right: -16,
-                top  : -10
+                top: -10
             },
             showMiniBasketOnMouseOver: true
         },
@@ -58,9 +58,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Icon = null;
             this.$Text = null;
 
-            this.$BasketSmall     = null;
+            this.$BasketSmall = null;
             this.$BasketContainer = null;
-            this.$isLoaded        = false;
+            this.$isLoaded = false;
 
             this.addEvents({
                 onImport: this.$onImport,
@@ -87,11 +87,11 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             var text = QUILocale.get(lg, 'control.basket.button.text');
 
             this.$Elm = new Element('button', {
-                'class'   : 'quiqqer-order-basketButton button--callToAction',
-                'html'    : '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
+                'class': 'quiqqer-order-basketButton button--callToAction',
+                'html': '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
                     '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
                     '<span class="quiqqer-order-basketButton-batch">0</span>',
-                disabled  : true,
+                disabled: true,
                 'data-qui': 'package/quiqqer/order/bin/frontend/controls/basket/Button'
             });
 
@@ -124,10 +124,10 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             }
 
             var self = this,
-                Elm  = this.getElm();
+                Elm = this.getElm();
 
-            this.$Icon  = Elm.getElement('.quiqqer-order-basketButton-icon');
-            this.$Text  = Elm.getElement('.quiqqer-order-basketButton-text');
+            this.$Icon = Elm.getElement('.quiqqer-order-basketButton-icon');
+            this.$Text = Elm.getElement('.quiqqer-order-basketButton-text');
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
             Elm.addEvent('click', function () {
@@ -222,16 +222,16 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          * Show the small basket
          */
         showSmallBasket: function () {
-            var self   = this,
-                pos    = this.getElm().getPosition(),
+            var self = this,
+                pos = this.getElm().getPosition(),
                 height = this.getElm().getSize();
 
             if (!this.$BasketContainer) {
                 this.$BasketContainer = new Element('div', {
-                    'class' : 'quiqqer-order-basket-small-container',
-                    html    : '<span class="fa fa-spinner fa-spin"></span>',
+                    'class': 'quiqqer-order-basket-small-container',
+                    html: '<span class="fa fa-spinner fa-spin"></span>',
                     tabindex: -1,
-                    events  : {
+                    events: {
                         blur: function () {
                             // @todo überdenken -> vllt api (wegen paypal express gebraucht)
                             (function () {
@@ -246,8 +246,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             this.$BasketContainer.setStyles({
                 display: null,
-                left   : pos.x,
-                top    : pos.y + height.y
+                left: pos.x,
+                top: pos.y + height.y
             });
 
             if (this.$BasketSmall) {
@@ -298,16 +298,18 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          */
         updateDisplay: function (Basket) {
             // sum display
-            var SumElm = this.getElm().getElement(
-                '.quiqqer-order-basketButton-sum'
-            );
-
+            var SumElm = this.getElm().getElement('.quiqqer-order-basketButton-sum');
+            
             if (SumElm) {
-                Currency.convertWithSign(
-                    Basket.getCalculations().sum
-                ).then((converted) => {
-                    SumElm.set('text', converted);
-                });
+                if (!Basket.getCalculations().sum || Basket.getCalculations().sum === '') {
+                    Currency.convertWithSign(
+                        Basket.getCalculations().sum
+                    ).then((converted) => {
+                        SumElm.set('text', converted);
+                    });
+                } else {
+                    SumElm.set('text', Basket.getCalculations().sum);
+                }
             }
 
             // subsum display
@@ -320,7 +322,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             }
 
             // quantity display
-            var quantity    = Basket.getQuantity();
+            var quantity = Basket.getQuantity();
             var QuantityElm = this.getElm().getElement(
                 '.quiqqer-order-basketButton-quantity'
             );
@@ -355,8 +357,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             return new Promise(function (resolve) {
                 moofx(this.$Batch).animate({
                     opacity: 1,
-                    right  : this.$getBatchPosition().right,
-                    top    : this.$getBatchPosition().top
+                    right: this.$getBatchPosition().right,
+                    top: this.$getBatchPosition().top
                 }, {
                     duration: 200,
                     callback: resolve
@@ -377,8 +379,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             return new Promise(function (resolve) {
                 moofx(this.$Batch).animate({
                     opacity: 0,
-                    right  : this.$getBatchPosition().right,
-                    top    : 0
+                    right: this.$getBatchPosition().right,
+                    top: 0
                 }, {
                     duration: 200,
                     callback: resolve
@@ -393,8 +395,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          */
         $getBatchPosition: function () {
             var batchPosition = this.getAttribute('batchPosition'),
-                right         = -16,
-                top           = -10;
+                right = -16,
+                top = -10;
 
             if ("right" in batchPosition) {
                 right = batchPosition.right;
@@ -405,7 +407,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             }
 
             return {
-                top  : top,
+                top: top,
                 right: right
             };
         },
@@ -427,7 +429,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             var Info = new Element('div', {
                 'class': 'quiqqer-order-basketButton-infoBubble',
-                html   : QUILocale.get(lg, 'basket.add.information')
+                html: QUILocale.get(lg, 'basket.add.information')
             }).inject(this.getElm());
 
             var size = this.getElm().getSize();

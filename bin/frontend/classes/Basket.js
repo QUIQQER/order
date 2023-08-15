@@ -32,7 +32,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
     return new Class({
 
         Extends: QUIDOM,
-        Type   : 'package/quiqqer/order/bin/frontend/classes/Basket',
+        Type: 'package/quiqqer/order/bin/frontend/classes/Basket',
 
         Binds: [
             '$onProductChange'
@@ -74,7 +74,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             const self = this;
 
             let products = [],
-                data     = QUI.Storage.get(STORAGE_KEY);
+                data = QUI.Storage.get(STORAGE_KEY);
 
             this.$basketId = String.uniqueID();
 
@@ -366,14 +366,14 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             return {
                 currencyData: {},
-                isEuVat     : 0,
-                isNetto     : 0,
-                nettoSubSum : 0,
-                nettoSum    : 0,
-                subSum      : 0,
-                sum         : 0,
-                vatArray    : {},
-                vatText     : {}
+                isEuVat: 0,
+                isNetto: 0,
+                nettoSubSum: 0,
+                nettoSum: 0,
+                subSum: 0,
+                sum: 0,
+                vatArray: {},
+                vatText: {}
             };
         },
 
@@ -420,7 +420,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                         if (typeOf(productId) === 'number') {
                             Product = new ProductCls({
-                                id    : productId,
+                                id: productId,
                                 events: {
                                     onChange: self.$onProductChange
                                 }
@@ -456,7 +456,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                 // nobody
                                 if (!QUIQQER_USER.id) {
                                     QUI.Storage.set('condition-product', JSON.encode({
-                                        id      : productId,
+                                        id: productId,
                                         quantity: quantity
                                     }));
 
@@ -574,8 +574,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         removeProductPos: function (pos) {
-            const self  = this,
-                  index = pos - 1;
+            const self = this,
+                index = pos - 1;
 
             if (!QUIQQER_USER.id) {
                 this.fireEvent('refreshBegin', [self]);
@@ -597,13 +597,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                     self.fireEvent('refreshBegin', [self]);
                     self.fireEvent('removeBegin', [self]);
-
+                    
                     self.$calculations = basket;
                     self.$loadData(basket).then(resolve);
                 }, {
                     'package': 'quiqqer/order',
-                    basketId : self.$basketId,
-                    pos      : index
+                    basketId: self.$basketId,
+                    pos: index
                 });
             }).then(function () {
                 self.fireEvent('remove', [self]);
@@ -629,7 +629,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     });
                 }, {
                     'package': 'quiqqer/order',
-                    basketId : self.$basketId
+                    basketId: self.$basketId
                 });
             });
         },
@@ -665,8 +665,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 return Promise.resolve();
             }
 
-            const self    = this,
-                  Product = this.$products[pos];
+            const self = this,
+                Product = this.$products[pos];
 
             return Product.setQuantity(quantity).then(function () {
                 self.$products[pos] = Product;
@@ -739,8 +739,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         resolve(result);
                     }, {
                         'package': 'quiqqer/order',
-                        basketId : this.$basketId,
-                        products : JSON.encode(products)
+                        basketId: this.$basketId,
+                        products: JSON.encode(products)
                     });
 
                     return;
@@ -773,7 +773,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     resolve(result);
                 }, {
                     'package': 'quiqqer/order',
-                    products : JSON.encode(products)
+                    products: JSON.encode(products)
                 });
             }.bind(this));
         },
@@ -789,7 +789,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_existsProduct', resolve, {
                     'package': 'quiqqer/order',
                     productId: productId,
-                    onError  : reject
+                    onError: reject
                 });
             });
         },
@@ -821,8 +821,8 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_toOrderInProcess', resolve, {
                     'package': 'quiqqer/order',
                     orderHash: orderHash,
-                    basketId : self.$basketId,
-                    onError  : reject
+                    basketId: self.$basketId,
+                    onError: reject
                 });
             });
         },
@@ -838,10 +838,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_addProductToOrderInProcess', resolve, {
                     'package': 'quiqqer/order',
-                    onError  : reject,
+                    onError: reject,
                     productId: productId,
-                    fields   : JSON.encode(fields),
-                    quantity : quantity
+                    fields: JSON.encode(fields),
+                    quantity: quantity
                 });
             });
         }
