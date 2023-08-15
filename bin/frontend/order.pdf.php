@@ -2,10 +2,10 @@
 
 define('QUIQQER_SYSTEM', true);
 
-require_once dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/header.php';
+require_once dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/header.php';
 
 $Response = QUI::getGlobalResponse();
-$User     = QUI::getUserBySession();
+$User = QUI::getUserBySession();
 
 if (!isset($_REQUEST['order'])) {
     $Response->setStatusCode(
@@ -28,8 +28,8 @@ if (QUI::getUsers()->isAuth($User) === false) {
 }
 
 try {
-    $Order    = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($_REQUEST['order']);
-    $Invoice  = $Order->getInvoice();
+    $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($_REQUEST['order']);
+    $Invoice = $Order->getInvoice();
     $Customer = $Invoice->getCustomer();
 } catch (\Exception $Exception) {
     $Response->setStatusCode(

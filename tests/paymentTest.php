@@ -14,7 +14,6 @@ echo $Order->getId();
 echo PHP_EOL;
 
 
-
 // Payment
 $Payment = QUI\ERP\Accounting\Payments\Payments::getInstance()->getPayment(23);
 $Order->addPayment(1, $Payment->getPaymentType());
