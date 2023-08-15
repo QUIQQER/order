@@ -39,9 +39,9 @@ class Basket extends QUI\Control
     public function __construct($attributes = [])
     {
         $this->setAttributes([
-            'buttons'   => true,
+            'buttons' => true,
             'isLoading' => false,
-            'editable'  => true
+            'editable' => true
         ]);
 
         parent::__construct($attributes);
@@ -56,7 +56,8 @@ class Basket extends QUI\Control
      */
     public function setBasket($Basket)
     {
-        if ($Basket instanceof QUI\ERP\Order\Basket\Basket ||
+        if (
+            $Basket instanceof QUI\ERP\Order\Basket\Basket ||
             $Basket instanceof QUI\ERP\Order\Basket\BasketGuest ||
             $Basket instanceof QUI\ERP\Order\Basket\BasketOrder
         ) {
@@ -73,27 +74,27 @@ class Basket extends QUI\Control
         $ProductsLocale = QUI\ERP\Products\Handler\Products::getLocale();
         QUI\ERP\Products\Handler\Products::setLocale(QUI::getLocale());
 
-        $Engine   = QUI::getTemplateManager()->getEngine();
+        $Engine = QUI::getTemplateManager()->getEngine();
         $Products = $this->Basket->getProducts();
 
         $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
         $Products->setUser(QUI::getUserBySession());
         $Products->recalculate();
 
-        $View              = $Products->getView(QUI::getLocale());
+        $View = $Products->getView(QUI::getLocale());
         $showArticleNumber = QUI\ERP\Order\Settings::getInstance()->get('orderProcess', 'showArticleNumberInBasket');
 
         QUI\ERP\Products\Handler\Products::setLocale($ProductsLocale);
 
         $Engine->assign([
-            'data'              => $View->toArray(),
-            'Basket'            => $this->Basket,
-            'Project'           => $this->Project,
-            'Products'          => $View,
-            'products'          => $View->getProducts(),
-            'this'              => $this,
+            'data' => $View->toArray(),
+            'Basket' => $this->Basket,
+            'Project' => $this->Project,
+            'Products' => $View,
+            'products' => $View->getProducts(),
+            'this' => $this,
             'showArticleNumber' => $showArticleNumber,
-            'Utils'             => new QUI\ERP\Order\Utils\Utils()
+            'Utils' => new QUI\ERP\Order\Utils\Utils()
         ]);
 
         return $Engine->fetch(dirname(__FILE__) . '/Basket.html');

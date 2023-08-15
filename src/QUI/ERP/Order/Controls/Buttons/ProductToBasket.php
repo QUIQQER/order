@@ -23,13 +23,13 @@ class ProductToBasket extends QUI\Control
     public function __construct($attributes = [])
     {
         $this->setAttributes([
-            'nodeName'     => 'div',
-            'data-qui'     => 'package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket',
-            'input'        => true,
-            'Product'      => false,
-            'btnClass'     => 'btn btn-primary',
-            'btnText'      => false,
-            'showLabel'    => true,
+            'nodeName' => 'div',
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket',
+            'input' => true,
+            'Product' => false,
+            'btnClass' => 'btn btn-primary',
+            'btnText' => false,
+            'showLabel' => true,
             'showControls' => true, // show decrease and increase buttons -/+
             //'disabled'     => false
         ]);
@@ -40,7 +40,7 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(\dirname(__FILE__).'/ProductToBasket.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/ProductToBasket.css');
     }
 
     /**
@@ -56,7 +56,7 @@ class ProductToBasket extends QUI\Control
             return '';
         }
 
-        $Locale      = QUI::getLocale();
+        $Locale = QUI::getLocale();
         $maxQuantity = '';
 
         $addButtonTitle = QUI::getLocale()->get(
@@ -66,7 +66,7 @@ class ProductToBasket extends QUI\Control
 
         if ($this->getAttribute('Product')) {
             /* @var $Product QUI\ERP\Products\Product\Product */
-            $Product     = $this->getAttribute('Product');
+            $Product = $this->getAttribute('Product');
             $maxQuantity = $Product->getMaximumQuantity();
 
             if (!$maxQuantity) {
@@ -80,7 +80,7 @@ class ProductToBasket extends QUI\Control
                 'control.basket.buttonAdd.title',
                 [
                     'productId' => $Product->getId(),
-                    'product'   => $Product->getTitle(),
+                    'product' => $Product->getTitle(),
                 ]
             );
         }
@@ -105,15 +105,15 @@ class ProductToBasket extends QUI\Control
         }
 
         $Engine->assign([
-            'this'           => $this,
+            'this' => $this,
             'addButtonTitle' => $addButtonTitle,
-            'showLabel'      => $this->getAttribute('showLabel'),
-            'showControls'   => $this->getAttribute('showControls'),
-            'btnText'        => $btnText,
-            'disableSpins'   => $disableSpins,
-            'maxQuantity'    => $maxQuantity
+            'showLabel' => $this->getAttribute('showLabel'),
+            'showControls' => $this->getAttribute('showControls'),
+            'btnText' => $btnText,
+            'disableSpins' => $disableSpins,
+            'maxQuantity' => $maxQuantity
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/ProductToBasket.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/ProductToBasket.html');
     }
 }

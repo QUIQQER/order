@@ -25,7 +25,7 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         parent::__construct($attributes);
 
         $this->addCSSClass('quiqqer-order-step-finish');
-        $this->addCSSFile(\dirname(__FILE__).'/Finish.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/Finish.css');
     }
 
     /**
@@ -35,10 +35,10 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getBody()
     {
-        $Engine  = QUI::getTemplateManager()->getEngine();
-        $Order   = $this->getOrder();
+        $Engine = QUI::getTemplateManager()->getEngine();
+        $Order = $this->getOrder();
         $Handler = QUI\ERP\Order\Handler::getInstance();
-        $Basket  = $Handler->getBasketFromUser(QUI::getUserBySession());
+        $Basket = $Handler->getBasketFromUser(QUI::getUserBySession());
 
         $Basket->clear();
         $Basket->setHash('');
@@ -47,18 +47,18 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order->recalculate();
 
         $OrderControl = new QUI\ERP\Order\Controls\Order\Order([
-            'Order'    => $Order,
+            'Order' => $Order,
             'template' => 'OrderLikeBasket'
         ]);
 
         $Engine->assign([
-            'User'      => $Order->getCustomer(),
-            'Order'     => $Order,
+            'User' => $Order->getCustomer(),
+            'Order' => $Order,
             'orderHtml' => $OrderControl->create(),
             'orderHash' => $Order->getHash()
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/Finish.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/Finish.html');
     }
 
     /**

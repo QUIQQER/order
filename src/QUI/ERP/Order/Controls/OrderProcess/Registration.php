@@ -25,7 +25,7 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         parent::__construct($attributes);
 
-        $this->addCSSFile(\dirname(__FILE__).'/Registration.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/Registration.css');
 
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/orderProcess/Registration'
@@ -54,7 +54,7 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        return $Engine->fetch(\dirname(__FILE__).'/Registration.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/Registration.html');
     }
 
     /**

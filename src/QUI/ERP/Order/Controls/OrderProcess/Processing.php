@@ -44,7 +44,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $this->addCSSClass('quiqqer-order-step-processing');
         $this->addCSSClass('quiqqer-order-step-processing-gateway');
-        $this->addCSSFile(\dirname(__FILE__).'/Processing.css');
+        $this->addCSSFile(\dirname(__FILE__) . '/Processing.css');
     }
 
     /**
@@ -65,24 +65,24 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         try {
-            $display   = $this->ProcessingProvider->getDisplay($this->getOrder(), $this);
+            $display = $this->ProcessingProvider->getDisplay($this->getOrder(), $this);
             $hasErrors = $this->ProcessingProvider->hasErrors();
         } catch (\Exception $Exception) {
             QUI\System\Log::write($Exception->getMessage());
 
             $hasErrors = true;
-            $display   = '<div class="message-error">'.
-                         QUI::getLocale()->get('quiqqer/order', 'exception.processing.error').
-                         '</div>';
+            $display = '<div class="message-error">' .
+                QUI::getLocale()->get('quiqqer/order', 'exception.processing.error') .
+                '</div>';
         }
 
         $Engine->assign([
-            'display'   => $display,
+            'display' => $display,
             'hasErrors' => $hasErrors,
-            'this'      => $this
+            'this' => $this
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/Processing.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/Processing.html');
     }
 
     /**
@@ -98,7 +98,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         // check if payment can be changed
-        $Order   = $this->getOrder();
+        $Order = $this->getOrder();
         $Payment = $Order->getPayment();
 
         if ($Payment && QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
@@ -113,7 +113,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             ]);
 
             $Engine->assign([
-                'this'        => $this,
+                'this' => $this,
                 'PaymentStep' => $PaymentStep
             ]);
         } catch (\Exception $Exception) {
@@ -122,7 +122,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        return $Engine->fetch(\dirname(__FILE__).'/ProcessingPayments.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/ProcessingPayments.html');
     }
 
     /**
@@ -181,7 +181,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         // check if payment can be changed
-        $Order   = $this->getOrder();
+        $Order = $this->getOrder();
         $Payment = $Order->getPayment();
 
         if (QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
@@ -189,7 +189,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
-            'Order'   => $this->getOrder(),
+            'Order' => $this->getOrder(),
             'payment' => $payment
         ]);
 
@@ -214,14 +214,14 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         try {
             $Reflection = new \ReflectionClass($this);
-            $className  = $Reflection->getShortName();
+            $className = $Reflection->getShortName();
         } catch (\ReflectionException $Exception) {
             $className = 'Processing';
         }
 
         return $Locale->get(
             'quiqqer/order',
-            'ordering.step.title.'.$className
+            'ordering.step.title.' . $className
         );
     }
 
@@ -259,14 +259,14 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Locale = QUI::getLocale();
         }
 
-        $header      = $Locale->get('quiqqer/order', 'ordering.step.title.CheckoutPayment');
+        $header = $Locale->get('quiqqer/order', 'ordering.step.title.CheckoutPayment');
         $description = $Locale->get('quiqqer/order', 'ordering.step.checkoutPayment.text');
 
         $content = '
         <header>
-            <h1>'.$header.'</h1>
+            <h1>' . $header . '</h1>
         </header>
-        <div class="quiqqer-order-step-processing-description">'.$description.'</div>';
+        <div class="quiqqer-order-step-processing-description">' . $description . '</div>';
 
         if (!empty($this->content)) {
             $content = $this->content;

@@ -112,9 +112,9 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 }
             }
 
-            $Order    = $this->Basket->getOrder();
+            $Order = $this->Basket->getOrder();
             $Articles = $Order->getArticles();
-            $empty    = [];
+            $empty = [];
 
             foreach ($Articles as $key => $Article) {
                 if (!$Article->getQuantity()) {
@@ -129,7 +129,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Order->save();
 
             $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
-            $products    = $BasketOrder->getProducts()->toArray();
+            $products = $BasketOrder->getProducts()->toArray();
 
             $this->Basket->import($products['products']);
         } catch (QUI\Exception $Exception) {
@@ -179,9 +179,9 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Engine->assign([
             'BasketControl' => $BasketControl,
-            'Basket'        => $this->Basket,
-            'Order'         => $this->getAttribute('Order'),
-            'this'          => $this
+            'Basket' => $this->Basket,
+            'Order' => $this->getAttribute('Order'),
+            'this' => $this
         ]);
 
         return $Engine->fetch(\dirname(__FILE__) . '/Basket.html');
