@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
         if ($Basket->getProducts()) {
             $Basket->getProducts()->removePos($pos);
         }
-        
+
         QUI::getEvents()->fireEvent(
             'quiqqerOrderBasketRemovePos',
             [$Basket, $pos]

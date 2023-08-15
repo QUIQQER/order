@@ -14,7 +14,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_list',
     function () {
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Orders = QUI\ERP\Order\Handler::getInstance();
         $orders = $Orders->getOrdersInProcessFromUser($User);
 

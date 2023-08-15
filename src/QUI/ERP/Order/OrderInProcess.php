@@ -84,7 +84,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         if (isset($data['customer'])) {
             try {
                 $customer = json_decode($data['customer'], true);
-                $User     = QUI::getUsers()->get($customer['id']);
+                $User = QUI::getUsers()->get($customer['id']);
 
                 $customer['lang'] = $User->getLang();
                 $data['customer'] = json_encode($customer);
@@ -181,7 +181,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
                     'quiqqer/order',
                     'message.change.order.status',
                     [
-                        'status'   => $status,
+                        'status' => $status,
                         'statusId' => $this->status
                     ]
                 )
@@ -291,7 +291,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
         // old status
         $oldPaidStatus = $this->getAttribute('paid_status');
-        $calculations  = QUI\ERP\Accounting\Calc::calculatePayments($this);
+        $calculations = QUI\ERP\Accounting\Calc::calculatePayments($this);
 
         switch ($this->getAttribute('paid_status')) {
             case QUI\ERP\Constants::PAYMENT_STATUS_OPEN:
@@ -313,7 +313,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
                 'history.message.edit',
                 [
                     'username' => $User->getName(),
-                    'uid'      => $User->getId()
+                    'uid' => $User->getId()
                 ]
             )
         );
@@ -439,15 +439,15 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         $this->orderId = $Order->getId();
 
         // copy the data to the order
-        $data                     = $this->getDataForSaving();
-        $data['id_prefix']        = $Order->getIdPrefix();
-        $data['id_str']           = $Order->getPrefixedId();
+        $data = $this->getDataForSaving();
+        $data['id_prefix'] = $Order->getIdPrefix();
+        $data['id_str'] = $Order->getPrefixedId();
         $data['order_process_id'] = $this->getId();
-        $data['c_user']           = $this->cUser;
-        $data['paid_status']      = $this->getAttribute('paid_status');
-        $data['paid_date']        = $this->getAttribute('paid_date');
-        $data['paid_data']        = $this->getAttribute('paid_data');
-        $data['successful']       = $this->successful;
+        $data['c_user'] = $this->cUser;
+        $data['paid_status'] = $this->getAttribute('paid_status');
+        $data['paid_date'] = $this->getAttribute('paid_date');
+        $data['paid_data'] = $this->getAttribute('paid_data');
+        $data['successful'] = $this->successful;
 
         if (empty($data['paid_date'])) {
             $data['paid_date'] = null;
@@ -514,8 +514,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
 
             $acData = [
                 'accountingCurrency' => $AccountingCurrency->toArray(),
-                'currency'           => $this->Currency->toArray(),
-                'rate'               => $this->Currency->getExchangeRate($AccountingCurrency)
+                'currency' => $this->Currency->toArray(),
+                'rate' => $this->Currency->getExchangeRate($AccountingCurrency)
             ];
 
             $Order->setData('accountingCurrencyData', $acData);
@@ -542,15 +542,19 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             return $Order;
         }
 
-        if (Settings::getInstance()->createInvoiceByPayment()
-            && $Order->getPayment()->isSuccessful($Order->getHash())) {
+        if (
+            Settings::getInstance()->createInvoiceByPayment()
+            && $Order->getPayment()->isSuccessful($Order->getHash())
+        ) {
             $Order->createInvoice();
 
             return $Order;
         }
 
-        if (Settings::getInstance()->createInvoiceByPayment()
-            && $Order->getPayment()->isSuccessful($Order->getHash())) {
+        if (
+            Settings::getInstance()->createInvoiceByPayment()
+            && $Order->getPayment()->isSuccessful($Order->getHash())
+        ) {
             $Order->createInvoice();
         }
 
@@ -594,7 +598,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
      */
     protected function getDataForSaving(): array
     {
-        $InvoiceAddress  = $this->getInvoiceAddress();
+        $InvoiceAddress = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
         $deliveryAddress = $DeliveryAddress->toJSON();
 
@@ -615,28 +619,28 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         //payment
-        $paymentId     = null;
+        $paymentId = null;
         $paymentMethod = null;
 
         $Payment = $this->getPayment();
 
         try {
             if ($Payment) {
-                $paymentId     = $Payment->getId();
+                $paymentId = $Payment->getId();
                 $paymentMethod = $Payment->getPaymentType()->getTitle();
             }
         } catch (QUI\Exception $Exception) {
         }
 
         //shipping
-        $shippingId     = null;
-        $shippingData   = '';
+        $shippingId = null;
+        $shippingData = '';
         $shippingStatus = null;
 
         $Shipping = $this->getShipping();
 
         if ($Shipping) {
-            $shippingId   = $Shipping->getId();
+            $shippingId = $Shipping->getId();
             $shippingData = $Shipping->toArray();
         }
 
@@ -646,32 +650,32 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         return [
-            'customerId'      => $this->customerId,
-            'customer'        => json_encode($customer),
-            'addressInvoice'  => $InvoiceAddress->toJSON(),
+            'customerId' => $this->customerId,
+            'customer' => json_encode($customer),
+            'addressInvoice' => $InvoiceAddress->toJSON(),
             'addressDelivery' => $deliveryAddress,
 
-            'articles'         => $this->Articles->toJSON(),
-            'comments'         => $this->Comments->toJSON(),
-            'status_mails'     => $this->StatusMails->toJSON(),
-            'history'          => $this->History->toJSON(),
+            'articles' => $this->Articles->toJSON(),
+            'comments' => $this->Comments->toJSON(),
+            'status_mails' => $this->StatusMails->toJSON(),
+            'history' => $this->History->toJSON(),
             'frontendMessages' => $this->FrontendMessage->toJSON(),
-            'data'             => json_encode($this->data),
-            'currency_data'    => json_encode($this->getCurrency()->toArray()),
-            'currency'         => $this->getCurrency()->getCode(),
-            'status'           => $status,
-            'successful'       => $this->successful,
+            'data' => json_encode($this->data),
+            'currency_data' => json_encode($this->getCurrency()->toArray()),
+            'currency' => $this->getCurrency()->getCode(),
+            'status' => $status,
+            'successful' => $this->successful,
 
-            'payment_id'      => $paymentId,
-            'payment_method'  => $paymentMethod,
-            'payment_time'    => null,
-            'payment_data'    => QUI\Security\Encryption::encrypt(
+            'payment_id' => $paymentId,
+            'payment_method' => $paymentMethod,
+            'payment_time' => null,
+            'payment_data' => QUI\Security\Encryption::encrypt(
                 json_encode($this->paymentData)
             ), // verschlüsselt
             'payment_address' => '',  // verschlüsselt
 
-            'shipping_id'     => $shippingId,
-            'shipping_data'   => json_encode($shippingData),
+            'shipping_id' => $shippingId,
+            'shipping_data' => json_encode($shippingData),
             'shipping_status' => $shippingStatus
         ];
     }
@@ -712,7 +716,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             Handler::getInstance()->tableOrderProcess(),
             [
                 'hash' => $hash,
-                'id'   => $oldOrderId
+                'id' => $oldOrderId
             ],
             ['id' => $newOrderId]
         );
@@ -852,10 +856,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage(), [
-                'order'     => $this->getId(),
+                'order' => $this->getId(),
                 'orderHash' => $this->getHash(),
                 'orderType' => $this->getType(),
-                'action'    => 'Order->clearFrontendMessages'
+                'action' => 'Order->clearFrontendMessages'
             ]);
         }
     }

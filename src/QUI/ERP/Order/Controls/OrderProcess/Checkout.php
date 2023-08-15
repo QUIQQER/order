@@ -49,7 +49,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if ($name === 'Process') {
             /* @var $Process QUI\ERP\Order\OrderProcess */
             $Process = $val;
-            $self    = $this;
+            $self = $this;
 
             // reset the session termsAndConditions if the step is not the checkout step
             $Process->Events->addEvent('onGetBody', function () use ($Process, $self) {
@@ -90,12 +90,12 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         );
 
         $Engine = QUI::getTemplateManager()->getEngine();
-        $Order  = $this->getOrder();
+        $Order = $this->getOrder();
 
         $Order->recalculate();
 
         $ArticleList = $Order->getArticles();
-        $Articles    = $ArticleList->toUniqueList();
+        $Articles = $ArticleList->toUniqueList();
         $Articles->hideHeader();
 
         $text = QUI::getLocale()->get(
@@ -125,15 +125,15 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $comment = trim($comment);
 
         $Engine->assign([
-            'User'            => $Order->getCustomer(),
-            'InvoiceAddress'  => $Order->getInvoiceAddress(),
+            'User' => $Order->getCustomer(),
+            'InvoiceAddress' => $Order->getInvoiceAddress(),
             'DeliveryAddress' => $Order->getDeliveryAddress(),
-            'Payment'         => $Order->getPayment(),
-            'Shipping'        => $Order->getShipping(),
-            'comment'         => $comment,
-            'Articles'        => $Articles,
-            'Order'           => $Order,
-            'text'            => $text
+            'Payment' => $Order->getPayment(),
+            'Shipping' => $Order->getShipping(),
+            'comment' => $comment,
+            'Articles' => $Articles,
+            'Order' => $Order,
+            'text' => $text
         ]);
 
         return $Engine->fetch(dirname(__FILE__) . '/Checkout.html');
@@ -161,7 +161,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function validate()
     {
-        $Order   = $this->getOrder();
+        $Order = $this->getOrder();
         $Payment = $Order->getPayment();
 
         if ($Order->isSuccessful()) {
@@ -225,7 +225,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function forceSave()
     {
-        $Order   = $this->getOrder();
+        $Order = $this->getOrder();
         $Payment = $Order->getPayment();
 
         if (!$Payment || !$Order) {
@@ -247,8 +247,8 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function getLinkOf(string $config): string
     {
         try {
-            $Config  = QUI::getPackage('quiqqer/erp')->getConfig();
-            $values  = $Config->get('sites', $config);
+            $Config = QUI::getPackage('quiqqer/erp')->getConfig();
+            $values = $Config->get('sites', $config);
             $Project = $this->getProject();
         } catch (QUI\Exception $Exception) {
             return '';
@@ -258,7 +258,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        $lang   = $Project->getLang();
+        $lang = $Project->getLang();
         $values = json_decode($values, true);
 
         if (empty($values[$lang])) {
@@ -268,12 +268,12 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $Site = QUI\Projects\Site\Utils::getSiteByLink($values[$lang]);
 
-            $url   = $Site->getUrlRewritten();
+            $url = $Site->getUrlRewritten();
             $title = $Site->getAttribute('title');
 
             $project = $Site->getProject()->getName();
-            $lang    = $Site->getProject()->getLang();
-            $id      = $Site->getId();
+            $lang = $Site->getProject()->getLang();
+            $id = $Site->getId();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 

@@ -33,7 +33,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         parent::__construct($attributes);
 
         $this->setAttributes([
-            'data-qui'      => 'package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData',
+            'data-qui' => 'package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData',
             'data-validate' => 0
         ]);
 
@@ -54,7 +54,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return '';
         }
 
-        $User    = null;
+        $User = null;
         $Address = $this->getInvoiceAddress();
 
         if ($Address) {
@@ -64,7 +64,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if (!$User) {
             try {
                 $Customer = $this->getOrder()->getCustomer();
-                $User     = QUI::getUsers()->get($Customer->getId());
+                $User = QUI::getUsers()->get($Customer->getId());
             } catch (QUI\Exception $Exception) {
                 $User = QUI::getUserBySession();
             }
@@ -102,8 +102,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 return '';
             }
 
-            if (QUI\ERP\Utils\Shop::isB2CPrioritized() ||
-                QUI\ERP\Utils\Shop::isOnlyB2C()) {
+            if (
+                QUI\ERP\Utils\Shop::isB2CPrioritized() ||
+                QUI\ERP\Utils\Shop::isOnlyB2C()
+            ) {
                 return '';
             }
 
@@ -116,7 +118,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
 
         $commentCustomer = QUI::getSession()->get('comment-customer');
-        $commentMessage  = QUI::getSession()->get('comment-message');
+        $commentMessage = QUI::getSession()->get('comment-message');
 
         if (!empty($commentCustomer)) {
             $commentCustomer = QUI\Utils\Security\Orthos::clear($commentCustomer);
@@ -135,7 +137,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         // frontend users address profile settings
         try {
-            $Conf     = QUI::getPackage('quiqqer/frontend-users')->getConfig();
+            $Conf = QUI::getPackage('quiqqer/frontend-users')->getConfig();
             $settings = $Conf->getValue('profile', 'addressFields');
 
             if (!empty($settings)) {
@@ -149,28 +151,28 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $settings = [];
         }
 
-        $settings                 = QUI\FrontendUsers\Controls\Address\Address::checkSettingsArray($settings);
+        $settings = QUI\FrontendUsers\Controls\Address\Address::checkSettingsArray($settings);
         $businessTypeIsChangeable = !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B());
 
-        $isB2B     = QUI\ERP\Utils\Shop::isB2B();
-        $isB2C     = QUI\ERP\Utils\Shop::isB2C();
+        $isB2B = QUI\ERP\Utils\Shop::isB2B();
+        $isB2C = QUI\ERP\Utils\Shop::isB2C();
         $isOnlyB2B = QUI\ERP\Utils\Shop::isOnlyB2B();
         $isOnlyB2C = QUI\ERP\Utils\Shop::isOnlyB2C();
 
         $Engine->assign([
-            'User'            => $User,
-            'Address'         => $Address,
-            'Order'           => $this->getOrder(),
-            'b2bSelected'     => $isUserB2B(),
-            'commentMessage'  => $commentMessage,
+            'User' => $User,
+            'Address' => $Address,
+            'Order' => $this->getOrder(),
+            'b2bSelected' => $isUserB2B(),
+            'commentMessage' => $commentMessage,
             'commentCustomer' => $commentCustomer,
-            'settings'        => $settings,
+            'settings' => $settings,
 
             'businessTypeIsChangeable' => $businessTypeIsChangeable,
-            'isB2C'                    => $isB2C,
-            'isB2B'                    => $isB2B,
-            'isOnlyB2B'                => $isOnlyB2B,
-            'isOnlyB2C'                => $isOnlyB2C,
+            'isB2C' => $isB2C,
+            'isB2B' => $isB2B,
+            'isOnlyB2B' => $isOnlyB2B,
+            'isOnlyB2C' => $isOnlyB2C,
         ]);
 
         return $Engine->fetch(dirname(__FILE__) . '/CustomerData.html');
@@ -201,8 +203,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Address = $this->getInvoiceAddress();
 
         try {
-            if ($Address &&
-                $Address->getId() !== $this->getOrder()->getInvoiceAddress()->getId()) {
+            if (
+                $Address &&
+                $Address->getId() !== $this->getOrder()->getInvoiceAddress()->getId()
+            ) {
                 $this->getOrder()->setInvoiceAddress($Address);
                 $this->getOrder()->save();
             }
@@ -224,10 +228,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public static function validateAddress(QUI\Users\Address $Address)
     {
         $firstName = $Address->getAttribute('firstname');
-        $lastName  = $Address->getAttribute('lastname');
+        $lastName = $Address->getAttribute('lastname');
         $street_no = $Address->getAttribute('street_no');
 //        $zip       = $Address->getAttribute('zip');
-        $city    = $Address->getAttribute('city');
+        $city = $Address->getAttribute('city');
         $country = $Address->getAttribute('country');
 
         /**
@@ -302,13 +306,14 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     protected function isAddressEmpty(QUI\Users\Address $Address)
     {
         $firstName = $Address->getAttribute('firstname');
-        $lastName  = $Address->getAttribute('lastname');
+        $lastName = $Address->getAttribute('lastname');
         $street_no = $Address->getAttribute('street_no');
-        $zip       = $Address->getAttribute('zip');
-        $city      = $Address->getAttribute('city');
-        $country   = $Address->getAttribute('country');
+        $zip = $Address->getAttribute('zip');
+        $city = $Address->getAttribute('city');
+        $country = $Address->getAttribute('country');
 
-        if (empty($firstName)
+        if (
+            empty($firstName)
             && empty($lastName)
             && empty($street_no)
             && empty($zip)
@@ -461,7 +466,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     protected function getAddressById($addressId)
     {
-        $User    = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Address = null;
 
         try {
@@ -494,9 +499,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     protected function getInvoiceAddress()
     {
-        $Order    = $this->getOrder();
+        $Order = $this->getOrder();
         $Customer = $Order->getCustomer();
-        $User     = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
 
         try {
             $Address = $Order->getInvoiceAddress();

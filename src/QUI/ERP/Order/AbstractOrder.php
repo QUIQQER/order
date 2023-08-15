@@ -259,8 +259,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             }
         }
 
-        $this->id    = (int)$data['id'];
-        $this->hash  = $data['hash'];
+        $this->id = (int)$data['id'];
+        $this->hash = $data['hash'];
         $this->cDate = $data['c_date'];
         $this->cUser = (int)$data['c_user'];
 
@@ -284,10 +284,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         $this->invoiceId = $data['invoice_id'];
 
-        $this->idPrefix        = $data['id_prefix'];
+        $this->idPrefix = $data['id_prefix'];
         $this->addressDelivery = json_decode($data['addressDelivery'], true);
-        $this->addressInvoice  = json_decode($data['addressInvoice'], true);
-        $this->data            = json_decode($data['data'], true);
+        $this->addressInvoice = json_decode($data['addressInvoice'], true);
+        $this->data = json_decode($data['data'], true);
 
         if (isset($data['status'])) {
             $this->status = $data['status'];
@@ -330,7 +330,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 $this->Customer->setAddress($this->getInvoiceAddress());
             } elseif (isset($customerData['quiqqer.erp.address'])) {
                 try {
-                    $User    = QUI::getUsers()->get($this->Customer->getId());
+                    $User = QUI::getUsers()->get($this->Customer->getId());
                     $Address = $User->getAddress($customerData['quiqqer.erp.address']);
                     $this->Customer->setAddress($Address);
                 } catch (QUI\Exception $Exception) {
@@ -390,7 +390,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         // payment
-        $this->paymentId  = $data['payment_id'];
+        $this->paymentId = $data['payment_id'];
         $this->successful = (int)$data['successful'];
 
         if ($data['paid_data'] === null) {
@@ -398,9 +398,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         $this->setAttributes([
-            'paid_status'          => (int)$data['paid_status'],
-            'paid_data'            => json_decode($data['paid_data'], true),
-            'paid_date'            => $data['paid_date'],
+            'paid_status' => (int)$data['paid_status'],
+            'paid_data' => json_decode($data['paid_data'], true),
+            'paid_date' => $data['paid_date'],
             'temporary_invoice_id' => $data['temporary_invoice_id'],
         ]);
 
@@ -635,13 +635,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function toArray(): array
     {
-        $status         = '';
+        $status = '';
         $shippingStatus = false;
-        $paymentId      = '';
-        $paidStatus     = [];
+        $paymentId = '';
+        $paidStatus = [];
 
-        $articles         = $this->getArticles()->toArray();
-        $Payment          = $this->getPayment();
+        $articles = $this->getArticles()->toArray();
+        $Payment = $this->getPayment();
         $ProcessingStatus = $this->getProcessingStatus();
 
         if ($Payment) {
@@ -669,30 +669,30 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         return [
-            'id'          => $this->id,
-            'prefixedId'  => $this->getPrefixedId(),
-            'invoiceId'   => $this->invoiceId,
-            'hash'        => $this->hash,
-            'cDate'       => $this->cDate,
-            'cUser'       => $this->cUser,
-            'cUsername'   => $this->getCreateUser()->getName(),
-            'data'        => $this->data,
-            'customerId'  => $this->customerId,
-            'customer'    => $this->getCustomer()->getAttributes(),
-            'comments'    => $this->getComments()->toArray(),
+            'id' => $this->id,
+            'prefixedId' => $this->getPrefixedId(),
+            'invoiceId' => $this->invoiceId,
+            'hash' => $this->hash,
+            'cDate' => $this->cDate,
+            'cUser' => $this->cUser,
+            'cUsername' => $this->getCreateUser()->getName(),
+            'data' => $this->data,
+            'customerId' => $this->customerId,
+            'customer' => $this->getCustomer()->getAttributes(),
+            'comments' => $this->getComments()->toArray(),
             'statusMails' => $this->getStatusMails()->toArray(),
-            'currency'    => $this->getCurrency()->toArray(),
+            'currency' => $this->getCurrency()->toArray(),
 
-            'articles'             => $articles,
-            'hasDeliveryAddress'   => $this->hasDeliveryAddress(),
-            'addressDelivery'      => $this->getDeliveryAddress()->getAttributes(),
-            'addressInvoice'       => $this->getInvoiceAddress()->getAttributes(),
-            'paymentId'            => $paymentId,
-            'status'               => $status,
-            'paidStatus'           => $paidStatus,
-            'shippingStatus'       => $shippingStatus,
-            'shipping'             => $shipping,
-            'shippingTracking'     => $this->getDataEntry('shippingTracking'),
+            'articles' => $articles,
+            'hasDeliveryAddress' => $this->hasDeliveryAddress(),
+            'addressDelivery' => $this->getDeliveryAddress()->getAttributes(),
+            'addressInvoice' => $this->getInvoiceAddress()->getAttributes(),
+            'paymentId' => $paymentId,
+            'status' => $status,
+            'paidStatus' => $paidStatus,
+            'shippingStatus' => $shippingStatus,
+            'shipping' => $shipping,
+            'shippingTracking' => $this->getDataEntry('shippingTracking'),
             'shippingConfirmation' => $this->getDataEntry('shippingConfirmation')
         ];
     }
@@ -779,7 +779,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 return false;
             }
 
-            $isApproved   = $this->getPayment()->getPaymentType()->isApproved($this->getHash());
+            $isApproved = $this->getPayment()->getPaymentType()->isApproved($this->getHash());
             $isSuccessful = $this->isSuccessful();
 
             return $isApproved && $isSuccessful;
@@ -933,7 +933,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         if ($this->customerId) {
             try {
-                $User     = QUI::getUsers()->get($this->customerId);
+                $User = QUI::getUsers()->get($this->customerId);
                 $Customer = QUI\ERP\User::convertUserToErpUser($User);
 
                 $this->Customer = $Customer;
@@ -1044,9 +1044,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function setInvoiceAddress($address)
     {
-        if ($address instanceof QUI\ERP\Address ||
-            $address instanceof QUI\Users\Address) {
-            $this->addressInvoice       = $address->getAttributes();
+        if (
+            $address instanceof QUI\ERP\Address ||
+            $address instanceof QUI\Users\Address
+        ) {
+            $this->addressInvoice = $address->getAttributes();
             $this->addressInvoice['id'] = $address->getId();
 
             return;
@@ -1170,9 +1172,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                             continue;
                         }
 
-                        if ($missingAttribute === 'country' ||
+                        if (
+                            $missingAttribute === 'country' ||
                             $missingAttribute === 'lastname' ||
-                            $missingAttribute === 'firstname') {
+                            $missingAttribute === 'firstname'
+                        ) {
                             if (!empty($address[$missingAttribute])) {
                                 $User[$missingAttribute] = $address[$missingAttribute];
                                 continue;
@@ -1187,21 +1191,21 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 }
             }
 
-            $this->Customer   = new QUI\ERP\User($User);
+            $this->Customer = new QUI\ERP\User($User);
             $this->customerId = $this->Customer->getId();
 
             return;
         }
 
         if ($User instanceof QUI\ERP\User) {
-            $this->Customer   = $User;
+            $this->Customer = $User;
             $this->customerId = $User->getId();
 
             return;
         }
 
         if ($User instanceof QUI\Interfaces\Users\User) {
-            $this->Customer   = QUI\ERP\User::convertUserToErpUser($User);
+            $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
             $this->customerId = $this->Customer->getId();
 
             if (empty($this->addressInvoice)) {
@@ -1215,7 +1219,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function removeCustomer()
     {
-        $this->Customer   = null;
+        $this->Customer = null;
         $this->customerId = 0;
     }
 
@@ -1275,13 +1279,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return null;
         }
 
-        $Currency     = $this->getCurrency();
-        $Payments     = Payments::getInstance();
+        $Currency = $this->getCurrency();
+        $Payments = Payments::getInstance();
         $calculations = $this->Articles->getCalculations();
 
         try {
-            if (round($calculations['sum'], $Currency->getPrecision()) >= 0
-                && round($calculations['sum'], $Currency->getPrecision()) <= 0) {
+            if (
+                round($calculations['sum'], $Currency->getPrecision()) >= 0
+                && round($calculations['sum'], $Currency->getPrecision()) <= 0
+            ) {
                 return $Payments->getPayment(
                     QUI\ERP\Accounting\Payments\Methods\Free\Payment::ID
                 );
@@ -1311,8 +1317,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         return [
             'paidData' => $this->getAttribute('paid_data'),
             'paidDate' => $this->getAttribute('paid_date'),
-            'paid'     => $this->getAttribute('paid'),
-            'toPay'    => $this->getAttribute('toPay')
+            'paid' => $this->getAttribute('paid'),
+            'toPay' => $this->getAttribute('toPay')
         ];
     }
 
@@ -1345,13 +1351,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 $Exception->getMessage(),
                 $Exception->getCode(),
                 [
-                    'order'   => $this->getId(),
+                    'order' => $this->getId(),
                     'payment' => $paymentId
                 ]
             );
         }
 
-        $this->paymentId     = $Payment->getId();
+        $this->paymentId = $Payment->getId();
         $this->paymentMethod = $Payment->getType();
     }
 
@@ -1360,7 +1366,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function clearPayment()
     {
-        $this->paymentId     = null;
+        $this->paymentId = null;
         $this->paymentMethod = null;
     }
 
@@ -1414,7 +1420,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return;
         }
 
-        if ($this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_PAID ||
+        if (
+            $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_PAID ||
             $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_CANCELED
         ) {
             $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
@@ -1425,10 +1432,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         QUI\ERP\Debug::getInstance()->log('Order:: add transaction start');
 
-        $User     = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $paidData = $this->getAttribute('paid_data');
-        $amount   = $Transaction->getAmount();
-        $date     = $Transaction->getDate();
+        $amount = $Transaction->getAmount();
+        $date = $Transaction->getDate();
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderAddTransactionBegin',
@@ -1494,10 +1501,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         $this->setAttributes([
             'currency_data' => json_encode($listCalculations['currencyData']),
-            'nettosum'      => $listCalculations['nettoSum'],
-            'subsum'        => $listCalculations['subSum'],
-            'sum'           => $listCalculations['sum'],
-            'vat_array'     => json_encode($listCalculations['vatArray'])
+            'nettosum' => $listCalculations['nettoSum'],
+            'subsum' => $listCalculations['subSum'],
+            'sum' => $listCalculations['sum'],
+            'vat_array' => json_encode($listCalculations['vatArray'])
         ]);
 
         $this->addHistory(
@@ -1506,8 +1513,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                 'history.message.addTransaction',
                 [
                     'username' => $User->getName(),
-                    'uid'      => $User->getId(),
-                    'txid'     => $Transaction->getTxId()
+                    'uid' => $User->getId(),
+                    'txid' => $Transaction->getTxId()
                 ]
             )
         );
@@ -1644,7 +1651,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             );
         }
 
-        if (!method_exists($Shipping, 'setOrder')
+        if (
+            !method_exists($Shipping, 'setOrder')
             || !method_exists($Shipping, 'isValid')
             || !method_exists($Shipping, 'canUsedInOrder')
             || !method_exists($Shipping, 'canUsedBy')
@@ -1655,9 +1663,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         // validate shipping
         $Shipping->setOrder($this);
 
-        if (!$Shipping->isValid()
+        if (
+            !$Shipping->isValid()
             || !$Shipping->canUsedInOrder($this)
-            || !$Shipping->canUsedBy($this->getCustomer(), $this)) {
+            || !$Shipping->canUsedBy($this->getCustomer(), $this)
+        ) {
             $this->shippingId = false;
 
             throw new QUI\Exception(
@@ -1766,7 +1776,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getArticleType(): int
     {
-        $digital  = false;
+        $digital = false;
         $physical = false;
 
         foreach ($this->Articles->getArticles() as $Article) {
@@ -1983,7 +1993,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         } else {
             try {
                 $Handler = ProcessingHandler::getInstance();
-                $Status  = $Handler->getProcessingStatus($status);
+                $Status = $Handler->getProcessingStatus($status);
             } catch (QUI\ERP\Order\ProcessingStatus\Exception $Exception) {
                 QUI\System\Log::addWarning($Exception->getMessage());
 
@@ -2062,7 +2072,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             }
         }
 
-        $OldStatus            = $this->ShippingStatus;
+        $OldStatus = $this->ShippingStatus;
         $this->ShippingStatus = $Status;
 
         if ($OldStatus !== $this->ShippingStatus) {
@@ -2071,7 +2081,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
                     'quiqqer/order',
                     'message.change.order.shipping.status',
                     [
-                        'status'   => $Status->getTitle(),
+                        'status' => $Status->getTitle(),
                         'statusId' => $Status->getId()
                     ]
                 )

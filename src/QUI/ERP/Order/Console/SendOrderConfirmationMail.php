@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains \QUI\ERP\Order\Console\SendOrderConfirmationMail
  *
@@ -38,11 +39,13 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
-            $this->writeLn(QUI::getLocale()->get(
-                'quiqqer/order',
-                'console.SendOrderConfirmationMail.message.noOrderFound',
-                ['orderId' => $this->getArgument('orderId')]
-            ));
+            $this->writeLn(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'console.SendOrderConfirmationMail.message.noOrderFound',
+                    ['orderId' => $this->getArgument('orderId')]
+                )
+            );
             $this->writeLn();
 
             exit(1);
@@ -58,18 +61,22 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
-            $this->writeLn(QUI::getLocale()->get(
-                'quiqqer/order',
-                'console.SendOrderConfirmationMail.message.cantSendEmail'
-            ));
+            $this->writeLn(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'console.SendOrderConfirmationMail.message.cantSendEmail'
+                )
+            );
 
             exit(1);
         }
 
-        $this->writeLn(QUI::getLocale()->get(
-            'quiqqer/order',
-            'console.SendOrderConfirmationMail.message.success'
-        ));
+        $this->writeLn(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'console.SendOrderConfirmationMail.message.success'
+            )
+        );
         $this->writeLn();
 
         exit(0);

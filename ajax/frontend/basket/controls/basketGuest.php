@@ -27,7 +27,7 @@ QUI::$Ajax->registerFunction(
         }
 
         $products = \json_decode($products, true);
-        $Basket   = new QUI\ERP\Order\Basket\BasketGuest();
+        $Basket = new QUI\ERP\Order\Basket\BasketGuest();
         $Basket->import($products);
 
         $Control = new QUI\ERP\Order\Controls\Basket\Basket([

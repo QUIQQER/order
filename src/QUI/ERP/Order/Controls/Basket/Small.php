@@ -32,7 +32,8 @@ class Small extends QUI\Controls\Control
      */
     public function setBasket($Basket)
     {
-        if ($Basket instanceof QUI\ERP\Order\Basket\Basket ||
+        if (
+            $Basket instanceof QUI\ERP\Order\Basket\Basket ||
             $Basket instanceof QUI\ERP\Order\Basket\BasketGuest ||
             $Basket instanceof QUI\ERP\Order\Basket\BasketOrder
         ) {
@@ -57,7 +58,7 @@ class Small extends QUI\Controls\Control
         $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
 
         $ProductView = $Products->getView();
-        $Project     = $this->getProject();
+        $Project = $this->getProject();
 
         try {
             $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
@@ -72,12 +73,12 @@ class Small extends QUI\Controls\Control
         }
 
         $Engine->assign([
-            'data'            => $ProductView->toArray(),
-            'Basket'          => $this->Basket,
-            'Products'        => $ProductView,
-            'products'        => $ProductView->getProducts(),
-            'OrderProcess'    => $OrderProcessSite,
-            'checkoutUrl'     => $OrderProcessSite->getUrlRewritten(),
+            'data' => $ProductView->toArray(),
+            'Basket' => $this->Basket,
+            'Products' => $ProductView,
+            'products' => $ProductView->getProducts(),
+            'OrderProcess' => $OrderProcessSite,
+            'checkoutUrl' => $OrderProcessSite->getUrlRewritten(),
             'shoppingCartUrl' => $ShoppingCart->getUrlRewritten()
         ]);
 

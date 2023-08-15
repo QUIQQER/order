@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
         $Order = QUI\ERP\Order\Handler::getInstance()->get((int)$orderId);
-        $data  = json_decode($data, true);
+        $data = json_decode($data, true);
 
         // customer
         $Customer = null;
@@ -44,15 +44,11 @@ QUI::$Ajax->registerFunction(
         }
 
         if (!$Customer && isset($data['customer'])) {
-            if (isset($data['customerId'])
-                && !isset($data['customer']['id'])
-            ) {
+            if (isset($data['customerId']) && !isset($data['customer']['id'])) {
                 $data['customer']['id'] = (int)$data['customerId'];
             }
 
-            if (isset($data['addressInvoice']['country'])
-                && !isset($data['customer']['country'])
-            ) {
+            if (isset($data['addressInvoice']['country']) && !isset($data['customer']['country'])) {
                 $data['customer']['country'] = $data['addressInvoice']['country'];
             }
 
@@ -60,17 +56,13 @@ QUI::$Ajax->registerFunction(
                 $data['customer']['username'] = '';
             }
 
-            if (!isset($data['customer']['firstname'])
-                && isset($data['addressInvoice']['firstname'])
-            ) {
+            if (!isset($data['customer']['firstname']) && isset($data['addressInvoice']['firstname'])) {
                 $data['customer']['firstname'] = $data['addressInvoice']['firstname'];
             } elseif (!isset($data['customer']['firstname'])) {
                 $data['customer']['firstname'] = '';
             }
 
-            if (!isset($data['customer']['lastname'])
-                && isset($data['addressInvoice']['lastname'])
-            ) {
+            if (!isset($data['customer']['lastname']) && isset($data['addressInvoice']['lastname'])) {
                 $data['customer']['lastname'] = $data['addressInvoice']['lastname'];
             } elseif (!isset($data['customer']['lastname'])) {
                 $data['customer']['lastname'] = '';
@@ -202,7 +194,7 @@ QUI::$Ajax->registerFunction(
             /* @var $Articles \QUI\ERP\Accounting\ArticleList */
             /* @var $FactorList FactorList */
             $Articles = $Order->getArticles();
-            $factors  = [];
+            $factors = [];
 
             foreach ($data['priceFactors'] as $priceFactor) {
                 $factors[] = new Factor($priceFactor);

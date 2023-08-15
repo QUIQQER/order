@@ -431,8 +431,10 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         $PaymentType = $this->Order->getPayment()->getPaymentType();
 
-        if (class_exists('QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment')
-            && get_class($PaymentType) === QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment::class) {
+        if (
+            class_exists('QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment')
+            && get_class($PaymentType) === QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment::class
+        ) {
             return '';
         }
 

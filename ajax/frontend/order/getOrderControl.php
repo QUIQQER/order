@@ -19,10 +19,10 @@ QUI::$Ajax->registerFunction(
 
         $Output = new QUI\Output();
         $result = $OrderProcess->create();
-        $css    = QUI\Control\Manager::getCSS();
+        $css = QUI\Control\Manager::getCSS();
 
         return [
-            'html' => $Output->parse($css.$result),
+            'html' => $Output->parse($css . $result),
             'data' => $OrderProcess->getOrder()->getView()->toArray()
         ];
     },

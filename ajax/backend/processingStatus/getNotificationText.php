@@ -4,8 +4,8 @@
  * This file contains package_quiqqer_order_ajax_backend_processingStatus_get
  */
 
-use QUI\ERP\Order\ProcessingStatus\Handler;
 use QUI\ERP\Order\Handler as Orders;
+use QUI\ERP\Order\ProcessingStatus\Handler;
 
 /**
  * Get status change notification text for a specific order

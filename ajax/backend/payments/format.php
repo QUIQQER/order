@@ -13,18 +13,18 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_payments_format',
     function ($payments) {
         $payments = \json_decode($payments, true);
-        $result   = [];
+        $result = [];
 
-        $Locale   = QUI::getLocale();
+        $Locale = QUI::getLocale();
         $Currency = QUI\ERP\Defaults::getCurrency();
         $Payments = QUI\ERP\Accounting\Payments\Payments::getInstance();
 
         foreach ($payments as $payment) {
             $paymentTitle = '';
-            $txid         = '';
+            $txid = '';
 
             try {
-                $Payment      = $Payments->getPaymentType($payment['payment']);
+                $Payment = $Payments->getPaymentType($payment['payment']);
                 $paymentTitle = $Payment->getTitle();
             } catch (QUI\Exception $Exception) {
             }
@@ -34,10 +34,10 @@ QUI::$Ajax->registerFunction(
             }
 
             $result[] = [
-                'date'    => $Locale->formatDate($payment['date']),
-                'amount'  => $Currency->format($payment['amount']),
+                'date' => $Locale->formatDate($payment['date']),
+                'amount' => $Currency->format($payment['amount']),
                 'payment' => $paymentTitle,
-                'txid'    => $txid
+                'txid' => $txid
             ];
         }
 

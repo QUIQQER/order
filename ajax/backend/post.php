@@ -17,7 +17,7 @@ QUI::$Ajax->registerFunction(
     function ($orderId) {
         QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOn();
 
-        $Order   = QUI\ERP\Order\Handler::getInstance()->get($orderId);
+        $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
         $Invoice = $Order->createInvoice();
 
         QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOff();

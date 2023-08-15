@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
         }
 
         $quantity = (int)$quantity;
-        $pos      = (int)$pos - 1;
+        $pos = (int)$pos - 1;
 
         $Basket = new BasketOrder($orderHash);
         $Products = $Basket->getProducts();
