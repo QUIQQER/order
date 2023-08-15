@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\FrontendUsers\Controls;
 
 use QUI;
-use QUI\ERP\Order\AbstractOrder;
 
 /**
  * Class UserOrders
@@ -24,15 +23,15 @@ class UserOpenedOrders extends UserOrders
     public function getBody()
     {
         $Engine = QUI::getTemplateManager()->getEngine();
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Orders = QUI\ERP\Order\Handler::getInstance();
 
         $allOrders = $Orders->getOrdersByUser($User, [
             'order' => 'c_date DESC'
         ]);
 
-        $limit        = 5;
-        $sheetsMax    = 1;
+        $limit = 5;
+        $sheetsMax = 1;
         $sheetCurrent = 1;
 
         $orders = [];
@@ -61,7 +60,7 @@ class UserOpenedOrders extends UserOrders
 
             $View->setAttribute(
                 'downloadLink',
-                URL_OPT_DIR.'quiqqer/order/bin/frontend/order.pdf.php?order='.$View->getHash()
+                URL_OPT_DIR . 'quiqqer/order/bin/frontend/order.pdf.php?order=' . $View->getHash()
             );
 
             $orders[] = $View;
@@ -86,17 +85,17 @@ class UserOpenedOrders extends UserOrders
         }
 
         $Engine->assign([
-            'orders'  => $orders,
-            'this'    => $this,
+            'orders' => $orders,
+            'this' => $this,
             'Project' => $this->getProject(),
-            'Site'    => $this->getSite(),
+            'Site' => $this->getSite(),
 
-            'sheetsMax'    => $sheetsMax,
+            'sheetsMax' => $sheetsMax,
             'sheetCurrent' => $sheetCurrent,
-            'sheetLimit'   => $limit,
-            'sheetCount'   => $count
+            'sheetLimit' => $limit,
+            'sheetCount' => $count
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__).'/UserOrders.html');
+        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.html');
     }
 }

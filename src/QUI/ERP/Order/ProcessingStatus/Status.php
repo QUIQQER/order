@@ -48,14 +48,14 @@ class Status
             ]);
         }
 
-        $this->id    = (int)$id;
+        $this->id = (int)$id;
         $this->color = $list[$id];
 
         // notification
         try {
             $Package = QUI::getPackage('quiqqer/order');
-            $Config  = $Package->getConfig();
-            $result  = $Config->getSection('processing_status_notification');
+            $Config = $Package->getConfig();
+            $result = $Config->getSection('processing_status_notification');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
@@ -89,7 +89,7 @@ class Status
             $Locale = QUI::getLocale();
         }
 
-        return $Locale->get('quiqqer/order', 'processing.status.'.$this->id);
+        return $Locale->get('quiqqer/order', 'processing.status.' . $this->id);
     }
 
     /**
@@ -106,19 +106,19 @@ class Status
         }
 
         $Customer = $Order->getCustomer();
-        $message  = $Locale->get('quiqqer/order', 'processing.status.notification.'.$this->id, [
+        $message = $Locale->get('quiqqer/order', 'processing.status.notification.' . $this->id, [
             'customerName' => $Customer->getName(),
-            'orderNo'      => $Order->getPrefixedId(),
-            'orderDate'    => $Locale->formatDate($Order->getCreateDate()),
-            'orderStatus'  => $this->getTitle($Locale)
+            'orderNo' => $Order->getPrefixedId(),
+            'orderDate' => $Locale->formatDate($Order->getCreateDate()),
+            'orderStatus' => $this->getTitle($Locale)
         ]);
 
         if (QUI::getLocale()->isLocaleString($message)) {
             $message = $Locale->get('quiqqer/order', 'processing.status.notification.template', [
                 'customerName' => $Customer->getName(),
-                'orderNo'      => $Order->getPrefixedId(),
-                'orderDate'    => $Locale->formatDate($Order->getCreateDate()),
-                'orderStatus'  => $this->getTitle($Locale)
+                'orderNo' => $Order->getPrefixedId(),
+                'orderDate' => $Locale->formatDate($Order->getCreateDate()),
+                'orderStatus' => $this->getTitle($Locale)
             ]);
         }
 
@@ -158,32 +158,32 @@ class Status
         $title = $this->getTitle($Locale);
 
         if ($Locale === null) {
-            $statusId         = $this->getId();
-            $title            = [];
+            $statusId = $this->getId();
+            $title = [];
             $statusChangeText = [];
 
-            $Locale    = QUI::getLocale();
+            $Locale = QUI::getLocale();
             $languages = QUI::availableLanguages();
 
             foreach ($languages as $language) {
                 $title[$language] = $Locale->getByLang(
                     $language,
                     'quiqqer/order',
-                    'processing.status.'.$statusId
+                    'processing.status.' . $statusId
                 );
 
                 $statusChangeText[$language] = $Locale->getByLang(
                     $language,
                     'quiqqer/order',
-                    'processing.status.notification.'.$statusId
+                    'processing.status.notification.' . $statusId
                 );
             }
         }
 
         return [
-            'id'           => $this->getId(),
-            'title'        => $title,
-            'color'        => $this->getColor(),
+            'id' => $this->getId(),
+            'title' => $title,
+            'color' => $this->getColor(),
             'notification' => $this->isAutoNotification()
         ];
     }

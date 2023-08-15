@@ -30,7 +30,7 @@ class Factory extends QUI\Utils\Singleton
     public function createProcessingStatus($id, $color, array $title)
     {
         $list = Handler::getInstance()->getList();
-        $id   = (int)$id;
+        $id = (int)$id;
         $data = [];
 
         if (isset($list[$id])) {
@@ -42,7 +42,7 @@ class Factory extends QUI\Utils\Singleton
 
         // config
         $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
+        $Config = $Package->getConfig();
 
         $Config->setValue('processing_status', $id, $color);
         $Config->save();
@@ -59,13 +59,13 @@ class Factory extends QUI\Utils\Singleton
         }
 
         // ProcessingSatus title
-        $data['package']  = 'quiqqer/order';
+        $data['package'] = 'quiqqer/order';
         $data['datatype'] = 'php,js';
-        $data['html']     = 1;
+        $data['html'] = 1;
 
         QUI\Translator::addUserVar(
             'quiqqer/order',
-            'processing.status.'.$id,
+            'processing.status.' . $id,
             $data
         );
 
