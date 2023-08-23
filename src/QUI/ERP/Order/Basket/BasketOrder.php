@@ -121,12 +121,12 @@ class BasketOrder
         $this->Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($this->hash);
         $this->Order->refresh();
 
-        $data         = $this->Order->getArticles()->toArray();
+        $data = $this->Order->getArticles()->toArray();
         $priceFactors = $this->Order->getArticles()->getPriceFactors()->toArray();
 
         $articles = $data['articles'];
 
-        $this->List            = new ProductList();
+        $this->List = new ProductList();
         $this->List->duplicate = true;
 
         $this->List->setOrder($this->Order);
@@ -192,8 +192,8 @@ class BasketOrder
     public function addProduct(Product $Product)
     {
         $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
-        $merge   = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+        $Config = $Package->getConfig();
+        $merge = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if (!$merge) {
             $this->List->addProduct($Product);
@@ -206,7 +206,7 @@ class BasketOrder
         }
 
 
-        $Products     = $this->List->getProducts();
+        $Products = $this->List->getProducts();
         $foundProduct = false;
 
         foreach ($Products as $P) {
@@ -215,8 +215,8 @@ class BasketOrder
 
             if ($p1 == $p2) {
                 $foundProduct = true;
-                $quantity     = $P->getQuantity();
-                $quantity     = $quantity + $Product->getQuantity();
+                $quantity = $P->getQuantity();
+                $quantity = $quantity + $Product->getQuantity();
 
                 $P->setQuantity($quantity);
                 break;
@@ -270,8 +270,8 @@ class BasketOrder
         }
 
         $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
-        $merge   = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
+        $Config = $Package->getConfig();
+        $merge = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if ($merge) {
             $products = OrderProductUtils::getMergedProductList($products);
@@ -341,7 +341,7 @@ class BasketOrder
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = [];
+        $result = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
@@ -361,9 +361,9 @@ class BasketOrder
             }
 
             $attributes = [
-                'id'       => $Product->getId(),
+                'id' => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
-                'fields'   => $fields
+                'fields' => $fields
             ];
 
             $result[] = $attributes;
@@ -385,9 +385,9 @@ class BasketOrder
 
 
         return [
-            'id'           => $this->getId(),
-            'orderHash'    => $this->getOrder()->getHash(),
-            'products'     => $result,
+            'id' => $this->getId(),
+            'orderHash' => $this->getOrder()->getHash(),
+            'products' => $result,
             'priceFactors' => $Products->getPriceFactors()->toArray(),
             'calculations' => $calculations
         ];
@@ -456,13 +456,16 @@ class BasketOrder
         }
 
 
+        $Articles = $this->Order->getArticles();
+        $OrderCurrency = $this->Order->getCurrency();
+
         $PriceFactors = $this->List->getPriceFactors();
+        $PriceFactors->setCurrency($OrderCurrency);
 
-        $this->Order->getArticles()->importPriceFactors(
-            $PriceFactors->toErpPriceFactorList()
-        );
+        $Articles->setCurrency($OrderCurrency);
+        $Articles->importPriceFactors($PriceFactors->toErpPriceFactorList());
+        $Articles->recalculate();
 
-        $this->Order->getArticles()->recalculate();
         $this->Order->save();
     }
 
