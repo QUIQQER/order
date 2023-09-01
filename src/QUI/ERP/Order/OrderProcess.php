@@ -344,7 +344,8 @@ class OrderProcess extends QUI\Control
         // set all to successful
         $this->cleanup();
 
-        $this->Events->fireEvent('send', [$this]);
+        $this->Events->fireEvent('send', [$this, $this->Order]);
+        QUI::getEvents()->fireEvent('orderSend', [$this]);
     }
 
     /**
