@@ -13,6 +13,8 @@ require.config({
     }
 });
 
+/* jshint ignore:start */
+
 define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
     'qui/QUI',
@@ -806,7 +808,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.$beginResultRendering();
 
-            const Form = this.getElm().getElement('form');
             const data = QUIFormUtils.getFormData(this.$Form);
 
             return this.saveCurrentStep().then(function() {
@@ -1732,3 +1733,5 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         }
     });
 });
+
+/* jshint ignore:end */
