@@ -13,8 +13,16 @@
  */
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_send',
-    function ($current, $orderHash) {
+    function ($current, $orderHash, $formData) {
         try {
+            $formData = json_decode($formData, true);
+
+            if (is_array($formData)) {
+                $_REQUEST = array_merge($_REQUEST, $formData);
+                $_POST = array_merge($_POST, $formData);
+                $_GET = array_merge($_GET, $formData);
+            }
+
             $_REQUEST['current'] = $current;
             $_REQUEST['payableToOrder'] = true;
 
@@ -44,5 +52,5 @@ QUI::$Ajax->registerFunction(
             );
         }
     },
-    ['current', 'orderHash']
+    ['current', 'orderHash', 'formData']
 );

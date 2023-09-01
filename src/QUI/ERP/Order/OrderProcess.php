@@ -271,6 +271,7 @@ class OrderProcess extends QUI\Control
     protected function send()
     {
         $this->Events->fireEvent('sendBegin', [$this]);
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessSendBegin', [$this]);
 
         $steps = $this->getSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
@@ -327,6 +328,8 @@ class OrderProcess extends QUI\Control
             $success[] = $Provider->onOrderSuccess($OrderInProcess);
         }
 
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessSendCreateOrder', [$this]);
+
         // all runs fine
         if ($OrderInProcess instanceof OrderInProcess) {
             $Order = $OrderInProcess->createOrder();
@@ -345,7 +348,7 @@ class OrderProcess extends QUI\Control
         $this->cleanup();
 
         $this->Events->fireEvent('send', [$this, $this->Order]);
-        QUI::getEvents()->fireEvent('orderSend', [$this]);
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessSend', [$this]);
     }
 
     /**

@@ -399,7 +399,7 @@ class Order extends AbstractOrder implements OrderInterface
      */
     public function post()
     {
-        return $this->createInvoice();
+        return $this->createInvoice(QUI::getUsers()->getSystemUser());
     }
 
     /**
@@ -770,7 +770,7 @@ class Order extends AbstractOrder implements OrderInterface
 
             // create invoice?
             if (Settings::getInstance()->createInvoiceOnPaid()) {
-                $this->createInvoice();
+                $this->createInvoice(QUI::getUsers()->getSystemUser());
             }
         }
 
