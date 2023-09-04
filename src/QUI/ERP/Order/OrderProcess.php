@@ -1400,6 +1400,8 @@ class OrderProcess extends QUI\Control
         $Order = $this->getOrder();
         $Basket = $this->Basket;
 
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
+
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
             $Steps->append(
                 new Controls\OrderProcess\Registration([
@@ -1408,6 +1410,8 @@ class OrderProcess extends QUI\Control
                     'priority' => 1
                 ])
             );
+
+            QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
             return $Steps;
         }
@@ -1424,14 +1428,18 @@ class OrderProcess extends QUI\Control
 
             $Steps->append($Finish);
 
+            QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+
             return $Steps;
         }
 
+        /*
         $Registration = new Controls\OrderProcess\Registration([
             'Basket' => $Basket,
             'Order' => $Order,
             'priority' => 1
         ]);
+        */
 
         $Basket = new Controls\OrderProcess\Basket([
             'Basket' => $Basket,
@@ -1474,6 +1482,9 @@ class OrderProcess extends QUI\Control
         }
 
         $this->sortSteps($Steps);
+
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
         return $Steps;
     }
