@@ -38,8 +38,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     const lg = 'quiqqer/order';
 
     let shippingInstalled = false;
-    let salesOrderInstalled = false;
-
+    
     return new Class({
 
         Extends: QUIPanel,
@@ -159,32 +158,32 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     OrderData = Promise.resolve(data);
                 }
 
-                OrderData.then((data) => {
-                    this.setAttribute('customerId', data.customerId);
-                    this.setAttribute('customer', data.customer);
-                    this.setAttribute('data', data.data);
-                    this.setAttribute('hash', data.hash);
-                    this.setAttribute('addressInvoice', data.addressInvoice);
-                    this.setAttribute('addressDelivery', data.addressDelivery);
-                    this.setAttribute('currency', data.currency.code);
-                    this.setAttribute('shipping', data.shipping);
-                    this.setAttribute('shippingTracking', data.shippingTracking);
-                    this.setAttribute('prefixedId', data.prefixedId);
-                    this.setAttribute('statusMails', data.statusMails);
+                OrderData.then((orderData) => {
+                    this.setAttribute('customerId', orderData.customerId);
+                    this.setAttribute('customer', orderData.customer);
+                    this.setAttribute('data', orderData.data);
+                    this.setAttribute('hash', orderData.hash);
+                    this.setAttribute('addressInvoice', orderData.addressInvoice);
+                    this.setAttribute('addressDelivery', orderData.addressDelivery);
+                    this.setAttribute('currency', orderData.currency.code);
+                    this.setAttribute('shipping', orderData.shipping);
+                    this.setAttribute('shippingTracking', orderData.shippingTracking);
+                    this.setAttribute('prefixedId', orderData.prefixedId);
+                    this.setAttribute('statusMails', orderData.statusMails);
 
                     // customer string for the panel title<
                     let customerString = '';
 
-                    if (data.customer.firstname) {
-                        customerString = customerString + ' ' + data.customer.firstname;
+                    if (orderData.customer.firstname) {
+                        customerString = customerString + ' ' + orderData.customer.firstname;
                     }
 
-                    if (data.customer.lastname) {
-                        customerString = customerString + ' ' + data.customer.lastname;
+                    if (orderData.customer.lastname) {
+                        customerString = customerString + ' ' + orderData.customer.lastname;
                     }
 
-                    if (customerString === '' && data.customer.email) {
-                        customerString = customerString + ' ' + data.customer.email;
+                    if (customerString === '' && orderData.customer.email) {
+                        customerString = customerString + ' ' + orderData.customer.email;
                     }
 
                     this.setAttribute(
@@ -194,27 +193,27 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }) + ' :' + customerString
                     );
 
-                    if (data.addressDelivery &&
-                        (typeof data.addressDelivery.length === 'undefined' || data.addressDelivery.length) &&
-                        JSON.stringify(data.addressDelivery) !== JSON.stringify(data.addressInvoice)) {
+                    if (orderData.addressDelivery &&
+                        (typeof orderData.addressDelivery.length === 'undefined' || orderData.addressDelivery.length) &&
+                        JSON.stringify(orderData.addressDelivery) !== JSON.stringify(orderData.addressInvoice)) {
                         this.setAttribute('hasDeliveryAddress', true);
                     }
 
-                    this.setAttribute('cDate', data.cDate);
-                    this.setAttribute('cUser', data.cUser);
-                    this.setAttribute('cUsername', data.cUsername);
+                    this.setAttribute('cDate', orderData.cDate);
+                    this.setAttribute('cUser', orderData.cUser);
+                    this.setAttribute('cUsername', orderData.cUsername);
 
-                    this.setAttribute('paymentId', data.paymentId);
-                    this.setAttribute('paymentMethod', data.paymentMethod);
-                    this.setAttribute('status', data.status);
-                    this.setAttribute('shippingStatus', data.shippingStatus);
-                    this.setAttribute('shippingConfirmation', data.shippingConfirmation);
+                    this.setAttribute('paymentId', orderData.paymentId);
+                    this.setAttribute('paymentMethod', orderData.paymentMethod);
+                    this.setAttribute('status', orderData.status);
+                    this.setAttribute('shippingStatus', orderData.shippingStatus);
+                    this.setAttribute('shippingConfirmation', orderData.shippingConfirmation);
 
-                    this.$initialStatus = parseInt(data.status);
-                    this.$initialShippingStatus = parseInt(data.shippingStatus);
+                    this.$initialStatus = parseInt(orderData.status);
+                    this.$initialShippingStatus = parseInt(orderData.shippingStatus);
 
-                    if (data.articles) {
-                        this.$serializedList = data.articles;
+                    if (orderData.articles) {
+                        this.$serializedList = orderData.articles;
 
                         if (typeof this.$serializedList.articles !== 'undefined') {
                             this.setAttribute('articles', this.$serializedList.articles);
@@ -514,6 +513,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 for (let category in categories) {
+                    if (!categories.hasOwnProperty(category)) {
+                        continue;
+                    }
+
                     cat = categories[category];
                     title = cat.title;
 
@@ -526,7 +529,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             onClick: this.$openXmlCategory
                         }
                     });
-
                 }
             }, {
                 'package': 'quiqqer/order'
@@ -1543,7 +1545,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             const Content = this.getContent(),
                 deliverAddress = Content.getElement('[name="differentDeliveryAddress"]'),
                 PaymentForm = Content.getElement('form[name="payment"]'),
-                ProcessingStatus = Content.getElement('[name="status"]'),
+                StatusNode = Content.getElement('[name="status"]'),
                 ShippingStatus = Content.getElement('[name="shippingStatus"]'),
                 Shipping = Content.getElement('[name="shipping"]'),
                 ShippingTracking = Content.getElement('[name="shippingTracking"]'),
@@ -1567,8 +1569,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }
 
             // processing status
-            if (ProcessingStatus) {
-                this.setAttribute('status', parseInt(ProcessingStatus.value));
+            if (StatusNode) {
+                this.setAttribute('status', parseInt(StatusNode.value));
             }
 
             // shipping stuff
@@ -1671,8 +1673,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 require([
                     'package/quiqqer/erp/bin/backend/controls/articles/product/AddProductWindow',
                     'package/quiqqer/erp/bin/backend/controls/articles/Article'
-                ], function(Win, Article) {
-                    new Win({
+                ], function(AddProductWindow, Article) {
+                    new AddProductWindow({
                         user: self.$AddressInvoice.getValue(),
                         events: {
                             onSubmit: function(Win, article) {
