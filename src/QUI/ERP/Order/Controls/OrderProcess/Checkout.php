@@ -124,9 +124,24 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $comment = trim($comment);
 
+
+        // invoice address
+        $InvoiceAddress = $Order->getInvoiceAddress();
+
+        if (
+            $InvoiceAddress->getName() === ''
+            && $InvoiceAddress->getPhone() === ''
+            && $InvoiceAddress->getAttribute('street_no') === false
+            && $InvoiceAddress->getAttribute('zip') === false
+            && $InvoiceAddress->getAttribute('city') === false
+            && $InvoiceAddress->getAttribute('country') === false
+        ) {
+            $InvoiceAddress = null;
+        }
+
         $Engine->assign([
             'User' => $Order->getCustomer(),
-            'InvoiceAddress' => $Order->getInvoiceAddress(),
+            'InvoiceAddress' => $InvoiceAddress,
             'DeliveryAddress' => $Order->getDeliveryAddress(),
             'Payment' => $Order->getPayment(),
             'Shipping' => $Order->getShipping(),

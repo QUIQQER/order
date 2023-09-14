@@ -1382,6 +1382,11 @@
             <p>You can track the shipping status of your order under [trackingLink]</p>.
             ]]></en>
         </locale>
+
+        <locale name="exception.no.permission.for.this.order">
+            <de><![CDATA[Du hast leider keine Berechtigung für diese Aktion.]]></de>
+            <en><![CDATA[Sorry, you do not have permission for this operation.]]></en>
+        </locale>
     </groups>
 
     <groups name="quiqqer/order" datatype="js">

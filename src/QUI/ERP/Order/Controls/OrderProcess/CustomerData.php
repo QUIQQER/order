@@ -154,6 +154,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $settings = QUI\FrontendUsers\Controls\Address\Address::checkSettingsArray($settings);
         $businessTypeIsChangeable = !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B());
 
+        if ($this->existsAttribute('businessTypeIsChangeable')) {
+            $businessTypeIsChangeable = $this->getAttribute('businessTypeIsChangeable');
+        }
+
         $isB2B = QUI\ERP\Utils\Shop::isB2B();
         $isB2C = QUI\ERP\Utils\Shop::isB2C();
         $isOnlyB2B = QUI\ERP\Utils\Shop::isOnlyB2B();

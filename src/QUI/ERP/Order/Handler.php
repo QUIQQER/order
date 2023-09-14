@@ -7,8 +7,8 @@
 namespace QUI\ERP\Order;
 
 use QUI;
-use QUI\Utils\Singleton;
 use QUI\ERP\Customer\Utils as CustomerUtils;
+use QUI\Utils\Singleton;
 
 /**
  * Class Handler
@@ -18,8 +18,8 @@ use QUI\ERP\Customer\Utils as CustomerUtils;
  */
 class Handler extends Singleton
 {
-    const ERROR_ORDER_NOT_FOUND         = 604; // a specific order wasn't found
-    const ERROR_NO_ORDERS_FOUND         = 605; // Search or last orders don't get results
+    const ERROR_ORDER_NOT_FOUND = 604; // a specific order wasn't found
+    const ERROR_NO_ORDERS_FOUND = 605; // Search or last orders don't get results
     const ERROR_ORDER_ID_ALREADY_EXISTS = 606; // attempt to create a new order with an already existing id
 
     /**
@@ -154,11 +154,11 @@ class Handler extends Singleton
     {
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
-            'from'   => $this->table(),
-            'where'  => [
+            'from' => $this->table(),
+            'where' => [
                 'hash' => $hash
             ],
-            'limit'  => 1
+            'limit' => 1
         ]);
 
         if (isset($result[0])) {
@@ -167,11 +167,11 @@ class Handler extends Singleton
 
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
-            'from'   => $this->tableOrderProcess(),
-            'where'  => [
+            'from' => $this->tableOrderProcess(),
+            'where' => [
                 'hash' => $hash
             ],
-            'limit'  => 1
+            'limit' => 1
         ]);
 
         if (!isset($result[0])) {
@@ -200,13 +200,13 @@ class Handler extends Singleton
     public function getOrderByGlobalProcessId($id)
     {
         $result = QUI::getDataBase()->fetch([
-            'select'   => 'id',
-            'from'     => $this->table(),
+            'select' => 'id',
+            'from' => $this->table(),
             'where_or' => [
-                'hash'              => $id,
+                'hash' => $id,
                 'global_process_id' => $id
             ],
-            'limit'    => 1
+            'limit' => 1
         ]);
 
         if (!isset($result[0])) {
@@ -230,10 +230,10 @@ class Handler extends Singleton
     public function getOrdersByGlobalProcessId($id)
     {
         $dbData = QUI::getDataBase()->fetch([
-            'select'   => 'id',
-            'from'     => $this->table(),
+            'select' => 'id',
+            'from' => $this->table(),
             'where_or' => [
-                'hash'              => $id,
+                'hash' => $id,
                 'global_process_id' => $id
             ]
         ]);
@@ -270,11 +270,11 @@ class Handler extends Singleton
     {
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
-            'from'   => $this->table(),
-            'where'  => [
+            'from' => $this->table(),
+            'where' => [
                 'id' => $id
             ],
-            'limit'  => 1
+            'limit' => 1
         ]);
 
         if (isset($result[0])) {
@@ -283,11 +283,11 @@ class Handler extends Singleton
 
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
-            'from'   => $this->tableOrderProcess(),
-            'where'  => [
+            'from' => $this->tableOrderProcess(),
+            'where' => [
                 'id' => $id
             ],
-            'limit'  => 1
+            'limit' => 1
         ]);
 
         if (!isset($result[0])) {
@@ -319,7 +319,7 @@ class Handler extends Singleton
         }
 
         $result = QUI::getDataBase()->fetch([
-            'from'  => $this->table(),
+            'from' => $this->table(),
             'where' => [
                 'id' => $orderId
             ],
@@ -346,8 +346,8 @@ class Handler extends Singleton
     {
         $query = [
             'select' => ['id', 'customerId'],
-            'from'   => $this->table(),
-            'where'  => [
+            'from' => $this->table(),
+            'where' => [
                 'customerId' => $User->getId()
             ]
         ];
@@ -404,10 +404,10 @@ class Handler extends Singleton
     public function countOrdersByUser(QUI\Interfaces\Users\User $User)
     {
         $data = QUI::getDataBase()->fetch([
-            'count'  => 'id',
+            'count' => 'id',
             'select' => 'id',
-            'from'   => $this->table(),
-            'where'  => [
+            'from' => $this->table(),
+            'where' => [
                 'customerId' => $User->getId()
             ]
         ]);
@@ -427,7 +427,7 @@ class Handler extends Singleton
      */
     public function sendOrderPaymentSuccessMail(AbstractOrder $Order): void
     {
-        $Customer       = $Order->getCustomer();
+        $Customer = $Order->getCustomer();
         $CustomerLocale = $Customer->getLocale();
 
         $subject = $CustomerLocale->get(
@@ -464,10 +464,10 @@ class Handler extends Singleton
      */
     protected function getLocaleVarsForOrderMail(AbstractOrder $Order): array
     {
-        $Customer        = $Order->getCustomer();
-        $CustomerLocale  = $Customer->getLocale();
+        $Customer = $Order->getCustomer();
+        $CustomerLocale = $Customer->getLocale();
         $CustomerAddress = $Customer->getAddress();
-        $user            = $CustomerAddress->getAttribute('contactPerson');
+        $user = $CustomerAddress->getAttribute('contactPerson');
 
         if (empty($user)) {
             $user = $Customer->getName();
@@ -525,7 +525,7 @@ class Handler extends Singleton
 
         // Customer company
         $customerCompany = $Address->getAttribute('company');
-        $companyOrName   = $customerCompany;
+        $companyOrName = $customerCompany;
 
         if (empty($companyOrName)) {
             $companyOrName = $user;
@@ -535,30 +535,30 @@ class Handler extends Singleton
         $company = '';
 
         try {
-            $Conf    = QUI::getPackage('quiqqer/erp')->getConfig();
+            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
 
         return [
-            'orderId'       => $Order->getPrefixedId(),
-            'hash'          => $Order->getHash(),
-            'date'          => $CustomerLocale->formatDate(\strtotime($Order->getCreateDate())),
+            'orderId' => $Order->getPrefixedId(),
+            'hash' => $Order->getHash(),
+            'date' => $CustomerLocale->formatDate(\strtotime($Order->getCreateDate())),
             'systemCompany' => $company,
 
-            'contactPerson'       => $contactPerson,
+            'contactPerson' => $contactPerson,
             'contactPersonOrName' => $contactPersonOrName,
 
-            'user'          => $user,
-            'name'          => $user,
-            'company'       => $Address->getAttribute('company'),
+            'user' => $user,
+            'name' => $user,
+            'company' => $Address->getAttribute('company'),
             'companyOrName' => $companyOrName,
-            'address'       => $Address->render(),
-            'email'         => $email,
-            'salutation'    => $Address->getAttribute('salutation'),
-            'firstname'     => $Address->getAttribute('firstname'),
-            'lastname'      => $Address->getAttribute('lastname')
+            'address' => $Address->render(),
+            'email' => $email,
+            'salutation' => $Address->getAttribute('salutation'),
+            'firstname' => $Address->getAttribute('firstname'),
+            'lastname' => $Address->getAttribute('lastname')
         ];
     }
 
@@ -571,7 +571,7 @@ class Handler extends Singleton
      *
      * @return string
      */
-    public function tableOrderProcess()
+    public function tableOrderProcess(): string
     {
         return QUI::getDBTableName('orders_process');
     }
@@ -609,11 +609,11 @@ class Handler extends Singleton
     {
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
-            'from'   => $this->tableOrderProcess(),
-            'where'  => [
+            'from' => $this->tableOrderProcess(),
+            'where' => [
                 'hash' => $hash
             ],
-            'limit'  => 1
+            'limit' => 1
         ]);
 
         if (!isset($result[0])) {
@@ -639,7 +639,7 @@ class Handler extends Singleton
         $result = [];
 
         $list = QUI::getDataBase()->fetch([
-            'from'  => $this->tableOrderProcess(),
+            'from' => $this->tableOrderProcess(),
             'where' => [
                 'customerId' => $User->getId()
             ]
@@ -667,10 +667,10 @@ class Handler extends Singleton
     public function countOrdersInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
         $data = QUI::getDataBase()->fetch([
-            'count'  => 'id',
+            'count' => 'id',
             'select' => 'id',
-            'from'   => $this->tableOrderProcess(),
-            'where'  => [
+            'from' => $this->tableOrderProcess(),
+            'where' => [
                 'customerId' => $User->getId()
             ]
         ]);
@@ -695,7 +695,7 @@ class Handler extends Singleton
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User)
     {
         $result = QUI::getDataBase()->fetch([
-            'from'  => $this->tableOrderProcess(),
+            'from' => $this->tableOrderProcess(),
             'where' => [
                 'customerId' => $User->getId(),
                 'successful' => 0
@@ -705,6 +705,17 @@ class Handler extends Singleton
         ]);
 
         if (!isset($result[0])) {
+            try {
+                $result = QUI::getEvents()->fireEvent('orderProcessGetOrder');
+
+                foreach ($result as $Order) {
+                    if ($Order instanceof OrderInProcess) {
+                        return $Order;
+                    }
+                }
+            } catch (\Exception $exception) {
+            }
+
             throw new Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.no.orders.found'),
                 self::ERROR_NO_ORDERS_FOUND
@@ -726,7 +737,7 @@ class Handler extends Singleton
     public function getOrderProcessData($orderId)
     {
         $result = QUI::getDataBase()->fetch([
-            'from'  => $this->tableOrderProcess(),
+            'from' => $this->tableOrderProcess(),
             'where' => [
                 'id' => $orderId
             ],
@@ -794,7 +805,7 @@ class Handler extends Singleton
     public function getBasketById($basketId, $User = null)
     {
         $data = QUI::getDataBase()->fetch([
-            'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
                 'id' => $basketId
             ],
@@ -812,7 +823,7 @@ class Handler extends Singleton
             $User = QUI::getUserBySession();
         } else {
             $basketData = $data[0];
-            $User       = QUI::getUsers()->get($basketData['uid']);
+            $User = QUI::getUsers()->get($basketData['uid']);
         }
 
         $this->checkBasketPermissions($User);
@@ -834,7 +845,7 @@ class Handler extends Singleton
     public function getBasketByHash($hash, $User = null)
     {
         $data = QUI::getDataBase()->fetch([
-            'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
                 'hash' => $hash
             ],
@@ -853,7 +864,7 @@ class Handler extends Singleton
             $User = QUI::getUserBySession();
         } else {
             $basketData = $data[0];
-            $User       = QUI::getUsers()->get($basketData['uid']);
+            $User = QUI::getUsers()->get($basketData['uid']);
         }
 
         $this->checkBasketPermissions($User);
@@ -875,11 +886,11 @@ class Handler extends Singleton
 
         $data = QUI::getDataBase()->fetch([
             'select' => 'id',
-            'from'   => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where'  => [
+            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'where' => [
                 'uid' => $User->getId()
             ],
-            'limit'  => 1
+            'limit' => 1
         ]);
 
 
@@ -915,9 +926,9 @@ class Handler extends Singleton
         $this->checkBasketPermissions($User);
 
         $data = QUI::getDataBase()->fetch([
-            'from'  => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
+            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
-                'id'  => (int)$basketId,
+                'id' => (int)$basketId,
                 'uid' => $User->getId()
             ],
             'limit' => 1

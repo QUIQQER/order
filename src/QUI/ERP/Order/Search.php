@@ -534,6 +534,10 @@ class Search extends Singleton
                 } else {
                     $orderData['customer_name'] = $Customer->getName();
 
+                    if (empty($orderData['customer_name'])) {
+                        $orderData['customer_name'] = $Customer->getAttribute('email');
+                    }
+
                     $Address = $Order->getInvoiceAddress();
 
                     if (empty(trim($orderData['customer_name']))) {

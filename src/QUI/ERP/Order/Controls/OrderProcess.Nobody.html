@@ -8,6 +8,8 @@
     <div class="quiqqer-order-ordering-nobody"
          data-qui="package/quiqqer/order/bin/frontend/controls/orderProcess/Login"
     >
+        {template_event name="quiqqer::order::orderProcess::nobody::begin"}
+
         <div class="quiqqer-order-ordering-nobody-login">
 
             {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.prefix'}}
@@ -45,6 +47,8 @@
             </div>
             {/if}
         </div>
+
+        {template_event name="quiqqer::order::orderProcess::nobody::end"}
     </div>
 
     <div class="quiqqer-order-ordering-buttons"></div>

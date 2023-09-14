@@ -1,5 +1,5 @@
 {if $Template->getAttribute('content-header')}
-<section class="content-header grid-100 mobile-grid-100 grid-parent">
+<section class="content-header">
     <header>
         <h1>{$Site->getAttribute('title')}</h1>
     </header>
@@ -13,19 +13,19 @@
 {/if}
 
 {if $Template->getAttribute('content-body') && $Site->getAttribute('content')}
-<section class="content-body grid-100 mobile-grid-100 grid-parent">
+<section class="content-body">
     {$Site->getAttribute('content')}
 </section>
 {/if}
 
 {if isset($Exception)}
-<div class="message-error grid-100 mobile-grid-100 grid-parent">
+<div class="message-error">
     {$Exception->getMessage()}
 </div>
 {/if}
 
 <div class="content-template">
-    <section class="content-template grid-100 mobile-grid-100 grid-parent">
+    <section class="content-template">
         {template_event name="quiqqer::order::orderShoppingCardBasketBegin" Basket=$Basket Order=false}
 
         {$BasketControl->create()}
@@ -39,7 +39,7 @@
         {/if}
     </section>
 
-    <div class="quiqqer-shoppingCart-buttons grid-100 mobile-grid-100 grid-parent">
+    <div class="quiqqer-shoppingCart-buttons">
         <a href="/" class="btn btn-light quiqqer-shoppingCart-buttons-backToShop">
             {locale group="quiqqer/order" var="control.button.backToShop"}
         </a>

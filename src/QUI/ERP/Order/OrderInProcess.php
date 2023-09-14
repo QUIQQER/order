@@ -537,7 +537,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         }
 
         if (Settings::getInstance()->createInvoiceOnOrder()) {
-            $Order->createInvoice();
+            $Order->createInvoice(QUI::getUsers()->getSystemUser());
 
             return $Order;
         }
@@ -546,7 +546,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             Settings::getInstance()->createInvoiceByPayment()
             && $Order->getPayment()->isSuccessful($Order->getHash())
         ) {
-            $Order->createInvoice();
+            $Order->createInvoice(QUI::getUsers()->getSystemUser());
 
             return $Order;
         }
@@ -555,7 +555,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             Settings::getInstance()->createInvoiceByPayment()
             && $Order->getPayment()->isSuccessful($Order->getHash())
         ) {
-            $Order->createInvoice();
+            $Order->createInvoice(QUI::getUsers()->getSystemUser());
         }
 
         return $Order;

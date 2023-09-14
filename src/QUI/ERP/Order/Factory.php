@@ -8,6 +8,8 @@ namespace QUI\ERP\Order;
 
 use QUI;
 
+use function date;
+
 /**
  * Class Factory
  * Creates Orders
@@ -65,8 +67,8 @@ class Factory extends QUI\Utils\Singleton
             $hash = QUI\Utils\Uuid::get();
         }
 
-        $User   = QUI::getUserBySession();
-        $table  = $Orders->table();
+        $User = QUI::getUserBySession();
+        $table = $Orders->table();
         $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
         if (Settings::getInstance()->get('orderStatus', 'standard')) {
@@ -74,14 +76,14 @@ class Factory extends QUI\Utils\Singleton
         }
 
         $orderData = [
-            'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
-            'c_user'      => $User->getId() ? $User->getId() : 0,
-            'c_date'      => \date('Y-m-d H:i:s'),
-            'hash'        => $hash,
-            'status'      => $status,
-            'customerId'  => 0,
+            'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
+            'c_user' => $User->getId() ? $User->getId() : 0,
+            'c_date' => date('Y-m-d H:i:s'),
+            'hash' => $hash,
+            'status' => $status,
+            'customerId' => 0,
             'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
-            'successful'  => 0
+            'successful' => 0
         ];
 
         if ($id) {
@@ -91,7 +93,7 @@ class Factory extends QUI\Utils\Singleton
         QUI::getDataBase()->insert($table, $orderData);
 
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
-        $Order   = $Orders->get($orderId);
+        $Order = $Orders->get($orderId);
 
         try {
             QUI::getEvents()->fireEvent('onQuiqqerOrderFactoryCreate', [$Order]);
@@ -161,9 +163,9 @@ class Factory extends QUI\Utils\Singleton
             $PermissionUser
         );
 
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
         $Orders = Handler::getInstance();
-        $table  = $Orders->tableOrderProcess();
+        $table = $Orders->tableOrderProcess();
 
         // @todo set default from customer
 
@@ -174,19 +176,17 @@ class Factory extends QUI\Utils\Singleton
         }
 
         QUI::getDataBase()->insert($table, [
-            'id_prefix'   => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
-            'c_user'      => $User->getId(),
-            'c_date'      => \date('Y-m-d H:i:s'),
-            'hash'        => QUI\Utils\Uuid::get(),
-            'customerId'  => $User->getId(),
-            'status'      => $status,
+            'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
+            'c_user' => $User->getId(),
+            'c_date' => date('Y-m-d H:i:s'),
+            'hash' => QUI\Utils\Uuid::get(),
+            'customerId' => $User->getId(),
+            'status' => $status,
             'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
-            'successful'  => 0
+            'successful' => 0
         ]);
 
-        $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
-
-        return $orderId;
+        return QUI::getDataBase()->getPDO()->lastInsertId();
     }
 
     /**

@@ -96,7 +96,7 @@ class Order extends AbstractOrder implements OrderInterface
      * Create an invoice for the order
      *
      * @param null|QUI\Interfaces\Users\User $PermissionUser
-     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
+     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary|void
      *
      * @throws QUI\Exception
      */
@@ -111,6 +111,30 @@ class Order extends AbstractOrder implements OrderInterface
                 'quiqqer/order',
                 'exception.invoice.is.not.installed'
             ]);
+        }
+
+        // check if order has an invoice address
+        // invoice creation is only possible with an address
+        $InvoiceAddress = $this->getInvoiceAddress();
+
+        if (QUI::getPackageManager()->isInstalled('quiqqer/order-guestorder')) {
+            $User = $InvoiceAddress->getUser();
+            $Guest = new QUI\ERP\Order\Guest\GuestOrderUser();
+
+            if ($User->getId() === $Guest->getId()) {
+                return;
+            }
+        }
+
+        if (
+            $InvoiceAddress->getName() === ''
+            && $InvoiceAddress->getPhone() === ''
+            && $InvoiceAddress->getAttribute('street_no') === ''
+            && $InvoiceAddress->getAttribute('zip') === ''
+            && $InvoiceAddress->getAttribute('city') === ''
+            && $InvoiceAddress->getAttribute('country') === ''
+        ) {
+            return;
         }
 
         if ($PermissionUser === null) {
@@ -399,7 +423,7 @@ class Order extends AbstractOrder implements OrderInterface
      */
     public function post()
     {
-        return $this->createInvoice();
+        return $this->createInvoice(QUI::getUsers()->getSystemUser());
     }
 
     /**
@@ -770,7 +794,7 @@ class Order extends AbstractOrder implements OrderInterface
 
             // create invoice?
             if (Settings::getInstance()->createInvoiceOnPaid()) {
-                $this->createInvoice();
+                $this->createInvoice(QUI::getUsers()->getSystemUser());
             }
         }
 

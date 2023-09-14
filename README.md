@@ -9,7 +9,6 @@ Paketname:
 
     quiqqer/order
 
-
 Features (Funktionen)
 --------
 
@@ -25,7 +24,6 @@ Features (Funktionen)
     - The shopping cart allows the user to place orders
     - There exists a basket and order overview in the administration
 
-
 Installation
 ------------
 
@@ -38,7 +36,6 @@ Contribution
 - Issue Tracker: https://dev.quiqqer.com/quiqqer/order/issues
 - Source Code: https://dev.quiqqer.com/quiqqer/order
 
-
 Support
 -------
 
@@ -50,7 +47,6 @@ Licence
 
 - GPL-3.0+
 - PCSG QEL-1.0
-
 
 Developers
 --------
@@ -77,6 +73,10 @@ Developers
 
 - quiqqerOrderBasketRemovePos [QUI\ERP\Order\Basket\Basket, pos]
 - quiqqerOrderBasketToOrder [QUI\ERP\Order\Basket\BasketOrder, $Order, QUI\ERP\Products\Product\ProductList]
+
+- onQuiqqerOrderProcessSendBegin [QUI\ERP\Order\OrderProcess]
+- onQuiqqerOrderProcessSendCreateOrder [QUI\ERP\Order\OrderProcess]
+- onQuiqqerOrderProcessSend [QUI\ERP\Order\OrderProcess]
 
 ### Order Events
 
