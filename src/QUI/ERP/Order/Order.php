@@ -117,6 +117,15 @@ class Order extends AbstractOrder implements OrderInterface
         // invoice creation is only possible with an address
         $InvoiceAddress = $this->getInvoiceAddress();
 
+        if (QUI::getPackageManager()->isInstalled('quiqqer/order-guestorder')) {
+            $User = $InvoiceAddress->getUser();
+            $Guest = new QUI\ERP\Order\Guest\GuestOrderUser();
+
+            if ($User->getId() === $Guest->getId()) {
+                return;
+            }
+        }
+
         if (
             $InvoiceAddress->getName() === ''
             && $InvoiceAddress->getPhone() === ''
