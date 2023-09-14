@@ -16,6 +16,7 @@ Order=$Order
     </div>
 
 
+    {if $InvoiceAddress}
     <div class="quiqqer-order-step-checkout-invoiceAddress">
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.billing.address"}</h2>
         {$InvoiceAddress->render(['tel' => false, 'mail' => false])}
@@ -31,6 +32,7 @@ Order=$Order
         <h2>{locale group="quiqqer/order" var="ordering.step.checkout.delivery.address"}</h2>
         {$DeliveryAddress->render(['tel' => false, 'mail' => false])}
     </div>
+    {/if}
     {/if}
 
     {if $comment}

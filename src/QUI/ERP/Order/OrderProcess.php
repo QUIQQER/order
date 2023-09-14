@@ -17,12 +17,14 @@ use function array_search;
 use function array_values;
 use function call_user_func;
 use function class_exists;
+use function class_implements;
 use function count;
 use function current;
 use function dirname;
 use function end;
 use function floor;
 use function get_class;
+use function in_array;
 use function is_a;
 use function json_decode;
 use function json_encode;
@@ -49,26 +51,26 @@ class OrderProcess extends QUI\Control
     const MESSAGES_SESSION_KEY = 'quiqqer_order_orderprocess_messages';
 
     /**
-     * @var QUI\ERP\Order\OrderInProcess
+     * @var AbstractOrder|null
      */
-    protected $Order;
+    protected ?AbstractOrder $Order = null;
 
     /**
-     * @var Basket\Basket
+     * @var Basket\Basket|null
      */
-    protected $Basket = null;
+    protected ?Basket\Basket $Basket = null;
 
     /**
      * @var null|AbstractOrderProcessProvider
      */
-    protected $ProcessingProvider = null;
+    protected ?AbstractOrderProcessProvider $ProcessingProvider = null;
 
     /**
      * List of order process steps
      *
      * @var array
      */
-    protected $steps = [];
+    protected array $steps = [];
 
     /**
      * @var QUI\Events\Event
@@ -185,8 +187,7 @@ class OrderProcess extends QUI\Control
             $step = $keys[1];
         }
 
-        // consider processing step
-        // processing step is ok
+        // consider processing step - processing step is ok
         $Processing = $this->getProcessingStep();
 
         if ($Processing->getName() === $step) {
@@ -270,6 +271,7 @@ class OrderProcess extends QUI\Control
     protected function send()
     {
         $this->Events->fireEvent('sendBegin', [$this]);
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessSendBegin', [$this]);
 
         $steps = $this->getSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
@@ -326,6 +328,8 @@ class OrderProcess extends QUI\Control
             $success[] = $Provider->onOrderSuccess($OrderInProcess);
         }
 
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessSendCreateOrder', [$this]);
+
         // all runs fine
         if ($OrderInProcess instanceof OrderInProcess) {
             $Order = $OrderInProcess->createOrder();
@@ -343,7 +347,8 @@ class OrderProcess extends QUI\Control
         // set all to successful
         $this->cleanup();
 
-        $this->Events->fireEvent('send', [$this]);
+        $this->Events->fireEvent('send', [$this, $this->Order]);
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessSend', [$this]);
     }
 
     /**
@@ -893,7 +898,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function getFirstStep()
+    public function getFirstStep(): AbstractOrderingStep
     {
         return array_values($this->getSteps())[0];
     }
@@ -916,13 +921,13 @@ class OrderProcess extends QUI\Control
     /**
      * Return the next step
      *
-     * @param null|AbstractOrderingStep $StartStep
+     * @param AbstractOrderingStep|null $StartStep
      * @return bool|AbstractOrderingStep
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function getNextStep($StartStep = null)
+    public function getNextStep(AbstractOrderingStep $StartStep = null)
     {
         if ($StartStep === null) {
             $step = $this->getCurrentStepName();
@@ -978,13 +983,13 @@ class OrderProcess extends QUI\Control
     /**
      * Return the previous step
      *
-     * @param null|AbstractOrderingStep $StartStep
-     * @return AbstractOrderingStep
+     * @param AbstractOrderingStep|null $StartStep
+     * @return AbstractOrderingStep|null
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function getPreviousStep($StartStep = null)
+    public function getPreviousStep(AbstractOrderingStep $StartStep = null): ?AbstractOrderingStep
     {
         if ($StartStep === null) {
             $step = $this->getCurrentStepName();
@@ -1048,7 +1053,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getStepByName($name)
+    protected function getStepByName(string $name)
     {
         $steps = $this->getSteps();
 
@@ -1067,7 +1072,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getCurrentStepName()
+    protected function getCurrentStepName(): string
     {
         $step = $this->getAttribute('step');
         $steps = $this->getSteps();
@@ -1088,13 +1093,13 @@ class OrderProcess extends QUI\Control
     /**
      * Return the next step
      *
-     * @param null|AbstractOrderingStep $StartStep
+     * @param AbstractOrderingStep|null $StartStep
      * @return bool|string
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getNextStepName($StartStep = null)
+    protected function getNextStepName(AbstractOrderingStep $StartStep = null)
     {
         $Next = $this->getNextStep($StartStep);
 
@@ -1108,13 +1113,13 @@ class OrderProcess extends QUI\Control
     /**
      * Return the previous step
      *
-     * @param null|AbstractOrderingStep $StartStep
+     * @param AbstractOrderingStep|null $StartStep
      * @return bool|string
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getPreviousStepName($StartStep = null)
+    protected function getPreviousStepName(AbstractOrderingStep $StartStep = null)
     {
         $Prev = $this->getPreviousStep($StartStep);
 
@@ -1130,7 +1135,7 @@ class OrderProcess extends QUI\Control
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         try {
             return QUI\ERP\Order\Utils\Utils::getOrderProcess($this->getProject())->getUrlRewritten();
@@ -1146,7 +1151,7 @@ class OrderProcess extends QUI\Control
      * @param $step
      * @return string
      */
-    public function getStepUrl($step)
+    public function getStepUrl($step): string
     {
         $url = $this->getUrl();
         $url = $url . '/' . $step;
@@ -1163,7 +1168,7 @@ class OrderProcess extends QUI\Control
      *
      * @return string
      */
-    public function getStepHash()
+    public function getStepHash(): string
     {
         if ($this->getAttribute('orderHash') && $this->Order) {
             return $this->Order->getHash();
@@ -1175,7 +1180,7 @@ class OrderProcess extends QUI\Control
     /**
      * Return the order site
      *
-     * @return QUI\Projects\Site
+     * @return QUI\Projects\Site|QUI\Projects\Site\Edit
      *
      * @throws QUI\Exception
      */
@@ -1207,20 +1212,42 @@ class OrderProcess extends QUI\Control
     }
 
     /**
-     * @return QUI\ERP\Order\OrderInProcess|null
+     * @return AbstractOrder|null
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function getOrder()
+    public function getOrder(): ?AbstractOrder
     {
         if ($this->Order !== null) {
             return $this->Order;
         }
 
+        try {
+            $result = QUI::getEvents()->fireEvent('orderProcessGetOrder', [$this]);
+
+            if (!empty($result)) {
+                $OrderInstance = null;
+
+                foreach ($result as $entry) {
+                    if ($entry && in_array(OrderInterface::class, class_implements($entry))) {
+                        $OrderInstance = $entry;
+                    }
+                }
+
+                if ($OrderInstance && in_array(OrderInterface::class, class_implements($OrderInstance))) {
+                    $this->Order = $OrderInstance;
+                    return $this->Order;
+                }
+            }
+        } catch (\Exception $exception) {
+        }
+
+
+        $User = QUI::getUserBySession();
+
         // for nobody a temporary order cant be created
-        // @todo gast bestellung
-        if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
+        if (QUI::getUsers()->isNobodyUser($User)) {
             return null;
         }
 
@@ -1315,7 +1342,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function getSteps()
+    public function getSteps(): array
     {
         if (empty($this->steps)) {
             $this->steps = $this->parseStepsToArray($this->parseSteps());
@@ -1365,13 +1392,15 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function parseSteps()
+    protected function parseSteps(): OrderProcessSteps
     {
         $Steps = new OrderProcessSteps();
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
         $Order = $this->getOrder();
         $Basket = $this->Basket;
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
 
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
             $Steps->append(
@@ -1381,6 +1410,8 @@ class OrderProcess extends QUI\Control
                     'priority' => 1
                 ])
             );
+
+            QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
             return $Steps;
         }
@@ -1397,14 +1428,18 @@ class OrderProcess extends QUI\Control
 
             $Steps->append($Finish);
 
+            QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+
             return $Steps;
         }
 
+        /*
         $Registration = new Controls\OrderProcess\Registration([
             'Basket' => $Basket,
             'Order' => $Order,
             'priority' => 1
         ]);
+        */
 
         $Basket = new Controls\OrderProcess\Basket([
             'Basket' => $Basket,
@@ -1448,6 +1483,9 @@ class OrderProcess extends QUI\Control
 
         $this->sortSteps($Steps);
 
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+
         return $Steps;
     }
 
@@ -1457,7 +1495,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function parseStepsToArray(OrderProcessSteps $Steps)
+    protected function parseStepsToArray(OrderProcessSteps $Steps): array
     {
         $result = [];
 
@@ -1476,7 +1514,7 @@ class OrderProcess extends QUI\Control
      *
      * @param OrderProcessSteps $Steps
      */
-    protected function sortSteps($Steps)
+    protected function sortSteps(OrderProcessSteps $Steps)
     {
         $Steps->sort(function ($Step1, $Step2) {
             /* @var $Step1 QUI\ERP\Order\Controls\AbstractOrderingStep */
@@ -1553,7 +1591,7 @@ class OrderProcess extends QUI\Control
      * (must implement QUI\ERP\Order\Controls\AbstractOrderingStep)
      * @return QUI\ERP\Order\OrderProcess\OrderProcessMessage[]
      */
-    protected function getStepMessages(string $orderStep)
+    protected function getStepMessages(string $orderStep): array
     {
         $messages = [];
         $Session = QUI::getSession();
@@ -1590,7 +1628,7 @@ class OrderProcess extends QUI\Control
      * @return string
      * @throws QUI\Exception
      */
-    protected function getBackToShopUrl()
+    protected function getBackToShopUrl(): string
     {
         $Project = $this->getSite()->getProject();
 

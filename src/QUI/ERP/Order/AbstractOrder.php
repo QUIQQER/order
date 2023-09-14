@@ -931,6 +931,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             return $Nobody;
         }
 
+        if ($this->Customer) {
+            $Address = $this->Customer->getStandardAddress();
+
+            if (!$Address->getId()) {
+                $this->Customer->setAddress(
+                    new QUI\ERP\Address($this->addressInvoice, $this->Customer)
+                );
+            }
+
+            return $this->Customer;
+        }
+
         if ($this->customerId) {
             try {
                 $User = QUI::getUsers()->get($this->customerId);
@@ -942,18 +954,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
-        }
-
-        if ($this->Customer) {
-            $Address = $this->Customer->getStandardAddress();
-
-            if (!$Address->getId()) {
-                $this->Customer->setAddress(
-                    new QUI\ERP\Address($this->addressInvoice, $this->Customer)
-                );
-            }
-
-            return $this->Customer;
         }
 
         if ($this->customer) {
