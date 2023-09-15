@@ -38,7 +38,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     const lg = 'quiqqer/order';
 
     let shippingInstalled = false;
-    
+
     return new Class({
 
         Extends: QUIPanel,
@@ -818,6 +818,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     const userId = parseInt(Select.getValue());
 
                     if (currentCustomerId === userId) {
+                        return;
+                    }
+
+                    if (!userId) {
                         return;
                     }
 

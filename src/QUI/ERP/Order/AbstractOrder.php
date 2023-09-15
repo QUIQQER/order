@@ -38,7 +38,7 @@ use function time;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
+abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP\ErpEntityInterface
 {
     /* @deprecated */
     const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
@@ -849,6 +849,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getArticles(): ArticleList
     {
+        if (!$this->Articles) {
+            $this->Articles = new ArticleList();
+        }
+
         $this->Articles->setOrder($this);
         $this->Articles->setUser($this->getCustomer());
         $this->Articles->setCurrency($this->getCurrency());
@@ -987,6 +991,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
      */
     public function getCurrency(): QUI\ERP\Currency\Currency
     {
+        if (!$this->Currency) {
+            return QUI\ERP\Defaults::getCurrency();
+        }
+
         return $this->Currency;
     }
 
@@ -1111,14 +1119,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * Set an customer to the order
+     * Set a customer to the order
      *
      * @param array|QUI\ERP\User|QUI\Interfaces\Users\User $User
      * @throws QUI\ERP\Exception
      */
     public function setCustomer($User)
     {
+        $oldCustomerId = $this->customerId;
+
         if (empty($User)) {
+            $this->removeCustomer();
+            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
             return;
         }
 
@@ -1194,12 +1206,24 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             $this->Customer = new QUI\ERP\User($User);
             $this->customerId = $this->Customer->getId();
 
+            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
+
+            if ($this->customerId !== $oldCustomerId) {
+                QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
+            }
+
             return;
         }
 
         if ($User instanceof QUI\ERP\User) {
             $this->Customer = $User;
             $this->customerId = $User->getId();
+
+            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
+
+            if ($this->customerId !== $oldCustomerId) {
+                QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
+            }
 
             return;
         }
@@ -1211,6 +1235,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
             if (empty($this->addressInvoice)) {
                 $this->setInvoiceAddress($this->Customer->getStandardAddress());
             }
+
+            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
+
+            if ($this->customerId !== $oldCustomerId) {
+                QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
+            }
         }
     }
 
@@ -1221,6 +1251,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
     {
         $this->Customer = null;
         $this->customerId = 0;
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
     }
 
     /**
@@ -1591,7 +1623,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
 
         try {
             $ShippingEntry = $Shipping->getShippingEntry($this->shippingId);
-            $ShippingEntry->setOrder($this);
+            $ShippingEntry->setErpEntity($this);
 
             return $ShippingEntry;
         } catch (QUI\Exception $Exception) {
@@ -1661,11 +1693,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface
         }
 
         // validate shipping
-        $Shipping->setOrder($this);
+        $Shipping->setErpEntity($this);
 
         if (
             !$Shipping->isValid()
-            || !$Shipping->canUsedInOrder($this)
+            || !$Shipping->canUsedInErpEntity($this)
             || !$Shipping->canUsedBy($this->getCustomer(), $this)
         ) {
             $this->shippingId = false;
