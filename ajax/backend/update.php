@@ -115,7 +115,7 @@ QUI::$Ajax->registerFunction(
         if (isset($data['paymentId'])) {
             try {
                 $Order->setPayment($data['paymentId']);
-            } catch (QUI\ERP\Order\Exception $Exception) {
+            } catch (\Exception $Exception) {
             }
         }
 
@@ -131,7 +131,7 @@ QUI::$Ajax->registerFunction(
                         $data['notification']
                     );
                 }
-            } catch (QUI\ERP\Order\Exception $Exception) {
+            } catch (\Exception $Exception) {
                 QUI\System\Log::addError($Exception->getMessage());
             }
         }
@@ -148,7 +148,7 @@ QUI::$Ajax->registerFunction(
                         $data['notificationShipping']
                     );
                 }
-            } catch (QUI\ERP\Order\Exception $Exception) {
+            } catch (\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -184,7 +184,7 @@ QUI::$Ajax->registerFunction(
                     $Order->addArticle(
                         new QUI\ERP\Accounting\Article($article)
                     );
-                } catch (QUI\Exception $Exception) {
+                } catch (\Exception $Exception) {
                 }
             }
         }
