@@ -11,8 +11,11 @@ use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
+use QUI\ERP\Exception;
 use QUI\ERP\Order\ProcessingStatus\Handler as ProcessingHandler;
 use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
+use QUI\ERP\User;
+use QUI\ExceptionStack;
 
 use function array_filter;
 use function array_flip;
@@ -1121,8 +1124,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     /**
      * Set a customer to the order
      *
-     * @param array|QUI\ERP\User|QUI\Interfaces\Users\User $User
-     * @throws QUI\ERP\Exception
+     * @param array|User|QUI\Interfaces\Users\User $User
+     * @throws Exception
+     * @throws QUI\Exception
+     * @throws ExceptionStack
      */
     public function setCustomer($User)
     {
