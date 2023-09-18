@@ -211,7 +211,7 @@ QUI::$Ajax->registerFunction(
                 'quiqqer/order',
                 'message.backend.update.success',
                 [
-                    'oderId' => $Order->getId()
+                    'orderId' => $Order->getId()
                 ]
             )
         );
