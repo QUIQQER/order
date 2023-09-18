@@ -78,6 +78,9 @@ Developers
 - onQuiqqerOrderProcessSendCreateOrder [QUI\ERP\Order\OrderProcess]
 - onQuiqqerOrderProcessSend [QUI\ERP\Order\OrderProcess]
 
+- onQuiqqerOrderCustomerChange [Order]
+- onQuiqqerOrderCustomerCustomerSet [Order]
+
 ### Order Events
 
 - onOrderStart [\QUI\ERP\Order\OrderProcess]
