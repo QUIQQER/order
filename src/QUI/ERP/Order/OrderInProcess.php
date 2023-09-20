@@ -16,12 +16,12 @@ use function json_encode;
 /**
  * Class OrderInProcess
  *
- * this is a order in process and not the ordering process
+ * this is an order in process and not the ordering process
  * This order is currently being processed by the user
  *
  * @package QUI\ERP\Order
  */
-class OrderInProcess extends AbstractOrder implements OrderInterface
+class OrderInProcess extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface
 {
     /**
      * @var null|integer
@@ -528,7 +528,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
         /**
          * The special attribute 'no_invoice_auto_create' was added to allow
          * plugins (e.g. via events) to prevent an Order from creating any invoices
-         * so they may create them on their own. This is used by e.g. quiqqer/contracts.
+         * so, they may create them on their own. This is used by e.g. quiqqer/contracts.
          *
          * @author Patrick Müller [26.02.2018]
          */
@@ -671,8 +671,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface
             'payment_time' => null,
             'payment_data' => QUI\Security\Encryption::encrypt(
                 json_encode($this->paymentData)
-            ), // verschlüsselt
-            'payment_address' => '',  // verschlüsselt
+            ), // encrypted
+            'payment_address' => '',  // encrypted
 
             'shipping_id' => $shippingId,
             'shipping_data' => json_encode($shippingData),
