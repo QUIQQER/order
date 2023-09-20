@@ -38,6 +38,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
     const lg = 'quiqqer/order';
 
     let shippingInstalled = false;
+    let NO_CATEGORY_UNLOAD = false;
 
     return new Class({
 
@@ -240,8 +241,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return Promise.reject('Order is locked');
             }
 
-            const self = this,
-                orderId = this.getAttribute('orderId');
+            const orderId = this.getAttribute('orderId');
 
             this.Loader.show();
             this.$unLoadCategory();
@@ -263,26 +263,35 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 priceFactors: this.$serializedList.priceFactors
             };
 
-            return new Promise(function(resolve) {
-                self.$dialogStatusChangeNotification(data.status).then(function(notificationText) {
+            return new Promise((resolve) => {
+                this.$dialogStatusChangeNotification(data.status).then((notificationText) => {
                     data.notification = notificationText;
 
-                    return self.$dialogShippingStatusChangeNotification(data.shippingStatus);
-                }).then(function(notificationShippingText) {
+                    return this.$dialogShippingStatusChangeNotification(data.shippingStatus);
+                }).then((notificationShippingText) => {
                     data.notificationShipping = notificationShippingText;
 
                     return Orders.updateOrder(orderId, data);
-                }).then(function(orderData) {
-                    return self.refresh(orderData);
-                }).then(function() {
-                    resolve();
-                    self.Loader.hide();
-                }).catch(function(err) {
-                    console.error(err);
-                    console.error(err.getMessage());
+                }).then((orderData) => {
+                    return this.refresh(orderData);
+                }).then(() => {
+                    if (this.getActiveCategory()) {
+                        NO_CATEGORY_UNLOAD = true;
+                        this.getActiveCategory().click();
+                        NO_CATEGORY_UNLOAD = false;
+                    }
 
                     resolve();
-                    self.Loader.hide();
+                    this.Loader.hide();
+                }).catch((err) => {
+                    console.error(err);
+
+                    if (typeof err.getMessage === 'function') {
+                        console.error(err.getMessage());
+                    }
+
+                    resolve();
+                    this.Loader.hide();
                 });
             });
         },
@@ -1472,7 +1481,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getContent().setStyle('padding', 0);
 
             // unload
-            this.$unLoadCategory();
+            if (NO_CATEGORY_UNLOAD === false) {
+                this.$unLoadCategory();
+            }
 
             if (this.$AddProduct) {
                 this.$AddProduct.hide();
