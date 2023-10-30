@@ -10,7 +10,7 @@ use DusanKasan\Knapsack\Collection;
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
-use QUI\Smarty\Collector;
+use Quiqqer\Engine\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use function array_flip;
