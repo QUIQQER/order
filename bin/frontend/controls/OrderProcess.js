@@ -185,6 +185,19 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$TimelineContainer = this.getElm().getElement('.quiqqer-order-ordering-timeline-container');
             this.$Form = this.getElm().getElement('[name="order"]');
 
+            if (!this.$Form) {
+                const SimpleCheckout = this.getElm().getParent(
+                    '[data-qui="package/quiqqer/order-simple-checkout/bin/frontend/controls/SimpleCheckout"]'
+                );
+
+                if (SimpleCheckout) {
+                    this.$Form = SimpleCheckout.getElement('form');
+                } else {
+                    console.error('Order Process: no form found');
+                    this.$Form = new Element('form');
+                }
+            }
+
             this.$Form.addEvent('submit', function(e) {
                 e.stop();
             });
@@ -972,7 +985,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         saveCurrentStep: function() {
             var self = this,
                 data = QUIFormUtils.getFormData(this.$Form);
-
+            
             // filter and use only data
             delete data.step;
             delete data.orderId;

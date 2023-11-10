@@ -24,8 +24,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
-], function (QUI, QUIControl, QUILocale, Currency, BasketWindow, Orders, Basket) {
-    "use strict";
+], function(QUI, QUIControl, QUILocale, Currency, BasketWindow, Orders, Basket) {
+    'use strict';
 
     var lg = 'quiqqer/order';
 
@@ -52,7 +52,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             showMiniBasketOnMouseOver: true
         },
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.parent(options);
 
             this.$Icon = null;
@@ -77,7 +77,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          *
          * @return {Element|null}
          */
-        create: function () {
+        create: function() {
             if (this.mayBeDisplayed() === false) {
                 this.$Elm = new Element('div');
 
@@ -111,14 +111,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         /**
          * event: on import
          */
-        $onInject: function () {
+        $onInject: function() {
             this.$onImport();
         },
 
         /**
          * event: on import
          */
-        $onImport: function () {
+        $onImport: function() {
             if (this.mayBeDisplayed() === false) {
                 return;
             }
@@ -130,13 +130,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Text = Elm.getElement('.quiqqer-order-basketButton-text');
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
-            Elm.addEvent('click', function () {
+            Elm.addEvent('click', function() {
                 if (self.getAttribute('open') === 0) {
                     return;
                 }
 
                 if (self.getAttribute('open') === 2) {
-                    Orders.getOrderProcessUrl().then(function (url) {
+                    Orders.getOrderProcessUrl().then(function(url) {
                         window.location = url;
                     });
                     return;
@@ -149,8 +149,8 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             if (this.getAttribute('showMiniBasketOnMouseOver')) {
                 Elm.addEvents({
-                    mouseenter: function () {
-                        delay = setTimeout(function () {
+                    mouseenter: function() {
+                        delay = setTimeout(function() {
                             if (QUI.getWindowSize().x <= 768) {
                                 return;
                             }
@@ -158,7 +158,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                             self.showSmallBasket();
                         }, 250);
                     },
-                    mouseleave: function () {
+                    mouseleave: function() {
                         clearTimeout(delay);
                     }
                 });
@@ -168,7 +168,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
             }
 
-            var isLoaded = function () {
+            var isLoaded = function() {
                 if (this.$isLoaded) {
                     return;
                 }
@@ -183,9 +183,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 this.getElm().set('disabled', false);
             }.bind(this);
 
-            require(['package/quiqqer/order/bin/frontend/Basket'], function (Basket) {
+            require(['package/quiqqer/order/bin/frontend/Basket'], function(Basket) {
                 Basket.addEvents({
-                    onRefresh: function () {
+                    onRefresh: function() {
                         if (!Basket.isLoaded()) {
                             return;
                         }
@@ -194,19 +194,19 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                         self.updateDisplay(Basket);
                     },
 
-                    onRefreshBegin: function () {
+                    onRefreshBegin: function() {
                         if (self.$Batch) {
                             self.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
                         }
                     },
 
-                    onClear: function () {
+                    onClear: function() {
                         isLoaded();
                         self.updateDisplay(Basket);
                     }
                 });
 
-                QUI.addEvent('onQuiqqerCurrencyChange', function () {
+                QUI.addEvent('onQuiqqerCurrencyChange', function() {
                     Basket.refresh();
                 });
 
@@ -221,7 +221,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         /**
          * Show the small basket
          */
-        showSmallBasket: function () {
+        showSmallBasket: function() {
             var self = this,
                 pos = this.getElm().getPosition(),
                 height = this.getElm().getSize();
@@ -232,9 +232,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                     html: '<span class="fa fa-spinner fa-spin"></span>',
                     tabindex: -1,
                     events: {
-                        blur: function () {
+                        blur: function() {
                             // @todo überdenken -> vllt api (wegen paypal express gebraucht)
-                            (function () {
+                            (function() {
                                 this.setStyle('display', 'none');
                             }).delay(200, this);
                         }
@@ -261,7 +261,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             require([
                 'package/quiqqer/order/bin/frontend/Basket',
                 'package/quiqqer/order/bin/frontend/controls/basket/Small'
-            ], function (Basket, Small) {
+            ], function(Basket, Small) {
                 self.$BasketContainer.set('html', '');
                 self.$BasketContainer.focus();
 
@@ -278,7 +278,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          *
          * @return {boolean}
          */
-        mayBeDisplayed: function () {
+        mayBeDisplayed: function() {
             if (typeof window.QUIQQER_SITE === 'undefined') {
                 return true;
             }
@@ -296,16 +296,18 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          *
          * @param {object} Basket
          */
-        updateDisplay: function (Basket) {
+        updateDisplay: function(Basket) {
             // sum display
             var SumElm = this.getElm().getElement('.quiqqer-order-basketButton-sum');
-            
+
             if (SumElm) {
                 if (!Basket.getCalculations().sum || Basket.getCalculations().sum === '') {
-                    Currency.convertWithSign(
-                        Basket.getCalculations().sum
-                    ).then((converted) => {
-                        SumElm.set('text', converted);
+                    Currency.convertWithSign(Basket.getCalculations().sum).then((result) => {
+                        if (typeOf(result) === 'object') {
+                            SumElm.set('text', result.convertedRound);
+                        } else {
+                            SumElm.set('text', result);
+                        }
                     });
                 } else {
                     SumElm.set('text', Basket.getCalculations().sum);
@@ -349,12 +351,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          *
          * @returns {Promise}
          */
-        showBatch: function () {
+        showBatch: function() {
             if (!this.$Batch) {
                 return Promise.resolve();
             }
 
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 moofx(this.$Batch).animate({
                     opacity: 1,
                     right: this.$getBatchPosition().right,
@@ -371,12 +373,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          *
          * @returns {Promise}
          */
-        hideBatch: function () {
+        hideBatch: function() {
             if (!this.$Batch) {
                 return Promise.resolve();
             }
 
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 moofx(this.$Batch).animate({
                     opacity: 0,
                     right: this.$getBatchPosition().right,
@@ -393,16 +395,16 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          *
          * @returns {{top: number, right: number}}
          */
-        $getBatchPosition: function () {
+        $getBatchPosition: function() {
             var batchPosition = this.getAttribute('batchPosition'),
                 right = -16,
                 top = -10;
 
-            if ("right" in batchPosition) {
+            if ('right' in batchPosition) {
                 right = batchPosition.right;
             }
 
-            if ("top" in batchPosition) {
+            if ('top' in batchPosition) {
                 top = batchPosition.top;
             }
 
@@ -418,7 +420,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
          * @param Basket
          * @param Product
          */
-        $showAddInformation: function (Basket, Product) {
+        $showAddInformation: function(Basket, Product) {
             if (this.mayBeDisplayed() === false) {
                 return;
             }
@@ -440,7 +442,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             Info.addClass('bounceInDown');
 
-            (function () {
+            (function() {
                 Info.destroy();
             }).delay(2000);
 
