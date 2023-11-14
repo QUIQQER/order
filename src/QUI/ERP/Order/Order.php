@@ -180,6 +180,8 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         if ($this->getDeliveryAddress()) {
             $deliveryAddress = $this->getDeliveryAddress()->toJSON();
             $deliveryAddressId = $this->getDeliveryAddress()->getId();
+
+            $TemporaryInvoice->setDeliveryAddress($this->getDeliveryAddress());
         }
 
         $TemporaryInvoice->setAttributes([
