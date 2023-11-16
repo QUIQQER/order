@@ -31,8 +31,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 ], function(QUI, QUIControl, QUILoader, QUIFormUtils, Basket, Orders, QUIAjax, QUILocale, Navigo) {
     'use strict';
 
-    var lg = 'quiqqer/order';
-    var Router, url;
+    const lg = 'quiqqer/order';
+    let Router, url;
 
     return new Class({
 
@@ -109,13 +109,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @event on change state
          */
         $onChangeState: function() {
-            var pathName = window.location.pathname;
+            const pathName = window.location.pathname;
 
             if (pathName.indexOf(url) === -1) {
                 return;
             }
 
-            var parts = pathName.trim().split('/').filter(function(value) {
+            const parts = pathName.trim().split('/').filter(function(value) {
                 return value !== '';
             });
 
@@ -124,7 +124,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return;
             }
 
-            var current = this.getCurrentStepData();
+            const current = this.getCurrentStepData();
 
             if (current.step !== parts[1]) {
                 this.openStep(parts[1]);
@@ -147,7 +147,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$startLoginCheck();
 
 
-            var self = this;
+            const self = this;
 
             if (this.getAttribute('showLoader')) {
                 this.Loader.inject(this.getElm());
@@ -216,7 +216,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.setAttribute('basketEditable', !!+this.getElm().get('data-qui-option-basketeditable'));
             }
 
-            var Current = this.$TimelineContainer.getFirst('ul li.current'),
+            let Current = this.$TimelineContainer.getFirst('ul li.current'),
                 Nobody = this.getElm().getElement('.quiqqer-order-ordering-nobody'),
                 Done = Promise.resolve();
 
@@ -257,7 +257,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     Nobody.getElements(
                         '[data-qui="package/quiqqer/frontend-users/bin/frontend/controls/login/Login"]'
                     ).forEach(function(Node) {
-                        var Control = QUI.Controls.getById(Node.get('data-quiid'));
+                        const Control = QUI.Controls.getById(Node.get('data-quiid'));
 
                         if (Control) {
                             Control.setAttribute('ownRedirectOnLogin', self.$onLoginRedirect);
@@ -281,12 +281,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * event: on import
          */
         $onInject: function() {
-            var self = this;
-            var Nobody = this.getElm().getElement('.quiqqer-order-ordering-nobody');
+            const self = this;
+            const Nobody = this.getElm().getElement('.quiqqer-order-ordering-nobody');
 
             this.getElm().set('data-quiid', this.getId());
 
-            var Prom = new Promise(function(resolve) {
+            let Prom = new Promise(function(resolve) {
                 resolve(self.getAttribute('orderHash'));
             });
 
@@ -299,19 +299,19 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             Prom.then(function() {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getControl', function(html) {
-                    var Ghost = new Element('div', {
+                    const Ghost = new Element('div', {
                         html: html
                     });
 
-                    var Process = Ghost.getElement(
+                    const Process = Ghost.getElement(
                         '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
                     );
 
-                    var styles = Ghost.getElements('style');
-                    var scripts = [];
+                    const styles = Ghost.getElements('style');
+                    const scripts = [];
 
                     Process.getElements('script').forEach(function(Script) {
-                        var New = new Element('script');
+                        const New = new Element('script');
 
                         if (Script.get('html')) {
                             New.set('html', Script.get('html'));
@@ -350,7 +350,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * login check
          */
         $startLoginCheck: function() {
-            var self = this;
+            const self = this;
 
             if (this.getElm().getElement('[data-qui="package/quiqqer/frontend-users/bin/frontend/controls/login/Login"]')) {
                 return;
@@ -376,7 +376,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * show the login window
          */
         $showLogin: function() {
-            var self = this;
+            const self = this;
 
             require(['package/quiqqer/frontend-users/bin/frontend/controls/login/Window'], function(LoginWindow) {
                 new LoginWindow({
@@ -447,7 +447,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         addProduct: function(productId, fields, quantity) {
-            var self = this;
+            const self = this;
 
             quantity = quantity || 1;
 
@@ -486,7 +486,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @param {Promise} products
          */
         addProducts: function(products) {
-            var self = this;
+            const self = this;
 
             if (!this.$Timeline) {
                 return new Promise(function(resolve) {
@@ -518,7 +518,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         removeProductPos: function(pos) {
-            var self = this;
+            const self = this;
 
             return Orders.removePosition(
                 this.getAttribute('orderHash'),
@@ -534,7 +534,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         getArticles: function() {
-            var self = this;
+            const self = this;
 
             return new Promise(function(resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getArticles', resolve, {
@@ -564,7 +564,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         getOrder: function() {
-            var self = this,
+            const self = this,
                 oderHash = this.getAttribute('orderHash');
 
             if (oderHash) {
@@ -582,7 +582,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Resize the order process
          */
         resize: function() {
-            var self = this;
+            const self = this;
 
             if (this.$isResizing) {
                 return new Promise(function(resolve) {
@@ -595,10 +595,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$isResizing = true;
 
             return new Promise(function(resolve) {
-                var Next = self.$StepContainer.getElement('.quiqqer-order-ordering-step-next');
-                var Basket = self.$StepContainer.getElement('.quiqqer-order-step-basket');
+                const Next = self.$StepContainer.getElement('.quiqqer-order-ordering-step-next');
+                const Basket = self.$StepContainer.getElement('.quiqqer-order-step-basket');
 
-                var innerHeight = self.$StepContainer.getChildren().filter(function(Node) {
+                const innerHeight = self.$StepContainer.getChildren().filter(function(Node) {
                     if (Node.nodeName === 'STYLE') {
                         return false;
                     }
@@ -612,7 +612,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     return size.y;
                 }).sum();
 
-                var finish = function() {
+                const finish = function() {
                     if (self.$isResizing === false) {
                         return;
                     }
@@ -658,7 +658,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.reject();
             }
 
-            var self = this;
+            const self = this;
 
             this.$beginResultRendering(-1);
 
@@ -698,7 +698,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var self = this;
+            const self = this;
 
             if (!this.$getCount()) {
                 return Promise.resolve();
@@ -736,16 +736,16 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         validateStep: function(stepCheck) {
             // test html5 required
-            var Required = this.getElm().getElements('[required]');
+            const Required = this.getElm().getElements('[required]');
 
             // validate controls
-            var Node = this.$StepContainer.getFirst();
+            let Node = this.$StepContainer.getFirst();
 
             if (Node.hasClass('quiqqer-order-ordering-step-next')) {
                 Node = Node.getFirst();
             }
 
-            var Instance = QUI.Controls.getById(Node.get('data-quiid'));
+            const Instance = QUI.Controls.getById(Node.get('data-quiid'));
 
             if (typeof stepCheck === 'undefined') {
                 stepCheck = true;
@@ -756,7 +756,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 typeof Instance.validate === 'function' &&
                 typeof Instance.isValid === 'function'
             ) {
-                var self = this;
+                const self = this;
 
                 if (Instance.isValid() === false) {
                     Instance.validate().then(function() {
@@ -768,7 +768,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             if (Required.length) {
-                var i, len, Field;
+                let i, len, Field;
 
                 for (i = 0, len = Required.length; i < len; i++) {
                     Field = Required[i];
@@ -808,7 +808,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var self = this;
+            const self = this;
 
             if (!this.$getCount()) {
                 return Promise.resolve();
@@ -864,10 +864,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var self = this;
+            const self = this;
 
             if (!this.$getCount()) {
-                var FirstLi = this.$TimelineContainer.getElement('li:first-child');
+                const FirstLi = this.$TimelineContainer.getElement('li:first-child');
 
                 step = FirstLi.get('data-step');
             }
@@ -924,7 +924,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         reload: function() {
-            var self = this;
+            const self = this;
 
             this.$beginResultRendering(0);
 
@@ -965,10 +965,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var FirstLi = this.$TimelineContainer.getElement('li:first-child'),
+            const FirstLi = this.$TimelineContainer.getElement('li:first-child'),
                 firstStep = FirstLi.get('data-step');
 
-            var current = this.getCurrentStepData();
+            const current = this.getCurrentStepData();
 
             if (current.step === firstStep) {
                 return Promise.resolve();
@@ -983,17 +983,17 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         saveCurrentStep: function() {
-            var self = this,
+            const self = this,
                 data = QUIFormUtils.getFormData(this.$Form);
-            
+
             // filter and use only data
             delete data.step;
             delete data.orderId;
             delete data.current;
 
-            var elements = this.$Form.elements;
+            const elements = this.$Form.elements;
 
-            for (var n in data) {
+            for (const n in data) {
                 if (!data.hasOwnProperty(n)) {
                     continue;
                 }
@@ -1028,7 +1028,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {{icon: string, title: string}}
          */
         getCurrentStepData: function() {
-            var current = this.getAttribute('current');
+            const current = this.getAttribute('current');
 
             if (!this.$TimelineContainer) {
                 return {
@@ -1038,7 +1038,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 };
             }
 
-            var Step = this.$TimelineContainer.getElement('li[data-step="' + current + '"]');
+            const Step = this.$TimelineContainer.getElement('li[data-step="' + current + '"]');
 
             if (!Step) {
                 return {
@@ -1095,13 +1095,13 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $renderResult: function(result, startDirection) {
-            var self = this;
+            const self = this;
 
-            var Ghost = new Element('div', {
+            const Ghost = new Element('div', {
                 html: result.html
             });
 
-            var leftPos = 0;
+            let leftPos = 0;
 
             if (typeof startDirection === 'undefined' || startDirection === -1) {
                 leftPos = -100;
@@ -1119,11 +1119,11 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             ]);
 
             // content
-            var Error = Ghost.getElement('.quiqqer-order-ordering-error');
-            var StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
-            var TimeLine = Ghost.getElement('.quiqqer-order-ordering-timeline');
-            var Form = Ghost.getElement('[name="order"]');
-            var scripts = Ghost.getElements('script');
+            const Error = Ghost.getElement('.quiqqer-order-ordering-error');
+            const StepContent = Ghost.getElement('.quiqqer-order-ordering-step');
+            const TimeLine = Ghost.getElement('.quiqqer-order-ordering-timeline');
+            const Form = Ghost.getElement('[name="order"]');
+            const scripts = Ghost.getElements('script');
 
             if (Form) {
                 this.$Form.set('data-order-hash', Form.get('data-order-hash'));
@@ -1142,7 +1142,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             // scroll the the timeline step
             // Fx.Scroll();
-            var Step = this.$TimelineContainer.getElement('.current');
+            const Step = this.$TimelineContainer.getElement('.current');
 
             if (Step) {
                 (function() {
@@ -1151,7 +1151,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             // render container
-            var Next = new Element('div', {
+            const Next = new Element('div', {
                 html: StepContent.get('html'),
                 'class': 'quiqqer-order-ordering-step-next',
                 styles: {
@@ -1172,7 +1172,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             // load script elements
             scripts.forEach(function(Script) {
-                var New = new Element('script');
+                const New = new Element('script');
 
                 if (Script.get('html')) {
                     New.set('html', Script.get('html'));
@@ -1197,14 +1197,14 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$refreshButtonEvents();
 
             return QUI.parse(this.$StepContainer).then(function() {
-                var Prom1 = self.$animate(Next, {
+                const Prom1 = self.$animate(Next, {
                     left: 0,
                     opacity: 1
                 }, {
                     duration: 500
                 });
 
-                var Prom2 = self.$animate(self.$StepContainer, {
+                const Prom2 = self.$animate(self.$StepContainer, {
                     height: Math.max(
                         Next.getSize().y,
                         Next.getComputedSize().totalHeight
@@ -1242,9 +1242,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $beginResultRendering: function(moveDirection) {
             this.Loader.show();
 
-            var self = this;
-            var Container = this.$StepContainer.getChildren();
-            var leftPos = 0;
+            const self = this;
+            const Container = this.$StepContainer.getChildren();
+            let leftPos = 0;
 
             if (typeof moveDirection === 'undefined' || moveDirection === -1) {
                 leftPos = -100;
@@ -1277,9 +1277,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }, {
                 duration: 500
             }).then(function() {
-                var styles = Container.getElements('style');
+                const styles = Container.getElements('style');
 
-                for (var i = 0, len = styles.length; i < len; i++) {
+                for (let i = 0, len = styles.length; i < len; i++) {
                     styles[i].inject(self.$TimelineContainer);
                 }
 
@@ -1297,7 +1297,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return 0;
             }
 
-            var productCount = parseInt(this.$Form.get('data-products-count'));
+            let productCount = parseInt(this.$Form.get('data-products-count'));
 
             // if no order hash set, we can ask the basket
             if (!this.getAttribute('orderHash')) {
@@ -1313,7 +1313,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $endResultRendering: function() {
             this.$TimelineContainer.getElements('style').destroy();
 
-            //var CurrentStep = this.getCurrentStepData();
+            //const CurrentStep = this.getCurrentStepData();
 
             //if (CurrentStep.step === 'Processing') {
             new Fx.Scroll(window).toTop();
@@ -1327,9 +1327,9 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * Refresh the step display
          */
         $refreshSteps: function() {
-            var current = this.getAttribute('current');
-            var list = this.$TimelineContainer.getElements('li');
-            var Timeline = this.$Timeline;
+            const current = this.getAttribute('current');
+            const list = this.$TimelineContainer.getElements('li');
+            const Timeline = this.$Timeline;
 
             list.removeClass('current');
             list.removeClass('active');
@@ -1349,7 +1349,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return;
             }
 
-            for (var i = 0, len = list.length; i < len; i++) {
+            for (let i = 0, len = list.length; i < len; i++) {
                 list[i].addClass('active');
 
                 if (list[i].get('data-step') === current) {
@@ -1371,7 +1371,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             this.$Next = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
 
-            var self = this,
+            const self = this,
                 list = this.$TimelineContainer.getElements('li');
 
             list.removeEvents('click');
@@ -1379,7 +1379,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             list.addEvent('click', function(event) {
                 event.stop();
 
-                var Target = event.target;
+                let Target = event.target;
 
                 if (Target.nodeName !== 'LI') {
                     Target = Target.getParent('li');
@@ -1421,7 +1421,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             // mobile, next button before
-            var EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
+            const EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
 
             if (QUI.getWindowSize().x < 768) {
                 if (EndContainer) {
@@ -1445,8 +1445,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {boolean}
          */
         $isNextClick: function(stepName) {
-            var current = this.getAttribute('current');
-            var list = this.$TimelineContainer.getElements('li').map(function(Node) {
+            const current = this.getAttribute('current');
+            const list = this.$TimelineContainer.getElements('li').map(function(Node) {
                 return Node.get('data-step');
             });
 
@@ -1510,7 +1510,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $animate: function(Elm, styles, options) {
-            var running = true;
+            let running = true;
 
             options = options || {};
 
@@ -1550,7 +1550,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
             this.Loader.show();
 
-            var self = this,
+            let self = this,
                 Container = this.getElm().getElement('.quiqqer-order-step-processing'),
                 Payments = Container.getElement('.quiqqer-order-processing-payments');
 
@@ -1596,17 +1596,17 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return Promise.resolve();
             }
 
-            var Container = this.getElm().getElement('.quiqqer-order-step-processing');
+            const Container = this.getElm().getElement('.quiqqer-order-step-processing');
 
             if (!Container) {
                 return Promise.resolve();
             }
 
-            var children = Container.getChildren().filter(function(Child) {
+            const children = Container.getChildren().filter(function(Child) {
                 return !Child.hasClass('quiqqer-order-processing-payments');
             });
 
-            var self = this,
+            const self = this,
                 Button = this.$Buttons.getElements('[name="changePayment"]');
 
             this.Loader.setAttribute('opacity', 1);
@@ -1630,7 +1630,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
 
                 return self.$onProcessingError();
             }).then(function() {
-                var Payments = Container.getElement('.quiqqer-order-processing-payments');
+                const Payments = Container.getElement('.quiqqer-order-processing-payments');
 
                 return self.$animate(Payments, {
                     marginTop: 0
@@ -1646,21 +1646,21 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         $parseProcessingPaymentChange: function() {
-            var Container = this.getElm().getElement('.quiqqer-order-step-processing');
+            const Container = this.getElm().getElement('.quiqqer-order-step-processing');
 
             if (!Container) {
                 return Promise.resolve();
             }
 
-            var self = this,
+            const self = this,
                 Payments = Container.getElement('.quiqqer-order-processing-payments');
 
             if (!Payments) {
                 return Promise.resolve();
             }
 
-            var PaymentChange = Payments.getElement('[name="change-payment"]');
-            var MainPaymentChange = this.$Buttons.getElement('[name="changePayment"]');
+            const PaymentChange = Payments.getElement('[name="change-payment"]');
+            const MainPaymentChange = this.$Buttons.getElement('[name="changePayment"]');
 
             if (PaymentChange && MainPaymentChange) {
                 MainPaymentChange.setStyle('display', 'none');
@@ -1671,7 +1671,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             return QUI.parse(Payments).then(function() {
-                var Change = Payments.getElement('[name="change-payment"]');
+                const Change = Payments.getElement('[name="change-payment"]');
 
                 if (!Change) {
                     return;
@@ -1683,8 +1683,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     self.Loader.show();
 
                     // save new payment method
-                    var paymentId = Payments.getElement('input:checked').value;
-                    var orderHash = self.getAttribute('orderHash');
+                    const paymentId = Payments.getElement('input:checked').value;
+                    const orderHash = self.getAttribute('orderHash');
 
                     Orders.saveProcessingPaymentChange(
                         orderHash,
@@ -1704,7 +1704,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $onLoginRedirect: function() {
             require(['package/quiqqer/order/bin/frontend/Basket'], function(GlobalBasket) {
                 GlobalBasket.getBasket().then(function(basket) {
-                    var products = basket.products;
+                    const products = basket.products;
 
                     // if there are no products yet, merge without query
                     if (!products.length) {
@@ -1715,12 +1715,12 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         return;
                     }
 
-                    var storageData = QUI.Storage.get('quiqqer-basket-products');
-                    var storageProducts = [];
+                    let storageData = QUI.Storage.get('quiqqer-basket-products');
+                    let storageProducts = [];
 
                     try {
                         storageData = JSON.decode(storageData);
-                        var currentList = storageData.currentList;
+                        const currentList = storageData.currentList;
 
                         if (typeof storageData.products !== 'undefined' &&
                             typeof storageData.products[currentList] !== 'undefined') {
