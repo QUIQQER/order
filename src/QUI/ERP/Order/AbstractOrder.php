@@ -543,6 +543,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
 
         $ArticleList = new ArticleList();
         $ArticleList->setUser($Customer);
+        $ArticleList->setCurrency($this->getCurrency());
 
         $ProductCalc = QUI\ERP\Products\Utils\Calc::getInstance();
         $ProductCalc->setUser($Customer);
