@@ -342,9 +342,31 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
             }
         }
 
+        // currency
+        if (!empty($data['currency_data'])) {
+            $currency = json_decode($data['currency_data'], true);
+
+            if (is_string($currency)) {
+                $currency = json_decode($currency, true);
+            }
+
+            if ($currency && isset($currency['code'])) {
+                try {
+                    $this->Currency = QUI\ERP\Currency\Handler::getCurrency($currency['code']);
+                } catch (QUI\Exception $Exception) {
+                    QUI\System\Log::addDebug($Exception->getMessage());
+                }
+            }
+        }
+
+        if ($this->Currency === null) {
+            $this->Currency = QUI\ERP\Defaults::getCurrency();
+        }
+
 
         // articles
         $this->Articles = new ArticleList();
+        $this->Articles->setCurrency($this->Currency);
 
         if (isset($data['articles'])) {
             $articles = json_decode($data['articles'], true);
@@ -352,6 +374,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
             if ($articles) {
                 try {
                     $this->Articles = new ArticleList($articles);
+                    $this->Articles->setCurrency($this->Currency);
                 } catch (QUI\ERP\Exception $Exception) {
                     QUI\System\Log::addError($Exception->getMessage());
                 }
@@ -415,29 +438,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
                 $this->paymentData = $paymentData;
             }
         }
-
-        // currency
-        if (!empty($data['currency_data'])) {
-            $currency = json_decode($data['currency_data'], true);
-
-            if (is_string($currency)) {
-                $currency = json_decode($currency, true);
-            }
-
-            if ($currency && isset($currency['code'])) {
-                try {
-                    $this->Currency = QUI\ERP\Currency\Handler::getCurrency($currency['code']);
-                } catch (QUI\Exception $Exception) {
-                    QUI\System\Log::addDebug($Exception->getMessage());
-                }
-            }
-        }
-
-        if ($this->Currency === null) {
-            $this->Currency = QUI\ERP\Defaults::getCurrency();
-        }
-
-        $this->Articles->setCurrency($this->Currency);
 
         // shipping
         if (is_numeric($data['shipping_id'])) {
