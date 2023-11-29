@@ -467,6 +467,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, QUI\ERP\Er
         $this->setAttribute('inOrderCreation', true);
 
         // get the order with new data
+        $Order->setCurrency($this->getCurrency());
         $Order->refresh();
         $Order->recalculate();
 
