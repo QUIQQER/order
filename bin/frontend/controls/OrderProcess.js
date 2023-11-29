@@ -1313,12 +1313,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $endResultRendering: function() {
             this.$TimelineContainer.getElements('style').destroy();
 
-            //const CurrentStep = this.getCurrentStepData();
-
-            //if (CurrentStep.step === 'Processing') {
-            new Fx.Scroll(window).toTop();
-            //}
-
+            this.scrollIntoView();
             this.$runningAnimation = false;
             this.fireEvent('stepLoaded', [this]);
         },
@@ -1476,7 +1471,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 return true;
             }
 
-            new Fx.Scroll(window).toTop();
+            this.scrollIntoView();
 
             this.next().catch(function(e) {
                 // nothing
@@ -1492,7 +1487,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          */
         $onPreviousClick: function(event) {
             event.stop();
-            new Fx.Scroll(window).toTop();
+            this.scrollIntoView();
 
             this.previous().catch(function(e) {
                 // nothing
@@ -1743,6 +1738,16 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     });
                 });
             });
+        },
+
+        scrollIntoView: function() {
+            if (typeof this.getElm().scrollIntoView === 'function') {
+                this.getElm().scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                    inline: 'start'
+                });
+            }
         }
     });
 });
