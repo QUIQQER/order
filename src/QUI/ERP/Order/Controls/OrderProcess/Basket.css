@@ -5,7 +5,7 @@
 
 .quiqqer-order-ordering-step .articles-sum {
     position: relative;
-    top: -1px;
+    float: initial;
 }
 
 .quiqqer-order-btn-submit {
