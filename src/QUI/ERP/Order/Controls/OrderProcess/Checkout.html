@@ -56,9 +56,9 @@ Order=$Order
             <span class="quiqqer-order-step-checkout-payments-payment-title">
                 {$Payment->getTitle()}
             </span>
-            <span class="quiqqer-order-step-checkout-payments-payment-description">
+            <div class="quiqqer-order-step-checkout-payments-payment-description">
                 {$Payment->getDescription()}
-            </span>
+            </div>
         </div>
 
         {if isset($Shipping) && $Shipping}
@@ -70,6 +70,9 @@ Order=$Order
             <span class="quiqqer-order-step-checkout-shipping-title">
                 {$Shipping->getTitle()}
             </span>
+            <div class="quiqqer-order-step-checkout-payments-payment-description">
+                {$Shipping->getDescription()}
+            </div>
         </div>
         {/if}
     </div>

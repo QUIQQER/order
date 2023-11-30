@@ -7,6 +7,15 @@
     margin-right: auto;
 }
 
+.quiqqer-order-basket-articles {
+    width: 100%;
+}
+
+.quiqqer-order-basket-total {
+    margin-top: 20px;
+    margin-left: auto;
+}
+
 .quiqqer-order-shoppingCart-nobody {
     display: flex;
     width: 100%;
