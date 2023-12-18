@@ -1,30 +1,33 @@
+.quiqqer-order-step-checkout-invoiceAddress,
+.quiqqer-order-step-checkout-deliveryAddress,
+.quiqqer-order-step-checkout-payments,
+.quiqqer-order-step-checkout-article {
+    margin: 2rem 0;
+}
 
 .quiqqer-order-step-checkout header {
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
 }
 
-.quiqqer-order-step-checkout-invoiceAddress,
-.quiqqer-order-step-checkout-article {
-    clear: both;
-    display: inline-block;
-    margin-bottom: 20px;
-    position: relative;
-    width: 100%;
+.quiqqer-order-step-checkout-payments {
+    display: grid;
+    gap: 1rem 2rem;
+    grid-template-areas:
+            "header header"
+            "payment shipping";
+    grid-template-columns: 1fr 1fr;
 }
 
-.quiqqer-order-step-checkout-invoiceAddress {
-    margin-top: 20px;
+.quiqqer-order-step-checkout-payments > h2 {
+    grid-area: header;
 }
 
 .quiqqer-order-step-checkout-shipping {
-    margin-top: 30px;
+    grid-area: shipping;
 }
 
-.quiqqer-order-step-checkout-shipping,
 .quiqqer-order-step-checkout-payments-payment {
-    display: block;
-    float: left;
-    width: 50%;
+    grid-area: payment;
 }
 
 .quiqqer-order-step-checkout-shipping img,
@@ -33,32 +36,11 @@
     max-width: 100%;
 }
 
-.quiqqer-order-step-checkout-payments-payment span {
-    float: left;
-}
-
 .quiqqer-order-step-checkout-shipping-title,
 .quiqqer-order-step-checkout-payments-payment-title {
-    clear: both;
-    float: left;
     font-weight: bold;
-    margin-top: 10px;
-}
-
-.quiqqer-order-step-checkout-payments-payment-description {
-    clear: both;
-}
-
-.quiqqer-order-step-checkout-payments-payment-description p {
-    margin: 5px 0 0 0;
-    padding: 0;
-}
-
-.quiqqer-order-customerData-display-customerNo span,
-.quiqqer-order-customerData-display-eMail span,
-.quiqqer-order-customerData-display-tel span {
-    float: left;
-    width: 50%;
+    margin-top: 0.5rem;
+    display: block;
 }
 
 .quiqqer-order-step-checkout-notice a {

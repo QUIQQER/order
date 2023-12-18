@@ -1104,10 +1104,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             let leftPos = 0;
 
             if (typeof startDirection === 'undefined' || startDirection === -1) {
-                leftPos = -100;
+                leftPos = -10;
             } else {
                 if (startDirection === 1) {
-                    leftPos = 100;
+                    leftPos = 10;
                 }
             }
 
@@ -1155,12 +1155,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 html: StepContent.get('html'),
                 'class': 'quiqqer-order-ordering-step-next',
                 styles: {
-                    'float': 'left',
                     left: leftPos,
                     opacity: 0,
                     position: 'relative',
                     top: 0,
-                    width: '100%'
                 }
             });
 
@@ -1247,16 +1245,15 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             let leftPos = 0;
 
             if (typeof moveDirection === 'undefined' || moveDirection === -1) {
-                leftPos = -100;
+                leftPos = -10;
             } else {
                 if (moveDirection === 1) {
-                    leftPos = 100;
+                    leftPos = 10;
                 }
             }
 
             this.$StepContainer.setStyles({
                 height: this.$StepContainer.getSize().y,
-                overflow: 'hidden',
                 width: '100%'
             });
 
@@ -1275,7 +1272,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 left: leftPos,
                 opacity: 0
             }, {
-                duration: 500
+                duration: 250
             }).then(function() {
                 const styles = Container.getElements('style');
 

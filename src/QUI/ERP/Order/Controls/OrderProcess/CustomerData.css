@@ -1,30 +1,47 @@
-
 .quiqqer-order-customerData-container {
-    float: left;
-    flex-wrap: wrap;
-    width: 100%;
+    display: flex;
+    gap: 1rem 2rem;
 }
 
 .quiqqer-order-customerData,
 .quiqqer-order-customerData-comment {
-    clear: both;
-    float: left;
-    max-width: 600px;
-    width: 100%;
+    flex: 1;
 }
 
 .quiqqer-order-customerData-comment label {
     clear: both;
-    float: left;
     margin-bottom: 20px;
     width: 100%;
+}
+
+@media screen and (max-width: 767px) {
+    .quiqqer-order-customerData-container {
+        flex-direction: column;
+    }
+}
+
+/* customer data */
+:is(.quiqqer-order-customerData-display-customerNo, .quiqqer-order-customerData-display-eMail, .quiqqer-order-customerData-display-tel){
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+}
+
+:is(.quiqqer-order-customerData-display-customerNo, .quiqqer-order-customerData-display-eMail, .quiqqer-order-customerData-display-tel) > .text-muted {
+    width: 12rem;
+}
+
+@media screen and (max-width: 767px) {
+    :is(.quiqqer-order-customerData-display-customerNo, .quiqqer-order-customerData-display-eMail, .quiqqer-order-customerData-display-tel) > .text-muted {
+        width: initial;
+        margin-right: 0.5em;
+    }
 }
 
 /** address data
  ========================================== */
 
 .quiqqer-order-customerData header {
-    float: left;
     width: 100%;
 }
 
@@ -39,32 +56,43 @@
 
 
 .quiqqer-order-customerData label {
-    clear: both;
-    float: left;
     margin-bottom: 10px;
     width: 100%;
+    display: flex;
 }
 
 .quiqqer-order-customerData label span {
-    float: left;
-    width: 50%;
+    width: 40%;
+    flex-grow: 1;
 }
 
 .quiqqer-order-customerData label input,
 .quiqqer-order-customerData label select,
 .quiqqer-order-customerData label textarea,
 .quiqqer-order-customerData .qui-select {
-    float: left;
-    width: 60%
+    width: 60%;
+    flex-grow: 1;
+}
+
+@media screen and (max-width: 500px) {
+    .quiqqer-order-customerData label {
+        flex-direction: column;
+    }
+
+    .quiqqer-order-customerData label span,
+    .quiqqer-order-customerData label input,
+    .quiqqer-order-customerData label select,
+    .quiqqer-order-customerData label textarea,
+    .quiqqer-order-customerData .qui-select {
+        width: 100%;
+    }
 }
 
 .quiqqer-order-customerData label [name="street"] {
-    float: left;
     width: 45%;
 }
 
 .quiqqer-order-customerData label [name="street_number"] {
-    float: left;
     margin-left: 10px;
     width: calc(15% - 10px);
 }
@@ -84,46 +112,30 @@
 }
 
 .quiqqer-order-customerData-edit {
-    display: none;
-    float: left;
     position: relative;
-    width: 100%;
+    overflow: auto;
 }
 
-.quiqqer-order-customerData-edit-close {
-    cursor: pointer;
-    font-size: 24px;
-    line-height: 40px;
-    position: absolute;
-    right: 0;
+button.quiqqer-order-customerData-edit-close {
     text-align: center;
-    top: -50px;
-    width: 40px;
+}
+
+button.quiqqer-order-customerData-edit-close > .fa {
+    margin: 0;
 }
 
 .quiqqer-order-customerData-edit [name="save-edit"] {
-    float: left;
     margin-left: 40%;
     width: 60%;
 }
 
 .quiqqer-order-customerData-display {
-    clear: both;
-    float: left;
-    max-width: 400px;
-    padding-right: 50px;
     position: relative;
-    width: 100%;
 }
 
 .quiqqer-order-customerData-display label {
-    float: left;
     margin-bottom: 0;
     width: 100%;
-}
-
-.quiqqer-order-customerData-edit label span {
-    width: 40%;
 }
 
 address {
@@ -139,10 +151,7 @@ address .fa {
 }
 
 .quiqqer-order-customerData-display-address {
-    clear: both;
-    float: left;
-    margin-top: 10px;
-    width: 100%;
+    margin-top: 20px;
 }
 
 .quiqqer-order-customerData-display-address-label {
@@ -151,16 +160,8 @@ address .fa {
     padding-bottom: 5px;
 }
 
-.quiqqer-order-customerData-display-address address {
-    margin-bottom: 10px;
-}
-
 .quiqqer-order-customerData-edit-vatId {
     position: relative;
-}
-
-.quiqqer-order-customerData-edit-salutation {
-    margin-top: 20px;
 }
 
 .quiqqer-order-customerData-tax-validation-loader {
@@ -179,12 +180,15 @@ address .fa {
 
 .quiqqer-order-customerData [name="open-edit"] {
     margin-left: auto;
-    /*display: none;*/
 }
 
 @media screen and (max-width: 500px) {
     .quiqqer-order-customerData [name="open-edit"] .quiqqer-order-customerData-edit-text {
         display: none;
+    }
+
+    .quiqqer-order-customerData [name="open-edit"] .quiqqer-order-customerData-edit-icon {
+        margin: 0;
     }
 }
 
@@ -205,11 +209,6 @@ address .fa {
 
 /** comment
  ========================================== */
-
-.quiqqer-order-customerData-comment {
-    margin-top: 40px;
-}
-
 .quiqqer-order-customerData-comment label span {
     display: block;
     padding: 10px 0;

@@ -53,33 +53,25 @@ Developers
 
 - onQuiqqerOrderSuccessful [Order]
 - onQuiqqerOrderCreated [Order]
-
 - onQuiqqerOrderDeleteBegin [Order]
 - onQuiqqerOrderDelete [$orderId, $orderData]
-
 - onQuiqqerOrderCopyBegin [Order]
 - onQuiqqerOrderCopy [Order]
-
 - onQuiqqerOrderUpdateBegin [Order]
 - onQuiqqerOrderUpdate [Order]
-
 - quiqqerOrderOrderProcessCheckoutOutput [AbstractOrderingStep, &text]
-
 - onQuiqqerOrderPaidStatusChanged [Order, currentPaidStatus, previousPaidStatus]
 - onQuiqqerOrderProcessStatusChange [Order, QUI\ERP\Order\ProcessingStatus\Status]
-
 - quiqqerOrderCustomerDataSave [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
 - quiqqerOrderCustomerDataSaveEnd [QUI\ERP\Order\Controls\OrderProcess\CustomerData]
-
 - quiqqerOrderBasketRemovePos [QUI\ERP\Order\Basket\Basket, pos]
 - quiqqerOrderBasketToOrder [QUI\ERP\Order\Basket\BasketOrder, $Order, QUI\ERP\Products\Product\ProductList]
-
 - onQuiqqerOrderProcessSendBegin [QUI\ERP\Order\OrderProcess]
 - onQuiqqerOrderProcessSendCreateOrder [QUI\ERP\Order\OrderProcess]
 - onQuiqqerOrderProcessSend [QUI\ERP\Order\OrderProcess]
-
 - onQuiqqerOrderCustomerChange [Order]
 - onQuiqqerOrderCustomerCustomerSet [Order]
+- onQuiqqerBasketImport [Basket Instance, ProductList]
 
 ### Order Events
 
@@ -91,12 +83,9 @@ Developers
 
 - onQuiqqer::order::orderProcessBasketBegin [Collector, Basket]
 - onQuiqqer::order::orderProcessBasketEnd [Collector, Basket]
-
 - onQuiqqer::order::orderProcessCustomerDataBegin [Collector, User, Address]
 - onQuiqqer::order::orderProcessCustomerData [Collector, User, Address]
 - onQuiqqer::order::orderProcessCustomerEnd [Collector, User, Address]
-
 - onQuiqqer::order::orderProcessCheckoutBegin [Collector, User, Order]
 - onQuiqqer::order::orderProcessCheckoutEnd [Collector, User, Order]
-
 - onQuiqqer::order::orderProcessFinish [Collector, User, Order]
