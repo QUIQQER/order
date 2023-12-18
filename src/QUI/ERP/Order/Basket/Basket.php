@@ -70,7 +70,7 @@ class Basket
             return;
         }
 
-        $this->List            = new ProductList();
+        $this->List = new ProductList();
         $this->List->duplicate = true;
         $this->List->setUser($User);
 
@@ -89,7 +89,7 @@ class Basket
             try {
                 if ($Exception instanceof ExceptionBasketNotFound) {
                     $Basket = Factory::getInstance()->createBasket($User);
-                    $data   = Handler::getInstance()->getBasketData($Basket->getId(), $User);
+                    $data = Handler::getInstance()->getBasketData($Basket->getId(), $User);
                 }
             } catch (QUI\Exception $Exception) {
                 throw new Exception(
@@ -99,7 +99,7 @@ class Basket
             }
         }
 
-        $this->id   = $basketId;
+        $this->id = $basketId;
         $this->User = $User;
         $this->hash = $data['hash'];
 
@@ -215,6 +215,12 @@ class Basket
         }
 
         $this->save();
+
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerBasketImport',
+            [$this, $this->List]
+        );
     }
 
     /**
@@ -227,7 +233,7 @@ class Basket
         }
 
         // save only product ids with custom fields, we need not more
-        $result   = [];
+        $result = [];
         $products = $this->List->getProducts();
 
         foreach ($products as $Product) {
@@ -240,11 +246,11 @@ class Basket
             }
 
             $productData = [
-                'id'          => $Product->getId(),
-                'title'       => $Product->getTitle(),
+                'id' => $Product->getId(),
+                'title' => $Product->getTitle(),
                 'description' => $Product->getDescription(),
-                'quantity'    => $Product->getQuantity(),
-                'fields'      => []
+                'quantity' => $Product->getQuantity(),
+                'fields' => []
             ];
 
             /* @var $Field QUI\ERP\Products\Field\UniqueField */
@@ -262,10 +268,10 @@ class Basket
                 QUI\ERP\Order\Handler::getInstance()->tableBasket(),
                 [
                     'products' => json_encode($result),
-                    'hash'     => $this->hash
+                    'hash' => $this->hash
                 ],
                 [
-                    'id'  => $this->getId(),
+                    'id' => $this->getId(),
                     'uid' => $this->User->getId()
                 ]
             );
@@ -283,7 +289,7 @@ class Basket
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = [];
+        $result = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
@@ -303,9 +309,9 @@ class Basket
             }
 
             $result[] = [
-                'id'       => $Product->getId(),
+                'id' => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
-                'fields'   => $fields
+                'fields' => $fields
             ];
         }
 
@@ -325,8 +331,8 @@ class Basket
 
 
         return [
-            'id'           => $this->getId(),
-            'products'     => $result,
+            'id' => $this->getId(),
+            'products' => $result,
             'calculations' => $calculations
         ];
     }
@@ -439,7 +445,7 @@ class Basket
         // update the data
         $products = $Products->getProducts();
 
-        $InvoiceAddress  = $Order->getInvoiceAddress();
+        $InvoiceAddress = $Order->getInvoiceAddress();
         $DeliveryAddress = $Order->getDeliveryAddress();
 
         $Order->clear();
@@ -486,7 +492,7 @@ class Basket
     protected function createNewOrder(): QUI\ERP\Order\OrderInProcess
     {
         $Orders = QUI\ERP\Order\Handler::getInstance();
-        $User   = QUI::getUserBySession();
+        $User = QUI::getUserBySession();
 
         // create a new order
         try {

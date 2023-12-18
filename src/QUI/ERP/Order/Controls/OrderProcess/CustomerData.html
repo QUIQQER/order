@@ -5,305 +5,313 @@
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData"}
             </span>
 
-            <button name="open-edit" disabled class="btn-light">
+            <button name="open-edit" disabled class="btn btn-light">
                 <span class="quiqqer-order-customerData-edit-icon fa fa-edit"></span>
                 <span class="quiqqer-order-customerData-edit-text">
                     {locale group="quiqqer/order" var="ordering.step.title.CustomerData.addressEdit"}
                 </span>
+            </button>
+
+            <button class="quiqqer-order-customerData-edit-close btn btn-light fs-lg" style="display: none; opacity: 0; visibility: hidden;">
+                <span class="fa fa-close"></span>
             </button>
         </h1>
     </header>
 
     {template_event name="quiqqer::order::orderProcessCustomerDataBegin" User=$User Address=$Address Order=$Order}
 
-    <div class="quiqqer-order-customerData-display">
-        <div class="quiqqer-order-customerData-display-customerNo">
-            <span>
-                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.customerNo"}
-            </span>
-            <span>{$User->getId()}</span>
+    <div class="quiqqer-order-customerData__container">
+        <div class="quiqqer-order-customerData-display">
+            <div class="quiqqer-order-customerData-display-customerNo">
+                <span class="text-muted">
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.customerNo"}
+                </span>
+                <span>{$User->getId()}</span>
+            </div>
+
+            <div class="quiqqer-order-customerData-display-eMail">
+                <span class="text-muted">
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.eMail"}
+                </span>
+                <span>{$User->getAttribute('email')}</span>
+            </div>
+
+            <div class="quiqqer-order-customerData-display-tel">
+                <span class="text-muted">
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}
+                </span>
+                <span>{if $Address->getPhone()}{$Address->getPhone()}{else}-{/if}</span>
+            </div>
+
+            <div class="quiqqer-order-customerData-display-address">
+                <span class="quiqqer-order-customerData-display-address-label">
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.address"}
+                </span>
+                {$Address->render()}
+            </div>
         </div>
 
-        <div class="quiqqer-order-customerData-display-eMail">
-            <span>
-                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.eMail"}
-            </span>
-            <span>{$User->getAttribute('email')}</span>
-        </div>
-
-        <div class="quiqqer-order-customerData-display-tel">
-            <span>
-                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}
-            </span>
-            <span>{if $Address->getPhone()}{$Address->getPhone()}{else}-{/if}</span>
-        </div>
-
-        <div class="quiqqer-order-customerData-display-address">
-            <span class="quiqqer-order-customerData-display-address-label">
-                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.address"}
-            </span>
-            {$Address->render()}
-        </div>
-    </div>
-
-    <div class="quiqqer-order-customerData-edit">
-        <div class="quiqqer-order-customerData-edit-close">
-            <span class="fa fa-close"></span>
-        </div>
-
-        <input type="hidden"
-               name="addressId"
-               value="{$Address->getId()}"
-        />
-
-        <div class="quiqqer-order-customerData-requiredFields-message content-message-attention">
-            {locale group='quiqqer/order' var='ordering.step.title.CustomerData.requiredField.text'}
-        </div>
-
-        {if $businessTypeIsChangeable}
-        <label class="quiqqer-order-customerData-edit-businessType">
-            <span>
-                {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType"}
-            </span>
-            <select name="businessType">
-                <option value="b2c">
-                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType.b2c"}
-                </option>
-                <option value="b2b" {$b2bSelected}>
-                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType.b2b"}
-                </option>
-            </select>
-        </label>
-        {/if}
-
-        {if $isB2B}
-        <label class="quiqqer-order-customerData-edit-company">
-            {assign var=r value=""}
-            {if $settings.company.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/order" var="company"}
-                {if $settings.company.required}*{/if}
-            </span>
-            <input type="text"
-                   name="company"
-                   autocomplete="organization"
-                   value="{$Address->getAttribute('company')|escape:'html'}"
-                   {$r}
+        <div class="quiqqer-order-customerData__edit-wrapper" style="height: 0; position:relative; overflow: hidden;">
+            <div class="quiqqer-order-customerData-edit" style="opacity: 0;">
+            <input type="hidden"
+                   name="addressId"
+                   value="{$Address->getId()}"
             />
-        </label>
-        <label class="quiqqer-order-customerData-edit-vatId">
-            <span>{locale group="quiqqer/order" var="vatId"}</span>
-            <input type="text"
-                   name="vatId"
-                   value="{$User->getAttribute('quiqqer.erp.euVatId')|escape:'html'}"
-            />
-        </label>
-        <label class="quiqqer-order-customerData-edit-chUID">
-            <span>{locale group="quiqqer/order" var="chUID"}</span>
-            <input type="text"
-                   name="chUID"
-                   value="{$User->getAttribute('quiqqer.erp.chUID')|escape:'html'}"
-            />
-        </label>
-        {/if}
 
-        {if $isOnlyB2B || $isOnlyB2C}
-        <style type="text/css">
-            .quiqqer-order-customerData-edit-businessType {
-                display: none;
-            }
-        </style>
-        {/if}
+            <div class="quiqqer-order-customerData-requiredFields-message content-message-attention">
+                {locale group='quiqqer/order' var='ordering.step.title.CustomerData.requiredField.text'}
+            </div>
 
-        {if $isB2B === false}
-        <style type="text/css">
-            .quiqqer-order-customerData-edit-company,
-            .quiqqer-order-customerData-edit-vatId,
-            .quiqqer-order-customerData-edit-chUID {
-                display: none;
-            }
-        </style>
-        {/if}
-
-
-        {if $settings.salutation.show}
-        <label class="quiqqer-order-customerData-edit-salutation">
-            {assign var=r value=""}
-            {if $settings.salutation.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="salutation"}
-                {if $settings.salutation.required}*{/if}
-            </span>
-            <input type="text"
-                   name="salutation"
-                   autocomplete
-                   maxlength="10"
-                   value="{$Address->getAttribute('salutation')|escape:'html'}"
-                   {$r}
-            />
-        </label>
-        {/if}
-
-        {if $settings.firstname.show}
-        <label class="quiqqer-order-customerData-edit-firstname">
-            {assign var=r value=""}
-            {if $settings.firstname.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="firstname"}
-                {if $settings.firstname.required}*{/if}
-            </span>
-            <input type="text"
-                   name="firstname"
-                   autocomplete="given-name"
-                   value="{$Address->getAttribute('firstname')|escape:'html'}"
-                   {$r}
-            />
-        </label>
-        {/if}
-
-        {if $settings.lastname.show}
-        <label class="quiqqer-order-customerData-edit-lastname">
-            {assign var=r value=""}
-            {if $settings.lastname.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="lastname"}
-                {if $settings.lastname.required}*{/if}
-            </span>
-            <input type="text"
-                   name="lastname"
-                   autocomplete="family-name"
-                   value="{$Address->getAttribute('lastname')|escape:'html'}"
-                   {$r}
-            />
-        </label>
-        {/if}
-
-        {if $settings.street_no.show}
-        <label class="quiqqer-order-customerData-edit-street_no">
-            {assign var=r value=""}
-            {if $settings.street_no.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="street_no"}
-                {if $settings.street_no.required}*{/if}
-            </span>
-            {if empty($Address->getAttribute('street_no'))}
-            <input type="text" name="street" value="" autocomplete="shipping street-address" {$r}>
-            <input type="text" name="street_number" value="">
-            {else}
-            <input type="text"
-                   name="street_no"
-                   autocomplete="address-line1"
-                   value="{$Address->getAttribute('street_no')|escape:'html'}"
-                   {$r}
-            />
+            {if $businessTypeIsChangeable}
+            <label class="quiqqer-order-customerData-edit-businessType">
+                <span>
+                    {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType"}
+                </span>
+                <select name="businessType">
+                    <option value="b2c">
+                        {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType.b2c"}
+                    </option>
+                    <option value="b2b" {$b2bSelected}>
+                        {locale group="quiqqer/order" var="ordering.step.title.CustomerData.businessType.b2b"}
+                    </option>
+                </select>
+            </label>
             {/if}
-        </label>
-        {/if}
 
-        {if $settings.zip.show}
-        <label class="quiqqer-order-customerData-edit-zip">
-            {assign var=r value=""}
-            {if $settings.zip.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="zip"}
-                {if $settings.zip.required}*{/if}
-            </span>
-            <input type="text"
-                   name="zip"
-                   autocomplete="postal-code"
-                   value="{$Address->getAttribute('zip')|escape:'html'}"
-                   {$r}
-            />
-        </label>
-        {/if}
+            {if $isB2B}
+            <div class="bt2-labelContainer"  style="height: 0; overflow: hidden; opacity: 0;">
+                <div class="bt2-labelContainer__inner" style="overflow: auto;">
+                    <label class="quiqqer-order-customerData-edit-company">
+                        {assign var=r value=""}
+                        {if $settings.company.required}{assign var=r value="required"}{/if}
+                        <span>
+                            {locale group="quiqqer/order" var="company"}
+                            {if $settings.company.required}*{/if}
+                        </span>
+                        <input type="text"
+                               name="company"
+                               autocomplete="organization"
+                               value="{$Address->getAttribute('company')|escape:'html'}"
+                               {$r}
+                        />
+                    </label>
+                    <label class="quiqqer-order-customerData-edit-vatId">
+                        <span>{locale group="quiqqer/order" var="vatId"}</span>
+                        <input type="text"
+                               name="vatId"
+                               value="{$User->getAttribute('quiqqer.erp.euVatId')|escape:'html'}"
+                        />
+                    </label>
+                    <label class="quiqqer-order-customerData-edit-chUID">
+                        <span>{locale group="quiqqer/order" var="chUID"}</span>
+                        <input type="text"
+                               name="chUID"
+                               value="{$User->getAttribute('quiqqer.erp.chUID')|escape:'html'}"
+                        />
+                    </label>
+                </div>
+            </div>
+            {/if}
 
-        {if $settings.city.show}
-        <label class="quiqqer-order-customerData-edit-city">
-            {assign var=r value=""}
-            {if $settings.city.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="city"}
-                {if $settings.city.required}*{/if}
-            </span>
-            <input type="text"
-                   name="city"
-                   autocomplete="city-name locality"
-                   value="{$Address->getAttribute('city')|escape:'html'}"
-                   {$r}
-            />
-        </label>
-        {/if}
+            {if $isOnlyB2B || $isOnlyB2C}
+            <style type="text/css">
+                .quiqqer-order-customerData-edit-businessType {
+                    display: none;
+                }
+            </style>
+            {/if}
 
-        {if $settings.country.show}
-        <label class="quiqqer-order-customerData-edit-country">
-            <span>
-                {locale group="quiqqer/frontend-users" var="country"}
-                {if $settings.country.required}*{/if}
-            </span>
-            {control name="country" control="QUI\Countries\Controls\Select"
-            selected=$Address->getAttribute('country')
-            required=$settings.country.required
-            use-geo-location=true
-            }
-        </label>
-        {/if}
+            {if $isB2B === false}
+            <style type="text/css">
+                .quiqqer-order-customerData-edit-company,
+                .quiqqer-order-customerData-edit-vatId,
+                .quiqqer-order-customerData-edit-chUID {
+                    display: none;
+                }
+            </style>
+            {/if}
 
-        {if $settings.phone.show}
-        <label class="quiqqer-order-customerData-edit-tel">
-            {assign var=r value=""}
-            {if $settings.phone.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="phone"}
-                {if $settings.phone.required}*{/if}
-            </span>
-            <input type="tel"
-                   name="tel"
-                   autocomplete="tel"
-                   value="{if $Address->getPhone()}{$Address->getPhone()}{/if}"
-                   {$r}
-            />
-        </label>
-        {/if}
 
-        {if $settings.mobile.show}
-        <label class="quiqqer-order-customerData-edit-tel">
-            {assign var=r value=""}
-            {if $settings.mobile.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="mobile"}
-                {if $settings.mobile.required}*{/if}
-            </span>
-            <input type="tel"
-                   name="mobile"
-                   autocomplete="mobile"
-                   value="{if $Address->getMobile()}{$Address->getMobile()}{/if}"
-                   {$r}
-            />
-        </label>
-        {/if}
+            {if $settings.salutation.show}
+            <label class="quiqqer-order-customerData-edit-salutation">
+                {assign var=r value=""}
+                {if $settings.salutation.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="salutation"}
+                    {if $settings.salutation.required}*{/if}
+                </span>
+                <input type="text"
+                       name="salutation"
+                       autocomplete
+                       maxlength="10"
+                       value="{$Address->getAttribute('salutation')|escape:'html'}"
+                       {$r}
+                />
+            </label>
+            {/if}
 
-        {if $settings.fax.show}
-        <label class="quiqqer-order-customerData-edit-tel">
-            {assign var=r value=""}
-            {if $settings.fax.required}{assign var=r value="required"}{/if}
-            <span>
-                {locale group="quiqqer/frontend-users" var="fax"}
-                {if $settings.fax.required}*{/if}
-            </span>
-            <input type="tel"
-                   name="fax"
-                   autocomplete="fax"
-                   value="{if $Address->getFax()}{$Address->getFax()}{/if}"
-                   {$r}
-            />
-        </label>
-        {/if}
+            {if $settings.firstname.show}
+            <label class="quiqqer-order-customerData-edit-firstname">
+                {assign var=r value=""}
+                {if $settings.firstname.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="firstname"}
+                    {if $settings.firstname.required}*{/if}
+                </span>
+                <input type="text"
+                       name="firstname"
+                       autocomplete="given-name"
+                       value="{$Address->getAttribute('firstname')|escape:'html'}"
+                       {$r}
+                />
+            </label>
+            {/if}
 
-        <input type="submit"
-               name="save-edit-address"
-               value="{locale group='quiqqer/order' var='ordering.step.title.CustomerData.addressSave'}"
-               style="display: none" {* <<- quiqqer/erp#60 *}
-        >
+            {if $settings.lastname.show}
+            <label class="quiqqer-order-customerData-edit-lastname">
+                {assign var=r value=""}
+                {if $settings.lastname.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="lastname"}
+                    {if $settings.lastname.required}*{/if}
+                </span>
+                <input type="text"
+                       name="lastname"
+                       autocomplete="family-name"
+                       value="{$Address->getAttribute('lastname')|escape:'html'}"
+                       {$r}
+                />
+            </label>
+            {/if}
+
+            {if $settings.street_no.show}
+            <label class="quiqqer-order-customerData-edit-street_no">
+                {assign var=r value=""}
+                {if $settings.street_no.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="street_no"}
+                    {if $settings.street_no.required}*{/if}
+                </span>
+                {if empty($Address->getAttribute('street_no'))}
+                <input type="text" name="street" value="" autocomplete="shipping street-address" {$r}>
+                <input type="text" name="street_number" value="">
+                {else}
+                <input type="text"
+                       name="street_no"
+                       autocomplete="address-line1"
+                       value="{$Address->getAttribute('street_no')|escape:'html'}"
+                       {$r}
+                />
+                {/if}
+            </label>
+            {/if}
+
+            {if $settings.zip.show}
+            <label class="quiqqer-order-customerData-edit-zip">
+                {assign var=r value=""}
+                {if $settings.zip.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="zip"}
+                    {if $settings.zip.required}*{/if}
+                </span>
+                <input type="text"
+                       name="zip"
+                       autocomplete="postal-code"
+                       value="{$Address->getAttribute('zip')|escape:'html'}"
+                       {$r}
+                />
+            </label>
+            {/if}
+
+            {if $settings.city.show}
+            <label class="quiqqer-order-customerData-edit-city">
+                {assign var=r value=""}
+                {if $settings.city.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="city"}
+                    {if $settings.city.required}*{/if}
+                </span>
+                <input type="text"
+                       name="city"
+                       autocomplete="city-name locality"
+                       value="{$Address->getAttribute('city')|escape:'html'}"
+                       {$r}
+                />
+            </label>
+            {/if}
+
+            {if $settings.country.show}
+            <label class="quiqqer-order-customerData-edit-country">
+                <span>
+                    {locale group="quiqqer/frontend-users" var="country"}
+                    {if $settings.country.required}*{/if}
+                </span>
+                {control name="country" control="QUI\Countries\Controls\Select"
+                selected=$Address->getAttribute('country')
+                required=$settings.country.required
+                use-geo-location=true
+                }
+            </label>
+            {/if}
+
+            {if $settings.phone.show}
+            <label class="quiqqer-order-customerData-edit-tel">
+                {assign var=r value=""}
+                {if $settings.phone.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="phone"}
+                    {if $settings.phone.required}*{/if}
+                </span>
+                <input type="tel"
+                       name="tel"
+                       autocomplete="tel"
+                       value="{if $Address->getPhone()}{$Address->getPhone()}{/if}"
+                       {$r}
+                />
+            </label>
+            {/if}
+
+            {if $settings.mobile.show}
+            <label class="quiqqer-order-customerData-edit-tel">
+                {assign var=r value=""}
+                {if $settings.mobile.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="mobile"}
+                    {if $settings.mobile.required}*{/if}
+                </span>
+                <input type="tel"
+                       name="mobile"
+                       autocomplete="mobile"
+                       value="{if $Address->getMobile()}{$Address->getMobile()}{/if}"
+                       {$r}
+                />
+            </label>
+            {/if}
+
+            {if $settings.fax.show}
+            <label class="quiqqer-order-customerData-edit-tel">
+                {assign var=r value=""}
+                {if $settings.fax.required}{assign var=r value="required"}{/if}
+                <span>
+                    {locale group="quiqqer/frontend-users" var="fax"}
+                    {if $settings.fax.required}*{/if}
+                </span>
+                <input type="tel"
+                       name="fax"
+                       autocomplete="fax"
+                       value="{if $Address->getFax()}{$Address->getFax()}{/if}"
+                       {$r}
+                />
+            </label>
+            {/if}
+
+            <input type="submit"
+                   name="save-edit-address"
+                   value="{locale group='quiqqer/order' var='ordering.step.title.CustomerData.addressSave'}"
+                   style="display: none" {* <<- quiqqer/erp#60 *}
+            >
+        </div>
+        </div>
     </div>
 
     {template_event name="quiqqer::order::orderProcessCustomerDataEnd" User=$User Address=$Address Order=$Order}

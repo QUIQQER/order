@@ -307,6 +307,11 @@ class BasketOrder
         } catch (\Exception $Exception) {
             QUI\System\Log::addDebug($Exception->getMessage());
         }
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerBasketImport',
+            [$this, $this->List]
+        );
     }
 
     /**

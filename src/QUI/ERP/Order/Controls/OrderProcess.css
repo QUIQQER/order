@@ -1,4 +1,11 @@
 .quiqqer-order-ordering {
+    --_order-listEntry-padding: var(--order-listEntry-padding, 1rem);
+    --_order-listEntry-bg: var(--order-listEntry-bg, transparent);
+    --_order-listEntry-bg--hover: var(--order-listEntry-bg--hover, #f8f8f8);
+    --_order-listEntry-radius: var(--order-listEntry-radius, 0.25rem);
+    --_order-listEntry-gap: var(--order-listEntry-gap, 2rem);
+    --_order-listEntry-spacing: var(--order-listEntry-spacing, 0.5rem);
+
     display: block;
     width: 100%;
 }
@@ -31,44 +38,43 @@
 }
 
 .quiqqer-order-ordering-error {
-    background-color: rgb(255, 249, 242);
-    border: 1px solid #D8D8D8;
-    clear: both;
-    color: rgb(211, 0, 0);
-    display: block;
-    margin-bottom: 20px;
-    padding: 10px;
-    width: 100%;
+
 }
 
 /** processing / time line
  ============================================*/
-
 .quiqqer-order-ordering-timeline {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    clear: both;
-    display: block;
-    float: left;
-    margin: 0 0 40px !important;
+    margin-bottom: 2rem;
+}
+
+.quiqqer-order-ordering-timeline-container > ul {
     padding: 0;
-    width: 100%;
+    display: flex;
 }
 
 .quiqqer-order-ordering-timeline a {
     text-decoration: none;
+    display: inline-block;
+    line-height: 1.3;
 }
 
 .quiqqer-order-ordering-timeline li {
-    float: left;
+    cursor: pointer;
+    padding: 0;
     height: 100px;
     list-style-type: none;
     position: relative;
     text-align: center;
-    width: 16.666%;
+    flex: 1;
 }
 
 .quiqqer-order-ordering-timeline li.active {
     background: transparent;
+}
+
+.quiqqer-order-ordering-timeline li .title {
+    z-index: 3;
+    position: relative;
 }
 
 .quiqqer-order-ordering-timeline li .fa {
@@ -133,10 +139,6 @@
     color: #75b947;
 }
 
-.quiqqer-order-ordering-timeline {
-    width: 100%;
-}
-
 .quiqqer-order-ordering-timeline.disabled,
 .quiqqer-order-ordering-timeline.disabled li,
 .quiqqer-order-ordering-timeline.disabled a {
@@ -149,43 +151,10 @@
     opacity: 0.75;
 }
 
-/** current step
- ============================================*/
-
-.quiqqer-order-ordering-step {
-    clear: both;
-    display: block;
-    margin-bottom: 20px;
-    overflow-x: hidden;
-    position: relative;
-    width: 100%;
-}
-
-/** step
- ============================================*/
-
-.quiqqer-order-ordering-buttons {
-    clear: both;
-    display: block;
-    float: left;
-    margin-top: 0;
-    width: 100%;
-}
-
-.quiqqer-order-ordering-buttons a {
-    float: left;
-    text-decoration: none;
-}
-
-.quiqqer-order-ordering-buttons-next {
-    float: right;
-}
-
 @media (max-width: 768px) {
     .quiqqer-order-ordering-timeline {
-        margin: 0 0 20px !important;
+        margin-bottom: 1rem;
         overflow: auto;
-        padding: 10px 0 0;
         white-space: nowrap;
     }
 
@@ -193,18 +162,14 @@
         float: left;
         height: 70px;
         overflow: hidden;
-        width: initial;
-    }
-
-    .quiqqer-order-ordering-timeline-container ul {
-        padding-left: 0;
+        min-width: 100%;
     }
 
     .quiqqer-order-ordering-timeline li {
         display: inline-block;
         float: none;
         height: 70px;
-        width: 175px !important;
+        width: 150px ;
     }
 
     .quiqqer-order-ordering-timeline-container li .title {
@@ -214,6 +179,44 @@
     .quiqqer-order-ordering-timeline li .fa {
         font-size: 24px;
         top: calc(50% - 6px);
+    }
+}
+
+/** current step
+ ============================================*/
+
+.quiqqer-order-ordering-step {
+    display: block;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/** step
+ ============================================*/
+
+.quiqqer-order-ordering-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.quiqqer-order-ordering-buttons-backToShop,
+.quiqqer-order-ordering-buttons-previous {
+    margin-right: auto;
+}
+
+.quiqqer-order-basket-articles {
+    width: 100%;
+}
+
+.quiqqer-order-basket-total {
+    margin-top: 20px;
+    margin-left: auto;
+}
+
+@media screen and (max-width: 767px) {
+    .quiqqer-order-ordering-buttons {
+        flex-direction: column;
     }
 }
 

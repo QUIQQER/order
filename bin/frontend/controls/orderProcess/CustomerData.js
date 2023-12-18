@@ -53,7 +53,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             this.EditButton.addEvent('click', this.openAddressEdit);
             this.EditButton.set('disabled', false);
 
-            this.$Close = this.getElm().getElements('.quiqqer-order-customerData-edit-close');
+            this.$Close = this.getElm().getElement('.quiqqer-order-customerData-edit-close');
             this.$Close.addEvent('click', this.closeAddressEdit);
 
             var EditContainer = this.getElm().getElement('.quiqqer-order-customerData-edit');
@@ -212,13 +212,21 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             var self             = this,
                 Elm              = this.getElm(),
-                Container        = Elm.getElement('.quiqqer-order-customerData'),
+                Container        = Elm.getElement('.quiqqer-order-customerData__container'),
                 DisplayContainer = Elm.getElement('.quiqqer-order-customerData-display'),
-                EditContainer    = Elm.getElement('.quiqqer-order-customerData-edit'),
-                Header           = Elm.getElement('.quiqqer-order-customerData header');
+                EditWrapper      = Elm.getElement('.quiqqer-order-customerData__edit-wrapper'),
+                Edit    = Elm.getElement('.quiqqer-order-customerData-edit');
+
+            Container.style.height = Container.offsetHeight + 'px';
 
             var BusinessType = Elm.getElement('[name="businessType"]');
             var OrderProcess = self.$getOrderProcess();
+
+            if (BusinessType) {
+                self.$onBusinessTypeChange({
+                    target: BusinessType
+                });
+            }
 
             if (OrderProcess) {
                 OrderProcess.resize();
@@ -231,33 +239,32 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             return this.$fx(DisplayContainer, {
                 opacity: 0
             }).then(function () {
+                DisplayContainer.style.display = 'none';
+
                 return self.$fx(Container, {
-                    height: EditContainer.getComputedSize().height + Header.getSize().y
+                    height: Edit.getComputedSize().height
                 });
             }).then(function () {
-                DisplayContainer.setStyle('display', 'none');
-                EditContainer.setStyle('opacity', 0);
-                EditContainer.setStyle('display', 'inline');
-
                 // save event
-                EditContainer.getElement('[type="submit"]').addEvent('click', function (event) {
+                Edit.getElement('[type="submit"]').addEvent('click', function (event) {
                     event.stop();
                     self.save().catch(function () {
                         // nothing
                     });
                 });
 
-                return self.$fx(EditContainer, {
+                EditWrapper.style.height = null;
+
+                self.$Close.style.display = null;
+                moofx(self.$Close).animate({
+                    opacity   : 1,
+                    visibility: null
+                });
+
+                return self.$fx(Edit, {
                     opacity: 1
                 });
             }).then(function () {
-                if (BusinessType) {
-                    self.$onBusinessTypeChange({
-                        target: BusinessType
-                    });
-                }
-
-                EditContainer.setStyle('display', 'inline');
                 Container.setStyle('height', null);
 
                 if (OrderProcess) {
@@ -279,36 +286,48 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             var self             = this,
                 Elm              = this.getElm(),
-                Container        = Elm.getElement('.quiqqer-order-customerData'),
+                Container        = Elm.getElement('.quiqqer-order-customerData__container'),
                 DisplayContainer = Elm.getElement('.quiqqer-order-customerData-display'),
-                EditContainer    = Elm.getElement('.quiqqer-order-customerData-edit'),
-                Header           = Elm.getElement('.quiqqer-order-customerData header');
+                EditWrapper      = Elm.getElement('.quiqqer-order-customerData__edit-wrapper'),
+                Edit    = Elm.getElement('.quiqqer-order-customerData-edit');
+
+            moofx(this.$Close).animate({
+                opacity   : 0,
+                visibility: 'hidden'
+            }, {
+                callback: function() {
+                    self.$Close.style.display = 'none';
+                }
+            });
 
             var OrderProcess = self.$getOrderProcess();
 
-            return this.$fx(EditContainer, {
+            Container.style.height = Container.offsetHeight + 'px';
+
+            return this.$fx(Edit, {
                 opacity: 0
             }).then(function () {
+
+                DisplayContainer.style.opacity = 0;
+                DisplayContainer.style.display = null;
+
                 return self.$fx(Container, {
-                    height: DisplayContainer.getComputedSize().height + Header.getSize().y
+                    height: DisplayContainer.getComputedSize().height
                 });
             }).then(function () {
-                EditContainer.setStyles({
-                    display: 'none',
-                    opacity: null
-                });
+                EditWrapper.style.height = 0;
 
                 moofx(self.EditButton).animate({
                     opacity   : 1,
                     visibility: null
                 });
 
-                DisplayContainer.setStyle('opacity', 0);
-                DisplayContainer.setStyle('display', null);
 
                 return self.$fx(DisplayContainer, {
                     opacity: 1
                 }).then(function () {
+                    Container.setStyle('height', null);
+
                     if (OrderProcess) {
                         OrderProcess.resize();
                     }
@@ -375,22 +394,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             }
 
             var businessType = Target.value;
+            const Container = this.getElm().querySelector('.bt2-labelContainer'),
+                  Inner = this.getElm().querySelector('.bt2-labelContainer__inner');
+
+
             var Company = this.getElm().getElement('.quiqqer-order-customerData-edit-company');
             var VatId = this.getElm().getElement('.quiqqer-order-customerData-edit-vatId');
-
-            var styles = {
-                display : 'inline-block',
-                height  : Company.getSize().y,
-                overflow: 'hidden',
-                opacity : 0,
-                position: 'relative'
-            };
-
-            VatId.getElement('input').setStyle('display', null);
-            Company.getElement('input').setStyle('display', null);
-
-            Company.setStyles(styles);
-            VatId.setStyles(styles);
 
             function show() {
                 if (VatId.getElement('input').value !== '') {
@@ -398,37 +407,21 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     VatId.getElement('input').title = QUILocale.get(lg, 'customer.data.vat.chaning.not.allowed');
                 }
 
-                moofx([
-                    VatId,
-                    Company
-                ]).animate({
-                    height      : Company.getScrollSize().y,
-                    marginBottom: 10,
-                    opacity     : 1
+                moofx(Container).animate({
+                    height: Inner.offsetHeight,
+                    opacity: 1
                 }, {
-                    duration: 250
+                    callback: function() {
+//                        Container.style.height = null;
+                    }
                 });
             }
 
             function hide() {
-                moofx([
-                    VatId,
-                    Company
-                ]).animate({
-                    height : 0,
-                    margin : 0,
-                    padding: 0,
+                moofx(Container).animate({
+                    height: 0,
                     opacity: 0
-                }, {
-                    duration: 250,
-                    callback: function () {
-                        VatId.getElement('input').setStyle('display', 'none');
-                        Company.getElement('input').setStyle('display', 'none');
-
-                        VatId.setStyle('display', 'none');
-                        Company.setStyle('display', 'none');
-                    }
-                });
+                })
             }
 
             if (businessType === 'b2c') {
