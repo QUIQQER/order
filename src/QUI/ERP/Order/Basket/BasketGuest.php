@@ -29,7 +29,7 @@ class BasketGuest
      */
     public function __construct()
     {
-        $this->List            = new ProductList();
+        $this->List = new ProductList();
         $this->List->duplicate = true;
         $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
@@ -131,6 +131,11 @@ class BasketGuest
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerBasketImport',
+            [$this, $this->List]
+        );
     }
 
     /**
@@ -150,7 +155,7 @@ class BasketGuest
     {
         $Products = $this->getProducts();
         $products = $Products->getProducts();
-        $result   = [];
+        $result = [];
 
         /* @var $Product Product */
         foreach ($products as $Product) {
@@ -170,9 +175,9 @@ class BasketGuest
             }
 
             $result[] = [
-                'id'       => $Product->getId(),
+                'id' => $Product->getId(),
                 'quantity' => $Product->getQuantity(),
-                'fields'   => $fields
+                'fields' => $fields
             ];
         }
 
@@ -191,7 +196,7 @@ class BasketGuest
         }
 
         return [
-            'products'     => $result,
+            'products' => $result,
             'calculations' => $calculations
         ];
     }
