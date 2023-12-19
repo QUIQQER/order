@@ -43,4 +43,6 @@
     <event on="onQuiqqer::products::product::detail::equipment::buttons"
            fire="\QUI\ERP\Order\EventHandling::onDetailEquipmentButtons"
     />
+
+    <event on="onQuiqqer::template::header::end" fire="\QUI\ERP\Order\EventHandling::onTemplateEnd"/>
 </events>
