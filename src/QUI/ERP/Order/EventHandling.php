@@ -441,6 +441,15 @@ class EventHandling
         );
     }
 
+    public static function onTemplateEnd(
+        Collector $Collection,
+        QUI\Template $Template
+    ) {
+        $Collection->append(
+            '<script src="' . URL_OPT_DIR . 'quiqqer/order/bin/frontend/dataLayerTracking.js"></script>'
+        );
+    }
+
     /**
      * quiqqer/order: onQuiqqerOrderProcessStatusChange
      *
