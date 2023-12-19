@@ -130,7 +130,7 @@ class DataLayer
             $order['items'][] = $article;
             $index++;
         }
-        
+
         return $order;
     }
 }
