@@ -6,7 +6,6 @@
 
 namespace QUI\ERP\Order\Utils;
 
-
 use QUI;
 use QUI\ERP\Products\Handler\Fields;
 use QUI\ERP\Products\Handler\Products;
@@ -131,8 +130,7 @@ class DataLayer
             $order['items'][] = $article;
             $index++;
         }
-
-
+        
         return $order;
     }
 }
