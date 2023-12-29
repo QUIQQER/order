@@ -247,6 +247,7 @@ class Basket
 
             $productData = [
                 'id' => $Product->getId(),
+                'uuid' => $Product->getUuid(),
                 'title' => $Product->getTitle(),
                 'description' => $Product->getDescription(),
                 'quantity' => $Product->getQuantity(),
@@ -310,6 +311,7 @@ class Basket
 
             $result[] = [
                 'id' => $Product->getId(),
+                'uuid' => $Product->getUuid(),
                 'quantity' => $Product->getQuantity(),
                 'fields' => $fields
             ];
