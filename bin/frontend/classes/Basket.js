@@ -414,17 +414,19 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     require(['package/quiqqer/order/bin/frontend/classes/Product'], (ProductCls) => {
                         let Product = product;
 
-                        if (typeOf(productId) === 'string') {
-                            productId = parseInt(productId);
-                        }
+                        if (typeOf(product) !== 'package/quiqqer/order/bin/frontend/classes/Product') {
+                            if (typeOf(productId) === 'string') {
+                                productId = parseInt(productId);
+                            }
 
-                        if (typeOf(productId) === 'number') {
-                            Product = new ProductCls({
-                                id: productId,
-                                events: {
-                                    onChange: self.$onProductChange
-                                }
-                            });
+                            if (typeOf(productId) === 'number') {
+                                Product = new ProductCls({
+                                    id: productId,
+                                    events: {
+                                        onChange: self.$onProductChange
+                                    }
+                                });
+                            }
                         }
 
                         // normal basket

@@ -20,6 +20,11 @@ define('package/quiqqer/order/bin/frontend/classes/Product', [
         Extends: Product,
         Type   : 'package/quiqqer/order/bin/frontend/classes/Product',
 
+        options: {
+            uuid                : false,
+            productSetParentUuid: false
+        },
+
         initialize: function (options) {
             this.parent(options);
 
@@ -48,14 +53,38 @@ define('package/quiqqer/order/bin/frontend/classes/Product', [
                 var data = result[0];
                 var calc = result[1];
 
-                data.uniqueId = this.getUniqueId();
-                data.quantity = this.getQuantity();
-                data.calc     = calc;
+                data.uniqueId             = this.getUniqueId();
+                data.quantity             = this.getQuantity();
+                data.uuid                 = this.getUuid();
+                data.productSetParentUuid = this.getProductSetParentUuid();
+                data.calc                 = calc;
 
                 this.fireEvent('refresh', [this]);
 
                 return data;
             }.bind(this));
+        },
+
+        /**
+         * @return {String|false}
+         */
+        getUuid: function () {
+            return this.getAttribute('uuid');
+        },
+
+        /**
+         * @param {String} productSetParentUuid
+         * @return {void}
+         */
+        setProductSetParentUuid: function (productSetParentUuid) {
+            this.setAttribute('productSetParentUuid', productSetParentUuid);
+        },
+
+        /**
+         * @return {String|false}
+         */
+        getProductSetParentUuid: function () {
+            return this.getAttribute('productSetParentUuid');
         },
 
         /**
@@ -65,6 +94,20 @@ define('package/quiqqer/order/bin/frontend/classes/Product', [
          */
         getUniqueId: function () {
             return this.$uniqueID;
+        },
+
+        /**
+         * Return the product attributes
+         *
+         * @returns {Object}
+         */
+        getAttributes: function () {
+            const attributes = this.parent();
+
+            attributes.uuid                 = this.getUuid();
+            attributes.productSetParentUuid = this.getProductSetParentUuid();
+
+            return attributes;
         }
     });
 });
