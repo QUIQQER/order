@@ -56,7 +56,7 @@
     width: 100%;
 }
 
-.quiqqer-order-profile-orders-order-header-addressInvoice:hover address {
+.quiqqer-order-profile-orders-order-header-addressInvoice:is(:hover, :active) address {
     display: inline-block;
 }
 
@@ -137,7 +137,8 @@
     }
 
     .quiqqer-order-profile-orders-order-header-addressInvoice address {
-        top: 40px !important;
+        top: 100%;
+        z-index: 1;
     }
 
     .quiqqer-order-profile-orders .quiqqer-order-profile-orders-pagination:first-child {
