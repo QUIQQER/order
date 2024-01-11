@@ -139,6 +139,14 @@
             Please install quiqqer/invoice to create invoices.
             ]]></en>
         </locale>
+        <locale name="exception.missing.address.for.invoice">
+            <de><![CDATA[
+            Leider konnte die Rechnung nicht erstellt werden. Bitte gebe alle erforderlichen Adressdaten an.
+            ]]></de>
+            <en><![CDATA[
+            Unfortunately the invoice could not be created. Please fill in all the necessary address details.
+            ]]></en>
+        </locale>
 
         <locale name="message.select.customer">
             <de><![CDATA[Bitte wählen Sie einen Kunden aus.]]></de>

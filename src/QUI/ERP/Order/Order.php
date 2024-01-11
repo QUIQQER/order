@@ -134,7 +134,10 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             && $InvoiceAddress->getAttribute('city') === ''
             && $InvoiceAddress->getAttribute('country') === ''
         ) {
-            return;
+            throw new QUI\Exception([
+                'quiqqer/order',
+                'exception.missing.address.for.invoice'
+            ]);
         }
 
         if ($PermissionUser === null) {
