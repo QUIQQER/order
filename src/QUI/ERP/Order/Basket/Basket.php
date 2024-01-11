@@ -299,11 +299,7 @@ class Basket
 
             /* @var $Field \QUI\ERP\Products\Field\UniqueField */
             foreach ($Product->getFields() as $Field) {
-                if (!$Field->isPublic()) {
-                    continue;
-                }
-
-                if (!$Field->isCustomField()) {
+                if (!$Field->isPublic() && !$Field->isCustomField()) {
                     continue;
                 }
 
