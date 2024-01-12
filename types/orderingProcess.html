@@ -24,7 +24,11 @@
 </div>
 {/if}
 
-{if isset($OrderProcess)}
+{if $SimpleCheckout}
+<section class="content-template">
+    {$SimpleCheckout->create()}
+</section>
+{elseif isset($OrderProcess)}
 <section class="content-template">
     {$OrderProcess->create()}
 </section>

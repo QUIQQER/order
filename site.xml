@@ -2,14 +2,40 @@
 <site>
 
     <types>
-        <type type="types/orderingProcess" icon="fa fa-shopping-basket">
+        <type type="types/orderingProcess" icon="fa fa-shopping-cart">
             <locale group="quiqqer/order" var="admin.types.orderingProcess"/>
             <desc>
                 <locale group="quiqqer/order" var="admin.types.orderingProcess.desc"/>
             </desc>
+
+            <attributes>
+                <attribute>quiqqer.order.checkoutType</attribute>
+            </attributes>
+
+            <settings>
+                <category name="order">
+                    <settings>
+                        <title>
+                            <locale group="quiqqer/order" var="order.siteSettings"/>
+                        </title>
+
+                        <select conf="quiqqer.order.checkoutType">
+                            <text>
+                                <locale group="quiqqer/order" var="quiqqer.order.checkoutType"/>
+                            </text>
+                            <option value="one-page">
+                                <locale group="quiqqer/order" var="quiqqer.order.checkoutType.one.page"/>
+                            </option>
+                            <option value="step-by-step">
+                                <locale group="quiqqer/order" var="quiqqer.order.checkoutType.step.by.step"/>
+                            </option>
+                        </select>
+                    </settings>
+                </category>
+            </settings>
         </type>
 
-        <type type="types/shoppingCart" icon="fa fa-shopping-cart">
+        <type type="types/shoppingCart" icon="fa fa-shopping-basket">
             <locale group="quiqqer/order" var="admin.types.shoppingCart"/>
             <desc>
                 <locale group="quiqqer/order" var="admin.types.shoppingCart.desc"/>
