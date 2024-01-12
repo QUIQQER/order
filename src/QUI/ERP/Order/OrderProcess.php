@@ -98,8 +98,11 @@ class OrderProcess extends QUI\Control
 
         parent::__construct($attributes);
 
-        $this->addCSSFile(dirname(__FILE__) . '/Controls/OrderProcess.css');
+        if (isset($attributes['Order']) && $attributes['Order'] instanceof AbstractOrder) {
+            $this->Order = $attributes['Order'];
+        }
 
+        $this->addCSSFile(dirname(__FILE__) . '/Controls/OrderProcess.css');
         $this->Events = new QUI\Events\Event();
 
         $User = QUI::getUserBySession();

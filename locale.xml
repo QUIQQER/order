@@ -442,7 +442,7 @@
 
         <locale name="admin.types.orderingProcess">
             <de><![CDATA[Bestellprozess]]></de>
-            <en><![CDATA[Ordering process]]></en>
+            <en><![CDATA[Checkout]]></en>
         </locale>
         <locale name="admin.types.orderingProcess.desc">
             <de><![CDATA[
@@ -450,7 +450,7 @@
             Unter dieser Adresse findet Ihr Kunde dann auch seinen Warenkorb
             ]]></de>
             <en><![CDATA[
-            Specify the address at which the order process can be called.
+            Specify the address at which the checkout can be called.
             At this address, your customer will also find his shopping cart
             ]]></en>
         </locale>
@@ -1395,6 +1395,23 @@
             <de><![CDATA[Du hast leider keine Berechtigung für diese Aktion.]]></de>
             <en><![CDATA[Sorry, you do not have permission for this operation.]]></en>
         </locale>
+        <locale name="order.siteSettings">
+            <de><![CDATA[Bestelleinstellungen]]></de>
+            <en><![CDATA[Order settings]]></en>
+        </locale>
+        <locale name="quiqqer.order.checkoutType">
+            <de><![CDATA[Checkout Aussehen]]></de>
+            <en><![CDATA[Checkout design]]></en>
+        </locale>
+        <locale name="quiqqer.order.checkoutType.one.page">
+            <de><![CDATA[One page checkout]]></de>
+            <en><![CDATA[One page checkout]]></en>
+        </locale>
+        <locale name="quiqqer.order.checkoutType.step.by.step">
+            <de><![CDATA[Step by Step checkout]]></de>
+            <en><![CDATA[Step by step checkout]]></en>
+        </locale>
+
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
