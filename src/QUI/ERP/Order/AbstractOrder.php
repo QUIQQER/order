@@ -591,7 +591,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
 
         $this->Articles = $ArticleList;
         $this->setCustomer($Customer);
-        $this->update();
+        $this->update(QUI::getUsers()->getSystemUser());
     }
 
     /**
