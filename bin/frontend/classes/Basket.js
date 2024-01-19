@@ -787,6 +787,24 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             }.bind(this));
         },
 
+        calculate: function() {
+            const products = [];
+
+            for (let i = 0, len = this.$products.length; i < len; i++) {
+                products.push(this.$products[i].getAttributes());
+            }
+
+            return new Promise((resolve) => {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_calc', (result) => {
+                    this.$calculations = result;
+                    resolve(result);
+                }, {
+                    'package': 'quiqqer/order',
+                    products: JSON.encode(products)
+                });
+            });
+        },
+
         /**
          * Exists the product, is it available?
          *
