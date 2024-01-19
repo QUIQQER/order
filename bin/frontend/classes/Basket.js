@@ -627,7 +627,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 this.$products = [];
                 self.fireEvent('clear', [self]);
 
-                return Promise.resolve();
+                return this.save();
             }
 
             return new Promise(function(resolve) {
