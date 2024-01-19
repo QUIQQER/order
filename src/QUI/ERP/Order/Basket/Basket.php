@@ -247,6 +247,8 @@ class Basket
 
             $productData = [
                 'id' => $Product->getId(),
+                'uuid' => $Product->getUuid(),
+                'productSetParentUuid' => $Product->getProductSetParentUuid(),
                 'title' => $Product->getTitle(),
                 'description' => $Product->getDescription(),
                 'quantity' => $Product->getQuantity(),
@@ -297,11 +299,7 @@ class Basket
 
             /* @var $Field \QUI\ERP\Products\Field\UniqueField */
             foreach ($Product->getFields() as $Field) {
-                if (!$Field->isPublic()) {
-                    continue;
-                }
-
-                if (!$Field->isCustomField()) {
+                if (!$Field->isPublic() && !$Field->isCustomField()) {
                     continue;
                 }
 
@@ -310,6 +308,8 @@ class Basket
 
             $result[] = [
                 'id' => $Product->getId(),
+                'uuid' => $Product->getUuid(),
+                'productSetParentUuid' => $Product->getProductSetParentUuid(),
                 'quantity' => $Product->getQuantity(),
                 'fields' => $fields
             ];

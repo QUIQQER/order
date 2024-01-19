@@ -162,7 +162,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, QUI\ERP\Er
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderProcessUpdateBegin',
-            [$this, $data]
+            [$this, &$data]
         );
 
         // set status change
