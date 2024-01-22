@@ -754,9 +754,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getGlobalProcessId(): string
+    public function getGlobalProcessId(): ?string
     {
         return $this->globalProcessId;
     }
