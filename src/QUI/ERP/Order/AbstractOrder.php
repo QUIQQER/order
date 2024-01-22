@@ -268,10 +268,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
         }
 
         $this->id = (int)$data['id'];
-        $this->globalProcessId = $data['global_process_id'];
         $this->hash = $data['hash'];
         $this->cDate = $data['c_date'];
         $this->cUser = (int)$data['c_user'];
+
+        if (!empty($data['global_process_id'])) {
+            $this->globalProcessId = $data['global_process_id'];
+        }
 
         $this->setDataBaseData($data);
 
