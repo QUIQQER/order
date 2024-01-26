@@ -22,16 +22,21 @@ class Factory extends QUI\Utils\Singleton
      * Creates a new order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
-     * @param string|bool $hash - optional
+     * @param bool|string $hash - optional
      * @param int|null $id (optional) - Fixed ID for the new order. Throws an exception if the ID is already taken.
+     * @param string $globalProcessId (optional) - if the ERP process has already been started by another instance, the process id can be transferred to the new order
      * @return Order
      *
      * @throws Exception
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    public function create($PermissionUser = null, $hash = false, ?int $id = null)
-    {
+    public function create(
+        QUI\Interfaces\Users\User $PermissionUser = null,
+        bool|string $hash = false,
+        ?int $id = null,
+        string $globalProcessId = ''
+    ) {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
         }
@@ -86,6 +91,10 @@ class Factory extends QUI\Utils\Singleton
             'successful' => 0
         ];
 
+        if (!empty($globalProcessId)) {
+            $orderData['global_process_id'] = $globalProcessId;
+        }
+
         if ($id) {
             $orderData['id'] = $id;
         }
@@ -114,7 +123,7 @@ class Factory extends QUI\Utils\Singleton
      *
      * @deprecated
      */
-    public function createOrderProcess($PermissionUser = null)
+    public function createOrderProcess($PermissionUser = null): OrderInProcess
     {
         return $this->createOrderInProcess($PermissionUser);
     }
@@ -129,7 +138,7 @@ class Factory extends QUI\Utils\Singleton
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    public function createOrderInProcess($PermissionUser = null)
+    public function createOrderInProcess(QUI\Interfaces\Users\User $PermissionUser = null): OrderInProcess
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -152,7 +161,7 @@ class Factory extends QUI\Utils\Singleton
      * @return int - OrderInProcess ID
      * @throws QUI\Database\Exception
      */
-    public function createOrderInProcessDataBaseEntry($PermissionUser = null)
+    public function createOrderInProcessDataBaseEntry(QUI\Interfaces\Users\User $PermissionUser = null): int
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -175,7 +184,7 @@ class Factory extends QUI\Utils\Singleton
             $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
         }
 
-        QUI::getDataBase()->insert($table, [
+        $orderData = [
             'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'c_user' => $User->getId(),
             'c_date' => date('Y-m-d H:i:s'),
@@ -184,7 +193,9 @@ class Factory extends QUI\Utils\Singleton
             'status' => $status,
             'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
             'successful' => 0
-        ]);
+        ];
+
+        QUI::getDataBase()->insert($table, $orderData);
 
         return QUI::getDataBase()->getPDO()->lastInsertId();
     }
@@ -195,9 +206,9 @@ class Factory extends QUI\Utils\Singleton
      * @param null $User
      * @return QUI\ERP\Order\Basket\Basket
      *
-     * @throws QUI\ERP\Order\Basket\Exception
+     * @throws QUI\ERP\Order\Basket\Exception|QUI\Database\Exception
      */
-    public function createBasket($User = null)
+    public function createBasket($User = null): Basket\Basket
     {
         if ($User === null) {
             $User = QUI::getUserBySession();
@@ -218,7 +229,7 @@ class Factory extends QUI\Utils\Singleton
      *
      * @return array
      */
-    public function getOrderConstructNeedles()
+    public function getOrderConstructNeedles(): array
     {
         return [
             'id',
