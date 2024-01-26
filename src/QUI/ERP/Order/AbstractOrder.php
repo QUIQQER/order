@@ -104,6 +104,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     protected ?string $idPrefix = null;
 
     /**
+     * @var string
+     */
+    protected string $globalProcessId;
+
+    /**
      * @var int
      */
     protected int $status = 0;
@@ -266,6 +271,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
         $this->hash = $data['hash'];
         $this->cDate = $data['c_date'];
         $this->cUser = (int)$data['c_user'];
+
+        if (!empty($data['global_process_id'])) {
+            $this->globalProcessId = $data['global_process_id'];
+        } else {
+            $this->globalProcessId = $this->hash;
+        }
 
         $this->setDataBaseData($data);
 
@@ -742,6 +753,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     public function getCleanId(): int
     {
         return $this->getId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getGlobalProcessId(): string
+    {
+        return $this->globalProcessId;
     }
 
     /**
