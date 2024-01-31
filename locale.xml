@@ -400,6 +400,28 @@
             <de><![CDATA[Versandbestätigungs E-Mail]]></de>
             <en><![CDATA[Shipping confirmation E-mail]]></en>
         </locale>
+
+        <locale name="history.order.created">
+            <de><![CDATA[Bestellung erstellt]]></de>
+            <en><![CDATA[Order created]]></en>
+        </locale>
+        <locale name="history.order.edit">
+            <de><![CDATA[Bestellung wurde editiert von #[userId] - [username]]]></de>
+            <en><![CDATA[Order was edited by #[userId] - [username]]]></en>
+        </locale>
+        <locale name="history.order.invoice.created">
+            <de><![CDATA[Rechnung [invoiceHash] aus Bestellung erstellt]]></de>
+            <en><![CDATA[Invoice [invoiceHash] created from order]]></en>
+        </locale>
+        <locale name="history.order.salesOrder.created">
+            <de><![CDATA[Auftrag [salesOrderHash] aus Bestellung erstellt]]></de>
+            <en><![CDATA[Sales order [salesOrderHash] created from order]]></en>
+        </locale>
+        <locale name="history.order.copy.created">
+            <de><![CDATA[Bestellungskopie [orderHash] aus Bestellung erstellt]]></de>
+            <en><![CDATA[Order copy [orderHash] created from order]]></en>
+        </locale>
+
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
