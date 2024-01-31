@@ -104,6 +104,12 @@ class Factory extends QUI\Utils\Singleton
         $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
         $Order = $Orders->get($orderId);
 
+        $Order->addHistory(
+            QUI::getLocale()->get('quiqqer/order', 'history.order.created')
+        );
+
+        $Order->updateHistory();
+
         try {
             QUI::getEvents()->fireEvent('onQuiqqerOrderFactoryCreate', [$Order]);
         } catch (\Exception $Exception) {
