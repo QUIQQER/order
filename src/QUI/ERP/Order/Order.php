@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\Database\Exception;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
@@ -140,6 +141,20 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             QUI::getUserBySession(),
             $this->getHash()
         );
+
+        $this->History->addComment(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.order.invoice.created',
+                [
+                    'userId' => QUI::getUserBySession()->getId(),
+                    'username' => QUI::getUserBySession()->getUsername(),
+                    'invoiceHash' => $TemporaryInvoice->getHash()
+                ]
+            )
+        );
+
+        $this->updateHistory();
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
@@ -278,6 +293,20 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         }
 
         $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getHash());
+
+        $this->History->addComment(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.order.salesOrder.created',
+                [
+                    'userId' => QUI::getUserBySession()->getId(),
+                    'username' => QUI::getUserBySession()->getUsername(),
+                    'salesOrderHash' => $SalesOrder->getHash()
+                ]
+            )
+        );
+
+        $this->updateHistory();
 
         // set the data to the temporary invoice
         $payment = '';
@@ -589,6 +618,17 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             $this->statusChanged = false;
         }
 
+        $this->History->addComment(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.order.edit',
+                [
+                    'userId' => QUI::getUserBySession()->getId(),
+                    'username' => QUI::getUserBySession()->getUsername()
+                ]
+            )
+        );
+
         // save data
         $data = $this->getDataForSaving();
 
@@ -655,6 +695,21 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
     public function save($PermissionUser = null)
     {
         $this->update($PermissionUser);
+    }
+
+    /**
+     * Saves the current history to the order
+     * @throws Exception
+     */
+    public function updateHistory(): void
+    {
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            [
+                'history' => $this->History->toJSON()
+            ],
+            ['id' => $this->getId()]
+        );
     }
 
     /**
@@ -840,7 +895,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      *
      * @throws QUI\Exception
      */
-    public function copy()
+    public function copy(): Order
     {
         $NewOrder = Factory::getInstance()->create();
 
@@ -852,7 +907,21 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             ['id' => $NewOrder->getId()]
         );
 
-        QUI::getEvents()->fireEvent('quiqqerOrderCopy', [$this]);
+
+        $this->History->addComment(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.order.copy.created',
+                [
+                    'userId' => QUI::getUserBySession()->getId(),
+                    'username' => QUI::getUserBySession()->getUsername(),
+                    'orderHash' => $NewOrder->getHash()
+                ]
+            )
+        );
+
+        $this->updateHistory();
+
 
         $NewOrder->addHistory(
             QUI::getLocale()->get('quiqqer/order', 'message.copy.from', [
@@ -860,7 +929,10 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             ])
         );
 
-        $NewOrder->update(QUI::getUsers()->getSystemUser());
+        $NewOrder->updateHistory();
+
+
+        QUI::getEvents()->fireEvent('quiqqerOrderCopy', [$this]);
 
         return $NewOrder;
     }
