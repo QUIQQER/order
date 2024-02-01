@@ -139,7 +139,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         $TemporaryInvoice = $InvoiceFactory->createInvoice(
             QUI::getUserBySession(),
-            $this->getHash()
+            $this->getGlobalProcessId()
         );
 
         $this->History->addComment(
