@@ -227,7 +227,7 @@ class Handler extends Singleton
      *
      * @throws QUI\Database\Exception
      */
-    public function getOrdersByGlobalProcessId($id)
+    public function getOrdersByGlobalProcessId(string $id): array|OrderInProcess|Order
     {
         $dbData = QUI::getDataBase()->fetch([
             'select' => 'id',
@@ -238,11 +238,11 @@ class Handler extends Singleton
             ]
         ]);
 
-        $result = [];
-
-        if (!isset($result[0])) {
-            return $result;
+        if (!count($dbData)) {
+            return [];
         }
+
+        $result = [];
 
         foreach ($dbData as $entry) {
             try {
