@@ -108,27 +108,35 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         }
 
         if (!Settings::getInstance()->isInvoiceInstalled()) {
-            throw new QUI\Exception([
-                'quiqqer/order',
-                'exception.invoice.is.not.installed'
-            ]);
+            throw new QUI\Exception(['quiqqer/order', 'exception.invoice.is.not.installed']);
         }
 
         // check if order has an invoice address
         // invoice creation is only possible with an address
         $InvoiceAddress = $this->getInvoiceAddress();
 
-        if (
+        $addressRequired = QUI\ERP\Accounting\Invoice\Utils\Invoice::addressRequirement();
+        $addressThreshold = QUI\ERP\Accounting\Invoice\Utils\Invoice::addressRequirementThreshold();
+        $Calculation = $this->getPriceCalculation();
+
+        if ($addressRequired === false && $Calculation->getSum()->value() > $addressThreshold) {
+            $addressRequired = true;
+        }
+
+        $missingAddress = (
             $InvoiceAddress->getName() === ''
             || $InvoiceAddress->getAttribute('street_no') === ''
             || $InvoiceAddress->getAttribute('zip') === ''
             || $InvoiceAddress->getAttribute('city') === ''
             || $InvoiceAddress->getAttribute('country') === ''
-        ) {
-            throw new QUI\Exception([
-                'quiqqer/order',
-                'exception.missing.address.for.invoice'
-            ]);
+        );
+
+        if ($addressRequired && $missingAddress) {
+            throw new QUI\Exception(['quiqqer/order', 'exception.missing.address.for.invoice']);
+        }
+
+        if (!$this->getPayment()) {
+            throw new QUI\Exception(['quiqqer/order', 'exception.to.invoice.missing.payment']);
         }
 
         if ($PermissionUser === null) {
