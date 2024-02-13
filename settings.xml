@@ -91,7 +91,7 @@
             </params>
 
             <categories>
-                <category name="order" index="2">
+                <category name="order">
                     <text>
                         <locale group="quiqqer/order" var="window.erp.order.title"/>
                     </text>
