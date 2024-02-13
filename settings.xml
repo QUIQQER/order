@@ -63,6 +63,10 @@
                     <type><![CDATA[integer]]></type>
                     <defaultvalue><![CDATA[1]]></defaultvalue>
                 </conf>
+                <conf name="cancelled">
+                    <type><![CDATA[integer]]></type>
+                    <defaultvalue><![CDATA[5]]></defaultvalue>
+                </conf>
             </section>
 
             <section name="orderProcess">
@@ -280,6 +284,18 @@
                             <description>
                                 <locale group="quiqqer/order"
                                         var="order.settings.order.defaultOrderStatus.description"
+                                />
+                            </description>
+                        </input>
+                        <input conf="orderStatus.cancelled" data-qui="package/quiqqer/order/bin/backend/utils/StatusSelect">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.orderStatus.cancelled"
+                                />
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.order.orderStatus.cancelled.description"
                                 />
                             </description>
                         </input>

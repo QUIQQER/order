@@ -24,6 +24,16 @@ class Handler extends QUI\Utils\Singleton
      */
     protected $list = null;
 
+    protected QUI\Config $OrderConfig;
+
+    /**
+     * @throws QUI\Exception
+     */
+    public function __construct()
+    {
+        $this->OrderConfig = QUI::getPackage('quiqqer/order')->getConfig();
+    }
+
     /**
      * Return all processing status entries from the config
      *
@@ -35,15 +45,7 @@ class Handler extends QUI\Utils\Singleton
             return $this->list;
         }
 
-        try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
-            $result = $Config->getSection('processing_status');
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeException($Exception);
-
-            return [];
-        }
+        $result = $this->OrderConfig->getSection('processing_status');
 
         if (!$result || !\is_array($result)) {
             $this->list = [];
@@ -106,6 +108,23 @@ class Handler extends QUI\Utils\Singleton
     }
 
     /**
+     * Get defined "cancelled" order status.
+     *
+     * @return Status|StatusUnknown
+     * @throws Exception
+     */
+    public function getCancelledStatus(): Status|StatusUnknown
+    {
+        $cancelledStatusId = $this->OrderConfig->get('orderStatus', 'cancelled');
+
+        if (empty($cancelledStatusId)) {
+            return new StatusUnknown();
+        }
+
+        return $this->getProcessingStatus($cancelledStatusId);
+    }
+
+    /**
      * Delete / Remove a processing status
      *
      * @param string|int $id
@@ -128,11 +147,8 @@ class Handler extends QUI\Utils\Singleton
         QUI\Translator::publish('quiqqer/order');
 
         // update config
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
-
-        $Config->del('processing_status', $Status->getId());
-        $Config->save();
+        $this->OrderConfig->del('processing_status', $Status->getId());
+        $this->OrderConfig->save();
     }
 
     /**
@@ -150,11 +166,8 @@ class Handler extends QUI\Utils\Singleton
         $Status = $this->getProcessingStatus($id);
 
         // update config
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
-
-        $Config->setValue('processing_status_notification', $Status->getId(), $notify ? "1" : "0");
-        $Config->save();
+        $this->OrderConfig->setValue('processing_status_notification', $Status->getId(), $notify ? "1" : "0");
+        $this->OrderConfig->save();
     }
 
     /**
@@ -198,11 +211,8 @@ class Handler extends QUI\Utils\Singleton
         QUI\Translator::publish('quiqqer/order');
 
         // update config
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
-
-        $Config->setValue('processing_status', $Status->getId(), $color);
-        $Config->save();
+        $this->OrderConfig->setValue('processing_status', $Status->getId(), $color);
+        $this->OrderConfig->save();
     }
 
     /**
