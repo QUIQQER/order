@@ -240,8 +240,15 @@ class Search extends Singleton
         }
 
         // result
+        $page = 1;
+
+        if (!empty($this->limit[0]) && !empty($this->limit[1])) {
+            $page = ($this->limit[0] / $this->limit[1]) + 1;
+        }
+
         $result = $this->parseListForGrid($orders);
         $Grid = new QUI\Utils\Grid();
+        $Grid->setAttribute('page', $page);
 
         return [
             'grid' => $Grid->parseResult($result, $count),
