@@ -139,6 +139,14 @@
             Please install quiqqer/invoice to create invoices.
             ]]></en>
         </locale>
+        <locale name="exception.to.invoice.missing.payment">
+            <de><![CDATA[
+            Bitte fügen Sie eine Zahlungsmethode zur Bestellung hinzu, um die Rechnungserstellung abzuschließen.
+            ]]></de>
+            <en><![CDATA[
+            Please add a payment method to the order to complete the billing process.
+            ]]></en>
+        </locale>
         <locale name="exception.missing.address.for.invoice">
             <de><![CDATA[
             Leider konnte die Rechnung nicht erstellt werden. Bitte gebe alle erforderlichen Adressdaten an.
