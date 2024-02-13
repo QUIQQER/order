@@ -891,7 +891,19 @@
                 Legt den standard Bestellstatus fest, welche eine Bestellung direkt beim Anlegen erhalten soll.
             ]]></de>
             <en><![CDATA[
-                Defines the standard order status, which a purchase order should receive directly when it is created.
+                Defines the standard order status, which an order receives directly when it is created.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.cancelled">
+            <de><![CDATA["Storniert" Bestellstatus]]></de>
+            <en><![CDATA["Cancelled" order status]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.cancelled.description">
+            <de><![CDATA[
+                Legt den Bestellstatus fest, bei welchem eine Bestellung als "storniert" gilt.
+            ]]></de>
+            <en><![CDATA[
+                Defines the order status, which marks an order as "cancelled".
             ]]></en>
         </locale>
 
