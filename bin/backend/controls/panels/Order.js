@@ -1042,6 +1042,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getCategory('payments').setActive();
 
             return this.$closeCategory().then(function(Container) {
+                Container.setStyle('height', '100%');
+                
                 return new Promise(function(resolve) {
                     require([
                         'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/TransactionList'
