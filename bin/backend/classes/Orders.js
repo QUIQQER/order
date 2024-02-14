@@ -388,6 +388,25 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
                     showError    : false
                 });
             });
+        },
+
+        /**
+         * Add a payment to an order
+         *
+         * @param {String} orderHash
+         * @param {String} txId
+         * @
+         */
+        linkTransaction: function (orderHash, txId) {
+            return new Promise((resolve, reject) => {
+                QUIAjax.post('package_quiqqer_order_ajax_backend_linkTransaction', resolve, {
+                    'package': 'quiqqer/order',
+                    orderHash: orderHash,
+                    txId     : txId,
+                    onError  : reject,
+                    showError: true
+                });
+            });
         }
     });
 });

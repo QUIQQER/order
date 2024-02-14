@@ -1065,6 +1065,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                                     ).then(function() {
                                         Control.refresh();
                                     });
+                                },
+                                onLinkTransaction: (txId, Control) => {
+                                    Orders.linkTransaction(self.getAttribute('hash'), txId).then(() => {
+                                        Control.refresh();
+                                    }).catch((err) => {
+                                        console.error(err);
+                                    });
                                 }
                             }
                         }).inject(Container);

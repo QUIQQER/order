@@ -974,8 +974,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event : on payment add button click
          */
         $onAddPaymentButtonClick: function(Button) {
-            const self = this,
-                selectedData = this.$Grid.getSelectedData();
+            const selectedData = this.$Grid.getSelectedData();
 
             if (!selectedData.length) {
                 return;
@@ -987,21 +986,28 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             require([
                 'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/AddPaymentWindow'
-            ], function(AddPaymentWindow) {
+            ], (AddPaymentWindow) => {
                 new AddPaymentWindow({
                     entityId: selectedData[0]['prefixed-id'],
                     entityType: 'Order',
                     paymentId: selectedData[0].paymentId,
                     events: {
-                        onSubmit: function(Win, data) {
+                        onSubmit: (Win, data) => {
                             Win.Loader.show();
 
-                            self.addPayment(
+                            this.addPayment(
                                 hash,
                                 data.amount,
                                 data.payment_method,
                                 data.date
                             ).then(function() {
+                                Win.close();
+                            }).catch(function() {
+                                Win.Loader.hide();
+                            });
+                        },
+                        onSubmitExisting: (txId, Win) => {
+                            this.linkTransaction(hash,txId).then(function() {
                                 Win.close();
                             }).catch(function() {
                                 Win.Loader.hide();
@@ -1037,6 +1043,25 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }).then(function() {
                 self.Loader.hide();
             }).catch(function(err) {
+                console.error(err);
+            });
+        },
+
+        /**
+         * Link transaction to an order
+         *
+         * @param {String} orderHash
+         * @param {String} txId
+         * @return {Promise<void>}
+         */
+        linkTransaction: function (orderHash, txId) {
+            this.Loader.show();
+
+            return Orders.linkTransaction(orderHash, txId).then(() => {
+                return this.refresh();
+            }).then(() => {
+                this.Loader.hide();
+            }).catch((err) => {
                 console.error(err);
             });
         },
