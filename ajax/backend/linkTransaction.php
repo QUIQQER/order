@@ -1,15 +1,16 @@
 <?php
 
-use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
-use QUI\Utils\Security\Orthos;
-use QUI\Exception;
-
 /**
  * Assign a transaction to an order.
  *
  * @param string $orderHash
  * @param string $txId
  */
+
+use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
+use QUI\Utils\Security\Orthos;
+use QUI\Exception;
+
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_linkTransaction',
     function ($orderHash, $txId) {
