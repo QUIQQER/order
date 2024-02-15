@@ -434,6 +434,7 @@
 
     <groups name="quiqqer/order" datatype="php">
 
+
         <locale name="message.ajax.backend.linkTransaction.error.tx_already_linked">
             <de><![CDATA[Die Transaktion "[txId]" ist bereits mit Bestellung "[orderNo]" verknüpft.]]></de>
             <en><![CDATA[Transaction "[txId]" is already linked to order "[orderNo]".]]></en>
@@ -1134,6 +1135,10 @@
             ]]></en>
         </locale>
 
+        <locale name="history.message.linkTransaction">
+            <de><![CDATA[Transaktion "[txId]" i.H.v. [txAmount] von [username] #[uid] mit Bestellung verknüpft.]]></de>
+            <en><![CDATA[Transaction "[txId]" in the amount of linked to order by [username] #[uid].]]></en>
+        </locale>
         <locale name="history.message.addTransaction">
             <de><![CDATA[Transaktion hinzugefügt]]></de>
             <en><![CDATA[Transaction added]]></en>

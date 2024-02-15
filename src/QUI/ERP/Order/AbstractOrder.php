@@ -1523,13 +1523,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
         }
 
         $User = QUI::getUserBySession();
+
+
         $this->addHistory(
             QUI::getLocale()->get(
                 'quiqqer/order',
-                'history.message.edit',
+                'history.message.linkTransaction',
                 [
                     'username' => $User->getName(),
-                    'uid' => $User->getId()
+                    'uid' => $User->getId(),
+                    'txId' => $Transaction->getTxId(),
+                    'txAmount' => $Transaction->getAmountFormatted()
                 ]
             )
         );
