@@ -1465,6 +1465,102 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     }
 
     /**
+     * Links an existing transaction (i.e. a transaction that was originally created for a different entity than
+     * this order) to this order.
+     *
+     * This does not trigger invoice creation, mails etc.
+     *
+     * @param Transaction $Transaction
+     * @return void
+     *
+     * @throws QUI\Database\Exception
+     * @throws QUI\Exception
+     */
+    public function linkTransaction(Transaction $Transaction): void
+    {
+        if ($this->isTransactionIdAddedToOrder($Transaction->getTxId())) {
+            return;
+        }
+
+        if ($Transaction->isHashLinked($this->getHash())) {
+            return;
+        }
+
+        QUI\ERP\Debug::getInstance()->log('Order:: link transaction');
+
+        if (
+            $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_PAID ||
+            $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_CANCELED
+        ) {
+            return;
+        }
+
+        $Transaction->addLinkedHash($this->getHash());
+
+        try {
+            $calculation = QUI\ERP\Accounting\Calc::calculatePayments($this);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
+            return;
+        }
+
+        QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> data');
+        QUI\ERP\Debug::getInstance()->log($calculation);
+
+        switch ($calculation['paidStatus']) {
+            case QUI\ERP\Constants::PAYMENT_STATUS_OPEN:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PAID:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PART:
+            case QUI\ERP\Constants::PAYMENT_STATUS_ERROR:
+            case QUI\ERP\Constants::PAYMENT_STATUS_DEBIT:
+            case QUI\ERP\Constants::PAYMENT_STATUS_CANCELED:
+            case QUI\ERP\Constants::PAYMENT_STATUS_PLAN:
+                break;
+
+            default:
+                $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_ERROR);
+        }
+
+        $User = QUI::getUserBySession();
+
+
+        $this->addHistory(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.message.linkTransaction',
+                [
+                    'username' => $User->getName(),
+                    'uid' => $User->getId(),
+                    'txId' => $Transaction->getTxId(),
+                    'txAmount' => $Transaction->getAmountFormatted()
+                ]
+            )
+        );
+
+        QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
+
+        if (!is_array($calculation['paidData'])) {
+            $calculation['paidData'] = json_decode($calculation['paidData'], true);
+        }
+
+        if (!is_array($calculation['paidData'])) {
+            $calculation['paidData'] = [];
+        }
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            [
+                'paid_data' => json_encode($calculation['paidData']),
+                'paid_date' => $calculation['paidDate']
+            ],
+            ['id' => $this->getId()]
+        );
+
+        $this->setPaymentStatus($calculation['paidStatus'], true);
+    }
+
+    /**
      * @param Transaction $Transaction
      *
      * @throws QUI\Exception
@@ -1490,7 +1586,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
         QUI\ERP\Debug::getInstance()->log('Order:: add transaction start');
 
         $User = QUI::getUserBySession();
-        $paidData = $this->getAttribute('paid_data');
         $amount = $Transaction->getAmount();
         $date = $Transaction->getDate();
 
@@ -1509,30 +1604,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
             return;
         }
 
-        if (!is_array($paidData)) {
-            $paidData = json_decode($paidData, true);
-        }
-
-        if (!is_array($paidData)) {
-            $paidData = [];
-        }
-
-        $isTxAlreadyAdded = function ($txid, $paidData) {
-            foreach ($paidData as $paidEntry) {
-                if (!isset($paidEntry['txid'])) {
-                    continue;
-                }
-
-                if ($paidEntry['txid'] == $txid) {
-                    return true;
-                }
-            }
-
-            return false;
-        };
-
         // already added
-        if ($isTxAlreadyAdded($Transaction->getTxId(), $paidData)) {
+        if ($this->isTransactionIdAddedToOrder($Transaction->getTxId())) {
             return;
         }
 
@@ -1597,6 +1670,35 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
                 $date
             ]
         );
+    }
+
+    /**
+     * @param string $txId
+     * @return bool
+     */
+    protected function isTransactionIdAddedToOrder(string $txId): bool
+    {
+        $paidData = $this->getAttribute('paid_data');
+
+        if (is_string($paidData)) {
+            $paidData = json_decode($paidData, true);
+        }
+
+        if (!is_array($paidData)) {
+            $paidData = [];
+        }
+
+        foreach ($paidData as $paidEntry) {
+            if (!isset($paidEntry['txid'])) {
+                continue;
+            }
+
+            if ($paidEntry['txid'] == $txId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
