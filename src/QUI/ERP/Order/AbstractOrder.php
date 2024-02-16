@@ -1488,14 +1488,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
 
         QUI\ERP\Debug::getInstance()->log('Order:: link transaction');
 
+        $currentPaidStatus = $this->getAttribute('paid_status');
+
         if (
-            $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_PAID ||
-            $this->getAttribute('paid_status') == QUI\ERP\Constants::PAYMENT_STATUS_CANCELED
+            $currentPaidStatus == QUI\ERP\Constants::PAYMENT_STATUS_PAID ||
+            $currentPaidStatus == QUI\ERP\Constants::PAYMENT_STATUS_CANCELED
         ) {
             return;
         }
 
         $Transaction->addLinkedHash($this->getHash());
+        // Set this before the next instruction so a possible paid status change is recognized
+        $this->setAttribute('old_paid_status', $currentPaidStatus);
 
         try {
             $calculation = QUI\ERP\Accounting\Calc::calculatePayments($this);
