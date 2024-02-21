@@ -627,7 +627,7 @@ class Search extends Singleton
 
             // payment
             $orderData['paid_status_display'] = $Locale->get(
-                'quiqqer/invoice',
+                'quiqqer/order',
                 'payment.status.' . $Order->getAttribute('paid_status')
             );
 
