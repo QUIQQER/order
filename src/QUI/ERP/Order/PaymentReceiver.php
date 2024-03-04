@@ -9,6 +9,8 @@ use QUI\ERP\Address;
 use QUI\ERP\Currency\Currency;
 use QUI\Locale;
 
+use function is_string;
+
 /**
  * Class PaymentReceiver
  *
@@ -52,11 +54,11 @@ class PaymentReceiver implements PaymentReceiverInterface
      */
     public function __construct($id)
     {
-        if (\is_string($id)) {
+        if (is_string($id)) {
             $result = QUI::getDataBase()->fetch([
                 'select' => ['id'],
-                'from'   => Handler::getInstance()->table(),
-                'where'  => [
+                'from' => Handler::getInstance()->table(),
+                'where' => [
                     'id_str' => $id
                 ]
             ]);

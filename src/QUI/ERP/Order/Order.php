@@ -12,6 +12,7 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
 
+use function is_array;
 use function json_decode;
 
 /**
@@ -63,13 +64,20 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice()
+    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
         if (!Settings::getInstance()->isInvoiceInstalled()) {
             throw new QUI\Exception([
                 'quiqqer/order',
                 'exception.invoice.is.not.installed'
             ]);
+        }
+
+        if (empty($this->invoiceId)) {
+            throw new QUI\ERP\Accounting\Invoice\Exception(
+                'Order has no invoice',
+                404
+            );
         }
 
         try {
@@ -88,7 +96,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      *
      * @return OrderView
      */
-    public function getView()
+    public function getView(): OrderView
     {
         return new OrderView($this);
     }
@@ -97,12 +105,12 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      * Create an invoice for the order
      *
      * @param null|QUI\Interfaces\Users\User $PermissionUser
-     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary|void
+     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
      * @throws QUI\Exception
      */
-    public function createInvoice($PermissionUser = null)
-    {
+    public function createInvoice(QUI\Interfaces\Users\User $PermissionUser = null
+    ): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary {
         if (Settings::getInstance()->forceCreateInvoice() === false && $this->isPosted()) {
             return $this->getInvoice();
         }
@@ -356,7 +364,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         ]);
 
         // pass data to the sales order
-        if (!\is_array($this->data)) {
+        if (!is_array($this->data)) {
             $this->data = [];
         }
 
@@ -541,7 +549,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         return [
             'id_prefix' => $idPrefix,
-            'id_str' => $idPrefix . $this->getId(),
+            'id_str' => $this->getPrefixedId(),
             'parent_order' => null,
             'invoice_id' => $invoiceId,
             'status' => $this->status,

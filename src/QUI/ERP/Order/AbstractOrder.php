@@ -101,6 +101,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     /**
      * @var string
      */
+    protected string $idStr = '';
+
+    /**
+     * @var ?string
+     */
     protected ?string $idPrefix = null;
 
     /**
@@ -131,9 +136,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     /**
      * invoice ID
      *
-     * @var int|bool
+     * @var int|bool|string
      */
-    protected $invoiceId = false;
+    protected string|int|bool|null $invoiceId = false;
 
     /**
      * @var int|null
@@ -280,6 +285,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
 
         $this->setDataBaseData($data);
 
+        if (!empty($data['id_str'])) {
+            $this->idStr = $data['id_str'];
+        } else {
+            $this->idStr = $this->idPrefix . $this->id;
+        }
+
         try {
             QUI::getEvents()->fireEvent('quiqqerOrderInit', [$this]);
         } catch (\Exception $Exception) {
@@ -294,7 +305,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
      *
      * @throws QUI\ERP\Exception|\Exception
      */
-    protected function setDataBaseData(array $data)
+    protected function setDataBaseData(array $data): void
     {
         $this->invoiceId = $data['invoice_id'];
 
@@ -741,7 +752,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
      */
     public function getPrefixedId(): string
     {
-        return $this->getIdPrefix() . $this->getId();
+        return $this->idStr;
     }
 
     /**

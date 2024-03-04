@@ -16,6 +16,8 @@ use function array_sum;
 use function implode;
 use function is_array;
 use function is_numeric;
+use function json_encode;
+use function strtotime;
 use function trim;
 
 /**
@@ -571,7 +573,7 @@ class Search extends Singleton
 
             if (empty($orderData['c_date'])) {
                 $orderData['c_date'] = $Locale->formatDate(
-                    \strtotime($Order->getCreateDate()),
+                    strtotime($Order->getCreateDate()),
                     $defaultTimeFormat
                 );
             }
@@ -634,7 +636,7 @@ class Search extends Singleton
             // invoice
             if ($Order->hasInvoice()) {
                 try {
-                    $orderData['invoice_id'] = $Order->getInvoice()->getId();
+                    $orderData['invoice_id'] = $Order->getInvoice()->getHash();
                     $orderData['invoice_status'] = $Order->getInvoice()->getAttribute('status');
                 } catch (QUI\Exception $Exception) {
                     QUI\System\Log::writeDebugException($Exception);
@@ -642,7 +644,7 @@ class Search extends Singleton
             }
 
             // currency data
-            $orderData['currency_data'] = \json_encode($Currency->toArray());
+            $orderData['currency_data'] = json_encode($Currency->toArray());
 
 
             // calculation

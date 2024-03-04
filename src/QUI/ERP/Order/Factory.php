@@ -36,7 +36,7 @@ class Factory extends QUI\Utils\Singleton
         bool|string $hash = false,
         ?int $id = null,
         string $globalProcessId = ''
-    ) {
+    ): Order {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
         }
@@ -76,12 +76,22 @@ class Factory extends QUI\Utils\Singleton
         $table = $Orders->table();
         $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
+
+        if (empty($orderId)) {
+            $orderId = 0;
+        } else {
+            $orderId = (int)$orderId + 1;
+        }
+
         if (Settings::getInstance()->get('orderStatus', 'standard')) {
             $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
         }
 
         $orderData = [
             'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
+            'id_str' => QUI\ERP\Order\Utils\Utils::getOrderPrefix() . $orderId,
             'c_user' => $User->getId() ? $User->getId() : 0,
             'c_date' => date('Y-m-d H:i:s'),
             'hash' => $hash,
@@ -100,9 +110,13 @@ class Factory extends QUI\Utils\Singleton
         }
 
         QUI::getDataBase()->insert($table, $orderData);
+        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
+        $Order = $Orders->get($lastId);
 
-        $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
-        $Order = $Orders->get($orderId);
+        // set new id index
+        $Config->set('order', 'orderCurrentIdIndex', $orderId);
+        $Config->save();
+
 
         $Order->addHistory(
             QUI::getLocale()->get('quiqqer/order', 'history.order.created')

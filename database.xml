@@ -13,8 +13,8 @@
             <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field>
 
             <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="INT NULL DEFAULT NULL">invoice_id</field>
-            <field type="INT NULL DEFAULT NULL">temporary_invoice_id</field>
+            <field type="VARCHAR(250) NULL DEFAULT NULL">invoice_id</field>
+            <field type="VARCHAR(250) NULL DEFAULT NULL">temporary_invoice_id</field>
             <field type="INT NOT NULL">status</field>
 
             <field type="INT NOT NULL">customerId</field>
@@ -64,8 +64,8 @@
             <field type="BIGINT(10) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
 
             <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
-            <field type="INT NULL DEFAULT NULL">invoice_id</field> <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="INT NULL DEFAULT NULL">temporary_invoice_id</field>
+            <field type="VARCHAR(250) NULL DEFAULT NULL">invoice_id</field>
+            <field type="VARCHAR(250) NULL DEFAULT NULL">temporary_invoice_id</field>
             <field type="INT NOT NULL">status</field>
 
             <field type="INT NOT NULL">customerId</field>
