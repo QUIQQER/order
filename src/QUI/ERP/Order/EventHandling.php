@@ -276,7 +276,7 @@ class EventHandling
         QUI\ERP\Accounting\Invoice\Invoice $Invoice
     ) {
         try {
-            $Order = Handler::getInstance()->getOrderByHash($Invoice->getHash());
+            $Order = Handler::getInstance()->getOrderByGlobalProcessId($Invoice->getGlobalProcessId());
 
             if ($Order->isPosted()) {
                 return;
@@ -284,7 +284,7 @@ class EventHandling
 
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
-                ['invoice_id' => $Invoice->getCleanId()],
+                ['invoice_id' => $Invoice->getHash()],
                 ['id' => $Order->getId()]
             );
         } catch (QUI\Exception $Exception) {
