@@ -109,7 +109,8 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      *
      * @throws QUI\Exception
      */
-    public function createInvoice(QUI\Interfaces\Users\User $PermissionUser = null
+    public function createInvoice(
+        QUI\Interfaces\Users\User $PermissionUser = null
     ): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary {
         if (Settings::getInstance()->forceCreateInvoice() === false && $this->isPosted()) {
             return $this->getInvoice();
