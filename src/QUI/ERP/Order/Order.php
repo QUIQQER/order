@@ -180,7 +180,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            ['temporary_invoice_id' => $TemporaryInvoice->getCleanId()],
+            ['temporary_invoice_id' => $TemporaryInvoice->getHash()],
             ['id' => $this->getId()]
         );
 
@@ -269,7 +269,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
                 $TemporaryInvoice->getId()
             );
 
-            $this->setAttribute('temporary_invoice_id', $TemporaryInvoice->getId());
+            $this->setAttribute('temporary_invoice_id', $TemporaryInvoice->getHash());
             $this->save();
 
             $TemporaryInvoice->validate();
