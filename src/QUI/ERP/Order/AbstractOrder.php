@@ -1419,7 +1419,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
                 $Exception->getMessage(),
                 $Exception->getCode(),
                 [
-                    'order' => $this->getId(),
+                    'order' => $this->getHash(),
                     'payment' => $paymentId
                 ]
             );

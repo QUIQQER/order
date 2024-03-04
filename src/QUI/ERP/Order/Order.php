@@ -53,7 +53,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
     public function refresh()
     {
         $this->setDataBaseData(
-            Handler::getInstance()->getOrderData($this->getId())
+            Handler::getInstance()->getOrderData($this->getHash())
         );
     }
 
@@ -266,7 +266,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         // create the real invoice
         try {
             $TemporaryInvoice = InvoiceHandler::getInstance()->getTemporaryInvoice(
-                $TemporaryInvoice->getId()
+                $TemporaryInvoice->getHash()
             );
 
             $this->setAttribute('temporary_invoice_id', $TemporaryInvoice->getHash());
@@ -287,13 +287,13 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
-                ['invoice_id' => $Invoice->getCleanId()],
+                ['invoice_id' => $Invoice->getHash()],
                 ['id' => $this->getId()]
             );
 
-            $this->invoiceId = $Invoice->getId();
+            $this->invoiceId = $Invoice->getHash();
 
-            return InvoiceHandler::getInstance()->getInvoice($Invoice->getId());
+            return InvoiceHandler::getInstance()->getInvoice($Invoice->getHash());
         }
 
         return $TemporaryInvoice;
@@ -406,7 +406,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             )
         );
 
-        $SalesOrder->setData('orderId', $this->getCleanId());
+        $SalesOrder->setData('orderId', $this->getHash());
 
         $SalesOrder->update();
 
@@ -954,7 +954,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         $NewOrder->addHistory(
             QUI::getLocale()->get('quiqqer/order', 'message.copy.from', [
-                'orderId' => $this->getId()
+                'orderId' => $this->getHash()
             ])
         );
 

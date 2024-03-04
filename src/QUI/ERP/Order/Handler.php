@@ -10,6 +10,8 @@ use QUI;
 use QUI\ERP\Customer\Utils as CustomerUtils;
 use QUI\Utils\Singleton;
 
+use function is_numeric;
+
 /**
  * Class Handler
  * - Handles orders and order in process
@@ -303,28 +305,31 @@ class Handler extends Singleton
     /**
      * Return the data of a wanted order
      *
-     * @param string|integer $orderId
+     * @param integer|string $orderId
      * @return array
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Database\Exception
      */
-    public function getOrderData($orderId)
+    public function getOrderData(int|string $orderId): array
     {
-        if (!\is_numeric($orderId)) {
-            throw new Exception(
-                QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
-                self::ERROR_ORDER_NOT_FOUND
-            );
-        }
-
         $result = QUI::getDataBase()->fetch([
             'from' => $this->table(),
             'where' => [
-                'id' => $orderId
+                'hash' => $orderId
             ],
             'limit' => 1
         ]);
+
+        if (empty($result)) {
+            $result = QUI::getDataBase()->fetch([
+                'from' => $this->table(),
+                'where' => [
+                    'id' => $orderId
+                ],
+                'limit' => 1
+            ]);
+        }
 
         if (!isset($result[0])) {
             throw new Exception(
@@ -784,7 +789,7 @@ class Handler extends Singleton
      */
     public function getBasket($str, $User = null)
     {
-        if (\is_numeric($str)) {
+        if (is_numeric($str)) {
             return self::getBasketById($str, $User);
         }
 
