@@ -22,6 +22,7 @@ use function ltrim;
 use function mb_strpos;
 use function parse_url;
 use function strpos;
+use function strtolower;
 use function strtotime;
 use function trim;
 
@@ -326,6 +327,27 @@ class EventHandling
     {
         if ($Package->getName() !== 'quiqqer/order') {
             return;
+        }
+
+        // check invoice id field
+        $orderTable = Handler::getInstance()->table();
+        $tableInfo = QUI::getDatabase()->table()->getFieldsInfos($orderTable);
+
+        $invoiceIsChar = false;
+
+        foreach ($tableInfo as $table) {
+            if ($table['Field'] === 'invoice_id') {
+                if (str_contains(strtolower($table['Type']), 'varchar')) {
+                    $invoiceIsChar = true;
+                }
+                break;
+            }
+        }
+
+        if ($invoiceIsChar === false) {
+            QUI::getDatabase()->execSQL(
+                'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(250) NULL DEFAULT NULL;'
+            );
         }
 
         // create order status
