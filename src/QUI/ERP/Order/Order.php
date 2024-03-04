@@ -12,6 +12,7 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
 
+use function class_exists;
 use function is_array;
 use function json_decode;
 
@@ -73,21 +74,25 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             ]);
         }
 
-        if (empty($this->invoiceId)) {
-            throw new QUI\ERP\Accounting\Invoice\Exception(
-                'Order has no invoice',
-                404
-            );
+        if (!empty($this->invoiceId)) {
+            try {
+                return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::writeDebugException($Exception);
+            }
         }
 
         try {
-            return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
+            return InvoiceHandler::getInstance()->getTemporaryInvoice(
+                $this->getAttribute('temporary_invoice_id')
+            );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        return InvoiceHandler::getInstance()->getTemporaryInvoice(
-            $this->getAttribute('temporary_invoice_id')
+        throw new QUI\ERP\Accounting\Invoice\Exception(
+            'Order has no invoice',
+            404
         );
     }
 
@@ -521,7 +526,14 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         $invoiceId = null;
 
         if ($this->hasInvoice()) {
-            $invoiceId = $this->getInvoice()->getCleanId();
+            $Invoice = $this->getInvoice();
+
+            if (
+                class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+                && $Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice
+            ) {
+                $invoiceId = $Invoice->getHash();
+            }
         }
 
         // currency exchange rate
