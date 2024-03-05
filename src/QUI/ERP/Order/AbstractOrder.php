@@ -736,7 +736,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     /**
      * @return string
      */
-    public function getIdPrefix(): ?string
+    public function getIdPrefix(): string
     {
         if ($this->idPrefix !== null) {
             return $this->idPrefix;
@@ -749,8 +749,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
      * Return the real order id for the customer
      *
      * @return string
+     * @deprecated use getPrefixedNumber())
      */
     public function getPrefixedId(): string
+    {
+        return $this->getPrefixedNumber();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrefixedNumber(): string
     {
         return $this->idStr;
     }
@@ -908,7 +917,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     /**
      * Return the order create date
      *
-     * @return QUI\Interfaces\Users\User
+     * @return QUI\Interfaces\Users\User|null
      */
     public function getCreateUser(): ?QUI\Interfaces\Users\User
     {
@@ -937,7 +946,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
      * @param string $key
      * @return mixed|null
      */
-    public function getDataEntry(string $key)
+    public function getDataEntry(string $key): mixed
     {
         if (isset($this->data[$key])) {
             return $this->data[$key];
@@ -947,11 +956,20 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     }
 
     /**
+     * @return string
+     * @deprecated use getUUID()
+     */
+    public function getHash(): string
+    {
+        return $this->getUUID();
+    }
+
+    /**
      * Return the hash
      *
      * @return string
      */
-    public function getHash(): string
+    public function getUUID(): string
     {
         return $this->hash;
     }

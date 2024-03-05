@@ -176,23 +176,40 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     let customerString = '';
 
                     if (orderData.customer.firstname) {
+                        customerString = customerString.trim();
                         customerString = customerString + ' ' + orderData.customer.firstname;
                     }
 
                     if (orderData.customer.lastname) {
+                        customerString = customerString.trim();
                         customerString = customerString + ' ' + orderData.customer.lastname;
                     }
 
+                    if (customerString === '') {
+                        if (orderData.customer.address.firstname) {
+                            customerString = customerString.trim();
+                            customerString = customerString + ' ' + orderData.customer.address.firstname;
+                        }
+
+                        if (orderData.customer.address.lastname) {
+                            customerString = customerString.trim();
+                            customerString = customerString + ' ' + orderData.customer.address.lastname;
+                        }
+                    }
+
                     if (customerString === '' && orderData.customer.email) {
+                        customerString = customerString.trim();
                         customerString = customerString + ' ' + orderData.customer.email;
                     }
 
-                    this.setAttribute(
-                        'title',
-                        QUILocale.get(lg, 'order.panel.title', {
-                            orderId: this.getAttribute('orderId')
-                        }) + ' :' + customerString
-                    );
+                    customerString = customerString.trim();
+
+                    let title = QUILocale.get(lg, 'order.panel.title', {
+                        orderId: this.getAttribute('prefixedId')
+                    });
+
+                    title = title + ' : ' + customerString;
+                    this.setAttribute('title', title);
 
                     if (orderData.addressDelivery &&
                         (typeof orderData.addressDelivery.length === 'undefined' || orderData.addressDelivery.length) &&
@@ -282,7 +299,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
 
                     resolve();
-                    this.Loader.hide();
+                    this.refresh();
                 }).catch((err) => {
                     console.error(err);
 
@@ -1043,7 +1060,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return this.$closeCategory().then(function(Container) {
                 Container.setStyle('height', '100%');
-                
+
                 return new Promise(function(resolve) {
                     require([
                         'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/TransactionList'

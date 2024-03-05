@@ -467,8 +467,8 @@
         </locale>
 
         <locale name="message.backend.update.success">
-            <de><![CDATA[Bestellung #[oderId] wurde erfolgreich gespeichert.]]></de>
-            <en><![CDATA[Order #[orderId] was successfully saved.]]></en>
+            <de><![CDATA[Bestellung [orderId] wurde erfolgreich gespeichert.]]></de>
+            <en><![CDATA[Order [orderId] was successfully saved.]]></en>
         </locale>
 
         <locale name="order.history.set_successful">

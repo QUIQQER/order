@@ -215,7 +215,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         }
 
         $TemporaryInvoice->setAttributes([
-            'order_id' => $this->getId(),
+            'order_id' => $this->getHash(),
             'order_date' => $this->getCreateDate(),
             'customer_id' => $this->customerId,
             'payment_method' => $payment,

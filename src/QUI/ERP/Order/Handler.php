@@ -118,7 +118,7 @@ class Handler extends Singleton
      *
      * @return string
      */
-    public function table()
+    public function table(): string
     {
         return QUI::getDBTableName('orders');
     }
@@ -274,6 +274,20 @@ class Handler extends Singleton
             'select' => 'id',
             'from' => $this->table(),
             'where' => [
+                'hash' => $id
+            ],
+            'limit' => 1
+        ]);
+
+        if (isset($result[0])) {
+            return $this->get($result[0]['id']);
+        }
+
+
+        $result = QUI::getDataBase()->fetch([
+            'select' => 'id',
+            'from' => $this->table(),
+            'where' => [
                 'id' => $id
             ],
             'limit' => 1
@@ -282,6 +296,7 @@ class Handler extends Singleton
         if (isset($result[0])) {
             return $this->get($result[0]['id']);
         }
+
 
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',

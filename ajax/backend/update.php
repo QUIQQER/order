@@ -211,12 +211,12 @@ QUI::$Ajax->registerFunction(
                 'quiqqer/order',
                 'message.backend.update.success',
                 [
-                    'orderId' => $Order->getId()
+                    'orderId' => $Order->getPrefixedNumber()
                 ]
             )
         );
 
-        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($Order->getHash())->toArray();
+        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($Order->getUUID())->toArray();
     },
     ['orderId', 'data'],
     'Permission::checkAdminUser'
