@@ -50,7 +50,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function refresh()
+    public function refresh(): void
     {
         $this->setDataBaseData(
             Handler::getInstance()->getOrderData($this->getHash())
