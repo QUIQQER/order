@@ -82,14 +82,6 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             }
         }
 
-        try {
-            return InvoiceHandler::getInstance()->getTemporaryInvoice(
-                $this->getAttribute('temporary_invoice_id')
-            );
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-        }
-
         throw new QUI\ERP\Accounting\Invoice\Exception(
             'Order has no invoice',
             404
