@@ -73,7 +73,9 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         }
 
         try {
-            return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
+            if ($this->invoiceId) {
+                return InvoiceHandler::getInstance()->getInvoice($this->invoiceId);
+            }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
