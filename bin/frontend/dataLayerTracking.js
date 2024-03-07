@@ -103,6 +103,23 @@ window.whenQuiLoaded().then(function() {
 
         function getOrderData(OrderProcess)
         {
+            if (typeof OrderProcess === 'string') {
+                return new Promise((resolve) => {
+                    QUIAjax.get(
+                        'package_quiqqer_order_ajax_frontend_dataLayer_getTrackDataForOrderProcess',
+                        function(orderData) {
+                            orderData.url = url;
+                            orderData.step = stepData.step;
+                            resolve(orderData);
+                        },
+                        {
+                            'package': 'quiqqer/order',
+                            orderHash: OrderProcess
+                        }
+                    );
+                });
+            }
+
             const stepData = OrderProcess.getCurrentStepData();
             let url = '/' + stepData.step;
 
