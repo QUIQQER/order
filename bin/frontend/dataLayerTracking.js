@@ -108,8 +108,8 @@ window.whenQuiLoaded().then(function() {
                     QUIAjax.get(
                         'package_quiqqer_order_ajax_frontend_dataLayer_getTrackDataForOrderProcess',
                         function(orderData) {
-                            orderData.url = url;
-                            orderData.step = stepData.step;
+                            orderData.url = window.location.toString();
+                            orderData.step = window.location.pathname;
                             resolve(orderData);
                         },
                         {
