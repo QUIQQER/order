@@ -1007,7 +1007,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                             });
                         },
                         onSubmitExisting: (txId, Win) => {
-                            this.linkTransaction(hash,txId).then(function() {
+                            this.linkTransaction(hash, txId).then(function() {
                                 Win.close();
                             }).catch(function() {
                                 Win.Loader.hide();
@@ -1054,7 +1054,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @param {String} txId
          * @return {Promise<void>}
          */
-        linkTransaction: function (orderHash, txId) {
+        linkTransaction: function(orderHash, txId) {
             this.Loader.show();
 
             return Orders.linkTransaction(orderHash, txId).then(() => {
@@ -1259,6 +1259,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 exportData: true,
                 storageKey: 'quiqqer-orders-panel',
                 exportTypes: {
+                    print: true,
+                    pdf: true,
                     csv: true,
                     json: true,
                     xls: true
