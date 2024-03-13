@@ -714,19 +714,28 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         // calc new status if it is needed
         // if price of the articles has been changed
-        $newPrice = json_decode($data['articles'], true);
-        $newPrice = $newPrice['calculations']['sum'];
-
         $paidData = $this->getAttribute('paid_data');
+        $paid = 0;
+        $newPrice = 0;
+
+        if (isset($data['articles'])) {
+            $newPrice = json_decode($data['articles'], true);
+            $newPrice = $newPrice['calculations']['sum'];
+        }
 
         if (is_string($paidData)) {
             $paidData = json_decode($paidData, true) ?? [];
         }
 
-        $paidData = array_map(function ($paidEntry) {
-            return $paidEntry['amount'];
-        }, $paidData);
-        $paid = array_sum($paidData);
+        if (is_array($paidData)) {
+            $paidData = array_map(function ($paidEntry) {
+                return $paidEntry['amount'];
+            }, $paidData);
+
+            if (!empty($paidData)) {
+                $paid = array_sum($paidData);
+            }
+        }
 
         if ($paid !== $newPrice) {
             $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
