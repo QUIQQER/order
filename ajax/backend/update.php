@@ -39,7 +39,7 @@ QUI::$Ajax->registerFunction(
                 $Order->setCurrency(
                     QUI\ERP\Currency\Handler::getCurrency($data['currency'])
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -78,7 +78,7 @@ QUI::$Ajax->registerFunction(
 
             try {
                 $Customer = new QUI\ERP\User($data['customer']);
-            } catch (QUI\Exception $Eception) {
+            } catch (QUI\Exception) {
             }
 
             if ($Customer && isset($data['customer']['quiqqer.erp.taxId'])) {
@@ -184,7 +184,7 @@ QUI::$Ajax->registerFunction(
                     $Order->addArticle(
                         new QUI\ERP\Accounting\Article($article)
                     );
-                } catch (\Exception $Exception) {
+                } catch (\Exception) {
                 }
             }
         }

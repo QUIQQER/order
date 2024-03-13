@@ -12,8 +12,11 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
 
+use function array_map;
+use function array_sum;
 use function class_exists;
 use function is_array;
+use function is_string;
 use function json_decode;
 
 /**
@@ -709,6 +712,27 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             }
         }
 
+        // calc new status if it is needed
+        // if price of the articles has been changed
+        $newPrice = json_decode($data['articles'], true);
+        $newPrice = $newPrice['calculations']['sum'];
+
+        $paidData = $this->getAttribute('paid_data');
+
+        if (is_string($paidData)) {
+            $paidData = json_decode($paidData, true) ?? [];
+        }
+
+        $paidData = array_map(function ($paidEntry) {
+            return $paidEntry['amount'];
+        }, $paidData);
+        $paid = array_sum($paidData);
+
+        if ($paid !== $newPrice) {
+            $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
+            $this->calculatePayments(false);
+        }
+
         QUI::getEvents()->fireEvent('quiqqerOrderUpdate', [
             $this,
             &$data
@@ -803,9 +827,10 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
     /**
      * Calculates the payment for the order
      *
+     * @param bool $writeHistory - default: true; writes a history entry
      * @throws QUI\Exception
      */
-    public function calculatePayments(): void
+    public function calculatePayments(bool $writeHistory = true): void
     {
         $User = QUI::getUserBySession();
 
@@ -838,16 +863,18 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
                 $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_ERROR);
         }
 
-        $this->addHistory(
-            QUI::getLocale()->get(
-                'quiqqer/order',
-                'history.message.edit',
-                [
-                    'username' => $User->getName(),
-                    'uid' => $User->getId()
-                ]
-            )
-        );
+        if ($writeHistory) {
+            $this->addHistory(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'history.message.edit',
+                    [
+                        'username' => $User->getName(),
+                        'uid' => $User->getId()
+                    ]
+                )
+            );
+        }
 
         QUI\ERP\Debug::getInstance()->log('Order:: Calculate -> Update DB');
 
