@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
-use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Products\Product\ProductList;
 
@@ -83,20 +82,6 @@ class Basket
             QUI\System\Log::writeDebugException($Exception);
 
             return;
-        }
-
-        if (isset($Exception)) {
-            try {
-                if ($Exception instanceof ExceptionBasketNotFound) {
-                    $Basket = Factory::getInstance()->createBasket($User);
-                    $data = Handler::getInstance()->getBasketData($Basket->getId(), $User);
-                }
-            } catch (QUI\Exception $Exception) {
-                throw new Exception(
-                    $Exception->getMessage(),
-                    $Exception->getCode()
-                );
-            }
         }
 
         $this->id = $basketId;

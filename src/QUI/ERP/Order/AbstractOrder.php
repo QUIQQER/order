@@ -1344,10 +1344,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
      * Set Order payment status (paid_status)
      *
      * @param int $status
+     * @param bool $force - default = false, if true, set payment status will be set in any case
      * @return void
      * @throws QUI\Exception
      */
-    abstract public function setPaymentStatus(int $status): void;
+    abstract public function setPaymentStatus(int $status, bool $force = false): void;
 
     //endregion
 

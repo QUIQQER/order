@@ -1638,7 +1638,7 @@ class OrderProcess extends QUI\Control
         if (Settings::getInstance()->get('orderProcess', 'backToShopUrl')) {
             $url = Settings::getInstance()->get('orderProcess', 'backToShopUrl');
 
-            if (!empty($url) && QUI\Projects\Site\Utils::isSiteLink($url)) {
+            if (QUI\Projects\Site\Utils::isSiteLink($url)) {
                 try {
                     return QUI\Projects\Site\Utils::getSiteByLink($url)->getUrlRewritten();
                 } catch (QUI\Exception $Exception) {

@@ -79,7 +79,7 @@ class DataLayer
 
     public static function parseArticle(QUI\ERP\Accounting\Article $Article, $Locale = null): array
     {
-        $Product = Products::getProduct($Article->getId(), $Locale);
+        $Product = Products::getProduct($Article->getId());
         $item = self::parseProduct($Product);
 
         $item['price'] = $Article->getPrice()->getValue();
