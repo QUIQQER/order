@@ -42,8 +42,9 @@ use function time;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP\ErpEntityInterface,
-                                                         QUI\ERP\ErpTransactionsInterface
+abstract class AbstractOrder
+    extends QUI\QDOM
+    implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
 {
     /* @deprecated */
     const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
