@@ -9,5 +9,4 @@ use QUI\ERP\Order\Exception;
  */
 class SyncProviderException extends Exception
 {
-
 }

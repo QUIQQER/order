@@ -18,7 +18,6 @@ use QUI\Sync\Entity\SyncTarget;
 use QUI\ERP\Order\Rest\Endpoint as OrderRestApiEndpoint;
 use QUI\ERP\Order\Rest\ResponseField;
 
-
 use function date_create;
 use function in_array;
 use function is_null;

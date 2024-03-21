@@ -9,5 +9,4 @@ use QUI\ERP\Order\Exception;
  */
 class RestProviderException extends Exception
 {
-
 }
