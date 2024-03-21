@@ -12,6 +12,9 @@
             <erp src="\QUI\ERP\Order\ErpProvider"/>
             <paymentReceiver src="\QUI\ERP\Order\PaymentReceiver"/>
             <erpOutput src="\QUI\ERP\Order\Output\OutputProviderOrder"/>
+
+            <rest src="\QUI\ERP\Order\Rest\Provider"/>
+            <sync src="\QUI\ERP\Order\Sync\Provider"/>
         </provider>
     </package>
 </quiqqer>

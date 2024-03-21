@@ -6,10 +6,12 @@
 
 namespace QUI\ERP\Order;
 
+use DateTime;
 use QUI;
 use QUI\ERP\Customer\Utils as CustomerUtils;
 use QUI\Utils\Singleton;
 
+use function is_null;
 use function is_numeric;
 
 /**
@@ -580,6 +582,61 @@ class Handler extends Singleton
             'firstname' => $Address->getAttribute('firstname'),
             'lastname' => $Address->getAttribute('lastname')
         ];
+    }
+
+    /**
+     * Get all orders that have been created in the given date range.
+     *
+     * @param DateTime $CreatedFromDate
+     * @param DateTime|null $CreatedToDate (optional) - If omitted, use current datetime
+     * @return Order[]
+     *
+     * @throws QUI\Database\Exception
+     * @throws QUI\Exception
+     * @throws Exception
+     */
+    public function getAllCreatedInDateRange(DateTime $CreatedFromDate, DateTime $CreatedToDate = null): array
+    {
+        $sql = "SELECT `id` FROM " . $this->table();
+        $sql .= " WHERE `c_date` >= '" . $CreatedFromDate->format('Y-m-d H:i:s') . "'";
+
+        if (!is_null($CreatedToDate)) {
+            $sql .= " AND `c_date` <= '" . $CreatedToDate->format('Y-m-d H:i:s') . "'";
+        }
+
+        $result = QUI::getDatabase()->fetchSQL($sql);
+        $orders = [];
+
+        foreach ($result as $row) {
+            $orders[] = $this->getOrderById($row['id']);
+        }
+
+        return $orders;
+    }
+
+    /**
+     * Get the order that was created last.
+     *
+     * @return Order|null
+     *
+     * @throws Exception
+     * @throws QUI\Database\Exception
+     * @throws QUI\Exception
+     */
+    public function getLastCreated(): ?Order
+    {
+        $result = QUI::getDataBase()->fetch([
+            'select' => 'id',
+            'from' => $this->table(),
+            'order' => 'c_date DESC',
+            'limit' => 1
+        ]);
+
+        if (empty($result)) {
+            return null;
+        }
+
+        return $this->get($result[0]['id']);
     }
 
     //endregion
