@@ -353,11 +353,15 @@ class Provider implements QUI\REST\ProviderInterface
         ];
 
         foreach ($orderFields as $orderField => $isRequired) {
-            if ($isRequired && empty($orderData[$orderField])) {
-                throw new RestProviderException(
-                    "Missing / empty required field in order data ($key): $orderField.",
-                    ErrorCode::MISSING_FIELD->value
-                );
+            if (empty($orderData[$orderField])) {
+                if ($isRequired) {
+                    throw new RestProviderException(
+                        "Missing / empty required field in order data ($key): $orderField.",
+                        ErrorCode::MISSING_FIELD->value
+                    );
+                }
+
+                continue;
             }
 
             $value = $orderData[$orderField];

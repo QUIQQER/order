@@ -108,20 +108,20 @@ class Provider implements SyncProviderInterface
         SyncPushProtocolEntry $SyncProtocolEntry
     ): void {
         $OAuthClient = RestUtils::getOAuthClientForSyncTarget($SyncTarget);
-        $syncBookings = $this->getSyncOrders($SyncTarget, $SyncPackage->getLastSyncDate());
+        $syncOrders = $this->getSyncOrders($SyncTarget, $SyncPackage->getLastSyncDate());
 
-        if (empty($syncBookings)) {
+        if (empty($syncOrders)) {
             $SyncProtocolEntry->addMessage(
-                "No bookings to sync. Target system already has all bookings from this system."
+                "No orders to sync. Target system already has all orders from this system."
             );
             return;
         }
 
         $response = RestUtils::getDataFromRestApiResponse(
             $OAuthClient->postRequest(
-                'booking/insert',
+                OrderRestApiEndpoint::INSERT->value,
                 [
-                    'bookings' => $syncBookings
+                    'orders' => $syncOrders
                 ]
             )
         );
@@ -194,7 +194,7 @@ class Provider implements SyncProviderInterface
 
         $data = $this->parseContentFromApiResponse($response);
 
-        if (!isset($data[ResponseField::ORDERS->value])) {
+        if (!isset($data[ResponseField::ORDER_UUIDS->value])) {
             throw new SyncProviderException(
                 'Sync process failed :: There was an error during an API call to the target system.'
                 . ' Error: Incorrect return message content.'
