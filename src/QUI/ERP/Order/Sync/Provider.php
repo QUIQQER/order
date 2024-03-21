@@ -4,6 +4,7 @@ namespace QUI\ERP\Order\Sync;
 
 use QUI;
 use DateTime;
+use QUI\ERP\Booking\Exception\SyncProviderException;
 use QUI\ERP\Order\Handler as OrderHandler;
 use QUI\OAuth\Client\ClientException;
 use QUI\Sync\Entity\SyncPackage;
@@ -21,6 +22,7 @@ use QUI\ERP\Order\Rest\ResponseField;
 use function date_create;
 use function in_array;
 use function is_null;
+use function json_decode;
 
 /**
  * quiqqer/sync provider for bookings..
@@ -252,13 +254,23 @@ class Provider implements SyncProviderInterface
      */
     protected function parseContentFromApiResponse(mixed $response): mixed
     {
-        if (!empty($response[ResponseField::ERROR->value])) {
-            $msg = !empty($response[ResponseField::MSG->value]) ? $response[ResponseField::MSG->value] : '-';
-            $errorCode = !empty($response[ResponseField::MSG->value]) ? $response[ResponseField::MSG->value] : '-';
+        if (!empty($response[\QUI\ERP\Booking\Rest\ResponseField::ERROR->value])) {
+            $errorDescription = '-';
+
+            if (!empty($response[ResponseField::ERROR_DESCRIPTION->value])) {
+                $errorDescription = json_decode(
+                    $response[ResponseField::ERROR_DESCRIPTION->value],
+                    true
+                );
+            }
+
+            $errorCode = !empty($response[ResponseField::ERROR_CODE->value]) ?
+                $response[ResponseField::ERROR_CODE->value] :
+                '-';
 
             throw new SyncProviderException(
                 'Sync process failed :: There was an error during an API call to the target system.'
-                . ' Error: ' . $msg . '(code: ' . $errorCode . ')'
+                . ' Error: ' . $errorDescription[ResponseField::MSG->value] . ' (code: ' . $errorCode . ')'
             );
         }
 
