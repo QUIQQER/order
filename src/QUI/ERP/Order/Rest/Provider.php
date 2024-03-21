@@ -20,8 +20,10 @@ use QUI\ERP\Constants as ERPConstants;
 use QUI\ERP\Currency\Handler as CurrencyHandler;
 use QUI\ERP\Order\Utils\Utils as OrderUtils;
 
+use function array_key_exists;
 use function date_create;
 use function is_array;
+use function is_null;
 use function is_numeric;
 use function is_string;
 use function json_encode;
@@ -336,7 +338,7 @@ class Provider implements QUI\REST\ProviderInterface
             'cDate' => true,
             'cUser' => false,
             'data' => false,
-            'customerId' => false,
+            'customerId' => true,
             'customer' => true,
             'comments' => false,
             'statusMails' => false,
@@ -345,15 +347,19 @@ class Provider implements QUI\REST\ProviderInterface
             'articles' => true,
             'addressDelivery' => false,
             'addressInvoice' => false,
-            'paymentId' => true,
+            'paymentId' => false,
             'status' => true,
             'paidStatus' => false,
             'shippingStatus' => false,
-            'shipping' => false
+            'shipping' => false,
+
+            'successful' => true
         ];
 
         foreach ($orderFields as $orderField => $isRequired) {
-            if (empty($orderData[$orderField])) {
+            $value = $orderData[$orderField];
+
+            if (!array_key_exists($orderField, $orderData)) {
                 if ($isRequired) {
                     throw new RestProviderException(
                         "Missing / empty required field in order data ($key): $orderField.",
@@ -364,7 +370,9 @@ class Provider implements QUI\REST\ProviderInterface
                 continue;
             }
 
-            $value = $orderData[$orderField];
+            if (is_null($value) && !$isRequired) {
+                continue;
+            }
 
             // Validate variable type
             switch ($orderField) {
@@ -391,6 +399,7 @@ class Provider implements QUI\REST\ProviderInterface
                 case 'paymentId':
                 case 'shippingStatus':
                 case 'shipping':
+                case 'successful':
                     if (!is_numeric($value)) {
                         throw new RestProviderException(
                             "Invalid value type for '$orderField' in order data ($key). Value must be numeric.",
@@ -454,11 +463,13 @@ class Provider implements QUI\REST\ProviderInterface
             'id_prefix' => !empty($orderData['idPrefix']) ? $orderData['idPrefix'] : OrderUtils::getOrderPrefix(),
             'id_str' => $orderData['prefixedId'],
             'hash' => $orderData['hash'],
-            'globalProcessId' => $orderData['globalProcessId'],
+            'global_process_id' => $orderData['globalProcessId'],
             'status' => (int)$orderData['status'],
             'customer' => json_encode($orderData['customer']),
-            'createDate' => $orderData['createDate'],
+            'customerId' => $orderData['customerId'],
+            'c_date' => $orderData['cDate'],
             'articles' => json_encode($orderData['articles']),
+            'successful' => (int)$orderData['successful'],
 
             'payment_id' => (int)$orderData['paymentId'],
             'invoice_id' => !empty($orderData['invoiceId']) ? $orderData['invoiceId'] : null,
@@ -471,9 +482,6 @@ class Provider implements QUI\REST\ProviderInterface
             'shipping_id' => !empty($orderData['shipping']) ?
                 (int)$orderData['shipping'] :
                 null,
-            'customerId' => !empty($orderData['customerId']) ?
-                $orderData['customerId'] :
-                null,
             'c_user' => !empty($orderData['cUser']) ?
                 $orderData['cUser'] :
                 null,
@@ -482,9 +490,6 @@ class Provider implements QUI\REST\ProviderInterface
                 null,
             'addressDelivery' => !empty($orderData['addressDelivery']) ?
                 json_encode($orderData['addressDelivery']) :
-                null,
-            'c_date' => !empty($orderData['cDate']) ?
-                $orderData['cDate'] :
                 null,
             'data' => !empty($orderData['data']) ?
                 json_encode($orderData['data']) :
