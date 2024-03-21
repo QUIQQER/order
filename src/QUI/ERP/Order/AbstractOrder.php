@@ -11,6 +11,7 @@ use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
+use QUI\ERP\ErpEntityInterface;
 use QUI\ERP\Exception;
 use QUI\ERP\Order\ProcessingStatus\Handler as ProcessingHandler;
 use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
@@ -41,7 +42,8 @@ use function time;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP\ErpEntityInterface
+abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP\ErpEntityInterface,
+                                                         QUI\ERP\ErpTransactionsInterface
 {
     /* @deprecated */
     const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
@@ -492,6 +494,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
     }
 
     /**
+     * @param string $reason
+     * @param QUI\Interfaces\Users\User|null $PermissionUser
+     * @return ErpEntityInterface|null
+     */
+    public function reversal(string $reason = '', QUI\Interfaces\Users\User $PermissionUser = null): ?ErpEntityInterface
+    {
+        $this->delete($PermissionUser);
+        return null;
+    }
+
+    /**
      * Set the successful status to the order
      *
      * @throws QUI\Exception
@@ -695,10 +708,16 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
         }
 
         return [
+            'uuid' => $this->getUUID(),
+            'hash' => $this->hash, // @deprecated
+            'entityType' => $this->getType(),
+            'globalProcessId' => $this->getGlobalProcessId(),
+
             'id' => $this->id,
-            'prefixedId' => $this->getPrefixedId(),
+            'prefixedId' => $this->getPrefixedNumber(),
+            'prefixedNumber' => $this->getPrefixedNumber(),
             'invoiceId' => $this->invoiceId,
-            'hash' => $this->hash,
+
             'cDate' => $this->cDate,
             'cUser' => $this->cUser,
             'cUsername' => $this->getCreateUser()->getName(),
@@ -2288,6 +2307,26 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP
                 QUI\System\Log::addError($Exception->getMessage());
             }
         }
+    }
+
+    //endregion
+
+    //region
+
+    public function addCustomerFile(string $fileHash, array $options = []): void
+    {
+        // TODO: Implement addCustomerFile() method.
+    }
+
+    public function clearCustomerFiles(): void
+    {
+        // TODO: Implement clearCustomerFiles() method.
+    }
+
+    public function getCustomerFiles(): array
+    {
+        // TODO: Implement getCustomerFiles() method.
+        return [];
     }
 
     //endregion

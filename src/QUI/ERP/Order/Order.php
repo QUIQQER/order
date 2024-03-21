@@ -27,7 +27,7 @@ use function json_decode;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface
+class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
 {
     /**
      * @var bool
