@@ -34,6 +34,9 @@
     "quiqqer-asset\/navigo": "5.*",
     "quiqqer-asset\/history-events": "1.*"
   },
+  "conflict": {
+    "quiqqer/rest": "<2.2 || >=3"
+  },
   "autoload": {
     "psr-4": {
       "QUI\\ERP\\Order\\": "src\/QUI\/ERP\/Order",

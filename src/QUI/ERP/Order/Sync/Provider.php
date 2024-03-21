@@ -147,6 +147,18 @@ class Provider implements SyncProviderInterface
     }
 
     /**
+     * Get list of packages that must be synced before this provider can sync.
+     *
+     * @return string[]
+     */
+    public function getPrerequisitePackages(): array
+    {
+        return [
+            'quiqqer/quiqqer'
+        ];
+    }
+
+    /**
      * @param string $package
      * @return void
      */
