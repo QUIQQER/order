@@ -101,6 +101,9 @@ class Provider implements SyncProviderInterface
      * @throws BaseException
      * @throws ClientException
      * @throws SyncProviderException
+     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\Database\Exception
+     * @throws QUI\Exception
      */
     public function syncPackageToTarget(
         SyncPackage $SyncPackage,
@@ -218,6 +221,22 @@ class Provider implements SyncProviderInterface
             $orderData = $Order->toArray();
             $orderData['globalProcessId'] = $Order->getGlobalProcessId();
             $orderData['idPrefix'] = $Order->getIdPrefix();
+            $orderData['currency'] = $Order->getCurrency()->getCode();
+            $orderData['paidStatus'] = (int)$Order->getAttribute('paid_status');
+            $orderData['successful'] = $Order->isSuccessful();
+
+            // $Order->toArray() returns "paymentId" as empty string if not set
+            if (empty($orderData['paymentId'])) {
+                $orderData['paymentId'] = null;
+            }
+
+            if (empty($orderData['shippingStatus'])) {
+                $orderData['shippingStatus'] = null;
+            }
+
+            if (empty($orderData['shipping'])) {
+                $orderData['shipping'] = null;
+            }
 
             $syncOrders[] = $orderData;
         }
