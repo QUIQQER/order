@@ -106,7 +106,7 @@ class OutputProviderOrder implements OutputProviderInterface
      */
     public static function getLocale($entityId): Locale
     {
-        $Order    = self::getEntity($entityId);
+        $Order = self::getEntity($entityId);
         $Customer = $Order->getCustomer();
 
         return $Customer->getLocale();
@@ -120,9 +120,9 @@ class OutputProviderOrder implements OutputProviderInterface
      */
     public static function getTemplateData($entityId): array
     {
-        $Order     = self::getEntity($entityId);
+        $Order = self::getEntity($entityId);
         $OrderView = $Order->getView();
-        $Customer  = $Order->getCustomer();
+        $Customer = $Order->getCustomer();
 
         $Address = $Order->getInvoiceAddress();
         $Address->clearMail();
@@ -159,7 +159,7 @@ class OutputProviderOrder implements OutputProviderInterface
 
         if ($OrderView->getAttribute('order_id')) {
             try {
-                $Order       = QUI\ERP\Order\Handler::getInstance()->getOrderById(
+                $Order = QUI\ERP\Order\Handler::getInstance()->getOrderById(
                     $OrderView->getAttribute('order_id')
                 );
                 $orderNumber = $Order->getPrefixedId();
@@ -177,17 +177,17 @@ class OutputProviderOrder implements OutputProviderInterface
          */
 
         return [
-            'this'              => $OrderView,
-            'ArticleList'       => $Articles,
-            'Customer'          => $Customer,
-            'Address'           => $Address,
-            'DeliveryAddress'   => $DeliveryAddress,
-            'Payment'           => $Order->getPayment(),
-            'transaction'       => $OrderView->getTransactionText(),
-            'projectName'       => $Order->getAttribute('project_name'),
-            'useShipping'       => QUI::getPackageManager()->isInstalled('quiqqer/shipping'),
-            'globalOrderText'   => $globalOrderText,
-            'orderNumber'       => $orderNumber,
+            'this' => $OrderView,
+            'ArticleList' => $Articles,
+            'Customer' => $Customer,
+            'Address' => $Address,
+            'DeliveryAddress' => $DeliveryAddress,
+            'Payment' => $Order->getPayment(),
+            'transaction' => $OrderView->getTransactionText(),
+            'projectName' => $Order->getAttribute('project_name'),
+            'useShipping' => QUI::getPackageManager()->isInstalled('quiqqer/shipping'),
+            'globalOrderText' => $globalOrderText,
+            'orderNumber' => $orderNumber,
             'epcQrCodeImageSrc' => $epcQrCodeImageSrc
         ];
     }
@@ -208,10 +208,6 @@ class OutputProviderOrder implements OutputProviderInterface
         try {
             $Customer = self::getEntity($entityId)->getCustomer();
 
-            if (empty($Customer)) {
-                return false;
-            }
-
             return $User->getId() === $Customer->getId();
         } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -228,13 +224,9 @@ class OutputProviderOrder implements OutputProviderInterface
      *
      * @throws QUI\Exception
      */
-    public static function getEmailAddress($entityId)
+    public static function getEmailAddress($entityId): bool|string
     {
         $Customer = self::getEntity($entityId)->getCustomer();
-
-        if (empty($Customer)) {
-            return false;
-        }
 
         if (!empty($Customer->getAttribute('contactEmail'))) {
             return $Customer->getAttribute('contactEmail');
@@ -253,7 +245,7 @@ class OutputProviderOrder implements OutputProviderInterface
      */
     public static function getMailSubject($entityId): string
     {
-        $Order    = self::getEntity($entityId);
+        $Order = self::getEntity($entityId);
         $Customer = $Order->getCustomer();
 
         return $Order->getCustomer()->getLocale()->get(
@@ -273,7 +265,7 @@ class OutputProviderOrder implements OutputProviderInterface
      */
     public static function getMailBody($entityId): string
     {
-        $Order    = self::getEntity($entityId);
+        $Order = self::getEntity($entityId);
         $Customer = $Order->getCustomer();
 
         return $Customer->getLocale()->get(
@@ -291,7 +283,7 @@ class OutputProviderOrder implements OutputProviderInterface
     protected static function getOrderLocaleVar($Order, $Customer): array
     {
         $CustomerAddress = $Customer->getAddress();
-        $user            = $CustomerAddress->getAttribute('contactPerson');
+        $user = $CustomerAddress->getAttribute('contactPerson');
 
         if (empty($user)) {
             $user = $Customer->getName();
@@ -326,12 +318,12 @@ class OutputProviderOrder implements OutputProviderInterface
         }
 
         return array_merge([
-            'orderId'       => $Order->getId(),
-            'hash'          => $Order->getAttribute('hash'),
-            'date'          => self::dateFormat($Order->getAttribute('date')),
+            'orderId' => $Order->getId(),
+            'hash' => $Order->getAttribute('hash'),
+            'date' => self::dateFormat($Order->getAttribute('date')),
             'systemCompany' => self::getCompanyName(),
 
-            'contactPerson'       => $contactPerson,
+            'contactPerson' => $contactPerson,
             'contactPersonOrName' => $contactPersonOrName
         ], self::getCustomerVariables($Customer));
     }
@@ -344,7 +336,7 @@ class OutputProviderOrder implements OutputProviderInterface
     protected static function getCompanyName(): string
     {
         try {
-            $Conf    = QUI::getPackage('quiqqer/erp')->getConfig();
+            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -407,15 +399,15 @@ class OutputProviderOrder implements OutputProviderInterface
         }
 
         return [
-            'user'          => $user,
-            'name'          => $user,
-            'company'       => $Customer->getStandardAddress()->getAttribute('company'),
+            'user' => $user,
+            'name' => $user,
+            'company' => $Customer->getStandardAddress()->getAttribute('company'),
             'companyOrName' => self::getCompanyOrName($Customer),
-            'address'       => $Address->render(),
-            'email'         => $email,
-            'salutation'    => $Address->getAttribute('salutation'),
-            'firstname'     => $Address->getAttribute('firstname'),
-            'lastname'      => $Address->getAttribute('lastname')
+            'address' => $Address->render(),
+            'email' => $email,
+            'salutation' => $Address->getAttribute('salutation'),
+            'firstname' => $Address->getAttribute('firstname'),
+            'lastname' => $Address->getAttribute('lastname')
         ];
     }
 
@@ -539,9 +531,9 @@ class OutputProviderOrder implements OutputProviderInterface
         $qrCodeText = implode(PHP_EOL, $qrCodeLines);
 
         $QrOptions = new QROptions([
-            'version'        => QRCode::VERSION_AUTO,
-            'outputType'     => QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel'       => QRCode::ECC_M,
+            'version' => QRCode::VERSION_AUTO,
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'eccLevel' => QRCode::ECC_M,
             'pngCompression' => -1
         ]);
 
