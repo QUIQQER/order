@@ -72,6 +72,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         options: {
             orderId: false,
+            uuid: false,
             customerId: false,
             customer: {},
             addressInvoice: {},
@@ -88,6 +89,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         initialize: function(options) {
             this.parent(options);
+
+            if (!this.getAttribute('orderId') && this.getAttribute('uuid')) {
+                this.setAttribute('orderId', this.getAttribute('uuid'));
+            }
 
             this.setAttributes({
                 icon: 'fa fa-shopping-cart',

@@ -21,7 +21,9 @@ use function json_encode;
  *
  * @package QUI\ERP\Order
  */
-class OrderInProcess extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface
+class OrderInProcess
+    extends AbstractOrder
+    implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
 {
     /**
      * @var null|integer
