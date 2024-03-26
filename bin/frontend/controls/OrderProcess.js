@@ -1409,25 +1409,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (this.$Next.getParent('.qui-window-popup').length &&
                 this.$Next.getParent('.qui-window-popup')[0]) {
                 this.$Next.setStyle('display', 'none');
-                return;
-            }
-
-            // mobile, next button before
-            const EndContainer = this.getElm().getElement('.quiqqer-order-basket-end');
-
-            if (QUI.getWindowSize().x < 768) {
-                if (EndContainer) {
-                    this.$Next.inject(
-                        this.getElm().getElement('.quiqqer-order-basket-end'),
-                        'before'
-                    );
-                } else {
-                    if (this.$Previous.length) {
-                        this.$Next.inject(this.$Previous[0], 'before');
-                    }
-                }
-
-                this.$Next.addClass('quiqqer-order-next-mobile');
             }
         },
 

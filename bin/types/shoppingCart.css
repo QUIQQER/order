@@ -96,7 +96,11 @@
         width: 100%;
     }
 
+    .quiqqer-shoppingCart-buttons-toCheckout{
+        order: 1;
+    }
+
     .quiqqer-shoppingCart-buttons-backToShop {
-        order: 10;
+        order: 2;
     }
 }
