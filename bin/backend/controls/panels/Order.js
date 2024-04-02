@@ -1078,16 +1078,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             disabled: self.$locked,
                             events: {
                                 onLoad: resolve,
-                                onAddTransaction: function(data, Control) {
-                                    Orders.addPaymentToOrder(
-                                        self.getAttribute('hash'),
-                                        data.amount,
-                                        data.payment_method,
-                                        data.date
-                                    ).then(function() {
-                                        Control.refresh();
-                                    });
-                                },
                                 onLinkTransaction: (txId, Control) => {
                                     Orders.linkTransaction(self.getAttribute('hash'), txId).then(() => {
                                         Control.refresh();

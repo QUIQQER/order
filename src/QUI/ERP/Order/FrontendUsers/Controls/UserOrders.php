@@ -135,20 +135,20 @@ class UserOrders extends Control implements ControlInterface
 
         switch ((int)$paidStatus) {
             case QUI\ERP\Constants::PAYMENT_STATUS_OPEN:
-                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
+                $paymentStatus = QUI::getLocale()->get('quiqqer/erp', 'payment.status.0');
                 break;
 
             case QUI\ERP\Constants::PAYMENT_STATUS_PAID:
                 $Formatter = QUI::getLocale()->getDateFormatter();
                 $date = $Formatter->format($paidDate);
 
-                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.paid.text', [
+                $paymentStatus = QUI::getLocale()->get('quiqqer/erp', 'payment.status.paid.text', [
                     'date' => $date
                 ]);
                 break;
 
             case QUI\ERP\Constants::PAYMENT_STATUS_PLAN:
-                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.12');
+                $paymentStatus = QUI::getLocale()->get('quiqqer/erp', 'payment.status.12');
                 break;
 
             default:
@@ -156,7 +156,7 @@ class UserOrders extends Control implements ControlInterface
             case QUI\ERP\Constants::PAYMENT_STATUS_ERROR:
             case QUI\ERP\Constants::PAYMENT_STATUS_CANCELED:
             case QUI\ERP\Constants::PAYMENT_STATUS_DEBIT:
-                $paymentStatus = QUI::getLocale()->get('quiqqer/order', 'payment.status.0');
+                $paymentStatus = QUI::getLocale()->get('quiqqer/erp', 'payment.status.0');
         }
 
         $PSHandler = QUI\ERP\Order\ProcessingStatus\Handler::getInstance();
