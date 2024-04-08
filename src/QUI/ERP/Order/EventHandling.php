@@ -10,7 +10,7 @@ use DusanKasan\Knapsack\Collection;
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
-use Quiqqer\Engine\Collector;
+use QUI\Smarty\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use function array_flip;
@@ -21,7 +21,6 @@ use function explode;
 use function ltrim;
 use function mb_strpos;
 use function parse_url;
-use function strpos;
 use function strtolower;
 use function strtotime;
 use function trim;
@@ -44,7 +43,7 @@ class EventHandling
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
         Collection &$Collection,
         $ProductControl = null
-    ) {
+    ): void {
         $Button = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
             'Product' => $Product
         ]);
@@ -67,7 +66,7 @@ class EventHandling
      * @throws Exception
      * @throws QUI\Exception
      */
-    public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
+    public static function onRequest(QUI\Rewrite $Rewrite, string $requestedUrl): void
     {
         if (defined('QUIQQER_AJAX')) {
             return;
@@ -88,11 +87,11 @@ class EventHandling
             return;
         }
 
-        if (strpos($requestedUrl, $path) === false) {
+        if (!str_contains($requestedUrl, $path)) {
             return;
         }
 
-        if (strpos($requestedUrl, $path) !== 0) {
+        if (!str_starts_with($requestedUrl, $path)) {
             return;
         }
 
@@ -107,7 +106,7 @@ class EventHandling
                 $OrderProcess = new OrderProcess([
                     'orderHash' => $orderHash
                 ]);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
                 $Redirect->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
 
@@ -134,7 +133,7 @@ class EventHandling
                     $Rewrite->setSite($CheckoutSite);
 
                     return;
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\Exception) {
                 }
             }
 
@@ -183,7 +182,7 @@ class EventHandling
      *
      * @param Transaction $Transaction
      */
-    public static function onTransactionCreate(Transaction $Transaction)
+    public static function onTransactionCreate(Transaction $Transaction): void
     {
         $Order = null;
 
@@ -191,7 +190,7 @@ class EventHandling
             $Order = Handler::getInstance()->getOrderByGlobalProcessId(
                 $Transaction->getGlobalProcessId()
             );
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         if ($Order === null && $Transaction->getHash() !== '') {
@@ -199,7 +198,7 @@ class EventHandling
                 $Order = Handler::getInstance()->getOrderByHash(
                     $Transaction->getHash()
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
 
             if ($Order === null) {
@@ -207,7 +206,7 @@ class EventHandling
                     $Order = Handler::getInstance()->getOrderInProcessByHash(
                         $Transaction->getHash()
                     );
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\Exception) {
                 }
             }
         }
@@ -226,7 +225,7 @@ class EventHandling
     /**
      * @param Transaction $Transaction
      */
-    public static function onTransactionStatusChange(Transaction $Transaction)
+    public static function onTransactionStatusChange(Transaction $Transaction): void
     {
         $Order = null;
 
@@ -234,7 +233,7 @@ class EventHandling
             $Order = Handler::getInstance()->getOrderByGlobalProcessId(
                 $Transaction->getGlobalProcessId()
             );
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         if ($Order === null && $Transaction->getHash() !== '') {
@@ -242,7 +241,7 @@ class EventHandling
                 $Order = Handler::getInstance()->getOrderByHash(
                     $Transaction->getHash()
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
 
             if ($Order === null) {
@@ -250,7 +249,7 @@ class EventHandling
                     $Order = Handler::getInstance()->getOrderInProcessByHash(
                         $Transaction->getHash()
                     );
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\Exception) {
                 }
             }
         }
@@ -274,7 +273,7 @@ class EventHandling
     public static function onQuiqqerInvoiceTemporaryInvoicePostEnd(
         QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary,
         QUI\ERP\Accounting\Invoice\Invoice $Invoice
-    ) {
+    ): void {
         try {
             $Order = Handler::getInstance()->getOrderByGlobalProcessId($Invoice->getGlobalProcessId());
 
@@ -284,7 +283,7 @@ class EventHandling
 
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
-                ['invoice_id' => $Invoice->getHash()],
+                ['invoice_id' => $Invoice->getUUID()],
                 ['id' => $Order->getId()]
             );
         } catch (QUI\Exception $Exception) {
@@ -296,9 +295,8 @@ class EventHandling
      * event: order creation
      *
      * @param Order $Order
-     * @throws QUI\Exception
      */
-    public static function onQuiqqerOrderCreated(Order $Order)
+    public static function onQuiqqerOrderCreated(Order $Order): void
     {
         CustomerData::parseSessionOrderCommentsToOrder($Order);
 
@@ -323,7 +321,7 @@ class EventHandling
      * @param QUI\Package\Package $Package
      * @throws QUI\Exception
      */
-    public static function onPackageSetup(QUI\Package\Package $Package)
+    public static function onPackageSetup(QUI\Package\Package $Package): void
     {
         if ($Package->getName() !== 'quiqqer/order') {
             return;
@@ -400,7 +398,7 @@ class EventHandling
     public static function onDetailEquipmentButtons(
         Collector $Collection,
         QUI\ERP\Products\Product\Types\AbstractType $Product
-    ) {
+    ): void {
         // add to basket -> only for complete products
         // variant products cant be added directly
         if (
@@ -433,7 +431,7 @@ class EventHandling
     /**
      * @param QUI\Template $Template
      */
-    public static function onTemplateGetHeader(QUI\Template $Template)
+    public static function onTemplateGetHeader(QUI\Template $Template): void
     {
         $merge = 0;
 
@@ -441,7 +439,7 @@ class EventHandling
             $Package = QUI::getPackage('quiqqer/order');
             $Config = $Package->getConfig();
             $merge = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         $header = '<script type="text/javascript">';
@@ -466,7 +464,7 @@ class EventHandling
     public static function onTemplateEnd(
         Collector $Collection,
         QUI\Template $Template
-    ) {
+    ): void {
         $Collection->append(
             '<script src="' . URL_OPT_DIR . 'quiqqer/order/bin/frontend/dataLayerTracking.js"></script>'
         );
@@ -480,8 +478,10 @@ class EventHandling
      * @param AbstractOrder $Order
      * @param ProcessingStatus\Status $Status
      */
-    public static function onQuiqqerOrderProcessStatusChange(AbstractOrder $Order, ProcessingStatus\Status $Status)
-    {
+    public static function onQuiqqerOrderProcessStatusChange(
+        AbstractOrder $Order,
+        ProcessingStatus\Status $Status
+    ): void {
         // Do not send auto-notification if the Order was manually saved (backend)
         if ($Order->getAttribute('userSave')) {
             return;
@@ -508,7 +508,7 @@ class EventHandling
     public static function onQuiqqerErpGetCommentsByUser(
         QUI\Users\User $User,
         QUI\ERP\Comments $Comments
-    ) {
+    ): void {
         $Handler = Handler::getInstance();
         $orders = $Handler->getOrdersByUser($User);
 
