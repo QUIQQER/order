@@ -75,7 +75,7 @@ class OrderProcess extends QUI\Control
     /**
      * @var QUI\Events\Event
      */
-    public $Events;
+    public QUI\Events\Event $Events;
 
     /**
      * Basket constructor.
