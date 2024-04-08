@@ -275,7 +275,8 @@ class EventHandling
         QUI\ERP\Accounting\Invoice\Invoice $Invoice
     ): void {
         try {
-            $Order = Handler::getInstance()->getOrderByGlobalProcessId($Invoice->getGlobalProcessId());
+            $Process = new QUI\ERP\Process($Invoice->getGlobalProcessId());
+            $Order = $Process->getOrder();
 
             if ($Order->isPosted()) {
                 return;
