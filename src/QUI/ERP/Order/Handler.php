@@ -672,7 +672,8 @@ class Handler extends Singleton
         foreach ($list as $entry) {
             try {
                 $result[] = $this->getOrderInProcess($entry['id']);
-            } catch (Exception|QUI\ERP\Exception) {
+            } catch (Exception) {
+            } catch (QUI\ERP\Exception) {
             }
         }
 
