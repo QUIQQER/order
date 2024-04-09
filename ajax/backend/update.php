@@ -144,7 +144,7 @@ QUI::$Ajax->registerFunction(
                 if (!empty($data['notificationShipping'])) {
                     QUI\ERP\Shipping\Shipping::getInstance()->sendStatusChangeNotification(
                         $Order,
-                        (int)$data['status'],
+                        (int)$data['shippingStatus'],
                         $data['notificationShipping']
                     );
                 }

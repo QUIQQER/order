@@ -849,6 +849,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     const userId = parseInt(Select.getValue());
 
                     if (currentCustomerId === userId) {
+                        Users.get(userId).loadIfNotLoaded().then(function(User) {
+                            // if email is updated
+                            // maybe we should think about more data
+                            const panelCustomer = self.getAttribute('customer');
+                            panelCustomer.email = User.getAttribute('email');
+
+                            self.setAttribute('customer', panelCustomer);
+                        });
+
                         return;
                     }
 
@@ -2105,7 +2114,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         onOpen: function(Win) {
                             // get current status title
                             const statusTitle = self.$Elm.getElement(
-                                'select[name="status"] option[value="' + statusId + '"]'
+                                'select[name="shippingStatus"] option[value="' + statusId + '"]'
                             ).innerHTML;
 
                             Win.setAttribute(
