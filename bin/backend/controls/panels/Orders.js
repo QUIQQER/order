@@ -348,9 +348,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 name: 'actions',
                 text: QUILocale.get(lg, 'panel.btn.actions'),
                 menuCorner: 'topRight',
-                styles: {
-                    'float': 'right'
-                }
+                position: 'right'
             });
 
             this.$Actions.appendChild({
