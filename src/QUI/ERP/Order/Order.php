@@ -203,16 +203,16 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         if ($this->getInvoiceAddress()) {
             $invoiceAddress = $this->getInvoiceAddress()->toJSON();
-            $invoiceAddressId = $this->getInvoiceAddress()->getId();
+            $invoiceAddressId = $this->getInvoiceAddress()->getUUID();
         }
 
         if (empty($invoiceAddressId)) {
-            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getId();
+            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getUUID();
         }
 
         if ($this->getDeliveryAddress()) {
             $deliveryAddress = $this->getDeliveryAddress()->toJSON();
-            $deliveryAddressId = $this->getDeliveryAddress()->getId();
+            $deliveryAddressId = $this->getDeliveryAddress()->getUUID();
 
             $TemporaryInvoice->setDeliveryAddress($this->getDeliveryAddress());
         }
@@ -345,17 +345,17 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         $InvoiceAddress = $this->getInvoiceAddress();
         $invoiceAddress = json_decode($InvoiceAddress->toJSON(), true);
-        $invoiceAddressId = $InvoiceAddress->getId();
+        $invoiceAddressId = $InvoiceAddress->getUUID();
 
         if (empty($invoiceAddressId)) {
-            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getId();
+            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getUUID();
         }
 
         $DeliveryAddress = $this->getDeliveryAddress();
 
         if ($InvoiceAddress->toJSON() !== $DeliveryAddress->toJSON()) {
             $deliveryAddress = json_decode($DeliveryAddress->toJSON(), true);
-            $deliveryAddressId = $DeliveryAddress->getId();
+            $deliveryAddressId = $DeliveryAddress->getUUID();
         }
 
         $Customer = $this->getCustomer();

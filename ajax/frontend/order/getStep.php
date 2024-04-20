@@ -44,7 +44,7 @@ QUI::$Ajax->registerFunction(
                 'url' => $OrderProcess->getStepUrl($Current->getName()),
                 'hash' => $OrderProcess->getStepHash()
             ];
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
             throw new QUI\Exception('Something went wrong');

@@ -41,10 +41,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * Overwrite setAttribute then checkout can react to onGetBody
      *
      * @param string $name
-     * @param array|bool|object|string $val
+     * @param mixed $val
      * @return QUI\QDOM
      */
-    public function setAttribute($name, $val)
+    public function setAttribute(string $name, mixed $val)
     {
         if ($name === 'Process') {
             /* @var $Process QUI\ERP\Order\OrderProcess */

@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
 
         $Transaction = TransactionHandler::getInstance()->get(Orthos::clear($txId));
 
-        if ($Transaction->isHashLinked($Order->getHash())) {
+        if ($Transaction->isHashLinked($Order->getUUID())) {
             throw new Exception([
                 'quiqqer/order',
                 'message.ajax.backend.linkTransaction.error.tx_already_linked',

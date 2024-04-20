@@ -4,6 +4,7 @@
  * This file contains package_quiqqer_order_ajax_backend_update
  */
 
+use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\PriceFactors\Factor;
 use QUI\ERP\Accounting\PriceFactors\FactorList;
 use QUI\ERP\Order\ProcessingStatus\Handler;
@@ -106,16 +107,16 @@ QUI::$Ajax->registerFunction(
             $Order->setInvoiceAddress($data['addressInvoice']);
         }
 
-        if (isset($data['addressDelivery']) && !empty($data['addressDelivery'])) {
+        if (!empty($data['addressDelivery'])) {
             $Order->setDeliveryAddress($data['addressDelivery']);
-        } elseif (isset($data['addressDelivery']) && empty($data['addressDelivery'])) {
+        } elseif (isset($data['addressDelivery'])) {
             $Order->removeDeliveryAddress();
         }
 
         if (isset($data['paymentId'])) {
             try {
                 $Order->setPayment($data['paymentId']);
-            } catch (\Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -131,7 +132,7 @@ QUI::$Ajax->registerFunction(
                         $data['notification']
                     );
                 }
-            } catch (\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::addError($Exception->getMessage());
             }
         }
@@ -148,7 +149,7 @@ QUI::$Ajax->registerFunction(
                         $data['notificationShipping']
                     );
                 }
-            } catch (\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -184,14 +185,14 @@ QUI::$Ajax->registerFunction(
                     $Order->addArticle(
                         new QUI\ERP\Accounting\Article($article)
                     );
-                } catch (\Exception) {
+                } catch (Exception) {
                 }
             }
         }
 
         // import factor list
         if (isset($data['priceFactors'])) {
-            /* @var $Articles \QUI\ERP\Accounting\ArticleList */
+            /* @var $Articles ArticleList */
             /* @var $FactorList FactorList */
             $Articles = $Order->getArticles();
             $factors = [];

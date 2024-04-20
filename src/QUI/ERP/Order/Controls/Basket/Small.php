@@ -13,7 +13,7 @@ use QUI;
  *
  * @package QUI\ERP\Order\Controls\Basket
  */
-class Small extends QUI\Controls\Control
+class Small extends QUI\Control
 {
     /**
      * Used basket
@@ -102,7 +102,7 @@ class Small extends QUI\Controls\Control
      *
      * @throws QUI\Exception
      */
-    protected function getProject()
+    protected function getProject(): QUI\Projects\Project
     {
         if ($this->Project === null) {
             $this->Project = QUI::getProjectManager()->get();

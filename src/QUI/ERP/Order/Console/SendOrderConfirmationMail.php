@@ -24,7 +24,7 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
             );
     }
 
-    public function execute()
+    public function execute(): void
     {
         $Handler = QUI\ERP\Order\Handler::getInstance();
         $orderId = $this->getArgument('orderId');
@@ -58,7 +58,7 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
 
         try {
             QUI\ERP\Order\Mail::sendOrderConfirmationMail($Order);
-        } catch (QUI\Exception $Exception) {
+        } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
             $this->writeLn(

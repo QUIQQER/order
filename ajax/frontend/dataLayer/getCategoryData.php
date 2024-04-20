@@ -11,7 +11,7 @@ QUI::$Ajax->registerFunction(
             $Category = QUI\ERP\Products\Handler\Categories::getCategory($categoryId);
 
             return $Category->getTitle();
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return '';
         }
     },

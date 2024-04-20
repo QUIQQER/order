@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
 
         try {
             $Basket = OrderHandler::getInstance()->getBasketFromUser(QUI::getUserBySession());
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $Basket = OrderFactory::getInstance()->createBasket(QUI::getUserBySession());
         }
 

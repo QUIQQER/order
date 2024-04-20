@@ -368,6 +368,7 @@ class Handler extends Singleton
      */
     public function getOrdersByUser(QUI\Interfaces\Users\User $User, array $params = []): array
     {
+        // @todo uuid
         $query = [
             'select' => ['id', 'customerId'],
             'from' => $this->table(),

@@ -13,7 +13,7 @@ QUI::$Ajax->registerFunction(
         } else {
             try {
                 $Basket = OrderHandler::getInstance()->getBasketById($basketId);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 return [];
             }
         }

@@ -17,7 +17,7 @@ QUI::$Ajax->registerFunction(
         $Order = $Handler->get($orderId);
         $SalesOrder = $Order->createSalesOrder();
 
-        return $SalesOrder->getHash();
+        return $SalesOrder->getUUID();
     },
     ['orderId'],
     'Permission::checkAdminUser'

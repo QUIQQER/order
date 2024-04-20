@@ -10,6 +10,9 @@
  * @param integer $orderId
  * @return string
  */
+
+use QUI\ERP\Order\Controls\OrderProcess\Processing;
+
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_processing_getPayments',
     function ($orderHash) {
@@ -19,7 +22,7 @@ QUI::$Ajax->registerFunction(
             'step' => $Processing->getName()
         ]);
 
-        /* @var $Processing \QUI\ERP\Order\Controls\OrderProcess\Processing */
+        /* @var $Processing Processing */
         $Processing = $OrderProcess->getCurrentStep();
         $Order = $OrderProcess->getOrder();
 

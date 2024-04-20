@@ -98,7 +98,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @throws Exception
      */
-    public function getProcessingStatus($id)
+    public function getProcessingStatus($id): StatusUnknown|Status
     {
         if ($id === 0) {
             return new StatusUnknown();

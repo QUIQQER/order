@@ -22,7 +22,7 @@ QUI::$Ajax->registerFunction(
             'orderId' => (int)$orderId,
             'orderHash' => $orderHash,
             'step' => $current,
-            'basketEditable' => \boolval($basketEditable)
+            'basketEditable' => boolval($basketEditable)
         ]);
 
         $Previous = $OrderProcess->getPreviousStep();

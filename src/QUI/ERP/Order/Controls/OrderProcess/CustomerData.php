@@ -7,6 +7,8 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
+use QUI\Exception;
+use QUI\Users\Address;
 use QUI\Users\User;
 
 use function dirname;
@@ -46,14 +48,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
-        try {
-            $Engine = QUI::getTemplateManager()->getEngine();
-        } catch (QUI\Exception $Exception) {
-            return '';
-        }
-
+        $Engine = QUI::getTemplateManager()->getEngine();
         $User = null;
         $Address = $this->getInvoiceAddress();
 
@@ -64,8 +61,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if (!$User) {
             try {
                 $Customer = $this->getOrder()->getCustomer();
-                $User = QUI::getUsers()->get($Customer->getId());
-            } catch (QUI\Exception $Exception) {
+                $User = QUI::getUsers()->get($Customer->getUUID());
+            } catch (QUI\Exception) {
                 $User = QUI::getUserBySession();
             }
         }
@@ -74,7 +71,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             try {
                 /* @var $User User */
                 $Address = $User->getStandardAddress();
-            } catch (QUI\Users\Exception $Exception) {
+            } catch (QUI\Exception) {
                 // user has no address
                 // create a new standard address
                 $Address = $User->addAddress();
@@ -351,7 +348,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSave', [$this]);
 
-        $Address = $this->getAddressById((int)$_REQUEST['addressId']);
+        $Address = $this->getAddressById($_REQUEST['addressId']);
 
         if ($Address === null) {
             return;
@@ -465,10 +462,12 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Return the address by its id
      *
-     * @param integer $addressId
-     * @return false|null|QUI\Users\Address
+     * @param int|string $addressId
+     * @return false|null|Address
+     * @throws Exception
+     * @throws QUI\Permissions\Exception
      */
-    protected function getAddressById($addressId)
+    protected function getAddressById(int|string $addressId): bool|QUI\Users\Address|null
     {
         $User = QUI::getUserBySession();
         $Address = null;

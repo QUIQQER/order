@@ -24,7 +24,7 @@ class Order implements NumberRangeInterface
      *
      * @return string
      */
-    public function getTitle($Locale = null): string
+    public function getTitle(QUI\Locale $Locale = null): string
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();
@@ -53,7 +53,7 @@ class Order implements NumberRangeInterface
     /**
      * @param int $range
      */
-    public function setRange($range): void
+    public function setRange(int $range): void
     {
         if (!is_numeric($range)) {
             return;

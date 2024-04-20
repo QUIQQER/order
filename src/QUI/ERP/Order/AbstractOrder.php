@@ -14,6 +14,8 @@ use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\ErpEntityInterface;
 use QUI\ERP\Exception;
 use QUI\ERP\Order\ProcessingStatus\Handler as ProcessingHandler;
+use QUI\ERP\Order\ProcessingStatus\Status;
+use QUI\ERP\Order\ProcessingStatus\StatusUnknown;
 use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
 use QUI\ERP\User;
 use QUI\ExceptionStack;
@@ -64,29 +66,6 @@ abstract class AbstractOrder
     /* @deprecated */
     const PAYMENT_STATUS_DEBIT = QUI\ERP\Constants::PAYMENT_STATUS_DEBIT;
 
-    /* @deprecated */
-    const PAYMENT_STATUS_PLAN = QUI\ERP\Constants::PAYMENT_STATUS_PLAN;
-
-    /**
-     * Order is only created
-     *
-     * @deprecated use
-     */
-    const STATUS_CREATED = QUI\ERP\Constants::ORDER_STATUS_CREATED;
-
-    /**
-     * Order is posted (Invoice created)
-     * Bestellung ist gebucht (Invoice erstellt)
-     *
-     * @deprecated
-     */
-    const STATUS_POSTED = QUI\ERP\Constants::ORDER_STATUS_POSTED; // Bestellung ist gebucht (Invoice erstellt)
-
-    /**
-     * @deprecated
-     */
-    const STATUS_STORNO = QUI\ERP\Constants::ORDER_STATUS_STORNO; // Bestellung ist storniert
-
     /**
      * Article types
      */
@@ -122,9 +101,9 @@ abstract class AbstractOrder
     protected int $status = 0;
 
     /**
-     * @var null
+     * @var Status|StatusUnknown|null
      */
-    protected $Status = null;
+    protected Status|StatusUnknown|null $Status = null;
 
     /**
      * @var null|QUI\ERP\Shipping\ShippingStatus\Status
@@ -1010,7 +989,7 @@ abstract class AbstractOrder
         if ($this->Customer) {
             $Address = $this->Customer->getStandardAddress();
 
-            if (!$Address->getId()) {
+            if (!$Address->getUUID()) {
                 $this->Customer->setAddress(
                     new QUI\ERP\Address($this->addressInvoice, $this->Customer)
                 );
@@ -1443,7 +1422,7 @@ abstract class AbstractOrder
      * Set the payment method to the order
      *
      * @param integer|string $paymentId
-     * @throws Exception
+     * @throws Exception|QUI\Exception
      *
      * @todo Payment->canBeUsed() noch implementieren
      */
@@ -2169,7 +2148,7 @@ abstract class AbstractOrder
 
         try {
             $this->Status = $Handler->getProcessingStatus($this->status);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         // use default status
@@ -2178,7 +2157,7 @@ abstract class AbstractOrder
                 $this->Status = $Handler->getProcessingStatus(
                     Settings::getInstance()->get('orderStatus', 'standard')
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 // nothing
             }
         }
@@ -2186,7 +2165,7 @@ abstract class AbstractOrder
         if ($this->Status === null) {
             try {
                 $this->Status = $Handler->getProcessingStatus(0);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 // nothing
             }
         }
@@ -2249,7 +2228,7 @@ abstract class AbstractOrder
         try {
             $this->ShippingStatus = ShippingStatusHandler::getInstance()
                 ->getShippingStatus($this->getAttribute('shipping_status'));
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         // use default status

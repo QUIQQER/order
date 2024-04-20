@@ -11,7 +11,7 @@ QUI::$Ajax->registerFunction(
             $Product = Products::getProduct($productId);
 
             return DataLayer::parseProduct($Product);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return [];
         }
     },

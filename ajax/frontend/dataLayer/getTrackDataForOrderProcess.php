@@ -8,17 +8,12 @@ QUI::$Ajax->registerFunction(
         try {
             $Orders = QUI\ERP\Order\Handler::getInstance();
             $Order = $Orders->getOrderByHash($orderHash);
-
-            if (!$Order) {
-                return [];
-            }
-
             $Articles = $Order->getArticles();
 
             if (!$Articles->count()) {
                 return [];
             }
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return [];
         }
 

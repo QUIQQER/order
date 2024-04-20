@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
 
         try {
             $Order = $Orders->get($orderId);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $Order = $Orders->getOrderByHash($orderId);
         }
 
