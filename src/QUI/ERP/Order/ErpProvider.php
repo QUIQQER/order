@@ -19,9 +19,9 @@ use QUI\ERP\Api\AbstractErpProvider;
 class ErpProvider extends AbstractErpProvider
 {
     /**
-     * @param \QUI\Controls\Sitemap\Map $Map
+     * @param Map $Map
      */
-    public static function addMenuItems(Map $Map)
+    public static function addMenuItems(Map $Map): void
     {
         $Accounting = $Map->getChildrenByName('accounting');
 
@@ -69,7 +69,7 @@ class ErpProvider extends AbstractErpProvider
     /**
      * @return array
      */
-    public static function getNumberRanges()
+    public static function getNumberRanges(): array
     {
         return [
             new NumberRanges\Order()

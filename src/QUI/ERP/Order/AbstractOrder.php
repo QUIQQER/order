@@ -104,9 +104,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     protected string|int|bool|null $invoiceId = false;
 
     /**
-     * @var int|null
+     * @var string|int|null
      */
-    protected ?int $customerId;
+    protected null|int|string $customerId;
 
     /**
      * @var array|null

@@ -8,6 +8,10 @@ namespace QUI\ERP\Order;
 
 use QUI;
 use QUI\ERP\Customer\Utils as CustomerUtils;
+use QUI\ERP\Order\Basket\Basket;
+use QUI\ERP\Order\Basket\Exception;
+use QUI\ERP\Order\Basket\ExceptionBasketNotFound;
+use QUI\ExceptionStack;
 use QUI\Utils\Singleton;
 
 use function array_merge;
@@ -181,7 +185,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($result[0])) {
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
@@ -216,7 +220,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($result[0])) {
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
@@ -312,7 +316,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($result[0])) {
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
@@ -327,8 +331,7 @@ class Handler extends Singleton
      * @param integer|string $orderId
      * @return array
      *
-     * @throws QUI\ERP\Order\Exception
-     * @throws QUI\Database\Exception
+     * @throws QUI\Database\Exception|QUI\ERP\Order\Exception
      */
     public function getOrderData(int|string $orderId): array
     {
@@ -351,7 +354,7 @@ class Handler extends Singleton
         }
 
         if (!isset($result[0])) {
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
@@ -642,7 +645,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($result[0])) {
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
@@ -673,8 +676,7 @@ class Handler extends Singleton
         foreach ($list as $entry) {
             try {
                 $result[] = $this->getOrderInProcess($entry['id']);
-            } catch (Exception) {
-            } catch (QUI\ERP\Exception) {
+            } catch (\Exception) {
             }
         }
 
@@ -741,7 +743,7 @@ class Handler extends Singleton
             } catch (\Exception) {
             }
 
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.no.orders.found'),
                 self::ERROR_NO_ORDERS_FOUND
             );
@@ -770,7 +772,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($result[0])) {
-            throw new Exception(
+            throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
@@ -798,16 +800,17 @@ class Handler extends Singleton
      * Can be a basket id or a basket hash
      *
      * @param integer|string $str - hash or basket id
-     * @param $User - optional, user of the basket
+     * @param null $User - optional, user of the basket
      *
-     * @return QUI\ERP\Order\Basket\Basket
+     * @return Basket
      *
-     * @throws Basket\Exception
-     * @throws Basket\ExceptionBasketNotFound
-     * @throws QUI\Users\Exception
+     * @throws Exception
+     * @throws ExceptionBasketNotFound
+     * @throws ExceptionStack
      * @throws QUI\Database\Exception
+     * @throws QUI\Exception
      */
-    public function getBasket(int|string $str, $User = null): Basket\Basket
+    public function getBasket(int|string $str, $User = null): Basket
     {
         if (is_numeric($str)) {
             return self::getBasketById($str, $User);
@@ -818,16 +821,15 @@ class Handler extends Singleton
 
     /**
      * @param int|string $basketId
-     * @param $User - optional, user of the basket
+     * @param null $User - optional, user of the basket
      *
-     * @return Basket\Basket
+     * @return Basket
      *
-     * @throws Basket\Exception
-     * @throws Basket\ExceptionBasketNotFound
-     * @throws QUI\Users\Exception
+     * @throws ExceptionStack
      * @throws QUI\Database\Exception
+     * @throws QUI\Exception
      */
-    public function getBasketById(int|string $basketId, $User = null): Basket\Basket
+    public function getBasketById(int|string $basketId, $User = null): Basket
     {
         $data = QUI::getDataBase()->fetch([
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
@@ -838,7 +840,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($data[0])) {
-            throw new Basket\ExceptionBasketNotFound([
+            throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
@@ -853,21 +855,22 @@ class Handler extends Singleton
 
         $this->checkBasketPermissions($User);
 
-        return new Basket\Basket($data[0]['id'], $User);
+        return new Basket($data[0]['id'], $User);
     }
 
     /**
      * @param string $hash
-     * @param $User - optional, user of the basket
+     * @param null $User - optional, user of the basket
      *
-     * @return Basket\Basket
+     * @return Basket
      *
-     * @throws Basket\Exception
-     * @throws Basket\ExceptionBasketNotFound
-     * @throws QUI\Users\Exception
+     * @throws Exception
+     * @throws ExceptionBasketNotFound
+     * @throws ExceptionStack
      * @throws QUI\Database\Exception
+     * @throws QUI\Exception
      */
-    public function getBasketByHash(string $hash, $User = null): Basket\Basket
+    public function getBasketByHash(string $hash, $User = null): Basket
     {
         $data = QUI::getDataBase()->fetch([
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
@@ -878,7 +881,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($data[0])) {
-            throw new Basket\ExceptionBasketNotFound([
+            throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
@@ -894,18 +897,19 @@ class Handler extends Singleton
 
         $this->checkBasketPermissions($User);
 
-        return new Basket\Basket($data[0]['id'], $User);
+        return new Basket($data[0]['id'], $User);
     }
 
     /**
      * @param QUI\Interfaces\Users\User $User
      * @return QUI\ERP\Order\Basket\Basket
      *
-     * @throws Basket\Exception
-     * @throws Basket\ExceptionBasketNotFound
+     * @throws Exception
+     * @throws ExceptionBasketNotFound
      * @throws QUI\Database\Exception
+     * @throws QUI\Exception
      */
-    public function getBasketFromUser(QUI\Interfaces\Users\User $User): Basket\Basket
+    public function getBasketFromUser(QUI\Interfaces\Users\User $User): Basket
     {
         $this->checkBasketPermissions($User);
 
@@ -920,13 +924,13 @@ class Handler extends Singleton
 
 
         if (!isset($data[0])) {
-            throw new Basket\ExceptionBasketNotFound([
+            throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
         }
 
-        return new Basket\Basket($data[0]['id'], $User);
+        return new Basket($data[0]['id'], $User);
     }
 
     /**
@@ -936,9 +940,10 @@ class Handler extends Singleton
      * @param null|QUI\Interfaces\Users\User $User
      * @return array
      *
-     * @throws Basket\Exception
-     * @throws Basket\ExceptionBasketNotFound
+     * @throws Exception
+     * @throws ExceptionBasketNotFound
      * @throws QUI\Database\Exception
+     * @throws QUI\Exception
      */
     public function getBasketData(int|string $basketId, QUI\Interfaces\Users\User $User = null): array
     {
@@ -958,7 +963,7 @@ class Handler extends Singleton
         ]);
 
         if (!isset($data[0])) {
-            throw new Basket\ExceptionBasketNotFound([
+            throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
@@ -971,7 +976,7 @@ class Handler extends Singleton
      * Basket permission check
      *
      * @param QUI\Interfaces\Users\User $User
-     * @throws Basket\Exception
+     * @throws QUI\Exception
      */
     protected function checkBasketPermissions(QUI\Interfaces\Users\User $User): void
     {
@@ -992,7 +997,7 @@ class Handler extends Singleton
         };
 
         if ($hasPermissions() === false) {
-            throw new Basket\Exception([
+            throw new QUI\Exception([
                 'quiqqer/order',
                 'exception.basket.no.permissions'
             ]);

@@ -226,7 +226,7 @@ class Factory extends QUI\Utils\Singleton
      * @param null $User
      * @return QUI\ERP\Order\Basket\Basket
      *
-     * @throws QUI\ERP\Order\Basket\Exception|QUI\Database\Exception
+     * @throws QUI\Database\Exception|QUI\ExceptionStack
      */
     public function createBasket($User = null): Basket\Basket
     {

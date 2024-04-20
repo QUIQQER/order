@@ -7,13 +7,17 @@
 namespace QUI\ERP\Order\Utils;
 
 use QUI;
+use QUI\Database\Exception;
 use QUI\ERP\Products\Field\Types\BasketConditions;
+
+use QUI\Projects\Project;
 
 use function date;
 use function is_array;
 use function mb_strlen;
 use function mb_substr;
 use function method_exists;
+use function serialize;
 use function str_replace;
 use function strftime;
 use function strpos;
@@ -37,7 +41,7 @@ class Utils
      * @param QUI\Projects\Project $Project
      * @return QUI\Projects\Site
      *
-     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\ERP\Order\Exception|QUI\Database\Exception
      */
     public static function getOrderProcess(QUI\Projects\Project $Project): QUI\Projects\Site
     {
@@ -64,7 +68,7 @@ class Utils
      * @param QUI\Projects\Project $Project
      * @return QUI\Projects\Site
      *
-     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\ERP\Order\Exception|QUI\Database\Exception
      */
     public static function getShoppingCart(QUI\Projects\Project $Project): QUI\Projects\Site
     {
@@ -89,7 +93,7 @@ class Utils
      * @param QUI\Projects\Project $Project
      * @return QUI\Projects\Site
      *
-     * @throws QUI\ERP\Order\Exception
+     * @throws QUI\ERP\Order\Exception|QUI\Database\Exception
      */
     public static function getCheckout(QUI\Projects\Project $Project): QUI\Projects\Site
     {
@@ -99,10 +103,11 @@ class Utils
     /**
      * Return the url to the checkout / order process
      *
-     * @param QUI\Projects\Project $Project
-     * @param null|QUI\ERP\Order\Controls\AbstractOrderingStep $Step
-     * @return string
+     * @param Project $Project
+     * @param null $Step
+     * @return string|null
      *
+     * @throws Exception
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
@@ -114,9 +119,7 @@ class Utils
 
         if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
             $url = self::$url;
-            $url = $url . '/' . $Step->getName();
-
-            return $url;
+            return $url . '/' . $Step->getName();
         }
 
         return self::$url;
@@ -154,7 +157,7 @@ class Utils
         }
 
         try {
-            return self::getOrderProcessUrlForHash($Project, $Order->getHash());
+            return self::getOrderProcessUrlForHash($Project, $Order->getUUID());
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -167,9 +170,12 @@ class Utils
      * @param QUI\ERP\Order\OrderInterface $Order
      *
      * @return string
+     * @throws Exception
      */
-    public static function getOrderProfileUrl(QUI\Projects\Project $Project, $Order): string
-    {
+    public static function getOrderProfileUrl(
+        QUI\Projects\Project $Project,
+        QUI\ERP\Order\OrderInterface $Order
+    ): string {
         if (
             !($Order instanceof QUI\ERP\Order\Order) &&
             !($Order instanceof QUI\ERP\Order\OrderView) &&
@@ -194,7 +200,7 @@ class Utils
 
         try {
             $url = $Site->getUrlRewritten();
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return '';
         }
 
@@ -206,7 +212,7 @@ class Utils
         }
 
         // parse the frontend users category
-        $url .= '/erp/erp-order#' . $Order->getHash();
+        $url .= '/erp/erp-order#' . $Order->getUUID();
 
         if ($ending) {
             $url .= '.html';
@@ -269,7 +275,7 @@ class Utils
     public static function importProductsToBasketList(
         QUI\ERP\Products\Product\ProductList $List,
         array $products = [],
-        $Order = null
+        QUI\ERP\Order\AbstractOrder|QUI\ERP\Order\Basket\Basket $Order = null
     ): QUI\ERP\Products\Product\ProductList {
         if (!is_array($products)) {
             $products = [];
@@ -421,8 +427,8 @@ class Utils
         $newProductList = [];
         $getProductIndex = function ($product) use (&$newProductList) {
             foreach ($newProductList as $index => $p) {
-                $p1 = \serialize(self::getCompareProductArray($product));
-                $p2 = \serialize(self::getCompareProductArray($p));
+                $p1 = serialize(self::getCompareProductArray($product));
+                $p2 = serialize(self::getCompareProductArray($p));
 
                 if ($p1 == $p2) {
                     return $index;
@@ -449,8 +455,6 @@ class Utils
     /**
      * @param $product
      * @return bool
-     * @throws \QUI\ERP\Products\Product\Exception
-     * @throws \QUI\Exception
      */
     public static function isBasketProductEditable($product): bool
     {
@@ -458,7 +462,7 @@ class Utils
             $productId = $product['id'];
             $Product = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
             $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return false;
         }
 

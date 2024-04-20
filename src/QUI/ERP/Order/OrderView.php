@@ -70,18 +70,24 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * @return string
+     * @deprecated
      */
     public function getHash(): string
     {
-        return $this->Order->getHash();
+        return $this->Order->getUUID();
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getId(): string
+    public function getId(): int
     {
-        return $this->Order->getIdPrefix() . $this->Order->getId();
+        return $this->Order->getId();
+    }
+
+    public function getUUID(): string
+    {
+        return $this->Order->getUUID();
     }
 
     /**
@@ -167,7 +173,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return bool|QUI\ERP\Shipping\ShippingStatus\Status
      */
-    public function getShippingStatus()
+    public function getShippingStatus(): bool|QUI\ERP\Shipping\ShippingStatus\Status
     {
         return $this->Order->getShippingStatus();
     }
@@ -198,9 +204,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * @param null|QUI\Locale $Locale
-     * @return mixed
+     * @return string|bool
      */
-    public function getDate(QUI\Locale $Locale = null)
+    public function getDate(QUI\Locale $Locale = null): string|bool
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();
@@ -226,7 +232,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @param string $key
      * @return mixed|null
      */
-    public function getDataEntry(string $key)
+    public function getDataEntry(string $key): mixed
     {
         return $this->Order->getDataEntry($key);
     }
@@ -263,7 +269,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * @return array
-     * @throws \QUI\ERP\Exception
+     * @throws \QUI\ERP\Exception|QUI\Exception
      */
     public function getPaidStatusInformation(): array
     {
@@ -296,7 +302,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice()
+    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
         return $this->Order->getInvoice();
     }
@@ -381,8 +387,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function previewOnlyArticles(): string
     {
         try {
-            $output = '';
-            $output .= '<style>';
+            $output = '<style>';
             $output .= file_get_contents(dirname(__FILE__) . '/Utils/Template.Articles.Preview.css');
             $output .= '</style>';
             $output .= $this->getArticles()->toHTML();
@@ -452,7 +457,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         // Temporary invoice (draft)
         $Transactions = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
-        $transactions = $Transactions->getTransactionsByHash($this->Order->getHash());
+        $transactions = $Transactions->getTransactionsByHash($this->Order->getUUID());
 
         if (empty($transactions)) {
             // Time for payment text
@@ -486,7 +491,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
         $Formatter = $Locale->getDateFormatter();
 
         if (get_class($PaymentType) === $Payment->getClass()) {
-            $payment = $PaymentType->getTitle($Locale);
+            $payment = $PaymentType->getTitle();
         }
 
         return $Locale->get('quiqqer/order', 'order.view.payment.transaction.text', [
@@ -515,7 +520,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     //region shipping
 
     /**
-     * do nothing, its a view
+     * do nothing, it's a view
      */
     public function setShipping(ShippingInterface $Shipping)
     {
@@ -530,7 +535,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * do nothing, its a view
+     * do nothing, it's a view
      */
     public function removeShipping()
     {
@@ -548,7 +553,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * do nothing, it's a view
      */
-    public function addFrontendMessage($message)
+    public function addFrontendMessage($message): void
     {
     }
 

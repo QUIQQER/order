@@ -11,6 +11,8 @@ use QUI\ERP\Accounting\Payments\Methods\AdvancePayment\Payment as AdvancePayment
 use QUI\ERP\Accounting\Payments\Methods\Invoice\Payment as InvoicePayment;
 use QUI\ERP\BankAccounts\Handler as BankAccounts;
 use QUI\ERP\Customer\Utils as CustomerUtils;
+use QUI\ERP\Order\Order;
+use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Output\OutputProviderInterface;
 use QUI\ERP\Payments\SEPA\Provider as SepaProvider;
 use QUI\Interfaces\Users\User;
@@ -52,10 +54,10 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get title for the output entity
      *
-     * @param Locale $Locale (optional) - If ommitted use \QUI::getLocale()
-     * @return mixed
+     * @param Locale|null $Locale $Locale (optional) - If ommitted use \QUI::getLocale()
+     * @return string
      */
-    public static function getEntityTypeTitle(Locale $Locale = null)
+    public static function getEntityTypeTitle(Locale $Locale = null): string
     {
         if (empty($Locale)) {
             $Locale = QUI::getLocale();
@@ -68,15 +70,15 @@ class OutputProviderOrder implements OutputProviderInterface
      * Get the entity the output is created for
      *
      * @param string|int $entityId
-     * @return \QUI\ERP\Order\Order|\QUI\ERP\Order\OrderInProcess
+     * @return Order|OrderInProcess
      *
      * @throws QUI\Exception
      */
-    public static function getEntity($entityId)
+    public static function getEntity($entityId): OrderInProcess|Order
     {
         try {
             $Order = QUI\ERP\Order\Handler::getInstance()->get($entityId);
-        } catch (QUI\Exception $exception) {
+        } catch (QUI\Exception) {
             $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($entityId);
         }
 
@@ -117,6 +119,7 @@ class OutputProviderOrder implements OutputProviderInterface
      *
      * @param string|int $entityId
      * @return array
+     * @throws QUI\Exception
      */
     public static function getTemplateData($entityId): array
     {
@@ -163,7 +166,7 @@ class OutputProviderOrder implements OutputProviderInterface
                     $OrderView->getAttribute('order_id')
                 );
                 $orderNumber = $Order->getPrefixedId();
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -208,7 +211,7 @@ class OutputProviderOrder implements OutputProviderInterface
         try {
             $Customer = self::getEntity($entityId)->getCustomer();
 
-            return $User->getId() === $Customer->getId();
+            return $User->getUUID() === $Customer->getUUID();
         } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
@@ -280,7 +283,7 @@ class OutputProviderOrder implements OutputProviderInterface
      * @param QUI\ERP\User $Customer
      * @return array
      */
-    protected static function getOrderLocaleVar($Order, $Customer): array
+    protected static function getOrderLocaleVar($Order, QUI\ERP\User $Customer): array
     {
         $CustomerAddress = $Customer->getAddress();
         $user = $CustomerAddress->getAttribute('contactPerson');
@@ -415,7 +418,7 @@ class OutputProviderOrder implements OutputProviderInterface
      * @param $date
      * @return false|string
      */
-    public static function dateFormat($date)
+    public static function dateFormat($date): bool|string
     {
         // date
         $localeCode = QUI::getLocale()->getLocalesByLang(
@@ -440,10 +443,10 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get raw base64 img src for EPC QR code.
      *
-     * @param \QUI\ERP\Order\Order $Order
+     * @param Order $Order
      * @return string|false - Raw <img> "src" attribute with base64 image data or false if code can or must not be generated.
      */
-    protected static function getEpcQrCodeImageImgSrc(QUI\ERP\Order\Order $Order)
+    protected static function getEpcQrCodeImageImgSrc(Order $Order): bool|string
     {
         try {
             // Check currency (must be EUR)

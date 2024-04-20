@@ -8,7 +8,11 @@ namespace QUI\ERP\Order\FrontendUsers\Controls;
 
 use QUI;
 use QUI\Control;
+use QUI\ERP\Order\OrderInterface;
 use QUI\FrontendUsers\Controls\Profile\ControlInterface;
+
+use function ceil;
+use function dirname;
 
 /**
  * Class UserOrders
@@ -25,7 +29,7 @@ class UserOrders extends Control implements ControlInterface
     public function __construct(array $attributes = [])
     {
         $this->addCSSClass('quiqqer-order-profile-orders');
-        $this->addCSSFile(\dirname(__FILE__) . '/UserOrders.css');
+        $this->addCSSFile(dirname(__FILE__) . '/UserOrders.css');
 
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/frontendusers/Orders',
@@ -41,7 +45,7 @@ class UserOrders extends Control implements ControlInterface
      *
      * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
         $Orders = QUI\ERP\Order\Handler::getInstance();
@@ -63,7 +67,7 @@ class UserOrders extends Control implements ControlInterface
         $count = $Orders->countOrdersByUser($User);
 
         if ($count) {
-            $sheetsMax = \ceil($count / $limit);
+            $sheetsMax = ceil($count / $limit);
         }
 
         $orders = [];
@@ -74,8 +78,6 @@ class UserOrders extends Control implements ControlInterface
         ]);
 
         foreach ($result as $Order) {
-            /* @var $Order QUI\ERP\Order\Order */
-            /* @var $View QUI\ERP\Order\OrderView */
             $View = $Order->getView();
 
             $View->setAttribute(
@@ -100,15 +102,15 @@ class UserOrders extends Control implements ControlInterface
             'sheetCount' => $count
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.html');
+        return $Engine->fetch(dirname(__FILE__) . '/UserOrders.html');
     }
 
     /**
-     * @param QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess $Order
+     * @param OrderInterface $Order
      * @return string
      * @throws QUI\Exception
      */
-    public function renderOrder($Order)
+    public function renderOrder(OrderInterface $Order): string
     {
         if (
             !($Order instanceof QUI\ERP\Order\Order) &&
@@ -203,7 +205,7 @@ class UserOrders extends Control implements ControlInterface
             )
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.Order.html');
+        return $Engine->fetch(dirname(__FILE__) . '/UserOrders.Order.html');
     }
 
     /**
@@ -212,7 +214,7 @@ class UserOrders extends Control implements ControlInterface
      *
      * @throws QUI\Exception
      */
-    public function renderArticle(QUI\ERP\Accounting\Article $Article)
+    public function renderArticle(QUI\ERP\Accounting\Article $Article): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
         $Product = null;
@@ -229,7 +231,7 @@ class UserOrders extends Control implements ControlInterface
         if (!empty($Product)) {
             try {
                 $Image = $Product->getImage();
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -243,14 +245,14 @@ class UserOrders extends Control implements ControlInterface
             'Project' => QUI::getProjectManager()->get()
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.Article.html');
+        return $Engine->fetch(dirname(__FILE__) . '/UserOrders.Article.html');
     }
 
     /**
-     * @return mixed|QUI\Projects\Site
+     * @return QUI\Interfaces\Projects\Site
      * @throws QUI\Exception
      */
-    public function getSite()
+    public function getSite(): QUI\Interfaces\Projects\Site
     {
         if ($this->getAttribute('Site')) {
             return $this->getAttribute('Site');

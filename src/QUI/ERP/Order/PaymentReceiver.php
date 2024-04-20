@@ -2,13 +2,16 @@
 
 namespace QUI\ERP\Order;
 
+use DateTime;
 use QUI;
+use QUI\Database\Exception;
 use QUI\ERP\Accounting\Payments\Transactions\IncomingPayments\PaymentReceiverInterface;
 use QUI\ERP\Accounting\Payments\Types\PaymentInterface;
 use QUI\ERP\Address;
 use QUI\ERP\Currency\Currency;
 use QUI\Locale;
 
+use function date_create;
 use function is_string;
 
 /**
@@ -19,9 +22,9 @@ use function is_string;
 class PaymentReceiver implements PaymentReceiverInterface
 {
     /**
-     * @var Order
+     * @var ?AbstractOrder
      */
-    protected $Order = null;
+    protected AbstractOrder|null $Order = null;
 
     /**
      * Get entity type descriptor
@@ -36,7 +39,7 @@ class PaymentReceiver implements PaymentReceiverInterface
     /**
      * Get entity type title
      *
-     * @param Locale $Locale (optional) - If omitted use \QUI::getLocale()
+     * @param Locale|null $Locale $Locale (optional) - If omitted use \QUI::getLocale()
      * @return string
      */
     public static function getTypeTitle(Locale $Locale = null): string
@@ -50,7 +53,14 @@ class PaymentReceiver implements PaymentReceiverInterface
 
     /**
      * PaymentReceiverInterface constructor.
+     *
      * @param string|int $id - Payment receiver entity ID
+     *
+     * @throws Exception
+     * @throws Exception
+     * @throws QUI\ERP\Exception
+     * @throws QUI\Exception
+     * @throws QUI\Permissions\Exception
      */
     public function __construct($id)
     {
@@ -70,7 +80,7 @@ class PaymentReceiver implements PaymentReceiverInterface
 
         try {
             $this->Order = Handler::getInstance()->get($id);
-        } catch (\Exception $Exception) {
+        } catch (\Exception) {
             $this->Order = Handler::getInstance()->getOrderByHash($id);
         }
 
@@ -78,12 +88,11 @@ class PaymentReceiver implements PaymentReceiverInterface
     }
 
     /**
-     * Get payment address of of the debtor (e.g. customer)
+     * Get payment address of the debtor (e.g. customer)
      *
-     * @param string|int $id - Payment entity ID
      * @return Address|false
      */
-    public function getDebtorAddress()
+    public function getDebtorAddress(): bool|Address
     {
         return $this->Order->getCustomer()->getStandardAddress();
     }
@@ -101,7 +110,6 @@ class PaymentReceiver implements PaymentReceiverInterface
     /**
      * Get the unique recipient no. of the debtor (e.g. customer no.)
      *
-     * @param string|int $id - Payment entity ID
      * @return string
      */
     public function getDebtorNo(): string
@@ -112,34 +120,34 @@ class PaymentReceiver implements PaymentReceiverInterface
     /**
      * Get date of the document
      *
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         $date = $this->Order->getAttribute('date');
 
         if (!empty($date)) {
-            $Date = \date_create($date);
+            $Date = date_create($date);
 
             if ($Date) {
                 return $Date;
             }
         }
 
-        return \date_create();
+        return date_create();
     }
 
     /**
      * Get entity due date (if applicable)
      *
-     * @return \DateTime|false
+     * @return DateTime|false
      */
-    public function getDueDate()
+    public function getDueDate(): DateTime|bool
     {
         $date = $this->Order->getAttribute('payment_time');
 
         if (!empty($date)) {
-            $Date = \date_create($date);
+            $Date = date_create($date);
 
             if ($Date) {
                 return $Date;
@@ -192,7 +200,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      *
      * @return PaymentInterface|false
      */
-    public function getPaymentMethod()
+    public function getPaymentMethod(): bool|PaymentInterface
     {
         try {
             return QUI\ERP\Accounting\Payments\Payments::getInstance()->getPayment(
@@ -209,7 +217,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      *
      * @return int - One of \QUI\ERP\Constants::PAYMENT_STATUS_*
      */
-    public function getPaymentStatus()
+    public function getPaymentStatus(): int
     {
         return (int)$this->Order->getAttribute('paid_status');
     }

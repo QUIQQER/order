@@ -21,12 +21,12 @@ use QUI\ERP\User;
 interface OrderInterface
 {
     /**
-     * It return the invoice, if an invoice exist for the order
+     * It returns the invoice, if an invoice exist for the order
      *
      * @return Invoice|InvoiceTemporary
      * @throws \QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice();
+    public function getInvoice(): Invoice|InvoiceTemporary;
 
     /**
      * Returns the invoice type, if the order has an invoice
@@ -60,9 +60,19 @@ interface OrderInterface
     /**
      * Return the order id
      *
-     * @return int|string
+     * @return int
      */
-    public function getId();
+    public function getId(): int;
+
+    /**
+     * @return string
+     */
+    public function getPrefixedId(): string;
+
+    /**
+     * @return string
+     */
+    public function getUUID(): string;
 
     /**
      * Is the order successful
@@ -106,7 +116,7 @@ interface OrderInterface
      * @param string $key
      * @return mixed|null
      */
-    public function getDataEntry(string $key);
+    public function getDataEntry(string $key): mixed;
 
     /**
      * Return the hash
@@ -124,7 +134,7 @@ interface OrderInterface
 
     /**
      * Return the currency of the order
-     * - At the moment its the default currency of the system
+     * - At the moment it's the default currency of the system
      * - If we want to have different currencies, this can be implemented here
      *
      * @return Currency
@@ -246,9 +256,9 @@ interface OrderInterface
 
     /**
      * @param string $message
-     * @return mixed
+     * @return void
      */
-    public function addFrontendMessage(string $message);
+    public function addFrontendMessage(string $message): void;
 
     //endregion
 }

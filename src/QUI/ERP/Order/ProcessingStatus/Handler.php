@@ -9,6 +9,8 @@ namespace QUI\ERP\Order\ProcessingStatus;
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
 
+use function is_array;
+
 /**
  * Class Handler
  * - Processing status management
@@ -20,9 +22,9 @@ use QUI\ERP\Order\AbstractOrder;
 class Handler extends QUI\Utils\Singleton
 {
     /**
-     * @var array
+     * @var ?array
      */
-    protected $list = null;
+    protected ?array $list = null;
 
     protected QUI\Config $OrderConfig;
 
@@ -39,7 +41,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @return array
      */
-    public function getList()
+    public function getList(): array
     {
         if ($this->list !== null) {
             return $this->list;
@@ -47,7 +49,7 @@ class Handler extends QUI\Utils\Singleton
 
         $result = $this->OrderConfig->getSection('processing_status');
 
-        if (!$result || !\is_array($result)) {
+        if (!$result || !is_array($result)) {
             $this->list = [];
 
             return $this->list;
@@ -63,7 +65,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @return array
      */
-    public function refreshList()
+    public function refreshList(): array
     {
         $this->list = null;
 
@@ -75,7 +77,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @return Status[]
      */
-    public function getProcessingStatusList()
+    public function getProcessingStatusList(): array
     {
         $list = $this->getList();
         $result = [];
@@ -83,7 +85,7 @@ class Handler extends QUI\Utils\Singleton
         foreach ($list as $entry => $color) {
             try {
                 $result[] = $this->getProcessingStatus($entry);
-            } catch (Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -127,14 +129,14 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Delete / Remove a processing status
      *
-     * @param string|int $id
+     * @param int|string $id
      *
      * @throws Exception
      * @throws QUI\Exception
      *
      * @todo permissions
      */
-    public function deleteProcessingStatus($id)
+    public function deleteProcessingStatus(int|string $id): void
     {
         $Status = $this->getProcessingStatus($id);
 
@@ -161,7 +163,7 @@ class Handler extends QUI\Utils\Singleton
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function setProcessingStatusNotification($id, $notify)
+    public function setProcessingStatusNotification(int $id, bool $notify): void
     {
         $Status = $this->getProcessingStatus($id);
 
@@ -181,7 +183,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @todo permissions
      */
-    public function updateProcessingStatus($id, $color, array $title)
+    public function updateProcessingStatus(int|string $id, int|string $color, array $title): void
     {
         $Status = $this->getProcessingStatus($id);
 
@@ -221,7 +223,7 @@ class Handler extends QUI\Utils\Singleton
      * @param int $id
      * @return void
      */
-    public function createNotificationTranslations($id)
+    public function createNotificationTranslations(int $id): void
     {
         $data = [
             'package' => 'quiqqer/order',
@@ -239,7 +241,7 @@ class Handler extends QUI\Utils\Singleton
         }
 
         try {
-            // Check if transaltion already exists
+            // Check if translation already exists
             $translation = QUI\Translator::get('quiqqer/order', 'processing.status.notification.' . $id);
 
             if (!empty($translation)) {
@@ -264,12 +266,12 @@ class Handler extends QUI\Utils\Singleton
      *
      * @param AbstractOrder $Order
      * @param int $statusId
-     * @param string $message (optional) - Custom notification message [default: default status change message]
+     * @param string|null $message (optional) - Custom notification message [default: default status change message]
      * @return void
      *
      * @throws QUI\Exception
      */
-    public function sendStatusChangeNotification(AbstractOrder $Order, $statusId, $message = null)
+    public function sendStatusChangeNotification(AbstractOrder $Order, int $statusId, string $message = null): void
     {
         $Customer = $Order->getCustomer();
         $customerEmail = $Customer->getAttribute('email');
@@ -277,7 +279,7 @@ class Handler extends QUI\Utils\Singleton
         if (empty($customerEmail)) {
             QUI\System\Log::addWarning(
                 'Status change notification for order #' . $Order->getPrefixedId() . ' cannot be sent'
-                . ' because customer #' . $Customer->getId() . ' has no e-mail address.'
+                . ' because customer #' . $Customer->getUUID() . ' has no e-mail address.'
             );
 
             return;
@@ -289,7 +291,6 @@ class Handler extends QUI\Utils\Singleton
         }
 
         $Mailer = new QUI\Mail\Mailer();
-        /** @var QUI\Locale $Locale */
         $Locale = $Order->getCustomer()->getLocale();
 
         $Mailer->setSubject(

@@ -9,6 +9,8 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\Database\Exception;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
+use QUI\ERP\Accounting\Invoice\Invoice;
+use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
 
@@ -27,7 +29,8 @@ use function json_decode;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
+class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface,
+                                             QUI\ERP\ErpTransactionsInterface
 {
     /**
      * @var bool
@@ -326,7 +329,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
                 [
                     'userId' => QUI::getUserBySession()->getId(),
                     'username' => QUI::getUserBySession()->getUsername(),
-                    'salesOrderHash' => $SalesOrder->getHash()
+                    'salesOrderHash' => $SalesOrder->getUUID()
                 ]
             )
         );
@@ -364,7 +367,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         $SalesOrder->setAttributes([
             'contact_person' => $ContactPersonAddress ? $ContactPersonAddress->getName() : null,
             'order_date' => $this->getCreateDate(),
-            'customer_id' => $Customer->getId(),
+            'customer_id' => $Customer->getUUID(),
             'payment_method' => $payment,
             'customer_address_id' => $invoiceAddressId,
             'customer_address' => $invoiceAddress,
@@ -464,13 +467,12 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
      * Post the order -> Create an invoice for the order
      * alias for createInvoice()
      *
-     * @return QUI\ERP\Accounting\Invoice\Invoice
+     * @return Invoice|InvoiceTemporary
      *
      * @throws QUI\Exception
-     *
      * @deprecated use createInvoice
      */
-    public function post(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
+    public function post(): Invoice|InvoiceTemporary
     {
         return $this->createInvoice(QUI::getUsers()->getSystemUser());
     }
@@ -613,7 +615,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
 
         if (
             !QUI::getUsers()->isSystemUser($PermissionUser)
-            && $PermissionUser->getId() !== $this->getCustomer()->getId()
+            && $PermissionUser->getUUID() !== $this->getCustomer()->getUUID()
         ) {
             QUI\Permissions\Permission::hasPermission(
                 'quiqqer.order.update',
@@ -1015,7 +1017,7 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
             $PermissionUser = QUI::getUserBySession();
         }
 
-        if ($PermissionUser->getId() !== $this->getCustomer()->getId()) {
+        if ($PermissionUser->getUUID() !== $this->getCustomer()->getUUID()) {
             QUI\Permissions\Permission::hasPermission(
                 'quiqqer.order.update',
                 $PermissionUser
