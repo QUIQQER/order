@@ -8,6 +8,9 @@ namespace QUI\ERP\Order;
 
 use QUI;
 
+use QUI\Exception;
+use QUI\Interfaces\Users\User;
+
 use function defined;
 use function is_array;
 use function json_decode;
@@ -128,12 +131,12 @@ class OrderInProcess
     /**
      * Alias for update
      *
-     * @param null $PermissionUser
+     * @param User|null $PermissionUser
      *
+     * @throws Exception
      * @throws QUI\Permissions\Exception
-     * @throws QUI\Exception
      */
-    public function save($PermissionUser = null): void
+    public function save(QUI\Interfaces\Users\User $PermissionUser = null): void
     {
         $this->update($PermissionUser);
     }

@@ -1,13 +1,19 @@
 <?php
 
 /**
- * This file contains QUI\ERP\Order\Basket\Baseket
+ * This file contains QUI\ERP\Order\Basket\Basket
  */
 
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
+use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
+use QUI\ExceptionStack;
+
+use function floatval;
+use function is_array;
+use function is_numeric;
 
 /**
  * Class BasketGuest
@@ -20,9 +26,9 @@ class BasketGuest
     /**
      * List of products
      *
-     * @var QUI\ERP\Products\Product\ProductList
+     * @var ?QUI\ERP\Products\Product\ProductList
      */
-    protected $List = null;
+    protected ?ProductList $List = null;
 
     /**
      * Basket constructor.
@@ -37,7 +43,7 @@ class BasketGuest
     /**
      * Clear the basket
      */
-    public function clear()
+    public function clear(): void
     {
         $this->List->clear();
     }
@@ -55,7 +61,7 @@ class BasketGuest
     /**
      * Return the product list
      *
-     * @return ProductList
+     * @return ?ProductList
      */
     public function getProducts(): ?ProductList
     {
@@ -67,7 +73,7 @@ class BasketGuest
      *
      * @param Product $Product
      */
-    public function addProduct(Product $Product)
+    public function addProduct(Product $Product): void
     {
         try {
             $this->List->addProduct($Product);
@@ -82,12 +88,13 @@ class BasketGuest
      * Import the products to the basket
      *
      * @param array $products
+     * @throws ExceptionStack
      */
-    public function import($products = [])
+    public function import(array $products = []): void
     {
         $this->clear();
 
-        if (!\is_array($products)) {
+        if (!is_array($products)) {
             $products = [];
         }
 
@@ -107,11 +114,11 @@ class BasketGuest
                 }
 
                 if (isset($productData['quantity'])) {
-                    if (!\is_numeric($productData['quantity'])) {
+                    if (!is_numeric($productData['quantity'])) {
                         $productData['quantity'] = 1;
                     }
 
-                    $productData['quantity'] = \floatval($productData['quantity']);
+                    $productData['quantity'] = floatval($productData['quantity']);
 
                     if ($productData['quantity'] < 0) {
                         $productData['quantity'] = 1;
@@ -161,7 +168,7 @@ class BasketGuest
         foreach ($products as $Product) {
             $fields = [];
 
-            /* @var $Field \QUI\ERP\Products\Field\UniqueField */
+            /* @var $Field UniqueField */
             foreach ($Product->getFields() as $Field) {
                 if (!$Field->isPublic()) {
                     continue;
