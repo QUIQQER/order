@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order;
 
 use QUI;
-
 use QUI\Exception;
 use QUI\Interfaces\Users\User;
 
@@ -53,7 +52,7 @@ class OrderInProcess
         // check if an order for the processing order exists
         try {
             Handler::getInstance()->get($this->orderId);
-        } catch (QUI\Exception) {
+        } catch (Exception) {
             $this->orderId = null;
         }
     }
@@ -79,7 +78,7 @@ class OrderInProcess
                 if (!$Order->isSuccessful()) {
                     $Order->refresh();
                 }
-            } catch (QUI\Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -121,7 +120,7 @@ class OrderInProcess
                 $Order = Handler::getInstance()->get($this->orderId);
 
                 return $Order->getUUID();
-            } catch (QUI\Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -145,7 +144,7 @@ class OrderInProcess
      * @param null|QUI\Interfaces\Users\User $PermissionUser
      *
      * @throws QUI\Permissions\Exception
-     * @throws QUI\Exception
+     * @throws Exception
      */
     public function update(QUI\Interfaces\Users\User $PermissionUser = null): void
     {
@@ -177,7 +176,7 @@ class OrderInProcess
             try {
                 $Status = QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($status);
                 $status = $Status->getTitle();
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
 
@@ -206,7 +205,7 @@ class OrderInProcess
                     $this,
                     QUI\ERP\Order\ProcessingStatus\Handler::getInstance()->getProcessingStatus($this->status)
                 ]);
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
         }
@@ -222,7 +221,7 @@ class OrderInProcess
      *
      * @param array $priceFactors
      *
-     * @throws QUI\Exception
+     * @throws Exception
      * @throws Exception
      */
     public function addPriceFactors(array $priceFactors = []): void
@@ -254,7 +253,7 @@ class OrderInProcess
             try {
                 /* @var QUI\ERP\Order\Basket\Product $Product */
                 $ArticleList->addArticle($Product->toArticle(null, false));
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
         }
@@ -284,7 +283,7 @@ class OrderInProcess
      * Calculates the payment for the order
      *
      * @throws Exception
-     * @throws QUI\Exception
+     * @throws Exception
      * @throws QUI\ERP\Exception
      * @throws QUI\Permissions\Exception
      */
@@ -382,7 +381,7 @@ class OrderInProcess
                 $Order = Handler::getInstance()->get($this->getOrderId());
 
                 return $Order->isPosted();
-            } catch (QUI\Exception) {
+            } catch (Exception) {
                 return false;
             }
         }
@@ -397,7 +396,7 @@ class OrderInProcess
      * @return Order
      *
      * @throws QUI\Permissions\Exception
-     * @throws QUI\Exception
+     * @throws Exception
      * @throws Exception
      */
     public function createOrder(QUI\Interfaces\Users\User $PermissionUser = null): Order
@@ -425,7 +424,7 @@ class OrderInProcess
 
                 return $Order;
             }
-        } catch (QUI\Exception) {
+        } catch (Exception) {
         }
 
 
@@ -488,7 +487,7 @@ class OrderInProcess
             if ($data['paid_status'] !== $Order->getAttribute('paid_status')) {
                 $Order->save();
             }
-        } catch (QUI\Exception $Exception) {
+        } catch (Exception $Exception) {
             if (defined('QUIQQER_DEBUG')) {
                 QUI\System\Log::writeException($Exception);
             }
@@ -601,7 +600,6 @@ class OrderInProcess
      * Return the order data for saving
      *
      * @return array
-     * @throws QUI\Exception
      */
     protected function getDataForSaving(): array
     {
@@ -614,7 +612,7 @@ class OrderInProcess
         $customer = $Customer->getAttributes();
         $customer = QUI\ERP\Utils\User::filterCustomerAttributes($customer);
 
-        if (!$InvoiceAddress->getId()) {
+        if (!$InvoiceAddress->getUUID()) {
             $InvoiceAddress = $Customer->getStandardAddress();
         }
 
@@ -636,7 +634,7 @@ class OrderInProcess
                 $paymentId = $Payment->getId();
                 $paymentMethod = $Payment->getPaymentType()->getTitle();
             }
-        } catch (QUI\Exception) {
+        } catch (Exception) {
         }
 
         //shipping
@@ -691,7 +689,7 @@ class OrderInProcess
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      *
      * @throws Exception
-     * @throws QUI\Exception
+     * @throws Exception
      * @throws QUI\ExceptionStack
      */
     public function clear($PermissionUser = null): void
@@ -745,7 +743,7 @@ class OrderInProcess
                 $Order = Handler::getInstance()->get($this->getOrderId());
 
                 return $Order->hasInvoice();
-            } catch (QUI\Exception) {
+            } catch (Exception) {
                 return false;
             }
         }
@@ -758,7 +756,7 @@ class OrderInProcess
      *
      * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
      *
-     * @throws QUI\Exception
+     * @throws Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
     public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
@@ -779,7 +777,7 @@ class OrderInProcess
      * is overwritten here, because the order in process checks if there is an order.
      * if so, do not fire the event quiqqerOrderSuccessful twice, the order already fires this
      *
-     * @throws QUI\Exception
+     * @throws Exception
      * @throws QUI\ExceptionStack
      */
     public function setSuccessfulStatus(): void
@@ -805,7 +803,7 @@ class OrderInProcess
      * @param bool $force - default = false, if true, set payment status will be set in any case
      *
      * @return void
-     * @throws \QUI\Exception
+     * @throws Exception
      */
     public function setPaymentStatus(int $status, bool $force = false): void
     {
@@ -861,7 +859,7 @@ class OrderInProcess
                 ['frontendMessages' => $this->FrontendMessage->toJSON()],
                 ['id' => $this->getId()]
             );
-        } catch (QUI\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage(), [
                 'order' => $this->getId(),
                 'orderHash' => $this->getUUID(),

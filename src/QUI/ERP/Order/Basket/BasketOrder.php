@@ -10,7 +10,6 @@ use QUI;
 use QUI\ERP\Order\Utils\Utils as OrderProductUtils;
 use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
-
 use QUI\Exception;
 use QUI\ExceptionStack;
 

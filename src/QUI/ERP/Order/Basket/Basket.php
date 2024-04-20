@@ -12,7 +12,6 @@ use QUI\ERP\Order\AbstractOrder;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
-
 use QUI\ExceptionStack;
 
 use function is_array;
