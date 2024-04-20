@@ -9,6 +9,8 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\Exception;
 use QUI\Interfaces\Users\User;
+use QUI\ERP\ErpEntityInterface;
+use QUI\ERP\ErpTransactionsInterface;
 
 use function defined;
 use function is_array;
@@ -23,9 +25,7 @@ use function json_encode;
  *
  * @package QUI\ERP\Order
  */
-class OrderInProcess
-    extends AbstractOrder
-    implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
+class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
     /**
      * @var null|integer
