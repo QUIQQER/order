@@ -12,6 +12,7 @@ use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\ErpEntityInterface;
+use QUI\ERP\ErpTransactionsInterface;
 use QUI\ERP\Exception;
 use QUI\ERP\Order\ProcessingStatus\Handler as ProcessingHandler;
 use QUI\ERP\Order\ProcessingStatus\Status;
@@ -44,8 +45,7 @@ use function time;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP\ErpEntityInterface,
-                                                         QUI\ERP\ErpTransactionsInterface
+abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
     /* @deprecated */
     const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
