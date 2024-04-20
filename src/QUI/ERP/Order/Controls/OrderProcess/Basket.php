@@ -12,7 +12,6 @@ use QUI\ERP\Order\OrderInterface;
 use QUI\ERP\Order\Basket\Basket as BasketClass;
 use QUI\ERP\Order\Basket\BasketOrder;
 use QUI\ERP\Order\Basket\BasketGuest;
-
 use QUI\Exception;
 
 use function dirname;
