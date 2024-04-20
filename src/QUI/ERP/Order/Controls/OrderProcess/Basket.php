@@ -9,6 +9,13 @@ namespace QUI\ERP\Order\Controls\OrderProcess;
 use QUI;
 use QUI\ERP\Order\Controls\Basket\Basket as BasketControl;
 use QUI\ERP\Order\OrderInterface;
+use QUI\ERP\Order\Basket\Basket as BasketClass;
+use QUI\ERP\Order\Basket\BasketOrder;
+use QUI\ERP\Order\Basket\BasketGuest;
+
+use QUI\Exception;
+
+use function dirname;
 
 /**
  * Class Basket
@@ -19,9 +26,9 @@ use QUI\ERP\Order\OrderInterface;
 class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
-     * @var QUI\ERP\Order\Basket\Basket
+     * @var BasketClass|BasketOrder|BasketGuest
      */
-    protected $Basket;
+    protected BasketClass|BasketOrder|BasketGuest $Basket;
 
     /**
      * Basket constructor.
@@ -30,7 +37,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @throws QUI\Exception
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         $this->setAttributes([
             'editable' => true
@@ -50,7 +57,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
-        $this->addCSSFile(\dirname(__FILE__) . '/Basket.css');
+        $this->addCSSFile(dirname(__FILE__) . '/Basket.css');
         $this->addCSSClass('quiqqer-order-step-basket');
         $this->setAttribute('nodeName', 'section');
 
@@ -65,7 +72,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null)
+    public function getName(QUI\Locale $Locale = null): string
     {
         return 'Basket';
     }
@@ -73,15 +80,15 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'fa fa-shopping-basket';
     }
 
     /**
-     * @return QUI\ERP\Order\Basket\Basket
+     * @return BasketGuest|BasketClass|BasketOrder
      */
-    public function getBasket()
+    public function getBasket(): BasketGuest|BasketClass|BasketOrder
     {
         return $this->Basket;
     }
@@ -89,7 +96,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @throws QUI\ERP\Order\Exception
      */
-    public function validate()
+    public function validate(): void
     {
         if (!$this->Basket->count()) {
             throw new QUI\ERP\Order\Exception([
@@ -126,9 +133,9 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 $Order->removeArticle($pos);
             }
 
-            $Order->save();
+            $Order->update();
 
-            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash());
+            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getUUID());
             $products = $BasketOrder->getProducts()->toArray();
 
             $this->Basket->import($products['products']);
@@ -140,7 +147,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return bool
      */
-    public function showNext()
+    public function showNext(): bool
     {
         if ($this->getAttribute('Order')) {
             /* @var $Order OrderInterface */
@@ -156,10 +163,8 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
     /**
      * @return string
-     *
-     * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
         if ($this->Basket instanceof QUI\ERP\Order\Basket\BasketOrder) {
             $this->Basket->refresh();
@@ -168,7 +173,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine = QUI::getTemplateManager()->getEngine();
 
         if (!$this->Basket->count()) {
-            return $Engine->fetch(\dirname(__FILE__) . '/BasketEmpty.html');
+            return $Engine->fetch(dirname(__FILE__) . '/BasketEmpty.html');
         }
 
         $BasketControl = new BasketControl([
@@ -184,13 +189,14 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'this' => $this
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/Basket.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Basket.html');
     }
 
     /**
-     * @return mixed|void
+     * @return void
+     * @throws Exception
      */
-    public function save()
+    public function save(): void
     {
         $this->Basket->save();
     }

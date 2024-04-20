@@ -30,7 +30,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
@@ -51,12 +51,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function getBody(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
-        $User = null;
         $Address = $this->getInvoiceAddress();
-
-        if ($Address) {
-            $User = $Address->getUser();
-        }
+        $User = $Address?->getUser();
 
         if (!$User) {
             try {
@@ -80,7 +76,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         try {
             $this->getOrder()->setInvoiceAddress($Address);
-            $this->getOrder()->save();
+            $this->getOrder()->update();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -128,7 +124,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $this->validate();
             $this->setAttribute('data-validate', 1);
-        } catch (QUI\ERP\Order\Exception $Exception) {
+        } catch (QUI\ERP\Order\Exception) {
             $this->setAttribute('data-validate', 0);
         }
 
@@ -140,7 +136,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             if (!empty($settings)) {
                 $settings = json_decode($settings, true);
             }
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $settings = [];
         }
 
@@ -183,7 +179,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null)
+    public function getName(QUI\Locale $Locale = null): string
     {
         return 'Customer';
     }
@@ -191,7 +187,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'fa-user-o';
     }
@@ -199,17 +195,17 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @throws QUI\ERP\Order\Exception
      */
-    public function validate()
+    public function validate(): void
     {
         $Address = $this->getInvoiceAddress();
 
         try {
             if (
                 $Address &&
-                $Address->getId() !== $this->getOrder()->getInvoiceAddress()->getId()
+                $Address->getUUID() !== $this->getOrder()->getInvoiceAddress()->getUUID()
             ) {
                 $this->getOrder()->setInvoiceAddress($Address);
-                $this->getOrder()->save();
+                $this->getOrder()->update();
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -226,7 +222,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param QUI\Users\Address $Address
      * @throws QUI\ERP\Order\Exception
      */
-    public static function validateAddress(QUI\Users\Address $Address)
+    public static function validateAddress(QUI\Users\Address $Address): void
     {
         $firstName = $Address->getAttribute('firstname');
         $lastName = $Address->getAttribute('lastname');
@@ -289,11 +285,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param QUI\Users\Address $Address
      * @return bool
      */
-    protected function isAddressValid(QUI\Users\Address $Address)
+    protected function isAddressValid(QUI\Users\Address $Address): bool
     {
         try {
             $this->validateAddress($Address);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return false;
         }
 
@@ -304,7 +300,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param QUI\Users\Address $Address
      * @return bool
      */
-    protected function isAddressEmpty(QUI\Users\Address $Address)
+    protected function isAddressEmpty(QUI\Users\Address $Address): bool
     {
         $firstName = $Address->getAttribute('firstname');
         $lastName = $Address->getAttribute('lastname');
@@ -333,10 +329,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @return void
      *
      * @throws QUI\Permissions\Exception
-     * @throws QUI\Permissions\Exception
      * @throws QUI\Exception
      */
-    public function save()
+    public function save(): void
     {
         if (isset($_REQUEST['current']) && $_REQUEST['current'] !== $this->getName()) {
             return;
@@ -418,7 +413,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $addressId = $User->getAttribute('quiqqer.erp.address');
 
         if (empty($addressId)) {
-            $User->setAttribute('quiqqer.erp.address', $Address->getId());
+            $User->setAttribute('quiqqer.erp.address', $Address->getUUID());
         }
 
 
@@ -454,7 +449,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $this->getOrder()->setCustomer($User);
-        $this->getOrder()->save();
+        $this->getOrder()->update();
 
         QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSaveEnd', [$this]);
     }
@@ -498,9 +493,9 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     }
 
     /**
-     * @return false|null|QUI\Users\Address
+     * @return null|QUI\Users\Address
      */
-    protected function getInvoiceAddress()
+    protected function getInvoiceAddress(): Address|null
     {
         $Order = $this->getOrder();
         $Customer = $Order->getCustomer();
@@ -509,8 +504,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $Address = $Order->getInvoiceAddress();
 
-            if ($Address->getId() && !$this->isAddressEmpty($Address)) {
-                return $User->getAddress($Address->getId());
+            if ($Address->getUUID() && !$this->isAddressEmpty($Address)) {
+                return $User->getAddress($Address->getUUID());
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -519,8 +514,8 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         try {
             $Address = $Customer->getStandardAddress();
 
-            if ($Address->getId() && !$this->isAddressEmpty($Address)) {
-                return $User->getAddress($Address->getId());
+            if ($Address->getUUID() && !$this->isAddressEmpty($Address)) {
+                return $User->getAddress($Address->getUUID());
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -528,9 +523,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         if ($User->getAttribute('quiqqer.erp.address')) {
             try {
-                $Address = $User->getAddress($User->getAttribute('quiqqer.erp.address'));
-
-                return $Address;
+                return $User->getAddress($User->getAttribute('quiqqer.erp.address'));
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
@@ -551,7 +544,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param QUI\ERP\Order\AbstractOrder $Order
      */
-    public static function parseSessionOrderCommentsToOrder(QUI\ERP\Order\AbstractOrder $Order)
+    public static function parseSessionOrderCommentsToOrder(QUI\ERP\Order\AbstractOrder $Order): void
     {
         $message = '';
 
@@ -582,7 +575,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Comments->addComment($message);
 
         try {
-            $Order->save(QUI::getUsers()->getSystemUser());
+            $Order->update(QUI::getUsers()->getSystemUser());
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

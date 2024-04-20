@@ -8,6 +8,7 @@
 
 namespace QUI\ERP\Order\Console;
 
+use Exception;
 use QUI;
 
 class SendOrderConfirmationMail extends QUI\System\Console\Tool
@@ -58,7 +59,7 @@ class SendOrderConfirmationMail extends QUI\System\Console\Tool
 
         try {
             QUI\ERP\Order\Mail::sendOrderConfirmationMail($Order);
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
             $this->writeLn(

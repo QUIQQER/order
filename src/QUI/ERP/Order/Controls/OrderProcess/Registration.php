@@ -8,6 +8,8 @@ namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
 
+use function dirname;
+
 /**
  * Class Basket
  * - Basket step
@@ -21,11 +23,11 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->addCSSFile(\dirname(__FILE__) . '/Registration.css');
+        $this->addCSSFile(dirname(__FILE__) . '/Registration.css');
 
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/orderProcess/Registration'
@@ -36,7 +38,7 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null $Locale
      * @return string
      */
-    public function getName($Locale = null)
+    public function getName($Locale = null): string
     {
         return 'Registration';
     }
@@ -44,23 +46,17 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
-        try {
-            $Engine = QUI::getTemplateManager()->getEngine();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
+        $Engine = QUI::getTemplateManager()->getEngine();
 
-            return '';
-        }
-
-        return $Engine->fetch(\dirname(__FILE__) . '/Registration.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Registration.html');
     }
 
     /**
      * @return bool
      */
-    public function hasOwnForm()
+    public function hasOwnForm(): bool
     {
         return true;
     }
@@ -68,15 +64,15 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      *
      */
-    public function validate()
+    public function validate(): void
     {
         // TODO: Implement validate() method.
     }
 
     /**
-     * @return mixed|void
+     * @return void
      */
-    public function save()
+    public function save(): void
     {
         // TODO: Implement save() method.
     }

@@ -8,6 +8,10 @@ namespace QUI\ERP\Order\Controls\Products;
 
 use QUI;
 
+use function dirname;
+use function is_array;
+use function json_decode;
+
 /**
  * Class ProductList
  *
@@ -21,25 +25,23 @@ class ProductList extends QUI\Control
 
         $this->setAttribute('class', 'quiqqer-order-productList');
         $this->setAttribute('nodeName', 'section');
-        $this->addCSSFile(\dirname(__FILE__) . '/ProductList.css');
+        $this->addCSSFile(dirname(__FILE__) . '/ProductList.css');
     }
 
     /**
      * @return string
-     *
-     * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
         $productIds = $this->getAttribute('productsIds');
         $products = [];
 
-        if (!\is_array($productIds)) {
-            $productIds = \json_decode($productIds, true);
+        if (!is_array($productIds)) {
+            $productIds = json_decode($productIds, true);
         }
 
-        if (\is_array($productIds)) {
+        if (is_array($productIds)) {
             foreach ($productIds as $productId) {
                 try {
                     $Product = QUI\ERP\Products\Handler\Products::getProduct((int)$productId);
@@ -54,6 +56,6 @@ class ProductList extends QUI\Control
             'products' => $products
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/ProductList.html');
+        return $Engine->fetch(dirname(__FILE__) . '/ProductList.html');
     }
 }

@@ -607,6 +607,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Updates the order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @throws QUI\Exception
      */
     abstract public function update(QUI\Interfaces\Users\User $PermissionUser = null);
 
