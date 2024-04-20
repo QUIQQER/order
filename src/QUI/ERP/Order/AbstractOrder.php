@@ -47,24 +47,6 @@ use function time;
  */
 abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
-    /* @deprecated */
-    const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_PAID = QUI\ERP\Constants::PAYMENT_STATUS_PAID;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_PART = QUI\ERP\Constants::PAYMENT_STATUS_PART;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_ERROR = QUI\ERP\Constants::PAYMENT_STATUS_ERROR;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_CANCELED = QUI\ERP\Constants::PAYMENT_STATUS_CANCELED;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_DEBIT = QUI\ERP\Constants::PAYMENT_STATUS_DEBIT;
-
     /**
      * Article types
      */
