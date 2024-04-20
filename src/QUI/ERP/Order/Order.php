@@ -13,6 +13,8 @@ use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
+use QUI\ERP\ErpEntityInterface;
+use QUI\ERP\ErpTransactionsInterface;
 
 use function array_map;
 use function array_sum;
@@ -29,8 +31,7 @@ use function json_decode;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityInterface,
-                                             QUI\ERP\ErpTransactionsInterface
+class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
     /**
      * @var bool
