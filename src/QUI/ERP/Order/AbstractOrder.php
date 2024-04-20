@@ -44,9 +44,8 @@ use function time;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder
-    extends QUI\QDOM
-    implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
+abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, QUI\ERP\ErpEntityInterface,
+                                                         QUI\ERP\ErpTransactionsInterface
 {
     /* @deprecated */
     const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
@@ -337,7 +336,7 @@ abstract class AbstractOrder
                 $this->Customer->setAddress($this->getInvoiceAddress());
             } elseif (isset($customerData['quiqqer.erp.address'])) {
                 try {
-                    $User = QUI::getUsers()->get($this->Customer->getId());
+                    $User = QUI::getUsers()->get($this->Customer->getUUID());
                     $Address = $User->getAddress($customerData['quiqqer.erp.address']);
                     $this->Customer->setAddress($Address);
                 } catch (QUI\Exception $Exception) {
@@ -1017,7 +1016,7 @@ abstract class AbstractOrder
 
                 $Address = $this->Customer->getStandardAddress();
 
-                if (!$Address->getId()) {
+                if (!$Address->getUUID()) {
                     $this->Customer->setAddress(
                         new QUI\ERP\Address($this->addressInvoice, $this->Customer)
                     );
@@ -1103,7 +1102,7 @@ abstract class AbstractOrder
     {
         if ($address instanceof QUI\Users\Address) {
             $this->addressInvoice = $address->getAttributes();
-            $this->addressInvoice['id'] = $address->getId();
+            $this->addressInvoice['id'] = $address->getUUID();
 
             return;
         }
@@ -1252,7 +1251,7 @@ abstract class AbstractOrder
             }
 
             $this->Customer = new QUI\ERP\User($User);
-            $this->customerId = $this->Customer->getId();
+            $this->customerId = $this->Customer->getUUID();
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
 
@@ -1265,7 +1264,7 @@ abstract class AbstractOrder
 
         if ($User instanceof QUI\ERP\User) {
             $this->Customer = $User;
-            $this->customerId = $User->getId();
+            $this->customerId = $User->getUUID();
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
 
@@ -1278,7 +1277,7 @@ abstract class AbstractOrder
 
         if ($User instanceof QUI\Interfaces\Users\User) {
             $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
-            $this->customerId = $this->Customer->getId();
+            $this->customerId = $this->Customer->getUUID();
 
             if (empty($this->addressInvoice)) {
                 $this->setInvoiceAddress($this->Customer->getStandardAddress());
@@ -2136,7 +2135,7 @@ abstract class AbstractOrder
      * This status is the custom status of the order system
      * Ths status can vary
      *
-     * @return QUI\ERP\Order\ProcessingStatus\Status
+     * @return Status|null
      */
     public function getProcessingStatus(): ?ProcessingStatus\Status
     {
@@ -2213,7 +2212,7 @@ abstract class AbstractOrder
      * Return the shipping status
      * -> This method only works if shipping is installed
      *
-     * @return QUI\ERP\Shipping\ShippingStatus\Status|bool
+     * @return bool|QUI\ERP\Shipping\ShippingStatus\Status|null
      */
     public function getShippingStatus(): bool|QUI\ERP\Shipping\ShippingStatus\Status|null
     {
