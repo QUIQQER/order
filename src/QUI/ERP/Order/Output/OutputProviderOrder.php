@@ -69,12 +69,12 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get the entity the output is created for
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return Order|OrderInProcess
      *
      * @throws QUI\Exception
      */
-    public static function getEntity($entityId): OrderInProcess|Order
+    public static function getEntity(int|string $entityId): OrderInProcess|Order
     {
         try {
             $Order = QUI\ERP\Order\Handler::getInstance()->get($entityId);
@@ -88,12 +88,12 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get download filename (without file extension)
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return string
      *
      * @throws QUI\Exception
      */
-    public static function getDownloadFileName($entityId): string
+    public static function getDownloadFileName(int|string $entityId): string
     {
         return self::getEntity($entityId)->getPrefixedId();
     }
@@ -101,12 +101,12 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get output Locale by entity
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return Locale
      *
      * @throws QUI\Exception
      */
-    public static function getLocale($entityId): Locale
+    public static function getLocale(int|string $entityId): Locale
     {
         $Order = self::getEntity($entityId);
         $Customer = $Order->getCustomer();
@@ -117,11 +117,11 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Fill the OutputTemplate with appropriate entity data
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return array
      * @throws QUI\Exception
      */
-    public static function getTemplateData($entityId): array
+    public static function getTemplateData(int|string $entityId): array
     {
         $Order = self::getEntity($entityId);
         $OrderView = $Order->getView();
@@ -198,11 +198,11 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Checks if $User has permission to download the document of $entityId
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @param User $User
      * @return bool
      */
-    public static function hasDownloadPermission($entityId, User $User): bool
+    public static function hasDownloadPermission(int|string $entityId, User $User): bool
     {
         if (!QUI::getUsers()->isAuth($User) || QUI::getUsers()->isNobodyUser($User)) {
             return false;
@@ -222,12 +222,12 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get e-mail address of the document recipient
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return string|false - E-Mail address or false if no e-mail address available
      *
      * @throws QUI\Exception
      */
-    public static function getEmailAddress($entityId): bool|string
+    public static function getEmailAddress(int|string $entityId): bool|string
     {
         $Customer = self::getEntity($entityId)->getCustomer();
 
@@ -241,12 +241,12 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get e-mail subject when document is sent via mail
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return string
      *
      * @throws QUI\Exception
      */
-    public static function getMailSubject($entityId): string
+    public static function getMailSubject(int|string $entityId): string
     {
         $Order = self::getEntity($entityId);
         $Customer = $Order->getCustomer();
@@ -261,12 +261,12 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get e-mail body when document is sent via mail
      *
-     * @param string|int $entityId
+     * @param int|string $entityId
      * @return string
      *
      * @throws QUI\Exception
      */
-    public static function getMailBody($entityId): string
+    public static function getMailBody(int|string $entityId): string
     {
         $Order = self::getEntity($entityId);
         $Customer = $Order->getCustomer();
