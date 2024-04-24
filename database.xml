@@ -48,7 +48,7 @@
 
             <field type="VARCHAR(250) NOT NULL">hash</field>
             <field type="timestamp NULL default NULL">c_date</field>
-            <field type="INT NOT NULL">c_user</field>
+            <field type="VARCHAR(50) NOT NULL">c_user</field>
 
             <primary>id</primary>
             <auto_increment>id</auto_increment>
@@ -61,7 +61,7 @@
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="VARCHAR(100) DEFAULT NULL">id_prefix</field>
             <field type="VARCHAR(110) DEFAULT NULL">id_str</field>
-            <field type="BIGINT(10) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
+            <field type="VARCHAR(50) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
 
             <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
             <field type="VARCHAR(250) NULL DEFAULT NULL">invoice_id</field>
@@ -99,7 +99,7 @@
 
             <field type="VARCHAR(250) NOT NULL">hash</field>
             <field type="timestamp NULL default NULL">c_date</field>
-            <field type="INT NOT NULL">c_user</field>
+            <field type="VARCHAR(50) NOT NULL">c_user</field>
 
             <primary>id</primary>
             <auto_increment>id</auto_increment>
@@ -110,7 +110,7 @@
 
         <table name="baskets">
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="INT(11) NOT NULL">uid</field>
+            <field type="VARCHAR(50) NOT NULL">uid</field>
             <field type="BIGINT(20) NULL">name</field>
             <field type="TEXT NULL">products</field>
             <field type="VARCHAR(250) NULL">hash</field>
