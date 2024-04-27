@@ -7,14 +7,14 @@
             <field type="VARCHAR(100) DEFAULT NULL">id_prefix</field>
             <field type="VARCHAR(110) DEFAULT NULL">id_str</field>
             <field type="BIGINT(10) NULL DEFAULT NULL">order_process_id</field>
-            <field type="VARCHAR(250) NULL DEFAULT NULL">global_process_id</field>
+            <field type="VARCHAR(50) NULL DEFAULT NULL">global_process_id</field>
 
             <!-- Für aufgesplittete Bestellungen -->
             <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field>
 
             <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="VARCHAR(250) NULL DEFAULT NULL">invoice_id</field>
-            <field type="VARCHAR(250) NULL DEFAULT NULL">temporary_invoice_id</field>
+            <field type="VARCHAR(50) NULL DEFAULT NULL">invoice_id</field>
+            <field type="VARCHAR(50) NULL DEFAULT NULL">temporary_invoice_id</field>
             <field type="INT NOT NULL">status</field>
 
             <field type="VARCHAR(50) NOT NULL">customerId</field>
@@ -46,7 +46,7 @@
             <field type="TEXT NULL">currency_data</field>
             <field type="VARCHAR(10) NULL">currency</field>
 
-            <field type="VARCHAR(250) NOT NULL">hash</field>
+            <field type="VARCHAR(50) NOT NULL">hash</field>
             <field type="timestamp NULL default NULL">c_date</field>
             <field type="VARCHAR(50) NOT NULL">c_user</field>
 
@@ -64,8 +64,8 @@
             <field type="VARCHAR(50) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
 
             <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
-            <field type="VARCHAR(250) NULL DEFAULT NULL">invoice_id</field>
-            <field type="VARCHAR(250) NULL DEFAULT NULL">temporary_invoice_id</field>
+            <field type="VARCHAR(50) NULL DEFAULT NULL">invoice_id</field>
+            <field type="VARCHAR(50) NULL DEFAULT NULL">temporary_invoice_id</field>
             <field type="INT NOT NULL">status</field>
 
             <field type="VARCHAR(50) NOT NULL">customerId</field>
@@ -97,7 +97,7 @@
             <field type="TEXT NULL">shipping_data</field>
             <field type="INT NULL">shipping_status</field>
 
-            <field type="VARCHAR(250) NOT NULL">hash</field>
+            <field type="VARCHAR(50) NOT NULL">hash</field>
             <field type="timestamp NULL default NULL">c_date</field>
             <field type="VARCHAR(50) NOT NULL">c_user</field>
 
@@ -113,7 +113,7 @@
             <field type="VARCHAR(50) NOT NULL">uid</field>
             <field type="BIGINT(20) NULL">name</field>
             <field type="TEXT NULL">products</field>
-            <field type="VARCHAR(250) NULL">hash</field>
+            <field type="VARCHAR(50) NULL">hash</field>
             <field type="timestamp DEFAULT NOW() ON UPDATE NOW()">e_date</field>
 
             <primary>id</primary>

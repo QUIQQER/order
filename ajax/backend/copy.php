@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
     function ($orderId) {
         $Order = Handler::getInstance()->get($orderId);
 
-        return $Order->copy()->getId();
+        return $Order->copy()->getUUID();
     },
     ['orderId'],
     'Permission::checkAdminUser'

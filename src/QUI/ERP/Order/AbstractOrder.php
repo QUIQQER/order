@@ -708,6 +708,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Return the order id
      *
      * @return integer
+     * @deprecated
      */
     public function getId(): int
     {
@@ -1546,7 +1547,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 'history.message.linkTransaction',
                 [
                     'username' => $User->getName(),
-                    'uid' => $User->getId(),
+                    'uid' => $User->getUUID(),
                     'txId' => $Transaction->getTxId(),
                     'txAmount' => $Transaction->getAmountFormatted()
                 ]
@@ -1569,7 +1570,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 'paid_data' => json_encode($calculation['paidData']),
                 'paid_date' => $calculation['paidDate']
             ],
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
         $this->setPaymentStatus($calculation['paidStatus'], true);
@@ -1658,7 +1659,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 'history.message.addTransaction',
                 [
                     'username' => $User->getName(),
-                    'uid' => $User->getId(),
+                    'uid' => $User->getUUID(),
                     'txid' => $Transaction->getTxId()
                 ]
             )

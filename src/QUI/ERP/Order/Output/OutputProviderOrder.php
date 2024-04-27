@@ -321,7 +321,7 @@ class OutputProviderOrder implements OutputProviderInterface
         }
 
         return array_merge([
-            'orderId' => $Order->getId(),
+            'orderId' => $Order->getUUID(),
             'hash' => $Order->getAttribute('hash'),
             'date' => self::dateFormat($Order->getAttribute('date')),
             'systemCompany' => self::getCompanyName(),
@@ -510,7 +510,7 @@ class OutputProviderOrder implements OutputProviderInterface
             'quiqqer/order',
             'OutputProvider.epc_qr_code_purpose',
             [
-                'orderNo' => $Order->getId()
+                'orderNo' => $Order->getUUID()
             ]
         );
 

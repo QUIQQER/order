@@ -287,7 +287,7 @@ class EventHandling
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
-                ['id' => $Order->getId()]
+                ['hash' => $Order->getUUID()]
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -522,7 +522,7 @@ class EventHandling
             // created invoice
             $Comments->addComment(
                 QUI::getLocale()->get('quiqqer/order', 'erp.comment.order.created', [
-                    'orderId' => $Order->getId()
+                    'orderId' => $Order->getUUID()
                 ]),
                 strtotime($Order->getAttribute('c_date'))
             );

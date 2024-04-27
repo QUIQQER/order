@@ -92,7 +92,7 @@ class Factory extends QUI\Utils\Singleton
         $orderData = [
             'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
             'id_str' => QUI\ERP\Order\Utils\Utils::getOrderPrefix() . $orderId,
-            'c_user' => $User->getId() ? $User->getId() : 0,
+            'c_user' => $User->getUUID() ? $User->getUUID() : 0,
             'c_date' => date('Y-m-d H:i:s'),
             'hash' => $hash,
             'status' => $status,
@@ -206,10 +206,10 @@ class Factory extends QUI\Utils\Singleton
 
         $orderData = [
             'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
-            'c_user' => $User->getId(),
+            'c_user' => $User->getUUID(),
             'c_date' => date('Y-m-d H:i:s'),
             'hash' => QUI\Utils\Uuid::get(),
-            'customerId' => $User->getId(),
+            'customerId' => $User->getUUID(),
             'status' => $status,
             'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
             'successful' => 0
@@ -236,7 +236,7 @@ class Factory extends QUI\Utils\Singleton
 
         QUI::getDataBase()->insert(
             Handler::getInstance()->tableBasket(),
-            ['uid' => $User->getId()]
+            ['uid' => $User->getUUID()]
         );
 
         $lastId = QUI::getDataBase()->getPDO()->lastInsertId();

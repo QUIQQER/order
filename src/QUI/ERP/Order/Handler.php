@@ -371,12 +371,11 @@ class Handler extends Singleton
      */
     public function getOrdersByUser(QUI\Interfaces\Users\User $User, array $params = []): array
     {
-        // @todo uuid
         $query = [
-            'select' => ['id', 'customerId'],
+            'select' => ['id', 'customerId', 'hash'],
             'from' => $this->table(),
             'where' => [
-                'customerId' => $User->getId()
+                'customerId' => $User->getUUID()
             ]
         ];
 
@@ -412,7 +411,7 @@ class Handler extends Singleton
 
         foreach ($data as $entry) {
             try {
-                $result[] = new Order($entry['id']);
+                $result[] = new Order($entry['hash']);
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
@@ -436,7 +435,7 @@ class Handler extends Singleton
             'select' => 'id',
             'from' => $this->table(),
             'where' => [
-                'customerId' => $User->getId()
+                'customerId' => $User->getUUID()
             ]
         ]);
 
@@ -669,13 +668,13 @@ class Handler extends Singleton
         $list = QUI::getDataBase()->fetch([
             'from' => $this->tableOrderProcess(),
             'where' => [
-                'customerId' => $User->getId()
+                'customerId' => $User->getUUID()
             ]
         ]);
 
         foreach ($list as $entry) {
             try {
-                $result[] = $this->getOrderInProcess($entry['id']);
+                $result[] = $this->getOrderInProcess($entry['hash']);
             } catch (\Exception) {
             }
         }
@@ -694,16 +693,16 @@ class Handler extends Singleton
     public function countOrdersInProcessFromUser(QUI\Interfaces\Users\User $User): int
     {
         $data = QUI::getDataBase()->fetch([
-            'count' => 'id',
-            'select' => 'id',
+            'count' => 'hash',
+            'select' => 'hash',
             'from' => $this->tableOrderProcess(),
             'where' => [
-                'customerId' => $User->getId()
+                'customerId' => $User->getUUID()
             ]
         ]);
 
-        if (isset($data[0]['id'])) {
-            return (int)$data[0]['id'];
+        if (isset($data[0]['hash'])) {
+            return (int)$data[0]['hash'];
         }
 
         return 0;
@@ -724,7 +723,7 @@ class Handler extends Singleton
         $result = QUI::getDataBase()->fetch([
             'from' => $this->tableOrderProcess(),
             'where' => [
-                'customerId' => $User->getId(),
+                'customerId' => $User->getUUID(),
                 'successful' => 0
             ],
             'limit' => 1,
@@ -749,7 +748,7 @@ class Handler extends Singleton
             );
         }
 
-        return $this->getOrderInProcess($result[0]['id']);
+        return $this->getOrderInProcess($result[0]['hash']);
     }
 
     /**
@@ -917,7 +916,7 @@ class Handler extends Singleton
             'select' => 'id',
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
-                'uid' => $User->getId()
+                'uid' => $User->getUUID()
             ],
             'limit' => 1
         ]);
@@ -957,7 +956,7 @@ class Handler extends Singleton
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
                 'id' => (int)$basketId,
-                'uid' => $User->getId()
+                'uid' => $User->getUUID()
             ],
             'limit' => 1
         ]);
@@ -989,7 +988,7 @@ class Handler extends Singleton
                 return true;
             }
 
-            if ($User->getId() === QUI::getUserBySession()->getId()) {
+            if ($User->getUUID() === QUI::getUserBySession()->getUUID()) {
                 return true;
             }
 

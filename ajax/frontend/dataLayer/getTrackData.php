@@ -7,7 +7,7 @@ use QUI\ERP\Products\Handler\Products;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_dataLayer_getTrackData',
     function ($basketId, $products) {
-        if (!QUI::getUserBySession()->getId()) {
+        if (!QUI::getUserBySession()->getUUID()) {
             $Basket = new QUI\ERP\Order\Basket\BasketGuest();
             $Basket->import(json_decode($products, true));
         } else {

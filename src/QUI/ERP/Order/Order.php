@@ -176,7 +176,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'quiqqer/order',
                 'history.order.invoice.created',
                 [
-                    'userId' => QUI::getUserBySession()->getId(),
+                    'userId' => QUI::getUserBySession()->getUUID(),
                     'username' => QUI::getUserBySession()->getUsername(),
                     'invoiceHash' => $TemporaryInvoice->getUUID()
                 ]
@@ -188,7 +188,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             ['temporary_invoice_id' => $TemporaryInvoice->getUUID()],
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
 
@@ -295,7 +295,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
-                ['id' => $this->getId()]
+                ['uuid' => $this->getUUID()]
             );
 
             $this->invoiceId = $Invoice->getUUID();
@@ -328,7 +328,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'quiqqer/order',
                 'history.order.salesOrder.created',
                 [
-                    'userId' => QUI::getUserBySession()->getId(),
+                    'userId' => QUI::getUserBySession()->getUUID(),
                     'username' => QUI::getUserBySession()->getUsername(),
                     'salesOrderHash' => $SalesOrder->getUUID()
                 ]
@@ -408,7 +408,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 [
                     'id' => $this->getPrefixedNumber(),
                     'user' => $SessionUser->getName(),
-                    'userId' => $SessionUser->getId()
+                    'userId' => $SessionUser->getUUID()
                 ]
             )
         );
@@ -658,7 +658,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'quiqqer/order',
                 'history.order.edit',
                 [
-                    'userId' => QUI::getUserBySession()->getId(),
+                    'userId' => QUI::getUserBySession()->getUUID(),
                     'username' => QUI::getUserBySession()->getUsername()
                 ]
             )
@@ -700,7 +700,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $data,
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
 
@@ -770,10 +770,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
     {
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            [
-                'history' => $this->History->toJSON()
-            ],
-            ['id' => $this->getId()]
+            ['history' => $this->History->toJSON()],
+            ['hash' => $this->getUUID()]
         );
     }
 
@@ -801,7 +799,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             ['paid_status' => $status],
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
         QUI\ERP\Debug::getInstance()->log(
@@ -882,7 +880,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                     'history.message.edit',
                     [
                         'username' => $User->getName(),
-                        'uid' => $User->getId()
+                        'uid' => $User->getUUID()
                     ]
                 )
             );
@@ -904,7 +902,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'paid_data' => json_encode($calculation['paidData']),
                 'paid_date' => $calculation['paidDate']
             ],
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
         if ($calculation['paidStatus'] === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
@@ -939,17 +937,15 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
 
         QUI::getDataBase()->delete(
             Handler::getInstance()->table(),
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderDelete',
             [
-                $this->getId(),
+                $this->getUUID(),
                 array_merge(
-                    [
-                        'hash' => $this->getUUID()
-                    ],
+                    ['hash' => $this->getUUID()],
                     $this->getDataForSaving()
                 )
             ]
@@ -972,7 +968,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
             $this->getDataForSaving(),
-            ['id' => $NewOrder->getId()]
+            ['hash' => $NewOrder->getUUID()]
         );
 
 
@@ -1045,7 +1041,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'payment_time' => null,
                 'payment_address' => null
             ],
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
         $this->refresh();
@@ -1062,11 +1058,11 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
                 ['frontendMessages' => $this->FrontendMessage->toJSON()],
-                ['id' => $this->getId()]
+                ['hash' => $this->getUUID()]
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage(), [
-                'order' => $this->getId(),
+                'order' => $this->getUUID(),
                 'orderHash' => $this->getUUID(),
                 'orderType' => $this->getType(),
                 'action' => 'Order->clearFrontendMessages'
