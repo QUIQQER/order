@@ -8,7 +8,6 @@ namespace QUI\ERP\Order;
 
 use IntlDateFormatter;
 use QUI;
-
 use QUI\Exception;
 
 use function dirname;
@@ -442,7 +441,7 @@ class Mail
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
-            } catch (Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -479,7 +478,7 @@ class Mail
      *
      * @throws Exception
      */
-    protected static function generatePdfFromSite(QUI\Projects\Site $Site)
+    protected static function generatePdfFromSite(QUI\Projects\Site $Site): string
     {
         $Document = new QUI\HtmlToPdf\Document();
 
@@ -525,11 +524,12 @@ class Mail
     //region mail helper
 
     /**
-     * @param OrderInterface|Order|OrderInProcess $Order
-     * @param $Customer
+     * @param OrderInterface $Order
+     * @param QUI\Interfaces\Users\User $Customer
      * @return array
+     * @throws Exception
      */
-    protected static function getOrderLocaleVar(OrderInterface $Order, $Customer): array
+    protected static function getOrderLocaleVar(OrderInterface $Order, QUI\Interfaces\Users\User $Customer): array
     {
         $Address = $Customer->getAddress();
 
@@ -598,10 +598,10 @@ class Mail
     }
 
     /**
-     * @param QUI\ERP\User $Customer
+     * @param QUI\Interfaces\Users\User $Customer
      * @return string
      */
-    protected static function getCompanyOrName(QUI\ERP\User $Customer): string
+    protected static function getCompanyOrName(QUI\Interfaces\Users\User $Customer): string
     {
         $Address = $Customer->getStandardAddress();
 
