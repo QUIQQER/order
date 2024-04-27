@@ -47,7 +47,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         parent::__construct($data);
 
-        $this->orderId = (int)$data['order_id'];
+        $this->orderId = $data['order_id'];
 
         // check if an order for the processing order exists
         try {

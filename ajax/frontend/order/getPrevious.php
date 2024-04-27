@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
         }
 
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
-            'orderId' => (int)$orderId,
+            'orderId' => $orderId,
             'orderHash' => $orderHash,
             'step' => $current,
             'basketEditable' => boolval($basketEditable)

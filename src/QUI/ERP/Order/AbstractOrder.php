@@ -150,9 +150,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Create user id
      *
-     * @var integer
+     * @var integer|string
      */
-    protected int $cUser;
+    protected int|string $cUser;
 
     /**
      * @var ArticleList|null
@@ -238,7 +238,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         $this->id = (int)$data['id'];
         $this->hash = $data['hash'];
         $this->cDate = $data['c_date'];
-        $this->cUser = (int)$data['c_user'];
+        $this->cUser = $data['c_user'];
 
         if (!empty($data['global_process_id'])) {
             $this->globalProcessId = $data['global_process_id'];
@@ -282,7 +282,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         }
 
         // user
-        $this->customerId = (int)$data['customerId'];
+        $this->customerId = $data['customerId'];
 
         if (isset($data['customer'])) {
             $this->customer = json_decode($data['customer'], true);

@@ -693,16 +693,16 @@ class Handler extends Singleton
     public function countOrdersInProcessFromUser(QUI\Interfaces\Users\User $User): int
     {
         $data = QUI::getDataBase()->fetch([
-            'count' => 'hash',
-            'select' => 'hash',
+            'count' => 'id',
+            'select' => 'id',
             'from' => $this->tableOrderProcess(),
             'where' => [
                 'customerId' => $User->getUUID()
             ]
         ]);
 
-        if (isset($data[0]['hash'])) {
-            return (int)$data[0]['hash'];
+        if (isset($data[0]['id'])) {
+            return (int)$data[0]['id'];
         }
 
         return 0;

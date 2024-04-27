@@ -332,24 +332,14 @@ class EventHandling
 
         // check invoice id field
         $orderTable = Handler::getInstance()->table();
-        $tableInfo = QUI::getDatabase()->table()->getFieldsInfos($orderTable);
 
-        $invoiceIsChar = false;
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
+        );
 
-        foreach ($tableInfo as $table) {
-            if ($table['Field'] === 'invoice_id') {
-                if (str_contains(strtolower($table['Type']), 'varchar')) {
-                    $invoiceIsChar = true;
-                }
-                break;
-            }
-        }
-
-        if ($invoiceIsChar === false) {
-            QUI::getDatabase()->execSQL(
-                'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(250) NULL DEFAULT NULL;'
-            );
-        }
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
+        );
 
         // create order status
         $Handler = ProcessingStatus\Handler::getInstance();

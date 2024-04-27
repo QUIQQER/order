@@ -46,7 +46,7 @@ QUI::$Ajax->registerFunction(
 
         if (!$Customer && isset($data['customer'])) {
             if (isset($data['customerId']) && !isset($data['customer']['id'])) {
-                $data['customer']['id'] = (int)$data['customerId'];
+                $data['customer']['id'] = $data['customerId'];
             }
 
             if (isset($data['addressInvoice']['country']) && !isset($data['customer']['country'])) {

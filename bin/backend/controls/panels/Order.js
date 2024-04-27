@@ -845,8 +845,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                 // events
                 self.$Customer.addEvent('change', function(Select) {
-                    const currentCustomerId = parseInt(self.getAttribute('customerId'));
-                    const userId = parseInt(Select.getValue());
+                    const currentCustomerId = self.getAttribute('customerId');
+                    const userId = Select.getValue();
 
                     if (currentCustomerId === userId) {
                         Users.get(userId).loadIfNotLoaded().then(function(User) {
@@ -945,7 +945,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 // Set addresses
-                const currentCustomerId = parseInt(self.getAttribute('customerId'));
+                const currentCustomerId = self.getAttribute('customerId');
 
                 if (self.getAttribute('addressInvoice')) {
                     const AddressInvoice = self.getAttribute('addressInvoice');
@@ -1469,7 +1469,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * event: on order deletion
          */
         $onOrderDelete: function(Handler, orderId) {
-            if (parseInt(this.getAttribute('orderId')) === parseInt(orderId)) {
+            if (this.getAttribute('orderId') === orderId) {
                 this.destroy();
             }
         },
@@ -1666,10 +1666,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     customer['quiqqer.erp.taxId'] = TaxNo.value;
                 }
 
-                const customerId = parseInt(this.$Customer.getValue()),
+                const customerId = this.$Customer.getValue(),
                     User = Users.get(customerId);
 
-                customer.id = customerId;
+                customer.uuid = customerId;
 
                 if (User.isLoaded()) {
                     customer.username = User.getUsername();
