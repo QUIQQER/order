@@ -16,15 +16,15 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
     'qui/classes/DOM',
     'Ajax'
 
-], function (QUI, QUIDOM, QUIAjax) {
-    "use strict";
+], function(QUI, QUIDOM, QUIAjax) {
+    'use strict';
 
     return new Class({
 
         Extends: QUIDOM,
-        Type   : 'package/quiqqer/order/bin/frontend/classes/Orders',
+        Type: 'package/quiqqer/order/bin/frontend/classes/Orders',
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.parent(options);
         },
 
@@ -34,12 +34,12 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {Number} orderId - Grid params
          * @returns {Promise}
          */
-        get: function (orderId) {
-            return new Promise(function (resolve, reject) {
+        get: function(orderId) {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_get', resolve, {
                     'package': 'quiqqer/order',
-                    orderId  : orderId,
-                    onError  : reject,
+                    orderId: orderId,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -51,12 +51,12 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {Object} params - Grid params
          * @returns {Promise}
          */
-        getList: function (params) {
-            return new Promise(function (resolve, reject) {
+        getList: function(params) {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_list', resolve, {
                     'package': 'quiqqer/order',
-                    params   : JSON.encode(params),
-                    onError  : reject,
+                    params: JSON.encode(params),
+                    onError: reject,
                     showError: false
                 });
             });
@@ -67,11 +67,11 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          *
          * @returns {Promise}
          */
-        getLastOrder: function () {
-            return new Promise(function (resolve, reject) {
+        getLastOrder: function() {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getLastOrder', resolve, {
                     'package': 'quiqqer/order',
-                    onError  : reject,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -81,11 +81,11 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          *
          * @returns {Promise}
          */
-        getOrderProcessUrl: function () {
-            return new Promise(function (resolve, reject) {
+        getOrderProcessUrl: function() {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getOrderProcessUrl', resolve, {
                     'package': 'quiqqer/order',
-                    onError  : reject,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -96,16 +96,16 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          *
          * @returns {Promise}
          */
-        createOrder: function () {
+        createOrder: function() {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_order_ajax_frontend_create', function (newId) {
+            return new Promise(function(resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_create', function(newId) {
                     self.fireEvent('orderCreate', [self, newId]);
                     resolve(newId);
                 }, {
                     'package': 'quiqqer/order',
-                    onError  : reject,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -117,17 +117,15 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {String|Number} orderId
          * @returns {Promise}
          */
-        deleteOrder: function (orderId) {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_order_ajax_frontend_delete', function () {
-                    self.fireEvent('orderDelete', [self, orderId]);
+        deleteOrder: function(orderId) {
+            return new Promise((resolve, reject) => {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_delete', () => {
+                    this.fireEvent('orderDelete', [this, orderId]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
-                    orderId  : orderId,
-                    onError  : reject,
+                    orderId: orderId,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -140,7 +138,7 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {Object} data
          * @returns {Promise}
          */
-        saveOrder: function (orderId, data) {
+        saveOrder: function(orderId, data) {
             return this.updateOrder(orderId, data);
         },
 
@@ -151,18 +149,18 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {Object} data
          * @returns {Promise}
          */
-        updateOrder: function (orderId, data) {
+        updateOrder: function(orderId, data) {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_order_ajax_frontend_update', function () {
+            return new Promise(function(resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_update', function() {
                     self.fireEvent('orderSave', [self, orderId, data]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
-                    orderId  : orderId,
-                    data     : JSON.encode(data),
-                    onError  : reject,
+                    orderId: orderId,
+                    data: JSON.encode(data),
+                    onError: reject,
                     showError: false
                 });
             });
@@ -174,17 +172,17 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param orderHash
          * @return {Promise}
          */
-        clearOrder: function (orderHash) {
+        clearOrder: function(orderHash) {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_clear', function () {
+            return new Promise(function(resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_clear', function() {
                     self.fireEvent('orderClear', [self, orderHash]);
                     resolve();
                 }, {
                     'package': 'quiqqer/order',
                     orderHash: orderHash,
-                    onError  : reject,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -197,18 +195,18 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {String|Number} vatId
          * @returns {Promise}
          */
-        validateVatId: function (vatId) {
+        validateVatId: function(vatId) {
             vatId = vatId.trim();
 
             if (vatId === '') {
                 return Promise.reject();
             }
 
-            return new Promise(function (resolve, reject) {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_validateVatId', resolve, {
                     'package': 'quiqqer/order',
-                    vatId    : vatId,
-                    onError  : reject,
+                    vatId: vatId,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -221,13 +219,13 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {String|Number} payment - payment id
          * @return {Promise}
          */
-        saveProcessingPaymentChange: function (orderHash, payment) {
-            return new Promise(function (resolve, reject) {
+        saveProcessingPaymentChange: function(orderHash, payment) {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_order_processing_savePayment', resolve, {
                     'package': 'quiqqer/order',
                     orderHash: orderHash,
-                    payment  : payment,
-                    onError  : reject,
+                    payment: payment,
+                    onError: reject,
                     showError: false
                 });
             });
@@ -240,13 +238,13 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @param {Number} pos -
          * @return {Promise}
          */
-        removePosition: function (orderHash, pos) {
-            return new Promise(function (resolve, reject) {
+        removePosition: function(orderHash, pos) {
+            return new Promise(function(resolve, reject) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_order_removePosition', resolve, {
                     'package': 'quiqqer/order',
                     orderHash: orderHash,
-                    pos      : pos,
-                    onError  : reject,
+                    pos: pos,
+                    onError: reject,
                     showError: false
                 });
             });

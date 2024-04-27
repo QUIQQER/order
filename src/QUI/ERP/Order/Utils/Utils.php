@@ -18,7 +18,6 @@ use function mb_substr;
 use function method_exists;
 use function serialize;
 use function str_replace;
-use function strftime;
 use function strpos;
 
 /**
@@ -241,7 +240,7 @@ class Utils
             return date('Y') . '-';
         }
 
-        $prefix = strftime($setting);
+        $prefix = \PHP81_BC\strftime($setting);
 
         if (mb_strlen($prefix) < 100) {
             return $prefix;

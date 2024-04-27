@@ -20,6 +20,8 @@
   },
   "require": {
     "php": "^8",
+    "php81_bc/strftime": "^0.7.4",
+    "ramsey\/uuid": "^3|^4",
     "quiqqer\/quiqqer": ">=1.5",
     "quiqqer\/erp": "^3",
     "quiqqer\/countries": "^1",
@@ -30,7 +32,6 @@
     "quiqqer\/payment-transactions": "^2",
     "quiqqer\/fontawesome": ">=4.5",
     "quiqqer\/data-layer": "^1.2",
-    "ramsey\/uuid": "^3|^4",
     "quiqqer-asset\/navigo": "5.*",
     "quiqqer-asset\/history-events": "1.*"
   },

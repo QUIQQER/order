@@ -271,11 +271,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     protected function setDataBaseData(array $data): void
     {
         $this->invoiceId = $data['invoice_id'];
-
         $this->idPrefix = $data['id_prefix'];
-        $this->addressDelivery = json_decode($data['addressDelivery'], true);
-        $this->addressInvoice = json_decode($data['addressInvoice'], true);
-        $this->data = json_decode($data['data'], true);
+
+        $this->addressDelivery = json_decode($data['addressDelivery'] ?? 'null', true);
+        $this->addressInvoice = json_decode($data['addressInvoice'] ?? 'null', true);
+        $this->data = json_decode($data['data'] ?? 'null', true);
 
         if (isset($data['status'])) {
             $this->status = $data['status'];

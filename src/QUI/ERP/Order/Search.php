@@ -76,10 +76,14 @@ class Search extends Singleton
      * Set a filter
      *
      * @param string $filter
-     * @param array|string $value
+     * @param array|string|null $value
      */
-    public function setFilter(string $filter, array|string $value): void
+    public function setFilter(string $filter, array|string|null $value): void
     {
+        if ($value === null) {
+            return;
+        }
+
         if ($filter === 'search') {
             $this->search = $value;
 
