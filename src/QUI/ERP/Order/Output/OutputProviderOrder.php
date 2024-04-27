@@ -95,7 +95,7 @@ class OutputProviderOrder implements OutputProviderInterface
      */
     public static function getDownloadFileName(int|string $entityId): string
     {
-        return self::getEntity($entityId)->getPrefixedId();
+        return self::getEntity($entityId)->getPrefixedNumber();
     }
 
     /**
@@ -165,7 +165,7 @@ class OutputProviderOrder implements OutputProviderInterface
                 $Order = QUI\ERP\Order\Handler::getInstance()->getOrderById(
                     $OrderView->getAttribute('order_id')
                 );
-                $orderNumber = $Order->getPrefixedId();
+                $orderNumber = $Order->getPrefixedNumber();
             } catch (QUI\Exception) {
             }
         }

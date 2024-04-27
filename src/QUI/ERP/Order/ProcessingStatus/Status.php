@@ -110,7 +110,7 @@ class Status
         $Customer = $Order->getCustomer();
         $message = $Locale->get('quiqqer/order', 'processing.status.notification.' . $this->id, [
             'customerName' => $Customer->getName(),
-            'orderNo' => $Order->getPrefixedId(),
+            'orderNo' => $Order->getPrefixedNumber(),
             'orderDate' => $Locale->formatDate($Order->getCreateDate()),
             'orderStatus' => $this->getTitle($Locale)
         ]);
@@ -118,7 +118,7 @@ class Status
         if (QUI::getLocale()->isLocaleString($message)) {
             $message = $Locale->get('quiqqer/order', 'processing.status.notification.template', [
                 'customerName' => $Customer->getName(),
-                'orderNo' => $Order->getPrefixedId(),
+                'orderNo' => $Order->getPrefixedNumber(),
                 'orderDate' => $Locale->formatDate($Order->getCreateDate()),
                 'orderStatus' => $this->getTitle($Locale)
             ]);

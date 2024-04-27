@@ -210,7 +210,7 @@ class Mail
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addAlert(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.confirmation.admin', [
-                    'orderId' => $Order->getPrefixedId(),
+                    'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
             );
@@ -249,7 +249,7 @@ class Mail
             'Address'  => $Address,
 
             'message' => QUI::getLocale()->get('quiqqer/order', 'order.confirmation.admin.body', [
-                'orderId'  => $Order->getPrefixedId(),
+                'orderId'  => $Order->getPrefixedNumber(),
                 'userId'   => $Customer->getId(),
                 'username' => $user
             ])
@@ -264,7 +264,7 @@ class Mail
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addAlert(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.confirmation.admin', [
-                    'orderId' => $Order->getPrefixedId(),
+                    'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
             );
@@ -383,7 +383,7 @@ class Mail
         } catch (\Exception $Exception) {
             QUI\System\Log::addAlert(
                 QUI::getLocale()->get('quiqqer/shipping', 'exception.shipping.order.mail', [
-                    'orderId' => $Order->getPrefixedId(),
+                    'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
             );
@@ -554,7 +554,7 @@ class Mail
 
         return [
             'orderId'         => $Order->getId(),
-            'orderPrefixedId' => $Order->getPrefixedId(),
+            'orderPrefixedId' => $Order->getPrefixedNumber(),
             'hash'            => $Order->getAttribute('hash'),
             'date'            => self::dateFormat($Order->getAttribute('date')),
             'systemCompany'   => self::getCompanyName(),

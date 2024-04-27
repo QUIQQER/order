@@ -278,7 +278,7 @@ class Handler extends QUI\Utils\Singleton
 
         if (empty($customerEmail)) {
             QUI\System\Log::addWarning(
-                'Status change notification for order #' . $Order->getPrefixedId() . ' cannot be sent'
+                'Status change notification for order #' . $Order->getPrefixedNumber() . ' cannot be sent'
                 . ' because customer #' . $Customer->getUUID() . ' has no e-mail address.'
             );
 
@@ -295,7 +295,7 @@ class Handler extends QUI\Utils\Singleton
 
         $Mailer->setSubject(
             $Locale->get('quiqqer/order', 'processing.status.notification.subject', [
-                'orderNo' => $Order->getPrefixedId()
+                'orderNo' => $Order->getPrefixedNumber()
             ])
         );
 

@@ -299,7 +299,7 @@ class Utils
             if (
                 $productClass === QUI\ERP\Accounting\Invoice\Articles\Text::class
                 || empty($productId)
-                || $productId === '-'
+                || $productId === -1
             ) {
                 $Product = new QUI\ERP\Products\Product\TextProduct($productData);
 

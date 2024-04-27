@@ -104,7 +104,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      */
     public function getDocumentNo(): string
     {
-        return $this->Order->getPrefixedId();
+        return $this->Order->getPrefixedNumber();
     }
 
     /**

@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
                 'quiqqer/order',
                 'message.ajax.backend.linkTransaction.error.tx_already_linked',
                 [
-                    'orderNo' => $Order->getPrefixedId(),
+                    'orderNo' => $Order->getPrefixedNumber(),
                     'txId' => $Transaction->getTxId()
                 ]
             ]);
