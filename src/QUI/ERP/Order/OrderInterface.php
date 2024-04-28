@@ -66,8 +66,14 @@ interface OrderInterface
 
     /**
      * @return string
+     * @deprecated use getPrefixedNumber())
      */
     public function getPrefixedId(): string;
+
+    /**
+     * @return string
+     */
+    public function getPrefixedNumber(): string;
 
     /**
      * @return string

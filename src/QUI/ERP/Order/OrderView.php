@@ -93,9 +93,17 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return string
      */
+    public function getPrefixedNumber(): string
+    {
+        return $this->Order->getPrefixedNumber();
+    }
+
+    /**
+     * @return string
+     */
     public function getPrefixedId(): string
     {
-        return $this->getId();
+        return $this->Order->getPrefixedNumber();
     }
 
     /**
