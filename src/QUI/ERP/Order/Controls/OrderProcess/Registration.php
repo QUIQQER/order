@@ -61,19 +61,11 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
         return true;
     }
 
-    /**
-     *
-     */
     public function validate(): void
     {
-        // TODO: Implement validate() method.
     }
-
-    /**
-     * @return void
-     */
+    
     public function save(): void
     {
-        // TODO: Implement save() method.
     }
 }

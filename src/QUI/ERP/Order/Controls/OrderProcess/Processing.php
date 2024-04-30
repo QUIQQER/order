@@ -154,14 +154,14 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      *
      */
-    public function validate()
+    public function validate(): void
     {
     }
 
     /**
      * placeholder
      */
-    public function save()
+    public function save(): void
     {
     }
 
