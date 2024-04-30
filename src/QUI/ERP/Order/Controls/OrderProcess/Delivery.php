@@ -7,7 +7,6 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
-
 use QUI\Locale;
 
 use function dirname;

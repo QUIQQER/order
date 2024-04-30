@@ -64,7 +64,7 @@ class Registration extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function validate(): void
     {
     }
-    
+
     public function save(): void
     {
     }
