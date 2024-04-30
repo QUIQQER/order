@@ -14,11 +14,11 @@ use QUI\ERP\Customer\Utils as CustomerUtils;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Output\OutputProviderInterface;
-use QUI\ERP\Payments\SEPA\Provider as SepaProvider;
 use QUI\Interfaces\Users\User;
 use QUI\Locale;
 
 use function array_merge;
+use function class_exists;
 use function get_class;
 use function implode;
 use function in_array;
@@ -474,8 +474,8 @@ class OutputProviderOrder implements OutputProviderInterface
 
 
         // Prefer bank account set in SEPA module if available
-        if (QUI::getPackageManager()->isInstalled('quiqqer/payment-sepa')) {
-            $creditorBankAccount = SepaProvider::getCreditorBankAccount();
+        if (class_exists('QUI\ERP\Payments\SEPA\Provider') && QUI::getPackageManager()->isInstalled('quiqqer/payment-sepa')) {
+            $creditorBankAccount = QUI\ERP\Payments\SEPA\Provider::getCreditorBankAccount();
         } else {
             $creditorBankAccount = BankAccounts::getCompanyBankAccount();
         }
