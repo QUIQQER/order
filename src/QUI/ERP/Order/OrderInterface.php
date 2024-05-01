@@ -3,6 +3,7 @@
 namespace QUI\ERP\Order;
 
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Invoice\Exception;
 use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Payments\Types\Payment;
@@ -23,10 +24,10 @@ interface OrderInterface
     /**
      * It returns the invoice, if an invoice exist for the order
      *
-     * @return Invoice|InvoiceTemporary
-     * @throws \QUI\ERP\Accounting\Invoice\Exception
+     * @return Invoice|InvoiceTemporary|null
+     * @throws Exception
      */
-    public function getInvoice(): Invoice|InvoiceTemporary;
+    public function getInvoice(): Invoice|InvoiceTemporary|null;
 
     /**
      * Returns the invoice type, if the order has an invoice
