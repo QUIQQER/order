@@ -20,10 +20,10 @@ use function array_keys;
 use function count;
 use function defined;
 use function explode;
+use function is_numeric;
 use function ltrim;
 use function mb_strpos;
 use function parse_url;
-use function strtolower;
 use function strtotime;
 use function trim;
 
@@ -330,17 +330,6 @@ class EventHandling
             return;
         }
 
-        // check invoice id field
-        $orderTable = Handler::getInstance()->table();
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
         // create order status
         $Handler = ProcessingStatus\Handler::getInstance();
         $Factory = ProcessingStatus\Factory::getInstance();
@@ -516,6 +505,63 @@ class EventHandling
                 ]),
                 strtotime($Order->getAttribute('c_date'))
             );
+        }
+    }
+
+
+    /**
+     * @throws QUI\Database\Exception
+     */
+    public static function onQuiqqerMigrationV2(QUI\System\Console\Tools\MigrationV2 $Console): void
+    {
+        $Console->writeLn('- Migrate orders');
+
+        // check invoice id field
+        $orderTable = Handler::getInstance()->table();
+        $orderProcessTable = Handler::getInstance()->tableOrderProcess();
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+
+        QUI\Utils\MigrationV1ToV2::migrateUsers($orderTable, [
+            'customerId',
+            'c_user'
+        ]);
+
+        // migrate invoice ids
+        $result = QUI::getDataBase()->fetch([
+            'from' => $orderTable
+        ]);
+
+        foreach ($result as $order) {
+            if (!is_numeric($order['invoice_id'])) {
+                continue;
+            }
+
+            try {
+                $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($order['invoice_id']);
+
+                QUI::getDataBase()->update(
+                    $orderTable,
+                    ['invoice_id' => $Invoice->getUUID()],
+                    ['id' => $order['id']]
+                );
+            } catch (QUI\Exception) {
+            }
         }
     }
 }

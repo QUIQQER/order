@@ -45,4 +45,5 @@
     />
 
     <event on="onQuiqqer::template::header::end" fire="\QUI\ERP\Order\EventHandling::onTemplateEnd"/>
+    <event on="onQuiqqerMigrationV2" fire="\QUI\ERP\Order\EventHandling::onQuiqqerMigrationV2"/>
 </events>
