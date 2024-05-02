@@ -543,6 +543,7 @@ class EventHandling
         ]);
 
         // migrate invoice ids
+        // @todo kontrollieren
         $result = QUI::getDataBase()->fetch([
             'from' => $orderTable
         ]);

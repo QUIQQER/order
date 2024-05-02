@@ -7,7 +7,7 @@
 </div>
 {/if}
 
-{if $DeliveryAddress && $DeliveryAddress->getId() === $InvoiceAddress->getId()}
+{if $DeliveryAddress && $DeliveryAddress->getUUID() === $InvoiceAddress->getUUID()}
 <div class="quiqqer-order-confirmation-mail-delivery-address">
     <h4>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.title"}</h4>
     <p>{locale group="quiqqer/order" var="mail.order.confirmation.delivery.same.as.invoice"}</p>

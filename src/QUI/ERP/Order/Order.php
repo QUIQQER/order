@@ -267,7 +267,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency' => $this->getCurrency()->getCode(),
             ],
-            ['id' => $TemporaryInvoice->getCleanId()]
+            ['uuid' => $TemporaryInvoice->getUUID()]
         );
 
         // create the real invoice
@@ -977,7 +977,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'quiqqer/order',
                 'history.order.copy.created',
                 [
-                    'userId' => QUI::getUserBySession()->getId(),
+                    'userId' => QUI::getUserBySession()->getUUID(),
                     'username' => QUI::getUserBySession()->getUsername(),
                     'orderHash' => $NewOrder->getUUID()
                 ]

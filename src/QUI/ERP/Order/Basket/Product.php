@@ -98,7 +98,7 @@ class Product extends UniqueProduct
         }
 
         $attributes['fields'] = array_values($fieldList);
-        $attributes['uid'] = QUI::getUserBySession()->getId();
+        $attributes['uid'] = QUI::getUserBySession()->getUUID();
 
         parent::__construct($pid, $attributes);
     }

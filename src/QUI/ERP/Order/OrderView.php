@@ -372,7 +372,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     {
         try {
             $previewHtml = ERPOutput::getDocumentHtml(
-                $this->Order->getCleanId(),
+                $this->Order->getUUID(),
                 $this->getOutputType(),
                 null,
                 null,
@@ -419,7 +419,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function toHTML(): string
     {
         try {
-            return QUI\ERP\Output\Output::getDocumentHtml($this->Order->getCleanId(), $this->getOutputType());
+            return QUI\ERP\Output\Output::getDocumentHtml($this->Order->getUUID(), $this->getOutputType());
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
@@ -518,7 +518,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     public function toPDF(): QUI\HtmlToPdf\Document
     {
         return QUI\ERP\Output\Output::getDocumentPdf(
-            $this->Order->getCleanId(),
+            $this->Order->getUUID(),
             $this->getOutputType()
         );
     }
