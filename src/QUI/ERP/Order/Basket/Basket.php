@@ -263,7 +263,7 @@ class Basket
                 ],
                 [
                     'id' => $this->getId(),
-                    'uid' => $this->User->getId()
+                    'uid' => $this->User->getUUID()
                 ]
             );
         } catch (\Exception $Exception) {
