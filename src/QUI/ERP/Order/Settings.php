@@ -17,19 +17,19 @@ use QUI;
 class Settings extends QUI\Utils\Singleton
 {
     /**
-     * @var null
+     * @var null|bool
      */
-    protected $isInvoiceInstalled = null;
+    protected ?bool $isInvoiceInstalled = null;
 
     /**
      * @var bool
      */
-    protected $forceCreateInvoice = false;
+    protected bool $forceCreateInvoice = false;
 
     /**
      * @var array
      */
-    protected $settings = [];
+    protected array $settings = [];
 
     /**
      * Settings constructor.
@@ -55,7 +55,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return mixed
      */
-    public function get($section, $key)
+    public function get(string $section, string $key): mixed
     {
         if (isset($this->settings[$section][$key])) {
             return $this->settings[$section][$key];
@@ -71,7 +71,7 @@ class Settings extends QUI\Utils\Singleton
      * @param string $key
      * @param string|bool|integer|float $value
      */
-    public function set($section, $key, $value)
+    public function set(string $section, string $key, mixed $value): void
     {
         $this->settings[$section][$key] = $value;
     }
@@ -81,7 +81,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return bool|null
      */
-    public function isInvoiceInstalled()
+    public function isInvoiceInstalled(): ?bool
     {
         if ($this->isInvoiceInstalled === null) {
             try {
@@ -103,7 +103,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return bool
      */
-    public function createInvoiceOnOrder()
+    public function createInvoiceOnOrder(): bool
     {
         if ($this->isInvoiceInstalled() === false) {
             return false;
@@ -111,7 +111,7 @@ class Settings extends QUI\Utils\Singleton
 
         try {
             $Package = QUI::getPackage('quiqqer/order');
-            $Config  = $Package->getConfig();
+            $Config = $Package->getConfig();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
@@ -126,7 +126,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return bool
      */
-    public function createInvoiceOnPaid()
+    public function createInvoiceOnPaid(): bool
     {
         if ($this->isInvoiceInstalled() === false) {
             return false;
@@ -135,7 +135,7 @@ class Settings extends QUI\Utils\Singleton
 
         try {
             $Package = QUI::getPackage('quiqqer/order');
-            $Config  = $Package->getConfig();
+            $Config = $Package->getConfig();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
@@ -150,7 +150,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return bool
      */
-    public function createInvoiceByPayment()
+    public function createInvoiceByPayment(): bool
     {
         if ($this->isInvoiceInstalled() === false) {
             return false;
@@ -159,7 +159,7 @@ class Settings extends QUI\Utils\Singleton
 
         try {
             $Package = QUI::getPackage('quiqqer/order');
-            $Config  = $Package->getConfig();
+            $Config = $Package->getConfig();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
@@ -174,7 +174,7 @@ class Settings extends QUI\Utils\Singleton
      *
      * @return bool
      */
-    public function forceCreateInvoice()
+    public function forceCreateInvoice(): bool
     {
         if ($this->isInvoiceInstalled() === false) {
             return false;
@@ -186,7 +186,7 @@ class Settings extends QUI\Utils\Singleton
     /**
      * Set force create invoice on
      */
-    public function forceCreateInvoiceOn()
+    public function forceCreateInvoiceOn(): void
     {
         $this->forceCreateInvoice = true;
     }
@@ -194,7 +194,7 @@ class Settings extends QUI\Utils\Singleton
     /**
      * Set force create invoice off
      */
-    public function forceCreateInvoiceOff()
+    public function forceCreateInvoiceOff(): void
     {
         $this->forceCreateInvoice = false;
     }

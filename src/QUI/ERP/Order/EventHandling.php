@@ -7,21 +7,23 @@
 namespace QUI\ERP\Order;
 
 use DusanKasan\Knapsack\Collection;
+use Exception;
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
-use Quiqqer\Engine\Collector;
+use QUI\Smarty\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 use function array_flip;
 use function array_keys;
 use function count;
 use function defined;
 use function explode;
+use function is_numeric;
 use function ltrim;
 use function mb_strpos;
 use function parse_url;
-use function strpos;
 use function strtotime;
 use function trim;
 
@@ -43,7 +45,7 @@ class EventHandling
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
         Collection &$Collection,
         $ProductControl = null
-    ) {
+    ): void {
         $Button = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
             'Product' => $Product
         ]);
@@ -66,7 +68,7 @@ class EventHandling
      * @throws Exception
      * @throws QUI\Exception
      */
-    public static function onRequest(QUI\Rewrite $Rewrite, $requestedUrl)
+    public static function onRequest(QUI\Rewrite $Rewrite, string $requestedUrl): void
     {
         if (defined('QUIQQER_AJAX')) {
             return;
@@ -87,11 +89,11 @@ class EventHandling
             return;
         }
 
-        if (strpos($requestedUrl, $path) === false) {
+        if (!str_contains($requestedUrl, $path)) {
             return;
         }
 
-        if (strpos($requestedUrl, $path) !== 0) {
+        if (!str_starts_with($requestedUrl, $path)) {
             return;
         }
 
@@ -106,9 +108,9 @@ class EventHandling
                 $OrderProcess = new OrderProcess([
                     'orderHash' => $orderHash
                 ]);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
-                $Redirect->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
+                $Redirect->setStatusCode(Response::HTTP_NOT_FOUND);
 
                 // @todo weiterleiten zu richtiger fehler seite
                 echo $Redirect->getContent();
@@ -120,7 +122,7 @@ class EventHandling
                 try {
                     $Order = Handler::getInstance()->getOrderByHash($orderHash);
 
-                    // if order is finished & a order in process & the user is nobody
+                    // if order is finished & an order in process & the user is nobody
                     // we need to create the order
                     if ($Order instanceof OrderInProcess && $Order->isSuccessful()) {
                         $OrderInProcess = $Order;
@@ -129,11 +131,11 @@ class EventHandling
                         $OrderInProcess->delete(QUI::getUsers()->getSystemUser());
                     }
 
-                    $CheckoutSite->setAttribute('order::hash', $Order->getHash());
+                    $CheckoutSite->setAttribute('order::hash', $Order->getUUID());
                     $Rewrite->setSite($CheckoutSite);
 
                     return;
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\Exception) {
                 }
             }
 
@@ -146,7 +148,7 @@ class EventHandling
 
             if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
-                $Redirect->setStatusCode(RedirectResponse::HTTP_BAD_REQUEST);
+                $Redirect->setStatusCode(Response::HTTP_BAD_REQUEST);
 
                 echo $Redirect->getContent();
                 $Redirect->send();
@@ -158,9 +160,9 @@ class EventHandling
 
             try {
                 $Order = Handler::getInstance()->getOrderByHash($orderHash);
-                $CheckoutSite->setAttribute('order::hash', $Order->getHash());
-            } catch (QUI\Exception $Exception) {
-                QUI::getGlobalResponse()->setStatusCode(RedirectResponse::HTTP_NOT_FOUND);
+                $CheckoutSite->setAttribute('order::hash', $Order->getUUID());
+            } catch (QUI\Exception) {
+                QUI::getGlobalResponse()->setStatusCode(Response::HTTP_NOT_FOUND);
                 // @todo weiterleiten zu fehler seite
             }
 
@@ -182,7 +184,7 @@ class EventHandling
      *
      * @param Transaction $Transaction
      */
-    public static function onTransactionCreate(Transaction $Transaction)
+    public static function onTransactionCreate(Transaction $Transaction): void
     {
         $Order = null;
 
@@ -190,7 +192,7 @@ class EventHandling
             $Order = Handler::getInstance()->getOrderByGlobalProcessId(
                 $Transaction->getGlobalProcessId()
             );
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         if ($Order === null && $Transaction->getHash() !== '') {
@@ -198,7 +200,7 @@ class EventHandling
                 $Order = Handler::getInstance()->getOrderByHash(
                     $Transaction->getHash()
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
 
             if ($Order === null) {
@@ -206,7 +208,7 @@ class EventHandling
                     $Order = Handler::getInstance()->getOrderInProcessByHash(
                         $Transaction->getHash()
                     );
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\Exception) {
                 }
             }
         }
@@ -225,7 +227,7 @@ class EventHandling
     /**
      * @param Transaction $Transaction
      */
-    public static function onTransactionStatusChange(Transaction $Transaction)
+    public static function onTransactionStatusChange(Transaction $Transaction): void
     {
         $Order = null;
 
@@ -233,7 +235,7 @@ class EventHandling
             $Order = Handler::getInstance()->getOrderByGlobalProcessId(
                 $Transaction->getGlobalProcessId()
             );
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         if ($Order === null && $Transaction->getHash() !== '') {
@@ -241,7 +243,7 @@ class EventHandling
                 $Order = Handler::getInstance()->getOrderByHash(
                     $Transaction->getHash()
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
 
             if ($Order === null) {
@@ -249,7 +251,7 @@ class EventHandling
                     $Order = Handler::getInstance()->getOrderInProcessByHash(
                         $Transaction->getHash()
                     );
-                } catch (QUI\Exception $Exception) {
+                } catch (QUI\Exception) {
                 }
             }
         }
@@ -261,7 +263,7 @@ class EventHandling
         try {
             $Order->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
             $Order->calculatePayments();
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
     }
@@ -273,9 +275,10 @@ class EventHandling
     public static function onQuiqqerInvoiceTemporaryInvoicePostEnd(
         QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary,
         QUI\ERP\Accounting\Invoice\Invoice $Invoice
-    ) {
+    ): void {
         try {
-            $Order = Handler::getInstance()->getOrderByHash($Invoice->getHash());
+            $Process = new QUI\ERP\Process($Invoice->getGlobalProcessId());
+            $Order = $Process->getOrder();
 
             if ($Order->isPosted()) {
                 return;
@@ -283,8 +286,8 @@ class EventHandling
 
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
-                ['invoice_id' => $Invoice->getCleanId()],
-                ['id' => $Order->getId()]
+                ['invoice_id' => $Invoice->getUUID()],
+                ['hash' => $Order->getUUID()]
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -295,16 +298,15 @@ class EventHandling
      * event: order creation
      *
      * @param Order $Order
-     * @throws QUI\Exception
      */
-    public static function onQuiqqerOrderCreated(Order $Order)
+    public static function onQuiqqerOrderCreated(Order $Order): void
     {
         CustomerData::parseSessionOrderCommentsToOrder($Order);
 
         if (Settings::getInstance()->get('order', 'sendAdminOrderConfirmation')) {
             try {
                 Mail::sendAdminOrderConfirmationMail($Order);
-            } catch (\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -312,7 +314,7 @@ class EventHandling
         if (Settings::getInstance()->get('order', 'sendOrderConfirmation')) {
             try {
                 Mail::sendOrderConfirmationMail($Order);
-            } catch (\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -322,7 +324,7 @@ class EventHandling
      * @param QUI\Package\Package $Package
      * @throws QUI\Exception
      */
-    public static function onPackageSetup(QUI\Package\Package $Package)
+    public static function onPackageSetup(QUI\Package\Package $Package): void
     {
         if ($Package->getName() !== 'quiqqer/order') {
             return;
@@ -374,11 +376,12 @@ class EventHandling
     /**
      * @param Collector $Collection
      * @param QUI\ERP\Products\Product\Types\AbstractType $Product
+     * @throws Exception
      */
     public static function onDetailEquipmentButtons(
         Collector $Collection,
         QUI\ERP\Products\Product\Types\AbstractType $Product
-    ) {
+    ): void {
         // add to basket -> only for complete products
         // variant products cant be added directly
         if (
@@ -404,14 +407,14 @@ class EventHandling
             $Collection->append(
                 '<a href="' . $url . '"><span class="fa fa-chevron-right"></span></a>'
             );
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
     }
 
     /**
      * @param QUI\Template $Template
      */
-    public static function onTemplateGetHeader(QUI\Template $Template)
+    public static function onTemplateGetHeader(QUI\Template $Template): void
     {
         $merge = 0;
 
@@ -419,7 +422,7 @@ class EventHandling
             $Package = QUI::getPackage('quiqqer/order');
             $Config = $Package->getConfig();
             $merge = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         $header = '<script type="text/javascript">';
@@ -444,7 +447,7 @@ class EventHandling
     public static function onTemplateEnd(
         Collector $Collection,
         QUI\Template $Template
-    ) {
+    ): void {
         $Collection->append(
             '<script src="' . URL_OPT_DIR . 'quiqqer/order/bin/frontend/dataLayerTracking.js"></script>'
         );
@@ -458,8 +461,10 @@ class EventHandling
      * @param AbstractOrder $Order
      * @param ProcessingStatus\Status $Status
      */
-    public static function onQuiqqerOrderProcessStatusChange(AbstractOrder $Order, ProcessingStatus\Status $Status)
-    {
+    public static function onQuiqqerOrderProcessStatusChange(
+        AbstractOrder $Order,
+        ProcessingStatus\Status $Status
+    ): void {
         // Do not send auto-notification if the Order was manually saved (backend)
         if ($Order->getAttribute('userSave')) {
             return;
@@ -474,7 +479,7 @@ class EventHandling
                 $Order,
                 $Status->getId()
             );
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
     }
@@ -486,7 +491,7 @@ class EventHandling
     public static function onQuiqqerErpGetCommentsByUser(
         QUI\Users\User $User,
         QUI\ERP\Comments $Comments
-    ) {
+    ): void {
         $Handler = Handler::getInstance();
         $orders = $Handler->getOrdersByUser($User);
 
@@ -496,10 +501,68 @@ class EventHandling
             // created invoice
             $Comments->addComment(
                 QUI::getLocale()->get('quiqqer/order', 'erp.comment.order.created', [
-                    'orderId' => $Order->getId()
+                    'orderId' => $Order->getUUID()
                 ]),
                 strtotime($Order->getAttribute('c_date'))
             );
+        }
+    }
+
+
+    /**
+     * @throws QUI\Database\Exception
+     */
+    public static function onQuiqqerMigrationV2(QUI\System\Console\Tools\MigrationV2 $Console): void
+    {
+        $Console->writeLn('- Migrate orders');
+
+        // check invoice id field
+        $orderTable = Handler::getInstance()->table();
+        $orderProcessTable = Handler::getInstance()->tableOrderProcess();
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+        QUI::getDatabase()->execSQL(
+            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
+        );
+
+
+        QUI\Utils\MigrationV1ToV2::migrateUsers($orderTable, [
+            'customerId',
+            'c_user'
+        ]);
+
+        // migrate invoice ids
+        // @todo kontrollieren
+        $result = QUI::getDataBase()->fetch([
+            'from' => $orderTable
+        ]);
+
+        foreach ($result as $order) {
+            if (!is_numeric($order['invoice_id'])) {
+                continue;
+            }
+
+            try {
+                $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($order['invoice_id']);
+
+                QUI::getDataBase()->update(
+                    $orderTable,
+                    ['invoice_id' => $Invoice->getUUID()],
+                    ['id' => $order['id']]
+                );
+            } catch (QUI\Exception) {
+            }
         }
     }
 }

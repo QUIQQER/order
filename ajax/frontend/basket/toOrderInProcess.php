@@ -45,7 +45,7 @@ QUI::$Ajax->registerFunction(
         }
 
 
-        return $Order->getHash();
+        return $Order->getUUID();
     },
     ['basketId', 'orderHash']
 );

@@ -10,7 +10,7 @@ use QUI\ERP\Accounting\Payments\Transactions\Factory as TransactionFactory;
 /**
  * Add a payment to an order
  *
- * @param string|integer invoiceId - ID of the invoice
+ * @param string|integer $orderId - ID of the invoice
  * @param string|int $amount - amount of the payment
  * @param string $paymentMethod - Payment method
  * @param string|int $date - Date of the payment
@@ -23,7 +23,7 @@ QUI::$Ajax->registerFunction(
 
         try {
             $Order = $Orders->get($orderId);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $Order = $Orders->getOrderByHash($orderId);
         }
 
@@ -31,12 +31,12 @@ QUI::$Ajax->registerFunction(
         TransactionFactory::createPaymentTransaction(
             $amount,
             QUI\ERP\Defaults::getCurrency(),
-            $Order->getHash(),
+            $Order->getUUID(),
             $Payment->getPaymentType()->getName(),
             [],
             QUI::getUserBySession(),
             $date,
-            $Order->getHash()
+            $Order->getGlobalProcessId()
         );
     },
     ['orderId', 'amount', 'paymentMethod', 'date'],

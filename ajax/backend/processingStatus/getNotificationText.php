@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
             $Order = Orders::getInstance()->get($orderId);
 
             return Handler::getInstance()->getProcessingStatus($id)->getStatusChangeNotificationText($Order);
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
             return '';

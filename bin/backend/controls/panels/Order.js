@@ -72,6 +72,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         options: {
             orderId: false,
+            uuid: false,
             customerId: false,
             customer: {},
             addressInvoice: {},
@@ -88,6 +89,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         initialize: function(options) {
             this.parent(options);
+
+            if (!this.getAttribute('orderId') && this.getAttribute('uuid')) {
+                this.setAttribute('orderId', this.getAttribute('uuid'));
+            }
 
             this.setAttributes({
                 icon: 'fa fa-shopping-cart',
@@ -176,23 +181,40 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     let customerString = '';
 
                     if (orderData.customer.firstname) {
+                        customerString = customerString.trim();
                         customerString = customerString + ' ' + orderData.customer.firstname;
                     }
 
                     if (orderData.customer.lastname) {
+                        customerString = customerString.trim();
                         customerString = customerString + ' ' + orderData.customer.lastname;
                     }
 
+                    if (customerString === '') {
+                        if (orderData.customer.address.firstname) {
+                            customerString = customerString.trim();
+                            customerString = customerString + ' ' + orderData.customer.address.firstname;
+                        }
+
+                        if (orderData.customer.address.lastname) {
+                            customerString = customerString.trim();
+                            customerString = customerString + ' ' + orderData.customer.address.lastname;
+                        }
+                    }
+
                     if (customerString === '' && orderData.customer.email) {
+                        customerString = customerString.trim();
                         customerString = customerString + ' ' + orderData.customer.email;
                     }
 
-                    this.setAttribute(
-                        'title',
-                        QUILocale.get(lg, 'order.panel.title', {
-                            orderId: this.getAttribute('orderId')
-                        }) + ' :' + customerString
-                    );
+                    customerString = customerString.trim();
+
+                    let title = QUILocale.get(lg, 'order.panel.title', {
+                        orderId: this.getAttribute('prefixedId')
+                    });
+
+                    title = title + ' : ' + customerString;
+                    this.setAttribute('title', title);
 
                     if (orderData.addressDelivery &&
                         (typeof orderData.addressDelivery.length === 'undefined' || orderData.addressDelivery.length) &&
@@ -282,7 +304,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
 
                     resolve();
-                    this.Loader.hide();
+                    this.refresh();
                 }).catch((err) => {
                     console.error(err);
 
@@ -823,10 +845,19 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
                 // events
                 self.$Customer.addEvent('change', function(Select) {
-                    const currentCustomerId = parseInt(self.getAttribute('customerId'));
-                    const userId = parseInt(Select.getValue());
+                    const currentCustomerId = self.getAttribute('customerId');
+                    const userId = Select.getValue();
 
                     if (currentCustomerId === userId) {
+                        Users.get(userId).loadIfNotLoaded().then(function(User) {
+                            // if email is updated
+                            // maybe we should think about more data
+                            const panelCustomer = self.getAttribute('customer');
+                            panelCustomer.email = User.getAttribute('email');
+
+                            self.setAttribute('customer', panelCustomer);
+                        });
+
                         return;
                     }
 
@@ -914,7 +945,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 }
 
                 // Set addresses
-                const currentCustomerId = parseInt(self.getAttribute('customerId'));
+                const currentCustomerId = self.getAttribute('customerId');
 
                 if (self.getAttribute('addressInvoice')) {
                     const AddressInvoice = self.getAttribute('addressInvoice');
@@ -1043,7 +1074,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             return this.$closeCategory().then(function(Container) {
                 Container.setStyle('height', '100%');
-                
+
                 return new Promise(function(resolve) {
                     require([
                         'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/TransactionList'
@@ -1056,16 +1087,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             disabled: self.$locked,
                             events: {
                                 onLoad: resolve,
-                                onAddTransaction: function(data, Control) {
-                                    Orders.addPaymentToOrder(
-                                        self.getAttribute('hash'),
-                                        data.amount,
-                                        data.payment_method,
-                                        data.date
-                                    ).then(function() {
-                                        Control.refresh();
-                                    });
-                                },
                                 onLinkTransaction: (txId, Control) => {
                                     Orders.linkTransaction(self.getAttribute('hash'), txId).then(() => {
                                         Control.refresh();
@@ -1448,7 +1469,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          * event: on order deletion
          */
         $onOrderDelete: function(Handler, orderId) {
-            if (parseInt(this.getAttribute('orderId')) === parseInt(orderId)) {
+            if (this.getAttribute('orderId') === orderId) {
                 this.destroy();
             }
         },
@@ -1645,10 +1666,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     customer['quiqqer.erp.taxId'] = TaxNo.value;
                 }
 
-                const customerId = parseInt(this.$Customer.getValue()),
+                const customerId = this.$Customer.getValue(),
                     User = Users.get(customerId);
 
-                customer.id = customerId;
+                customer.uuid = customerId;
 
                 if (User.isLoaded()) {
                     customer.username = User.getUsername();
@@ -2093,7 +2114,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         onOpen: function(Win) {
                             // get current status title
                             const statusTitle = self.$Elm.getElement(
-                                'select[name="status"] option[value="' + statusId + '"]'
+                                'select[name="shippingStatus"] option[value="' + statusId + '"]'
                             ).innerHTML;
 
                             Win.setAttribute(

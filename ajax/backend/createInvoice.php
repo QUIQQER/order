@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
 
         QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOff();
 
-        return $Invoice->getId();
+        return $Invoice->getUUID();
     },
     ['orderId'],
     'Permission::checkAdminUser'

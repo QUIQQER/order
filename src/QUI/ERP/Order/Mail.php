@@ -8,6 +8,7 @@ namespace QUI\ERP\Order;
 
 use IntlDateFormatter;
 use QUI;
+use QUI\Exception;
 
 use function dirname;
 use function is_array;
@@ -30,18 +31,18 @@ class Mail
      * confirmation mail for the customer
      *
      * @param Order $Order
-     * @throws QUI\Exception|\PHPMailer\PHPMailer\Exception
+     * @throws Exception|\PHPMailer\PHPMailer\Exception
      */
-    public static function sendOrderConfirmationMail(Order $Order)
+    public static function sendOrderConfirmationMail(Order $Order): void
     {
         $Customer = $Order->getCustomer();
-        $email    = $Customer->getAttribute('email');
+        $email = $Customer->getAttribute('email');
 
         if (empty($email)) {
             QUI\System\Log::writeRecursive(
                 QUI::getLocale()->get('quiqqer/order', 'message.order.missing.customer.mail', [
-                    'orderId'    => $Order->getId(),
-                    'customerId' => $Customer->getId()
+                    'orderId' => $Order->getUUID(),
+                    'customerId' => $Customer->getUUID()
                 ])
             );
 
@@ -50,11 +51,11 @@ class Mail
 
         // create order data
         $OrderControl = new QUI\ERP\Order\Controls\Order\Order([
-            'orderHash' => $Order->getHash(),
-            'template'  => 'OrderLikeBasket'
+            'orderHash' => $Order->getUUID(),
+            'template' => 'OrderLikeBasket'
         ]);
 
-        $Address  = null;
+        $Address = null;
         $Customer = $Order->getCustomer();
 
         $user = $Customer->getName();
@@ -83,24 +84,22 @@ class Mail
         self::addOrderMailAttachments($Mailer, $Order);
 
         $Engine = QUI::getTemplateManager()->getEngine();
-        $Order  = $OrderControl->getOrder();
+        $Order = $OrderControl->getOrder();
 
         $Articles = $Order->getArticles()->toUniqueList();
         $Articles->hideHeader();
 
-        $Shipping        = null;
+        $Shipping = null;
         $DeliveryAddress = null;
 
         if ($Order->getShipping()) {
-            $Shipping        = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
+            $Shipping = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
             $DeliveryAddress = $Shipping->getAddress();
 
-            if ($DeliveryAddress) {
-                $DeliveryAddress->setAttribute(
-                    'template',
-                    dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
-                );
-            }
+            $DeliveryAddress?->setAttribute(
+                'template',
+                dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
+            );
         }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
@@ -121,15 +120,15 @@ class Mail
 
 
         $Engine->assign([
-            'Shipping'        => $Shipping,
+            'Shipping' => $Shipping,
             'DeliveryAddress' => $DeliveryAddress,
-            'InvoiceAddress'  => $InvoiceAddress,
-            'Payment'         => $Order->getPayment(),
-            'comment'         => $comment,
+            'InvoiceAddress' => $InvoiceAddress,
+            'Payment' => $Order->getPayment(),
+            'comment' => $comment,
 
-            'Order'    => $Order,
+            'Order' => $Order,
             'Articles' => $Articles,
-            'Address'  => $Address,
+            'Address' => $Address,
 
             'message' => QUI::getLocale()->get(
                 'quiqqer/order',
@@ -149,12 +148,13 @@ class Mail
      * confirmation mail for the admin
      *
      * @param Order $Order
+     * @throws Exception|\PHPMailer\PHPMailer\Exception
      */
-    public static function sendAdminOrderConfirmationMail(Order $Order)
+    public static function sendAdminOrderConfirmationMail(Order $Order): void
     {
         $Package = QUI::getPackage('quiqqer/order');
-        $Config  = $Package->getConfig();
-        $email   = $Config->getValue('order', 'orderAdminMails');
+        $Config = $Package->getConfig();
+        $email = $Config->getValue('order', 'orderAdminMails');
 
         if (empty($email)) {
             $email = QUI::conf('mail', 'admin_mail');
@@ -170,11 +170,11 @@ class Mail
 
         // create order data
         $OrderControl = new QUI\ERP\Order\Controls\Order\Order([
-            'orderHash' => $Order->getHash(),
-            'template'  => 'OrderLikeBasket'
+            'orderHash' => $Order->getUUID(),
+            'template' => 'OrderLikeBasket'
         ]);
 
-        $Address  = null;
+        $Address = null;
         $Customer = $Order->getCustomer();
         $comments = $Order->getComments()->toArray();
 
@@ -183,7 +183,7 @@ class Mail
 
         if (empty($user)) {
             $Address = $Customer->getAddress();
-            $user    = $Address->getName();
+            $user = $Address->getName();
         }
 
         // mail
@@ -203,14 +203,14 @@ class Mail
 
         try {
             $Engine = QUI::getTemplateManager()->getEngine();
-            $Order  = $OrderControl->getOrder();
+            $Order = $OrderControl->getOrder();
 
             $Articles = $Order->getArticles()->toUniqueList();
             $Articles->hideHeader();
-        } catch (QUI\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::addAlert(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.confirmation.admin', [
-                    'orderId' => $Order->getPrefixedId(),
+                    'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
             );
@@ -219,11 +219,11 @@ class Mail
         }
 
 
-        $Shipping        = null;
+        $Shipping = null;
         $DeliveryAddress = null;
 
         if ($Order->getShipping()) {
-            $Shipping        = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
+            $Shipping = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
             $DeliveryAddress = $Shipping->getAddress();
             $DeliveryAddress->setAttribute(
                 'template',
@@ -238,19 +238,19 @@ class Mail
         );
 
         $Engine->assign([
-            'Shipping'        => $Shipping,
+            'Shipping' => $Shipping,
             'DeliveryAddress' => $DeliveryAddress,
-            'InvoiceAddress'  => $InvoiceAddress,
-            'Payment'         => $Order->getPayment(),
-            'comments'        => $comments,
+            'InvoiceAddress' => $InvoiceAddress,
+            'Payment' => $Order->getPayment(),
+            'comments' => $comments,
 
-            'Order'    => $Order,
+            'Order' => $Order,
             'Articles' => $Articles,
-            'Address'  => $Address,
+            'Address' => $Address,
 
             'message' => QUI::getLocale()->get('quiqqer/order', 'order.confirmation.admin.body', [
-                'orderId'  => $Order->getPrefixedId(),
-                'userId'   => $Customer->getId(),
+                'orderId' => $Order->getPrefixedNumber(),
+                'userId' => $Customer->getUUID(),
                 'username' => $user
             ])
         ]);
@@ -261,10 +261,10 @@ class Mail
 
         try {
             $Mailer->send();
-        } catch (QUI\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::addAlert(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.confirmation.admin', [
-                    'orderId' => $Order->getPrefixedId(),
+                    'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
             );
@@ -276,17 +276,17 @@ class Mail
     /**
      * Sends a shipping confirmation to the customer
      *
-     * @param \QUI\ERP\Order\AbstractOrder $Order
+     * @param AbstractOrder $Order
      * @return void
      *
-     * @throws \QUI\Exception
+     * @throws Exception
      */
-    public static function sendOrderShippingConfirmation(AbstractOrder $Order)
+    public static function sendOrderShippingConfirmation(AbstractOrder $Order): void
     {
         $Customer = $Order->getCustomer();
-        $Address  = $Customer->getAddress();
-        $email    = $Customer->getAttribute('email');
-        $Country  = $Customer->getCountry();
+        $Address = $Customer->getAddress();
+        $email = $Customer->getAttribute('email');
+        $Country = $Customer->getCountry();
 
         if (empty($email)) {
             $mailList = $Address->getMailList();
@@ -298,23 +298,23 @@ class Mail
 
         if (empty($email)) {
             try {
-                $User = QUI::getUsers()->get($Customer->getId());
+                $User = QUI::getUsers()->get($Customer->getUUID());
 
                 if ($User->getAttribute('email')) {
                     $email = $User->getAttribute('email');
                 }
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
         if (empty($email)) {
-            throw new QUI\Exception(
+            throw new Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.shipping.order.no.customer.mail')
             );
         }
 
         $shippingConfirmation = $Order->getDataEntry('shippingConfirmation');
-        $shippingTracking     = $Order->getDataEntry('shippingTracking');
+        $shippingTracking = $Order->getDataEntry('shippingTracking');
 
         if (is_string($shippingTracking)) {
             $shippingTracking = json_decode($shippingTracking, true);
@@ -325,22 +325,22 @@ class Mail
         }
 
         $shippingConfirmation[] = [
-            'time'  => time(),
+            'time' => time(),
             'email' => $email
         ];
 
         $localeVar = self::getOrderLocaleVar($Order, $Customer);
 
-        $localeVar['trackingInfo']   = '';
+        $localeVar['trackingInfo'] = '';
         $localeVar['trackingNumber'] = '';
-        $localeVar['trackingLink']   = '';
+        $localeVar['trackingLink'] = '';
 
         if (!empty($shippingTracking) && isset($shippingTracking['type']) && isset($shippingTracking['number'])) {
             $localeVar['trackingInfo'] = QUI::getLocale()->get(
                 'quiqqer/order',
                 'shipping.order.mail.body.shippingInformation',
                 [
-                    'trackingLink'   => QUI\ERP\Shipping\Tracking\Tracking::getUrl(
+                    'trackingLink' => QUI\ERP\Shipping\Tracking\Tracking::getUrl(
                         $shippingTracking['number'],
                         $shippingTracking['type'],
                         $Country
@@ -350,7 +350,7 @@ class Mail
             );
 
             $localeVar['trackingNumber'] = $shippingTracking['number'];
-            $localeVar['trackingLink']   = QUI\ERP\Shipping\Tracking\Tracking::getUrl(
+            $localeVar['trackingLink'] = QUI\ERP\Shipping\Tracking\Tracking::getUrl(
                 $shippingTracking['number'],
                 $shippingTracking['type'],
                 $Country
@@ -383,7 +383,7 @@ class Mail
         } catch (\Exception $Exception) {
             QUI\System\Log::addAlert(
                 QUI::getLocale()->get('quiqqer/shipping', 'exception.shipping.order.mail', [
-                    'orderId' => $Order->getPrefixedId(),
+                    'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
             );
@@ -401,25 +401,25 @@ class Mail
      *
      * @param QUI\Mail\Mailer $Mail
      * @param OrderInterface $Order
+     * @throws Exception
      */
     protected static function addOrderMailAttachments(
         QUI\Mail\Mailer $Mail,
         OrderInterface $Order
-    ) {
+    ): void {
         // check if html2pdf is installed
         if (QUI::getPackageManager()->isInstalled('quiqqer/htmltopdf') === false) {
             return;
         }
 
-        $Package  = QUI::getPackage('quiqqer/order');
-        $Config   = $Package->getConfig();
-        $language = QUI::getLocale()->getCurrent();
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config = $Package->getConfig();
 
-        $privacyPolicy      = (int)$Config->getValue('mails', 'privacyPolicy');
+        $privacyPolicy = (int)$Config->getValue('mails', 'privacyPolicy');
         $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
         $cancellationPolicy = (int)$Config->getValue('mails', 'cancellationPolicy');
-        $attachments        = $Config->getValue('mails', 'attachments');
-        $Customer           = $Order->getCustomer();
+        $attachments = $Config->getValue('mails', 'attachments');
+        $Customer = $Order->getCustomer();
 
         if ($privacyPolicy) {
             try {
@@ -429,7 +429,7 @@ class Mail
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -441,7 +441,7 @@ class Mail
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -453,13 +453,13 @@ class Mail
                     $file = self::generatePdfFromSite($Site);
                     $Mail->addAttachment($file);
                 }
-            } catch (QUI\Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
         if (!empty($attachments)) {
             $attachments = explode(',', $attachments);
-            $Media       = QUI::getProjectManager()->getStandard()->getMedia();
+            $Media = QUI::getProjectManager()->getStandard()->getMedia();
 
             foreach ($attachments as $attachment) {
                 try {
@@ -476,9 +476,9 @@ class Mail
      * @param QUI\Projects\Site $Site
      * @return string
      *
-     * @throws QUI\Exception
+     * @throws Exception
      */
-    protected static function generatePdfFromSite(QUI\Projects\Site $Site)
+    protected static function generatePdfFromSite(QUI\Projects\Site $Site): string
     {
         $Document = new QUI\HtmlToPdf\Document();
 
@@ -504,12 +504,12 @@ class Mail
      * Add the order bcc addresses
      *
      * @param QUI\Mail\Mailer $Mailer
-     * @throws QUI\Exception
+     * @throws Exception
      */
-    protected static function addBCCMailAddress(QUI\Mail\Mailer $Mailer)
+    protected static function addBCCMailAddress(QUI\Mail\Mailer $Mailer): void
     {
-        $Package    = QUI::getPackage('quiqqer/order');
-        $Config     = $Package->getConfig();
+        $Package = QUI::getPackage('quiqqer/order');
+        $Config = $Package->getConfig();
         $orderMails = $Config->getValue('order', 'orderAdminMails');
 
         if (empty($orderMails)) {
@@ -524,11 +524,12 @@ class Mail
     //region mail helper
 
     /**
-     * @param OrderInterface|Order|OrderInProcess $Order
-     * @param $Customer
+     * @param OrderInterface $Order
+     * @param QUI\Interfaces\Users\User $Customer
      * @return array
+     * @throws Exception
      */
-    protected static function getOrderLocaleVar(OrderInterface $Order, $Customer): array
+    protected static function getOrderLocaleVar(OrderInterface $Order, QUI\Interfaces\Users\User $Customer): array
     {
         $Address = $Customer->getAddress();
 
@@ -553,20 +554,20 @@ class Mail
 
 
         return [
-            'orderId'         => $Order->getId(),
-            'orderPrefixedId' => $Order->getPrefixedId(),
-            'hash'            => $Order->getAttribute('hash'),
-            'date'            => self::dateFormat($Order->getAttribute('date')),
-            'systemCompany'   => self::getCompanyName(),
-            'user'            => $user,
-            'name'            => $user,
-            'company'         => $Customer->getStandardAddress()->getAttribute('company'),
-            'companyOrName'   => self::getCompanyOrName($Customer),
-            'address'         => $Address->render(),
-            'email'           => $email,
-            'salutation'      => $Address->getAttribute('salutation'),
-            'firstname'       => $Address->getAttribute('firstname'),
-            'lastname'        => $Address->getAttribute('lastname')
+            'orderId' => $Order->getUUID(),
+            'orderPrefixedId' => $Order->getPrefixedNumber(),
+            'hash' => $Order->getAttribute('hash'),
+            'date' => self::dateFormat($Order->getAttribute('date')),
+            'systemCompany' => self::getCompanyName(),
+            'user' => $user,
+            'name' => $user,
+            'company' => $Customer->getStandardAddress()->getAttribute('company'),
+            'companyOrName' => self::getCompanyOrName($Customer),
+            'address' => $Address->render(),
+            'email' => $email,
+            'salutation' => $Address->getAttribute('salutation'),
+            'firstname' => $Address->getAttribute('firstname'),
+            'lastname' => $Address->getAttribute('lastname')
         ];
     }
 
@@ -574,7 +575,7 @@ class Mail
      * @param $date
      * @return false|string
      */
-    public static function dateFormat($date)
+    public static function dateFormat($date): bool|string
     {
         // date
         $localeCode = QUI::getLocale()->getLocalesByLang(
@@ -597,10 +598,10 @@ class Mail
     }
 
     /**
-     * @param QUI\ERP\User $Customer
+     * @param QUI\Interfaces\Users\User $Customer
      * @return string
      */
-    protected static function getCompanyOrName(QUI\ERP\User $Customer): string
+    protected static function getCompanyOrName(QUI\Interfaces\Users\User $Customer): string
     {
         $Address = $Customer->getStandardAddress();
 
@@ -619,7 +620,7 @@ class Mail
     protected static function getCompanyName(): string
     {
         try {
-            $Conf    = QUI::getPackage('quiqqer/erp')->getConfig();
+            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);

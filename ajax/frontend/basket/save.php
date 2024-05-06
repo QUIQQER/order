@@ -31,8 +31,8 @@ QUI::$Ajax->registerFunction(
                 Log::writeDebugException($Exception);
             }
 
-            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getHash(), $User);
-            $BasketOrder->import(\json_decode($products, true));
+            $BasketOrder = new QUI\ERP\Order\Basket\BasketOrder($Order->getUUID(), $User);
+            $BasketOrder->import(json_decode($products, true));
 
             $productsCalc = $BasketOrder->getProducts()->toArray();
             $products = $productsCalc['products'];
@@ -40,7 +40,7 @@ QUI::$Ajax->registerFunction(
             // set the order products to the basket
             $Basket->import($products);
         } else {
-            $Basket->import(\json_decode($products, true));
+            $Basket->import(json_decode($products, true));
         }
 
         return $Basket->toArray();

@@ -1,6 +1,8 @@
 .quiqqer-shoppingCart-buttons {
     display: flex;
+    gap: 1rem;
     margin: 20px 0;
+    flex-wrap: wrap;
 }
 
 .quiqqer-shoppingCart-buttons-backToShop {
@@ -88,5 +90,17 @@
 
     .qui-window-popup .quiqqer-order-shoppingCart-nobody-registration {
         margin-bottom: 40px;
+    }
+
+    .quiqqer-shoppingCart-buttons > .btn {
+        width: 100%;
+    }
+
+    .quiqqer-shoppingCart-buttons-toCheckout{
+        order: 1;
+    }
+
+    .quiqqer-shoppingCart-buttons-backToShop {
+        order: 2;
     }
 }

@@ -6,7 +6,14 @@
 
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
+use Exception;
 use QUI;
+use QUI\Locale;
+use ReflectionClass;
+use ReflectionException;
+
+use function class_exists;
+use function dirname;
 
 /**
  * Class ProcessingStep
@@ -19,24 +26,24 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @var string|null
      */
-    protected $content = null;
+    protected ?string $content = null;
 
     /**
      * @var string|null
      */
-    protected $title = null;
+    protected ?string $title = null;
 
     /**
      * @var null|QUI\ERP\Order\AbstractOrderProcessProvider
      */
-    protected $ProcessingProvider = null;
+    protected ?QUI\ERP\Order\AbstractOrderProcessProvider $ProcessingProvider = null;
 
     /**
      * Basket constructor.
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
@@ -44,30 +51,24 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $this->addCSSClass('quiqqer-order-step-processing');
         $this->addCSSClass('quiqqer-order-step-processing-gateway');
-        $this->addCSSFile(\dirname(__FILE__) . '/Processing.css');
+        $this->addCSSFile(dirname(__FILE__) . '/Processing.css');
     }
 
     /**
      * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
         if ($this->ProcessingProvider === null) {
             return '';
         }
 
-        try {
-            $Engine = QUI::getTemplateManager()->getEngine();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return '';
-        }
+        $Engine = QUI::getTemplateManager()->getEngine();
 
         try {
             $display = $this->ProcessingProvider->getDisplay($this->getOrder(), $this);
             $hasErrors = $this->ProcessingProvider->hasErrors();
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::write($Exception->getMessage());
 
             $hasErrors = true;
@@ -82,7 +83,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'this' => $this
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/Processing.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Processing.html');
     }
 
     /**
@@ -91,9 +92,9 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @return string
      */
-    public function getProcessingPayments()
+    public function getProcessingPayments(): string
     {
-        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
+        if (!class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
             return '';
         }
 
@@ -116,19 +117,19 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 'this' => $this,
                 'PaymentStep' => $PaymentStep
             ]);
-        } catch (\Exception $Exception) {
+        } catch (Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
 
             return '';
         }
 
-        return $Engine->fetch(\dirname(__FILE__) . '/ProcessingPayments.html');
+        return $Engine->fetch(dirname(__FILE__) . '/ProcessingPayments.html');
     }
 
     /**
      * @param QUI\ERP\Order\AbstractOrderProcessProvider $ProcessingProvider
      */
-    public function setProcessingProvider(QUI\ERP\Order\AbstractOrderProcessProvider $ProcessingProvider)
+    public function setProcessingProvider(QUI\ERP\Order\AbstractOrderProcessProvider $ProcessingProvider): void
     {
         $this->ProcessingProvider = $ProcessingProvider;
     }
@@ -137,7 +138,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null)
+    public function getName($Locale = null): string
     {
         return 'Processing';
     }
@@ -145,7 +146,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'fa-check';
     }
@@ -153,14 +154,14 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      *
      */
-    public function validate()
+    public function validate(): void
     {
     }
 
     /**
      * placeholder
      */
-    public function save()
+    public function save(): void
     {
     }
 
@@ -174,9 +175,9 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @throws QUI\Exception
      * @throws QUI\Permissions\Exception
      */
-    public function savePayment($payment)
+    public function savePayment($payment): void
     {
-        if (!\class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
+        if (!class_exists('\QUI\ERP\Accounting\Payments\Order\Payment')) {
             return;
         }
 
@@ -199,10 +200,10 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     //region title
 
     /**
-     * @param null $Locale
+     * @param Locale|null $Locale
      * @return string
      */
-    public function getTitle($Locale = null)
+    public function getTitle(QUI\Locale $Locale = null): string
     {
         if (!empty($this->title)) {
             return $this->title;
@@ -213,9 +214,9 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         try {
-            $Reflection = new \ReflectionClass($this);
+            $Reflection = new ReflectionClass($this);
             $className = $Reflection->getShortName();
-        } catch (\ReflectionException $Exception) {
+        } catch (ReflectionException) {
             $className = 'Processing';
         }
 
@@ -230,7 +231,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -244,16 +245,16 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      *
      * @param string $content
      */
-    public function setContent($content)
+    public function setContent(string $content): void
     {
         $this->content = $content;
     }
 
     /**
-     * @param null $Locale
-     * @return string
+     * @param Locale|null $Locale
+     * @return string|null
      */
-    public function getContent($Locale = null)
+    public function getContent(QUI\Locale $Locale = null): ?string
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();

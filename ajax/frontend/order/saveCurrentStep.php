@@ -15,7 +15,7 @@
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_saveCurrentStep',
     function ($step, $data, $orderHash) {
-        $data = \json_decode($data, true);
+        $data = json_decode($data, true);
 
         unset($_REQUEST['data']);
 
@@ -36,7 +36,7 @@ QUI::$Ajax->registerFunction(
         $hash = '';
 
         if ($Order) {
-            $hash = $Order->getHash();
+            $hash = $Order->getUUID();
         }
 
         return [

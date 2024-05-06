@@ -19,9 +19,9 @@ use function dirname;
 class Order extends QUI\Control
 {
     /**
-     * @var null
+     * @var null|QUI\ERP\Order\AbstractOrder
      */
-    protected $Order = null;
+    protected QUI\ERP\Order\AbstractOrder|null $Order = null;
 
     /**
      * Order constructor.
@@ -50,7 +50,7 @@ class Order extends QUI\Control
      *
      * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
 
@@ -113,7 +113,7 @@ class Order extends QUI\Control
 
         $DeliveryAddress = $Order->getDeliveryAddress();
 
-        if ($DeliveryAddress->getId() === $Order->getInvoiceAddress()->getId()) {
+        if ($DeliveryAddress->getUUID() === $Order->getInvoiceAddress()->getUUID()) {
             $DeliveryAddress = null;
         }
 
@@ -139,12 +139,12 @@ class Order extends QUI\Control
     /**
      * Returns the assigned order
      *
-     * @return QUI\ERP\Order\OrderInProcess|Order|QUI\ERP\Order\Order
+     * @return QUI\ERP\Order\AbstractOrder
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
-    public function getOrder()
+    public function getOrder(): QUI\ERP\Order\AbstractOrder
     {
         if ($this->Order !== null) {
             return $this->Order;

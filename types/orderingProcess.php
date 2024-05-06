@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This file contains the ordering process site type
+ */
+
+/** @var QUI\Projects\Project $Project */
+/** @var QUI\Projects\Site $Site */
+/** @var QUI\Interfaces\Template\EngineInterface $Engine */
+
 $Site->setAttribute('nocache', true);
 
 try {
@@ -14,7 +22,11 @@ try {
     $checkoutType = $Site->getAttribute('quiqqer.order.checkoutType');
     $SimpleCheckout = null;
 
-    if ($checkoutType === 'one-page' && !$Site->getAttribute('order::hash')) {
+    if (
+        class_exists('QUI\ERP\Order\SimpleCheckout\Checkout')
+        && $checkoutType === 'one-page'
+        && !$Site->getAttribute('order::hash')
+    ) {
         // simple checkout can be used
         $SimpleCheckout = new QUI\ERP\Order\SimpleCheckout\Checkout([
             'data-qui-load-hash-from-url' => 1
@@ -25,7 +37,7 @@ try {
         'OrderProcess' => $OrderProcess,
         'SimpleCheckout' => $SimpleCheckout
     ]);
-} catch (QUI\DataBase\Exception $Exception) {
+} catch (QUI\Database\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);
 
     QUI\System\Log::writeException($Exception);

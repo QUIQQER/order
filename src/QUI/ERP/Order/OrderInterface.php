@@ -3,6 +3,7 @@
 namespace QUI\ERP\Order;
 
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Invoice\Exception;
 use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Payments\Types\Payment;
@@ -21,12 +22,12 @@ use QUI\ERP\User;
 interface OrderInterface
 {
     /**
-     * It return the invoice, if an invoice exist for the order
+     * It returns the invoice, if an invoice exist for the order
      *
-     * @return Invoice|InvoiceTemporary
-     * @throws \QUI\ERP\Accounting\Invoice\Exception
+     * @return Invoice|InvoiceTemporary|null
+     * @throws Exception
      */
-    public function getInvoice();
+    public function getInvoice(): Invoice|InvoiceTemporary|null;
 
     /**
      * Returns the invoice type, if the order has an invoice
@@ -60,9 +61,25 @@ interface OrderInterface
     /**
      * Return the order id
      *
-     * @return int|string
+     * @return int
      */
-    public function getId();
+    public function getId(): int;
+
+    /**
+     * @return string
+     * @deprecated use getPrefixedNumber())
+     */
+    public function getPrefixedId(): string;
+
+    /**
+     * @return string
+     */
+    public function getPrefixedNumber(): string;
+
+    /**
+     * @return string
+     */
+    public function getUUID(): string;
 
     /**
      * Is the order successful
@@ -106,7 +123,7 @@ interface OrderInterface
      * @param string $key
      * @return mixed|null
      */
-    public function getDataEntry(string $key);
+    public function getDataEntry(string $key): mixed;
 
     /**
      * Return the hash
@@ -124,7 +141,7 @@ interface OrderInterface
 
     /**
      * Return the currency of the order
-     * - At the moment its the default currency of the system
+     * - At the moment it's the default currency of the system
      * - If we want to have different currencies, this can be implemented here
      *
      * @return Currency
@@ -246,9 +263,9 @@ interface OrderInterface
 
     /**
      * @param string $message
-     * @return mixed
+     * @return void
      */
-    public function addFrontendMessage(string $message);
+    public function addFrontendMessage(string $message): void;
 
     //endregion
 }

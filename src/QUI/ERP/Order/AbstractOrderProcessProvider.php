@@ -23,12 +23,12 @@ abstract class AbstractOrderProcessProvider
     /**
      * @var int
      */
-    protected $currentStatus = self::PROCESSING_STATUS_START;
+    protected int $currentStatus = self::PROCESSING_STATUS_START;
 
     /**
      * @var bool
      */
-    protected $hasErrors = false;
+    protected bool $hasErrors = false;
 
     /**
      * Can be overwritten
@@ -48,7 +48,7 @@ abstract class AbstractOrderProcessProvider
      * @param null $Step
      * @return string
      */
-    public function getDisplay(AbstractOrder $Order, $Step = null)
+    public function getDisplay(AbstractOrder $Order, $Step = null): string
     {
         return '';
     }
@@ -59,7 +59,7 @@ abstract class AbstractOrderProcessProvider
      * @param AbstractOrder $Order
      * @return int - Processing status
      */
-    public function onOrderStart(AbstractOrder $Order)
+    public function onOrderStart(AbstractOrder $Order): int
     {
         $this->currentStatus = self::PROCESSING_STATUS_FINISH;
 
@@ -72,7 +72,7 @@ abstract class AbstractOrderProcessProvider
      * @param AbstractOrder $Order
      * @return integer
      */
-    public function onOrderSuccess(AbstractOrder $Order)
+    public function onOrderSuccess(AbstractOrder $Order): int
     {
         $this->currentStatus = self::PROCESSING_STATUS_FINISH;
 
@@ -86,7 +86,7 @@ abstract class AbstractOrderProcessProvider
      * @param AbstractOrder $Order
      * @return integer
      */
-    public function onOrderAbort(AbstractOrder $Order)
+    public function onOrderAbort(AbstractOrder $Order): int
     {
         $this->currentStatus = self::PROCESSING_STATUS_FINISH;
 
@@ -98,7 +98,7 @@ abstract class AbstractOrderProcessProvider
      *
      * @return bool
      */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return $this->hasErrors;
     }

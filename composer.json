@@ -1,5 +1,5 @@
 {
-  "name": "quiqqer\/order",
+  "name": "quiqqer/order",
   "type": "quiqqer-module",
   "description": "QUIQQER ERP Order",
   "license": [
@@ -10,34 +10,35 @@
     {
       "name": "Henning Leutz",
       "email": "support@pcsg.de",
-      "homepage": "http:\/\/www.pcsg.de",
+      "homepage": "https://www.pcsg.de",
       "role": "Developer"
     }
   ],
   "support": {
     "email": "support@pcsg.de",
-    "url": "http:\/\/www.pcsg.de"
+    "url": "httpa://www.pcsg.de"
   },
   "require": {
     "php": "^8",
-    "quiqqer\/quiqqer": ">=1.5|dev-master|dev-dev",
-    "quiqqer\/erp": "^1.8|dev-master|dev-dev",
-    "quiqqer\/countries": "^1|dev-master|dev-dev",
-    "quiqqer\/areas": "^1|dev-master|dev-dev",
-    "quiqqer\/products": "^1.6.3|dev-master|dev-dev",
-    "quiqqer\/payments": "^1|^2|dev-master|dev-dev",
-    "quiqqer\/tax": "^1|dev-master|dev-dev",
-    "quiqqer\/payment-transactions": "^1|dev-master|dev-dev",
-    "quiqqer\/fontawesome": ">=4.5|dev-master|dev-dev",
-    "quiqqer\/data-layer": "^1.2|*@dev",
-    "ramsey\/uuid": "^3|^4",
-    "quiqqer-asset\/navigo": "5.*",
-    "quiqqer-asset\/history-events": "1.*"
+    "php81_bc/strftime": "^0.7",
+    "ramsey/uuid": "^3|^4",
+    "quiqqer/core": "^2",
+    "quiqqer/erp": "^3.2",
+    "quiqqer/countries": "^2",
+    "quiqqer/areas": "^2",
+    "quiqqer/products": "^2",
+    "quiqqer/payments": "^2",
+    "quiqqer/tax": "^2",
+    "quiqqer/payment-transactions": "^2",
+    "quiqqer/fontawesome": "^4|^5|^6",
+    "quiqqer/data-layer": "^2",
+    "quiqqer-asset/navigo": "^5",
+    "quiqqer-asset/history-events": "^1"
   },
   "autoload": {
     "psr-4": {
-      "QUI\\ERP\\Order\\": "src\/QUI\/ERP\/Order",
-      "QUITests\\ERP\\Order\\": "tests\/QUITests\/ERP\/Order"
+      "QUI\\ERP\\Order\\": "src/QUI/ERP/Order",
+      "QUITests\\ERP\\Order\\": "tests/QUITests/ERP/Order"
     }
   }
 }

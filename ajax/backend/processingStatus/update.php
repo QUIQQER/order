@@ -5,7 +5,7 @@
  *
  * @param int $id - ProcessingStatus ID
  * @param string $color - hex color code
- * @param array $title - (multilignual) titel
+ * @param array $title - (multilingual) title
  * @param bool $notification - send auto-notification on status change
  */
 
@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
         $Handler->updateProcessingStatus(
             $id,
             Orthos::clear($color),
-            Orthos::clearArray(\json_decode($title, true))
+            Orthos::clearArray(json_decode($title, true))
         );
 
         $Handler->setProcessingStatusNotification($id, boolval($notification));
