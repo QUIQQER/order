@@ -7,6 +7,8 @@
 namespace QUI\ERP\Order\Controls;
 
 use QUI;
+use QUI\Locale;
+use ReflectionClass;
 
 /**
  * Class OrderingStepInterface
@@ -15,18 +17,16 @@ use QUI;
 abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepInterface
 {
     /**
-     * @param null $Locale
+     * @param Locale|null $Locale
      * @return string
-     *
-     * @throws \ReflectionException
      */
-    public function getTitle($Locale = null)
+    public function getTitle(QUI\Locale $Locale = null): string
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();
         }
 
-        $Reflection = new \ReflectionClass($this);
+        $Reflection = new ReflectionClass($this);
 
         return $Locale->get(
             'quiqqer/order',
@@ -40,7 +40,7 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
      *
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'fa fa-shopping-bag';
     }
@@ -48,9 +48,9 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     /**
      * Return the current order
      *
-     * @return QUI\ERP\Order\OrderInProcess
+     * @return QUI\ERP\Order\AbstractOrder
      */
-    public function getOrder()
+    public function getOrder(): QUI\ERP\Order\AbstractOrder
     {
         return $this->getAttribute('Order');
     }
@@ -60,11 +60,11 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
      *
      * @return bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         try {
             $this->validate();
-        } catch (QUI\ERP\Order\Exception $Exception) {
+        } catch (QUI\ERP\Order\Exception) {
             return false;
         }
 
@@ -73,11 +73,11 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
 
     /**
      * Has the Step its own form?
-     * Canbe overwritten
+     * Can be overwritten
      *
      * @return bool
      */
-    public function hasOwnForm()
+    public function hasOwnForm(): bool
     {
         return false;
     }
@@ -88,7 +88,7 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
      *
      * @return bool
      */
-    public function showNext()
+    public function showNext(): bool
     {
         return true;
     }

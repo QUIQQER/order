@@ -30,7 +30,7 @@ class CleanupOrderInProcess
      * @param array $params - cron parameter
      * @throws QUI\Exception
      */
-    public static function run(array $params = [])
+    public static function run(array $params = []): void
     {
         $days = 14; // 14 days
 
@@ -71,7 +71,7 @@ class CleanupOrderInProcess
         $c_date = strtotime('-1 day');
         $c_date = date('Y-m-d H:i:s', $c_date);
 
-        $query     = "SELECT * FROM {$table} where data LIKE :search AND c_date <= :date";
+        $query     = "SELECT * FROM $table where data LIKE :search AND c_date <= :date";
         $Statement = $PDO->prepare($query);
 
         $Statement->bindValue('search', '%"basketConditionOrder":2%');

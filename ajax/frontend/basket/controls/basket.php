@@ -30,7 +30,7 @@ QUI::$Ajax->registerFunction(
         }
 
         $Control = new QUI\ERP\Order\Controls\Basket\Basket([
-            'editable' => \boolval($editable)
+            'editable' => boolval($editable)
         ]);
 
         $Control->setBasket($Basket);

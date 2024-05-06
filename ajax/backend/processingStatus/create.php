@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
         Factory::getInstance()->createProcessingStatus(
             $id,
             Orthos::clear($color),
-            Orthos::clearArray(\json_decode($title, true))
+            Orthos::clearArray(json_decode($title, true))
         );
 
         Handler::getInstance()->setProcessingStatusNotification($id, boolval($notification));

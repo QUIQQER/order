@@ -20,7 +20,7 @@ class Registration extends QUI\Control
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         $this->setAttributes([
             'autofill' => true
@@ -32,13 +32,9 @@ class Registration extends QUI\Control
     /**
      * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
-        try {
-            $Engine = QUI::getTemplateManager()->getEngine();
-        } catch (QUI\Exception $Exception) {
-            return '';
-        }
+        $Engine = QUI::getTemplateManager()->getEngine();
 
         $this->addCSSFile(dirname(__FILE__) . '/Registration.css');
 

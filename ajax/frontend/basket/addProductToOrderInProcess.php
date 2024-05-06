@@ -42,7 +42,7 @@ QUI::$Ajax->registerFunction(
 
         $Order->save();
 
-        return $Order->getHash();
+        return $Order->getUUID();
     },
     ['productId', 'fields', 'quantity']
 );

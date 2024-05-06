@@ -8,6 +8,10 @@ namespace QUI\ERP\Order\FrontendUsers\Controls;
 
 use QUI;
 
+use function ceil;
+use function count;
+use function dirname;
+
 /**
  * Class UserOrders
  *
@@ -20,7 +24,7 @@ class UserOpenedOrders extends UserOrders
      *
      * @throws QUI\Exception
      */
-    public function getBody()
+    public function getBody(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
         $User = QUI::getUserBySession();
@@ -39,8 +43,7 @@ class UserOpenedOrders extends UserOrders
 
         // filter not paid orders
         foreach ($allOrders as $Order) {
-            /* @var $Order QUI\ERP\Order\Order */
-            $hashes[] = $Order->getHash();
+            $hashes[] = $Order->getUUID();
 
             if ($Order->isPosted()) {
                 $Invoice = $Order->getInvoice();
@@ -78,10 +81,10 @@ class UserOpenedOrders extends UserOrders
 //            }
 //        }
 
-        $count = \count($orders);
+        $count = count($orders);
 
         if ($count) {
-            $sheetsMax = \ceil($count / $limit);
+            $sheetsMax = ceil($count / $limit);
         }
 
         $Engine->assign([
@@ -96,6 +99,6 @@ class UserOpenedOrders extends UserOrders
             'sheetCount' => $count
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/UserOrders.html');
+        return $Engine->fetch(dirname(__FILE__) . '/UserOrders.html');
     }
 }

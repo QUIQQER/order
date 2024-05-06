@@ -11,6 +11,9 @@ use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Handler\Fields;
 use QUI\ERP\Products\Product\UniqueProduct;
 
+use function array_values;
+use function is_array;
+
 /**
  * Class Product
  *
@@ -27,11 +30,11 @@ class Product extends UniqueProduct
      * @throws QUI\Exception
      * @throws QUI\ERP\Products\Product\Exception
      */
-    public function __construct($pid, array $attributes = [])
+    public function __construct(int $pid, array $attributes = [])
     {
-        $fields    = [];
+        $fields = [];
         $fieldList = [];
-        $Product   = QUI\ERP\Products\Handler\Products::getProduct((int)$pid);
+        $Product = QUI\ERP\Products\Handler\Products::getProduct($pid);
 
         $this->maximumQuantity = $Product->getMaximumQuantity();
 
@@ -94,8 +97,8 @@ class Product extends UniqueProduct
             }
         }
 
-        $attributes['fields'] = \array_values($fieldList);
-        $attributes['uid']    = QUI::getUserBySession()->getId();
+        $attributes['fields'] = array_values($fieldList);
+        $attributes['uid'] = QUI::getUserBySession()->getUUID();
 
         parent::__construct($pid, $attributes);
     }
@@ -105,14 +108,14 @@ class Product extends UniqueProduct
      * @param $fieldValue
      * @return null|QUI\ERP\Products\Field\Field|UniqueField
      */
-    protected function importFieldData($fieldId, $fieldValue)
+    protected function importFieldData($fieldId, $fieldValue): QUI\ERP\Products\Field\Field|UniqueField|null
     {
         try {
-            if (\is_array($fieldValue) && isset($fieldValue['identifier'])) {
+            if (is_array($fieldValue) && isset($fieldValue['identifier'])) {
                 return new UniqueField($fieldValue['identifier'], $fieldValue);
             }
 
-            if (\is_array($fieldValue) && isset($fieldValue['value'])) {
+            if (is_array($fieldValue) && isset($fieldValue['value'])) {
                 $Field = Fields::getField($fieldValue['id']);
                 $Field->setValue($fieldValue['value']);
 
@@ -130,7 +133,7 @@ class Product extends UniqueProduct
                 $Field = Fields::getField($fieldId);
                 $Field->setValue($fieldValue);
             }
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return null;
         } catch (\Exception $Exception) {
             QUI\System\Log::writeRecursive($fieldValue);
@@ -145,13 +148,13 @@ class Product extends UniqueProduct
     /**
      * @return array
      */
-    public function getCategories()
+    public function getCategories(): array
     {
         if (!$this->categories) {
             try {
-                $Real             = QUI\ERP\Products\Handler\Products::getProduct($this->getId());
+                $Real = QUI\ERP\Products\Handler\Products::getProduct($this->getId());
                 $this->categories = $Real->getCategories();
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -161,13 +164,13 @@ class Product extends UniqueProduct
     /**
      * @return QUI\ERP\Products\Category\Category|null
      */
-    public function getCategory()
+    public function getCategory(): ?QUI\ERP\Products\Category\Category
     {
         if (!$this->Category) {
             try {
-                $Real           = QUI\ERP\Products\Handler\Products::getProduct($this->getId());
+                $Real = QUI\ERP\Products\Handler\Products::getProduct($this->getId());
                 $this->Category = $Real->getCategory();
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 

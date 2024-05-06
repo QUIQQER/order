@@ -12,8 +12,11 @@ use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\ErpEntityInterface;
+use QUI\ERP\ErpTransactionsInterface;
 use QUI\ERP\Exception;
 use QUI\ERP\Order\ProcessingStatus\Handler as ProcessingHandler;
+use QUI\ERP\Order\ProcessingStatus\Status;
+use QUI\ERP\Order\ProcessingStatus\StatusUnknown;
 use QUI\ERP\Shipping\ShippingStatus\Handler as ShippingStatusHandler;
 use QUI\ERP\User;
 use QUI\ExceptionStack;
@@ -42,51 +45,8 @@ use function time;
  *
  * @package QUI\ERP\Order
  */
-abstract class AbstractOrder
-    extends QUI\QDOM
-    implements OrderInterface, QUI\ERP\ErpEntityInterface, QUI\ERP\ErpTransactionsInterface
+abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
-    /* @deprecated */
-    const PAYMENT_STATUS_OPEN = QUI\ERP\Constants::PAYMENT_STATUS_OPEN;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_PAID = QUI\ERP\Constants::PAYMENT_STATUS_PAID;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_PART = QUI\ERP\Constants::PAYMENT_STATUS_PART;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_ERROR = QUI\ERP\Constants::PAYMENT_STATUS_ERROR;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_CANCELED = QUI\ERP\Constants::PAYMENT_STATUS_CANCELED;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_DEBIT = QUI\ERP\Constants::PAYMENT_STATUS_DEBIT;
-
-    /* @deprecated */
-    const PAYMENT_STATUS_PLAN = QUI\ERP\Constants::PAYMENT_STATUS_PLAN;
-
-    /**
-     * Order is only created
-     *
-     * @deprecated use
-     */
-    const STATUS_CREATED = QUI\ERP\Constants::ORDER_STATUS_CREATED;
-
-    /**
-     * Order is posted (Invoice created)
-     * Bestellung ist gebucht (Invoice erstellt)
-     *
-     * @deprecated
-     */
-    const STATUS_POSTED = QUI\ERP\Constants::ORDER_STATUS_POSTED; // Bestellung ist gebucht (Invoice erstellt)
-
-    /**
-     * @deprecated
-     */
-    const STATUS_STORNO = QUI\ERP\Constants::ORDER_STATUS_STORNO; // Bestellung ist storniert
-
     /**
      * Article types
      */
@@ -122,9 +82,9 @@ abstract class AbstractOrder
     protected int $status = 0;
 
     /**
-     * @var null
+     * @var Status|StatusUnknown|null
      */
-    protected $Status = null;
+    protected Status|StatusUnknown|null $Status = null;
 
     /**
      * @var null|QUI\ERP\Shipping\ShippingStatus\Status
@@ -144,9 +104,9 @@ abstract class AbstractOrder
     protected string|int|bool|null $invoiceId = false;
 
     /**
-     * @var int|null
+     * @var string|int|null
      */
-    protected ?int $customerId;
+    protected null|int|string $customerId;
 
     /**
      * @var array|null
@@ -190,9 +150,9 @@ abstract class AbstractOrder
     /**
      * Create user id
      *
-     * @var integer
+     * @var integer|string
      */
-    protected int $cUser;
+    protected int|string $cUser;
 
     /**
      * @var ArticleList|null
@@ -278,7 +238,7 @@ abstract class AbstractOrder
         $this->id = (int)$data['id'];
         $this->hash = $data['hash'];
         $this->cDate = $data['c_date'];
-        $this->cUser = (int)$data['c_user'];
+        $this->cUser = $data['c_user'];
 
         if (!empty($data['global_process_id'])) {
             $this->globalProcessId = $data['global_process_id'];
@@ -311,18 +271,18 @@ abstract class AbstractOrder
     protected function setDataBaseData(array $data): void
     {
         $this->invoiceId = $data['invoice_id'];
-
         $this->idPrefix = $data['id_prefix'];
-        $this->addressDelivery = json_decode($data['addressDelivery'], true);
-        $this->addressInvoice = json_decode($data['addressInvoice'], true);
-        $this->data = json_decode($data['data'], true);
+
+        $this->addressDelivery = json_decode($data['addressDelivery'] ?? 'null', true);
+        $this->addressInvoice = json_decode($data['addressInvoice'] ?? 'null', true);
+        $this->data = json_decode($data['data'] ?? 'null', true);
 
         if (isset($data['status'])) {
             $this->status = $data['status'];
         }
 
         // user
-        $this->customerId = (int)$data['customerId'];
+        $this->customerId = $data['customerId'];
 
         if (isset($data['customer'])) {
             $this->customer = json_decode($data['customer'], true);
@@ -358,7 +318,7 @@ abstract class AbstractOrder
                 $this->Customer->setAddress($this->getInvoiceAddress());
             } elseif (isset($customerData['quiqqer.erp.address'])) {
                 try {
-                    $User = QUI::getUsers()->get($this->Customer->getId());
+                    $User = QUI::getUsers()->get($this->Customer->getUUID());
                     $Address = $User->getAddress($customerData['quiqqer.erp.address']);
                     $this->Customer->setAddress($Address);
                 } catch (QUI\Exception $Exception) {
@@ -647,6 +607,7 @@ abstract class AbstractOrder
      * Updates the order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @throws QUI\Exception
      */
     abstract public function update(QUI\Interfaces\Users\User $PermissionUser = null);
 
@@ -747,6 +708,7 @@ abstract class AbstractOrder
      * Return the order id
      *
      * @return integer
+     * @deprecated
      */
     public function getId(): int
     {
@@ -1010,7 +972,7 @@ abstract class AbstractOrder
         if ($this->Customer) {
             $Address = $this->Customer->getStandardAddress();
 
-            if (!$Address->getId()) {
+            if (!$Address->getUUID()) {
                 $this->Customer->setAddress(
                     new QUI\ERP\Address($this->addressInvoice, $this->Customer)
                 );
@@ -1038,7 +1000,7 @@ abstract class AbstractOrder
 
                 $Address = $this->Customer->getStandardAddress();
 
-                if (!$Address->getId()) {
+                if (!$Address->getUUID()) {
                     $this->Customer->setAddress(
                         new QUI\ERP\Address($this->addressInvoice, $this->Customer)
                     );
@@ -1124,7 +1086,7 @@ abstract class AbstractOrder
     {
         if ($address instanceof QUI\Users\Address) {
             $this->addressInvoice = $address->getAttributes();
-            $this->addressInvoice['id'] = $address->getId();
+            $this->addressInvoice['id'] = $address->getUUID();
 
             return;
         }
@@ -1273,7 +1235,7 @@ abstract class AbstractOrder
             }
 
             $this->Customer = new QUI\ERP\User($User);
-            $this->customerId = $this->Customer->getId();
+            $this->customerId = $this->Customer->getUUID();
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
 
@@ -1286,7 +1248,7 @@ abstract class AbstractOrder
 
         if ($User instanceof QUI\ERP\User) {
             $this->Customer = $User;
-            $this->customerId = $User->getId();
+            $this->customerId = $User->getUUID();
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
 
@@ -1299,7 +1261,7 @@ abstract class AbstractOrder
 
         if ($User instanceof QUI\Interfaces\Users\User) {
             $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
-            $this->customerId = $this->Customer->getId();
+            $this->customerId = $this->Customer->getUUID();
 
             if (empty($this->addressInvoice)) {
                 $this->setInvoiceAddress($this->Customer->getStandardAddress());
@@ -1443,7 +1405,7 @@ abstract class AbstractOrder
      * Set the payment method to the order
      *
      * @param integer|string $paymentId
-     * @throws Exception
+     * @throws Exception|QUI\Exception
      *
      * @todo Payment->canBeUsed() noch implementieren
      */
@@ -1585,7 +1547,7 @@ abstract class AbstractOrder
                 'history.message.linkTransaction',
                 [
                     'username' => $User->getName(),
-                    'uid' => $User->getId(),
+                    'uid' => $User->getUUID(),
                     'txId' => $Transaction->getTxId(),
                     'txAmount' => $Transaction->getAmountFormatted()
                 ]
@@ -1608,7 +1570,7 @@ abstract class AbstractOrder
                 'paid_data' => json_encode($calculation['paidData']),
                 'paid_date' => $calculation['paidDate']
             ],
-            ['id' => $this->getId()]
+            ['hash' => $this->getUUID()]
         );
 
         $this->setPaymentStatus($calculation['paidStatus'], true);
@@ -1697,7 +1659,7 @@ abstract class AbstractOrder
                 'history.message.addTransaction',
                 [
                     'username' => $User->getName(),
-                    'uid' => $User->getId(),
+                    'uid' => $User->getUUID(),
                     'txid' => $Transaction->getTxId()
                 ]
             )
@@ -2157,7 +2119,7 @@ abstract class AbstractOrder
      * This status is the custom status of the order system
      * Ths status can vary
      *
-     * @return QUI\ERP\Order\ProcessingStatus\Status
+     * @return Status|null
      */
     public function getProcessingStatus(): ?ProcessingStatus\Status
     {
@@ -2169,7 +2131,7 @@ abstract class AbstractOrder
 
         try {
             $this->Status = $Handler->getProcessingStatus($this->status);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         // use default status
@@ -2178,7 +2140,7 @@ abstract class AbstractOrder
                 $this->Status = $Handler->getProcessingStatus(
                     Settings::getInstance()->get('orderStatus', 'standard')
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 // nothing
             }
         }
@@ -2186,7 +2148,7 @@ abstract class AbstractOrder
         if ($this->Status === null) {
             try {
                 $this->Status = $Handler->getProcessingStatus(0);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 // nothing
             }
         }
@@ -2234,7 +2196,7 @@ abstract class AbstractOrder
      * Return the shipping status
      * -> This method only works if shipping is installed
      *
-     * @return QUI\ERP\Shipping\ShippingStatus\Status|bool
+     * @return bool|QUI\ERP\Shipping\ShippingStatus\Status|null
      */
     public function getShippingStatus(): bool|QUI\ERP\Shipping\ShippingStatus\Status|null
     {
@@ -2249,7 +2211,7 @@ abstract class AbstractOrder
         try {
             $this->ShippingStatus = ShippingStatusHandler::getInstance()
                 ->getShippingStatus($this->getAttribute('shipping_status'));
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         // use default status

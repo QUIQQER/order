@@ -46,7 +46,7 @@ class DataLayer
         if (!empty($mField) && isset($mField[0])) {
             try {
                 $manufacturer = QUI::getUsers()->get($mField[0])->getName();
-            } catch (QUI\Exception $exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -77,7 +77,7 @@ class DataLayer
         return $product;
     }
 
-    public static function parseArticle(QUI\ERP\Accounting\Article $Article, $Locale = null): array
+    public static function parseArticle(QUI\ERP\Accounting\Article $Article, QUI\Locale $Locale = null): array
     {
         $Product = Products::getProduct($Article->getId());
         $item = self::parseProduct($Product);
@@ -93,7 +93,7 @@ class DataLayer
         return $item;
     }
 
-    public static function parseOrder(QUI\ERP\Order\OrderInterface $Order, $Locale = null): array
+    public static function parseOrder(QUI\ERP\Order\OrderInterface $Order, QUI\Locale $Locale = null): array
     {
         $calculations = $Order->getArticles()->getCalculations();
         $tax = 0;
@@ -117,7 +117,7 @@ class DataLayer
         }
 
         if ($Order->isSuccessful()) {
-            $order['transaction_id'] = $Order->getHash();
+            $order['transaction_id'] = $Order->getUUID();
         }
 
         // items / articles

@@ -7,7 +7,7 @@
 /**
  * Save the address data to the address
  *
- * @param integer $addressId - Address ID
+ * @param integer|string $addressId - Address ID
  * @param string $data - JSON data
  * @return string
  */
@@ -15,12 +15,8 @@ QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_address_save',
     function ($addressId, $data) {
         $User = QUI::getUserBySession();
-        $Address = $User->getAddress((int)$addressId);
-        $data = \json_decode($data, true);
-
-        if ($Address === null) {
-            return false;
-        }
+        $Address = $User->getAddress($addressId);
+        $data = json_decode($data, true);
 
         $fields = [
             'company',
@@ -74,7 +70,7 @@ QUI::$Ajax->registerFunction(
         // check missing fields
         $missing = QUI\FrontendUsers\Utils::getMissingAddressFields($Address);
 
-        if (\count($missing)) {
+        if (count($missing)) {
             throw new QUI\Exception([
                 'quiqqer/frontend-users',
                 'exception.controls.profile.address.required_fields_empty'
@@ -85,7 +81,7 @@ QUI::$Ajax->registerFunction(
 
         try {
             QUI\ERP\Order\Controls\OrderProcess\CustomerData::validateAddress(
-                $User->getAddress((int)$addressId)
+                $User->getAddress($addressId)
             );
 
             QUI::getMessagesHandler()->addSuccess(

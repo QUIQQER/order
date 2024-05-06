@@ -7,45 +7,44 @@
 namespace QUI\ERP\Order\Controls\Basket;
 
 use QUI;
+use QUI\ERP\Order\Basket\Basket;
+use QUI\ERP\Order\Basket\BasketGuest;
+use QUI\ERP\Order\Basket\BasketOrder;
+
+use function dirname;
 
 /**
  * Class Small
  *
  * @package QUI\ERP\Order\Controls\Basket
  */
-class Small extends QUI\Controls\Control
+class Small extends QUI\Control
 {
     /**
      * Used basket
      *
-     * @var QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest
+     * @var Basket|BasketGuest|BasketOrder
      */
-    protected $Basket;
+    protected Basket|BasketGuest|BasketOrder $Basket;
 
     /**
-     * @var
+     * @var ?QUI\Projects\Project
      */
-    protected $Project;
+    protected ?QUI\Projects\Project $Project = null;
 
     /**
-     * @param QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest $Basket
+     * @param Basket|BasketGuest|BasketOrder $Basket
      */
-    public function setBasket($Basket)
+    public function setBasket(Basket|BasketGuest|BasketOrder $Basket): void
     {
-        if (
-            $Basket instanceof QUI\ERP\Order\Basket\Basket ||
-            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest ||
-            $Basket instanceof QUI\ERP\Order\Basket\BasketOrder
-        ) {
-            $this->Basket = $Basket;
-        }
+        $this->Basket = $Basket;
     }
 
     /**
      * @return string
      * @throws QUI\Exception
      */
-    protected function onCreate()
+    protected function onCreate(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
 
@@ -62,13 +61,13 @@ class Small extends QUI\Controls\Control
 
         try {
             $OrderProcessSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $OrderProcessSite = $Project->firstChild();
         }
 
         try {
             $ShoppingCart = QUI\ERP\Order\Utils\Utils::getShoppingCart($Project);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $ShoppingCart = $Project->firstChild();
         }
 
@@ -82,7 +81,7 @@ class Small extends QUI\Controls\Control
             'shoppingCartUrl' => $ShoppingCart->getUrlRewritten()
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/Small.html');
+        return $Engine->fetch(dirname(__FILE__) . '/Small.html');
     }
 
     //region project
@@ -92,7 +91,7 @@ class Small extends QUI\Controls\Control
      *
      * @param QUI\Projects\Project $Project
      */
-    public function setProject(QUI\Projects\Project $Project)
+    public function setProject(QUI\Projects\Project $Project): void
     {
         $this->Project = $Project;
     }
@@ -100,14 +99,9 @@ class Small extends QUI\Controls\Control
     /**
      * @return QUI\Projects\Project
      *
-     * @throws QUI\Exception
      */
-    protected function getProject()
+    protected function getProject(): QUI\Projects\Project
     {
-        if ($this->Project === null) {
-            $this->Project = QUI::getProjectManager()->get();
-        }
-
         return $this->Project;
     }
 

@@ -3,6 +3,7 @@
 namespace QUI\ERP\Order\Controls;
 
 use QUI\ERP\Order\Exception;
+use QUI\Locale;
 
 /**
  * Class OrderingStepInterface
@@ -13,32 +14,32 @@ interface OrderingStepInterface
     /**
      * Return the step name
      *
-     * @param null|\QUI\Locale $Locale
+     * @param null|Locale $Locale
      * @return string
      */
-    public function getName($Locale = null);
+    public function getName(Locale $Locale = null): string;
 
     /**
-     * @param null|\QUI\Locale $Locale $Locale
+     * @param null|Locale $Locale $Locale
      * @return mixed
      */
-    public function getTitle($Locale = null);
+    public function getTitle(Locale $Locale = null): mixed;
 
     /**
      * @throws Exception
      */
-    public function validate();
+    public function validate(): void;
 
     /**
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 
     /**
      * Save the values from the step into the processing order
      *
-     * @return mixed
-     * @throws \QUI\ERP\Order\Exception
+     * @return void
+     * @throws Exception
      */
-    public function save();
+    public function save(): void;
 }
