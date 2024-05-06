@@ -8,6 +8,8 @@ namespace QUI\ERP\Order\Controls\Buttons;
 
 use QUI;
 
+use function dirname;
+
 /**
  * Class ProductToBasket
  *
@@ -20,7 +22,7 @@ class ProductToBasket extends QUI\Control
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         $this->setAttributes([
             'nodeName' => 'div',
@@ -40,22 +42,15 @@ class ProductToBasket extends QUI\Control
         $this->addCSSClass('button--callToAction');
         $this->addCSSClass('button');
         $this->addCSSClass('disabled');
-        $this->addCSSFile(\dirname(__FILE__) . '/ProductToBasket.css');
+        $this->addCSSFile(dirname(__FILE__) . '/ProductToBasket.css');
     }
 
     /**
-     * (non-PHPdoc)
-     *
-     * @see \QUI\Control::create()
+     * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
-        try {
-            $Engine = QUI::getTemplateManager()->getEngine();
-        } catch (QUI\Exception $Exception) {
-            return '';
-        }
-
+        $Engine = QUI::getTemplateManager()->getEngine();
         $Locale = QUI::getLocale();
         $maxQuantity = '';
 
@@ -114,6 +109,6 @@ class ProductToBasket extends QUI\Control
             'maxQuantity' => $maxQuantity
         ]);
 
-        return $Engine->fetch(\dirname(__FILE__) . '/ProductToBasket.html');
+        return $Engine->fetch(dirname(__FILE__) . '/ProductToBasket.html');
     }
 }

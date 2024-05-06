@@ -36,7 +36,7 @@ class Factory extends QUI\Utils\Singleton
         bool|string $hash = false,
         ?int $id = null,
         string $globalProcessId = ''
-    ) {
+    ): Order {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
         }
@@ -76,13 +76,23 @@ class Factory extends QUI\Utils\Singleton
         $table = $Orders->table();
         $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
+
+        if (empty($orderId)) {
+            $orderId = 0;
+        } else {
+            $orderId = (int)$orderId + 1;
+        }
+
         if (Settings::getInstance()->get('orderStatus', 'standard')) {
             $status = (int)Settings::getInstance()->get('orderStatus', 'standard');
         }
 
         $orderData = [
             'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
-            'c_user' => $User->getId() ? $User->getId() : 0,
+            'id_str' => QUI\ERP\Order\Utils\Utils::getOrderPrefix() . $orderId,
+            'c_user' => $User->getUUID() ? $User->getUUID() : 0,
             'c_date' => date('Y-m-d H:i:s'),
             'hash' => $hash,
             'status' => $status,
@@ -100,9 +110,13 @@ class Factory extends QUI\Utils\Singleton
         }
 
         QUI::getDataBase()->insert($table, $orderData);
+        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
+        $Order = $Orders->get($lastId);
 
-        $orderId = QUI::getDataBase()->getPDO()->lastInsertId();
-        $Order = $Orders->get($orderId);
+        // set new id index
+        $Config->set('order', 'orderCurrentIdIndex', $orderId);
+        $Config->save();
+
 
         $Order->addHistory(
             QUI::getLocale()->get('quiqqer/order', 'history.order.created')
@@ -192,10 +206,10 @@ class Factory extends QUI\Utils\Singleton
 
         $orderData = [
             'id_prefix' => QUI\ERP\Order\Utils\Utils::getOrderPrefix(),
-            'c_user' => $User->getId(),
+            'c_user' => $User->getUUID(),
             'c_date' => date('Y-m-d H:i:s'),
             'hash' => QUI\Utils\Uuid::get(),
-            'customerId' => $User->getId(),
+            'customerId' => $User->getUUID(),
             'status' => $status,
             'paid_status' => QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
             'successful' => 0
@@ -212,7 +226,7 @@ class Factory extends QUI\Utils\Singleton
      * @param null $User
      * @return QUI\ERP\Order\Basket\Basket
      *
-     * @throws QUI\ERP\Order\Basket\Exception|QUI\Database\Exception
+     * @throws QUI\Database\Exception|QUI\ExceptionStack
      */
     public function createBasket($User = null): Basket\Basket
     {
@@ -222,7 +236,7 @@ class Factory extends QUI\Utils\Singleton
 
         QUI::getDataBase()->insert(
             Handler::getInstance()->tableBasket(),
-            ['uid' => $User->getId()]
+            ['uid' => $User->getUUID()]
         );
 
         $lastId = QUI::getDataBase()->getPDO()->lastInsertId();

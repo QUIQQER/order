@@ -15,10 +15,7 @@ QUI::$Ajax->registerFunction(
     function ($basketId, $pos) {
         $User = QUI::getUserBySession();
         $Basket = new QUI\ERP\Order\Basket\Basket($basketId, $User);
-
-        if ($Basket->getProducts()) {
-            $Basket->getProducts()->removePos($pos);
-        }
+        $Basket->getProducts()?->removePos($pos);
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderBasketRemovePos',

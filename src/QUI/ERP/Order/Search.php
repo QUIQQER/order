@@ -8,14 +8,19 @@ namespace QUI\ERP\Order;
 
 use PDO;
 use QUI;
+use QUI\Exception;
 use QUI\Utils\Singleton;
 
+use function array_filter;
 use function array_flip;
 use function array_map;
 use function array_sum;
+use function count;
 use function implode;
 use function is_array;
 use function is_numeric;
+use function json_encode;
+use function strtotime;
 use function trim;
 
 /**
@@ -39,7 +44,7 @@ class Search extends Singleton
     /**
      * @var array|bool
      */
-    protected $limit = [0, 20];
+    protected array|bool $limit = [0, 20];
 
     /**
      * @var string
@@ -71,10 +76,14 @@ class Search extends Singleton
      * Set a filter
      *
      * @param string $filter
-     * @param string|array $value
+     * @param array|string|null $value
      */
-    public function setFilter(string $filter, $value)
+    public function setFilter(string $filter, array|string|null $value): void
     {
+        if ($value === null) {
+            return;
+        }
+
         if ($filter === 'search') {
             $this->search = $value;
 
@@ -88,14 +97,9 @@ class Search extends Singleton
                 return;
             }
 
-            try {
-                $allowed = QUI\ERP\Currency\Handler::getAllowedCurrencies();
-            } catch (QUI\Exception $Exception) {
-                return;
-            }
+            $allowed = QUI\ERP\Currency\Handler::getAllowedCurrencies();
 
             $allowed = array_map(function ($Currency) {
-                /* @var $Currency QUI\ERP\Currency\Currency */
                 return $Currency->getCode();
             }, $allowed);
 
@@ -141,7 +145,7 @@ class Search extends Singleton
     /**
      * Clear all filters
      */
-    public function clearFilter()
+    public function clearFilter(): void
     {
         $this->filter = [];
         $this->search = null;
@@ -150,10 +154,10 @@ class Search extends Singleton
     /**
      * Set the limit
      *
-     * @param string|int $from
-     * @param string|int $to
+     * @param int|string $from
+     * @param int|string $to
      */
-    public function limit($from, $to)
+    public function limit(int|string $from, int|string $to): void
     {
         $this->limit = [(int)$from, (int)$to];
     }
@@ -163,7 +167,7 @@ class Search extends Singleton
      *
      * @param $order
      */
-    public function order($order)
+    public function order($order): void
     {
         $allowed = [];
 
@@ -220,7 +224,7 @@ class Search extends Singleton
         $oldLimit = $this->limit;
 
         $this->limit = false;
-        $this->filter = \array_filter($this->filter, function ($filter) {
+        $this->filter = array_filter($this->filter, function ($filter) {
             return $filter['filter'] != 'paid_status';
         });
 
@@ -235,7 +239,7 @@ class Search extends Singleton
         if (!empty($this->currency)) {
             try {
                 $Currency = QUI\ERP\Currency\Handler::getCurrency($this->currency);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -259,8 +263,9 @@ class Search extends Singleton
     /**
      * @param bool $count - Use count select, or not
      * @return array
+     * @throws Exception
      */
-    protected function getQuery(bool $count = false)
+    protected function getQuery(bool $count = false): array
     {
         $Order = Handler::getInstance();
 
@@ -387,7 +392,7 @@ class Search extends Singleton
 
         $whereQuery = 'WHERE ' . implode(' AND ', $where);
 
-        if (!\count($where)) {
+        if (!count($where)) {
             $whereQuery = '';
         }
 
@@ -417,6 +422,7 @@ class Search extends Singleton
 
     /**
      * @return array
+     * @throws Exception
      */
     protected function getQueryCount(): array
     {
@@ -529,12 +535,12 @@ class Search extends Singleton
             $orderData = $entry;
 
             $orderData['id'] = (int)$orderData['id'];
-            $orderData['hash'] = $Order->getHash();
-            $orderData['prefixed-id'] = $Order->getPrefixedId();
+            $orderData['hash'] = $Order->getUUID();
+            $orderData['prefixed-id'] = $Order->getPrefixedNumber();
 
             // customer data
             if (empty($orderData['customer_id'])) {
-                $orderData['customer_id'] = $Customer->getId();
+                $orderData['customer_id'] = $Customer->getUUID();
 
                 if (!$orderData['customer_id']) {
                     $orderData['customer_id'] = Handler::EMPTY_VALUE;
@@ -571,7 +577,7 @@ class Search extends Singleton
 
             if (empty($orderData['c_date'])) {
                 $orderData['c_date'] = $Locale->formatDate(
-                    \strtotime($Order->getCreateDate()),
+                    strtotime($Order->getCreateDate()),
                     $defaultTimeFormat
                 );
             }
@@ -634,7 +640,7 @@ class Search extends Singleton
             // invoice
             if ($Order->hasInvoice()) {
                 try {
-                    $orderData['invoice_id'] = $Order->getInvoice()->getId();
+                    $orderData['invoice_id'] = $Order->getInvoice()->getUUID();
                     $orderData['invoice_status'] = $Order->getInvoice()->getAttribute('status');
                 } catch (QUI\Exception $Exception) {
                     QUI\System\Log::writeDebugException($Exception);
@@ -642,11 +648,11 @@ class Search extends Singleton
             }
 
             // currency data
-            $orderData['currency_data'] = \json_encode($Currency->toArray());
+            $orderData['currency_data'] = json_encode($Currency->toArray());
 
 
             // calculation
-            $transactions = $Transactions->getTransactionsByHash($Order->getHash());
+            $transactions = $Transactions->getTransactionsByHash($Order->getUUID());
 
             $paid = array_map(function ($Transaction) {
                 if ($Transaction->isPending()) {
@@ -677,10 +683,8 @@ class Search extends Singleton
             }, $vatArray);
 
             $orderData['vat'] = implode('; ', $vat);
-            $orderData['display_vatsum'] = $Currency->format(array_sum($vatSum));
             $orderData['calculated_vat'] = $vatSum;
             $orderData['calculated_vatsum'] = array_sum($vatSum);
-
 
             // display
             $orderData['display_nettosum'] = $Currency->format($calculations['nettoSum']);

@@ -12,7 +12,7 @@ QUI::$Ajax->registerFunction(
     function ($orderId, $onlyArticles) {
         try {
             $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
-        } catch (QUI\Exception $exception) {
+        } catch (QUI\Exception) {
             $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderId);
         }
 

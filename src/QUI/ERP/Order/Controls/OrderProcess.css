@@ -169,7 +169,7 @@
         display: inline-block;
         float: none;
         height: 70px;
-        width: 150px ;
+        width: 150px;
     }
 
     .quiqqer-order-ordering-timeline-container li .title {
@@ -196,6 +196,7 @@
 
 .quiqqer-order-ordering-buttons {
     display: flex;
+    align-items: center;
     gap: 1rem;
     margin-top: 2rem;
 }
@@ -203,6 +204,10 @@
 .quiqqer-order-ordering-buttons-backToShop,
 .quiqqer-order-ordering-buttons-previous {
     margin-right: auto;
+}
+
+.quiqqer-order-ordering-buttons-backToShop {
+    color: inherit;
 }
 
 .quiqqer-order-basket-articles {
@@ -217,6 +222,23 @@
 @media screen and (max-width: 767px) {
     .quiqqer-order-ordering-buttons {
         flex-direction: column;
+    }
+
+    .quiqqer-order-ordering-buttons-next {
+        order: 1;
+    }
+
+    .quiqqer-order-ordering-buttons-changePayment,
+    .quiqqer-order-ordering-buttons-previous {
+        order: 2;
+    }
+
+    /*
+      1. place "back to shop" button at the end
+     */
+    .quiqqer-order-ordering-buttons-backToShop {
+        order: 10; /* 1 */
+        margin-top: 0.5rem;
     }
 }
 
@@ -248,6 +270,7 @@
     width: 50%;
     flex-direction: column;
 }
+
 .quiqqer-order-ordering-nobody-login {
     margin-right: 1rem;
 }

@@ -7,6 +7,9 @@
 namespace QUI\ERP\Order\Controls\Basket;
 
 use QUI;
+use QUI\ERP\Order\Basket\Basket as BasketClass;
+use QUI\ERP\Order\Basket\BasketGuest;
+use QUI\ERP\Order\Basket\BasketOrder;
 
 use function dirname;
 use function is_array;
@@ -22,9 +25,9 @@ class Basket extends QUI\Control
     /**
      * Used basket
      *
-     * @var QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest
+     * @var BasketClass|BasketGuest|BasketOrder
      */
-    protected $Basket;
+    protected BasketClass|BasketGuest|BasketOrder $Basket;
 
     /**
      * @var QUI\Projects\Project|null
@@ -36,7 +39,7 @@ class Basket extends QUI\Control
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         $this->setAttributes([
             'buttons' => true,
@@ -52,17 +55,11 @@ class Basket extends QUI\Control
     }
 
     /**
-     * @param QUI\ERP\Order\Basket\Basket|QUI\ERP\Order\Basket\BasketGuest $Basket
+     * @param BasketClass|BasketGuest|BasketOrder $Basket
      */
-    public function setBasket($Basket)
+    public function setBasket(BasketClass|BasketGuest|BasketOrder $Basket): void
     {
-        if (
-            $Basket instanceof QUI\ERP\Order\Basket\Basket ||
-            $Basket instanceof QUI\ERP\Order\Basket\BasketGuest ||
-            $Basket instanceof QUI\ERP\Order\Basket\BasketOrder
-        ) {
-            $this->Basket = $Basket;
-        }
+        $this->Basket = $Basket;
     }
 
     /**
@@ -104,7 +101,7 @@ class Basket extends QUI\Control
      * @param $fieldValueText
      * @return mixed|string
      */
-    public function getValueText($fieldValueText)
+    public function getValueText($fieldValueText): mixed
     {
         $current = QUI::getLocale()->getCurrent();
 
@@ -142,7 +139,7 @@ class Basket extends QUI\Control
      *
      * @param QUI\Projects\Project $Project
      */
-    public function setProject(QUI\Projects\Project $Project)
+    public function setProject(QUI\Projects\Project $Project): void
     {
         $this->Project = $Project;
     }

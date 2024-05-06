@@ -4,6 +4,7 @@
  * This file contains package_quiqqer_order_ajax_backend_update
  */
 
+use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\PriceFactors\Factor;
 use QUI\ERP\Accounting\PriceFactors\FactorList;
 use QUI\ERP\Order\ProcessingStatus\Handler;
@@ -20,7 +21,7 @@ use QUI\ERP\Shipping\Shipping;
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
-        $Order = QUI\ERP\Order\Handler::getInstance()->get((int)$orderId);
+        $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
         $data = json_decode($data, true);
 
         // customer
@@ -39,13 +40,13 @@ QUI::$Ajax->registerFunction(
                 $Order->setCurrency(
                     QUI\ERP\Currency\Handler::getCurrency($data['currency'])
                 );
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
         if (!$Customer && isset($data['customer'])) {
             if (isset($data['customerId']) && !isset($data['customer']['id'])) {
-                $data['customer']['id'] = (int)$data['customerId'];
+                $data['customer']['id'] = $data['customerId'];
             }
 
             if (isset($data['addressInvoice']['country']) && !isset($data['customer']['country'])) {
@@ -78,7 +79,7 @@ QUI::$Ajax->registerFunction(
 
             try {
                 $Customer = new QUI\ERP\User($data['customer']);
-            } catch (QUI\Exception $Eception) {
+            } catch (QUI\Exception) {
             }
 
             if ($Customer && isset($data['customer']['quiqqer.erp.taxId'])) {
@@ -106,16 +107,16 @@ QUI::$Ajax->registerFunction(
             $Order->setInvoiceAddress($data['addressInvoice']);
         }
 
-        if (isset($data['addressDelivery']) && !empty($data['addressDelivery'])) {
+        if (!empty($data['addressDelivery'])) {
             $Order->setDeliveryAddress($data['addressDelivery']);
-        } elseif (isset($data['addressDelivery']) && empty($data['addressDelivery'])) {
+        } elseif (isset($data['addressDelivery'])) {
             $Order->removeDeliveryAddress();
         }
 
         if (isset($data['paymentId'])) {
             try {
                 $Order->setPayment($data['paymentId']);
-            } catch (\Exception $Exception) {
+            } catch (Exception) {
             }
         }
 
@@ -131,7 +132,7 @@ QUI::$Ajax->registerFunction(
                         $data['notification']
                     );
                 }
-            } catch (\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::addError($Exception->getMessage());
             }
         }
@@ -144,11 +145,11 @@ QUI::$Ajax->registerFunction(
                 if (!empty($data['notificationShipping'])) {
                     QUI\ERP\Shipping\Shipping::getInstance()->sendStatusChangeNotification(
                         $Order,
-                        (int)$data['status'],
+                        (int)$data['shippingStatus'],
                         $data['notificationShipping']
                     );
                 }
-            } catch (\Exception $Exception) {
+            } catch (Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
             }
         }
@@ -184,14 +185,14 @@ QUI::$Ajax->registerFunction(
                     $Order->addArticle(
                         new QUI\ERP\Accounting\Article($article)
                     );
-                } catch (\Exception $Exception) {
+                } catch (Exception) {
                 }
             }
         }
 
         // import factor list
         if (isset($data['priceFactors'])) {
-            /* @var $Articles \QUI\ERP\Accounting\ArticleList */
+            /* @var $Articles ArticleList */
             /* @var $FactorList FactorList */
             $Articles = $Order->getArticles();
             $factors = [];
@@ -211,12 +212,12 @@ QUI::$Ajax->registerFunction(
                 'quiqqer/order',
                 'message.backend.update.success',
                 [
-                    'orderId' => $Order->getId()
+                    'orderId' => $Order->getPrefixedNumber()
                 ]
             )
         );
 
-        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($Order->getHash())->toArray();
+        return QUI\ERP\Order\Handler::getInstance()->getOrderByHash($Order->getUUID())->toArray();
     },
     ['orderId', 'data'],
     'Permission::checkAdminUser'

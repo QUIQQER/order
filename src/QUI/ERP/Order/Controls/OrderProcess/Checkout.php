@@ -7,6 +7,9 @@
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
 use QUI;
+use QUI\ERP\Order\Basket\Basket;
+use QUI\ERP\Order\Basket\BasketOrder;
+use QUI\ERP\Order\Basket\BasketGuest;
 
 use function dirname;
 use function json_decode;
@@ -21,16 +24,16 @@ use function trim;
 class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 {
     /**
-     * @var QUI\ERP\Order\Basket\Basket
+     * @var Basket|BasketOrder|BasketGuest
      */
-    protected $Basket;
+    protected Basket|BasketOrder|BasketGuest $Basket;
 
     /**
      * Basket constructor.
      *
      * @param array $attributes
      */
-    public function __construct($attributes = [])
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
@@ -41,18 +44,19 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * Overwrite setAttribute then checkout can react to onGetBody
      *
      * @param string $name
-     * @param array|bool|object|string $val
-     * @return QUI\QDOM
+     * @param mixed $value
+     * @return void
      */
-    public function setAttribute($name, $val)
+    public function setAttribute(string $name, mixed $value): void
     {
         if ($name === 'Process') {
             /* @var $Process QUI\ERP\Order\OrderProcess */
-            $Process = $val;
-            $self = $this;
+            $Process = $value;
 
             // reset the session termsAndConditions if the step is not the checkout step
-            $Process->Events->addEvent('onGetBody', function () use ($Process, $self) {
+            $Process->Events->addEvent('onGetBody', function () use ($Process) {
+                $self = $this;
+
                 if ($Process->getAttribute('step') === $self->getName()) {
                     return;
                 }
@@ -65,7 +69,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                     $Order = $this->getOrder();
 
                     QUI::getSession()->set(
-                        'termsAndConditions-' . $Order->getHash(),
+                        'termsAndConditions-' . $Order->getUUID(),
                         0
                     );
                 } catch (QUI\Exception $Exception) {
@@ -74,7 +78,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             });
         }
 
-        return parent::setAttribute($name, $val);
+        parent::setAttribute($name, $value);
     }
 
     /**
@@ -174,7 +178,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @throws QUI\ERP\Order\Exception
      */
-    public function validate()
+    public function validate(): void
     {
         $Order = $this->getOrder();
         $Payment = $Order->getPayment();
@@ -194,7 +198,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return;
         }
 
-        if (!QUI::getSession()->get('termsAndConditions-' . $Order->getHash())) {
+        if (!QUI::getSession()->get('termsAndConditions-' . $Order->getUUID())) {
             throw new QUI\ERP\Order\Exception([
                 'quiqqer/order',
                 'exception.order.termsAndConditions.missing'
@@ -210,13 +214,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @throws QUI\Permissions\Exception
      * @throws QUI\Exception
      */
-    public function save()
+    public function save(): void
     {
-        if (isset($_REQUEST['termsAndConditions']) && !empty($_REQUEST['termsAndConditions'])) {
+        if (!empty($_REQUEST['termsAndConditions'])) {
             $Order = $this->getOrder();
 
             QUI::getSession()->set(
-                'termsAndConditions-' . $Order->getHash(),
+                'termsAndConditions-' . $Order->getUUID(),
                 (int)$_REQUEST['termsAndConditions']
             );
         }
@@ -238,12 +242,12 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @throws QUI\Permissions\Exception
      * @throws QUI\Exception
      */
-    public function forceSave()
+    public function forceSave(): void
     {
         $Order = $this->getOrder();
         $Payment = $Order->getPayment();
 
-        if (!$Payment || !$Order) {
+        if (!$Payment) {
             return;
         }
 

@@ -19,7 +19,7 @@ QUI::$Ajax->registerFunction(
     function ($orderHash, $pos, $quantity) {
         try {
             QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return;
         }
 

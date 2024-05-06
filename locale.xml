@@ -467,8 +467,12 @@
         </locale>
 
         <locale name="message.backend.update.success">
-            <de><![CDATA[Bestellung #[oderId] wurde erfolgreich gespeichert.]]></de>
-            <en><![CDATA[Order #[orderId] was successfully saved.]]></en>
+            <de><![CDATA[Bestellung [orderId] wurde erfolgreich gespeichert.]]></de>
+            <en><![CDATA[Order [orderId] was successfully saved.]]></en>
+        </locale>
+        <locale name="message.backend.update.status">
+            <de><![CDATA[Status von Bestellung [orderId] wurde geändert.]]></de>
+            <en><![CDATA[Status of the Order [orderId] was saved.]]></en>
         </locale>
         <locale name="message.backend.update.status">
             <de><![CDATA[Status von Bestellung [orderId] wurde geändert.]]></de>
@@ -1467,7 +1471,6 @@
             <de><![CDATA[Step by Step checkout]]></de>
             <en><![CDATA[Step by step checkout]]></en>
         </locale>
-
     </groups>
 
     <groups name="quiqqer/order" datatype="js">
@@ -1476,8 +1479,8 @@
             <en><![CDATA[Orders]]></en>
         </locale>
         <locale name="order.panel.title">
-            <de><![CDATA[Bestellung: #[orderId]]]></de>
-            <en><![CDATA[Order: #[orderId]]]></en>
+            <de><![CDATA[Bestellung: [orderId]]]></de>
+            <en><![CDATA[Order: [orderId]]]></en>
         </locale>
         <locale name="erp.panel.orderProcess.text">
             <de><![CDATA[Bestellungen (in Bearbeitung)]]></de>

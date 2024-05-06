@@ -16,7 +16,7 @@ QUI::$Ajax->registerFunction(
     function ($orderId) {
         try {
             return Handler::getInstance()->get($orderId)->toArray();
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         return Handler::getInstance()->getOrderByHash($orderId)->toArray();

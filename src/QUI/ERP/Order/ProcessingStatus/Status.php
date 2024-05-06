@@ -9,6 +9,8 @@ namespace QUI\ERP\Order\ProcessingStatus;
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
 
+use function boolval;
+
 /**
  * Class Exception
  *
@@ -19,25 +21,25 @@ class Status
     /**
      * @var int
      */
-    protected $id;
+    protected int $id;
 
     /**
      * @var string
      */
-    protected $color;
+    protected mixed $color;
 
     /**
      * @var bool
      */
-    protected $notification = false;
+    protected bool $notification = false;
 
     /**
      * Status constructor.
      *
-     * @param int|\string $id - Processing status id
+     * @param int|string $id - Processing status id
      * @throws Exception
      */
-    public function __construct($id)
+    public function __construct(int|string $id)
     {
         $list = Handler::getInstance()->getList();
 
@@ -61,7 +63,7 @@ class Status
         }
 
         if (!empty($result[$id])) {
-            $this->notification = \boolval($result[$id]);
+            $this->notification = boolval($result[$id]);
         }
     }
 
@@ -72,7 +74,7 @@ class Status
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -80,10 +82,10 @@ class Status
     /**
      * Return the title
      *
-     * @param null|QUI\Locale (optional) $Locale
+     * @param null|QUI\Locale $Locale (optional) $Locale
      * @return string
      */
-    public function getTitle($Locale = null)
+    public function getTitle(QUI\Locale $Locale = null): string
     {
         if (!($Locale instanceof QUI\Locale)) {
             $Locale = QUI::getLocale();
@@ -96,10 +98,10 @@ class Status
      * Get status notification message
      *
      * @param AbstractOrder $Order - The order the status change applies to
-     * @param QUI\Locale $Locale (optional) - [default: QUI::getLocale()]
+     * @param QUI\Locale|null $Locale (optional) - [default: QUI::getLocale()]
      * @return string
      */
-    public function getStatusChangeNotificationText(AbstractOrder $Order, $Locale = null)
+    public function getStatusChangeNotificationText(AbstractOrder $Order, QUI\Locale $Locale = null): string
     {
         if (!($Locale instanceof QUI\Locale)) {
             $Locale = QUI::getLocale();
@@ -108,7 +110,7 @@ class Status
         $Customer = $Order->getCustomer();
         $message = $Locale->get('quiqqer/order', 'processing.status.notification.' . $this->id, [
             'customerName' => $Customer->getName(),
-            'orderNo' => $Order->getPrefixedId(),
+            'orderNo' => $Order->getPrefixedNumber(),
             'orderDate' => $Locale->formatDate($Order->getCreateDate()),
             'orderStatus' => $this->getTitle($Locale)
         ]);
@@ -116,7 +118,7 @@ class Status
         if (QUI::getLocale()->isLocaleString($message)) {
             $message = $Locale->get('quiqqer/order', 'processing.status.notification.template', [
                 'customerName' => $Customer->getName(),
-                'orderNo' => $Order->getPrefixedId(),
+                'orderNo' => $Order->getPrefixedNumber(),
                 'orderDate' => $Locale->formatDate($Order->getCreateDate()),
                 'orderStatus' => $this->getTitle($Locale)
             ]);
@@ -130,7 +132,7 @@ class Status
      *
      * @return string
      */
-    public function getColor()
+    public function getColor(): string
     {
         return $this->color;
     }
@@ -140,7 +142,7 @@ class Status
      *
      * @return bool
      */
-    public function isAutoNotification()
+    public function isAutoNotification(): bool
     {
         return $this->notification;
     }
@@ -153,14 +155,14 @@ class Status
      * @param null|QUI\Locale $Locale - optional. if no locale, all translations would be returned
      * @return array
      */
-    public function toArray($Locale = null)
+    public function toArray(QUI\Locale $Locale = null): array
     {
         $title = $this->getTitle($Locale);
+        $statusChangeText = [];
 
         if ($Locale === null) {
             $statusId = $this->getId();
             $title = [];
-            $statusChangeText = [];
 
             $Locale = QUI::getLocale();
             $languages = QUI::availableLanguages();
@@ -184,7 +186,8 @@ class Status
             'id' => $this->getId(),
             'title' => $title,
             'color' => $this->getColor(),
-            'notification' => $this->isAutoNotification()
+            'notification' => $this->isAutoNotification(),
+            'statusChangeText' => $statusChangeText
         ];
     }
 }

@@ -24,7 +24,7 @@ class Order implements NumberRangeInterface
      *
      * @return string
      */
-    public function getTitle($Locale = null)
+    public function getTitle(QUI\Locale $Locale = null): string
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();
@@ -38,31 +38,29 @@ class Order implements NumberRangeInterface
      *
      * @return int
      */
-    public function getRange()
+    public function getRange(): int
     {
-        $Table = QUI::getDataBase()->table();
-        $Handler = QUI\ERP\Order\Handler::getInstance();
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
 
-        return $Table->getAutoIncrementIndex($Handler->table());
+        if (empty($orderId)) {
+            return 1;
+        }
+
+        return (int)$orderId + 1;
     }
 
     /**
      * @param int $range
      */
-    public function setRange($range)
+    public function setRange(int $range): void
     {
         if (!is_numeric($range)) {
             return;
         }
 
-        $PDO = QUI::getDataBase()->getPDO();
-        $Handler = QUI\ERP\Order\Handler::getInstance();
-        $tableName = $Handler->table();
-
-        $Statement = $PDO->prepare(
-            "ALTER TABLE {$tableName} AUTO_INCREMENT = " . (int)$range
-        );
-
-        $Statement->execute();
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $Config->set('order', 'orderCurrentIdIndex', $range);
+        $Config->save();
     }
 }

@@ -21,14 +21,14 @@ QUI::$Ajax->registerFunction(
 
         try {
             $Order = $Orders->getLastOrderInProcessFromUser($User);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             $Order = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
 
             // merge with current basket
             try {
                 $Basket = $Orders->getBasketFromUser($User);
                 $Basket->toOrder($Order);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 

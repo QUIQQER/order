@@ -1,16 +1,24 @@
 <?php
 
+/**
+ * This file contains the shopping card site type
+ *
+ * @var QUI\Projects\Project $Project
+ * @var QUI\Projects\Site $Site
+ * @var QUI\Interfaces\Template\EngineInterface $Engine
+ **/
+
 use QUI\ERP\Order\Basket\BasketGuest;
 use QUI\ERP\Order\Handler;
 use QUI\System\Log;
 
 try {
     $BasketControl = null;
-    $checkoutUrl   = false;
-    $Registration  = null;
-    $Login         = null;
+    $checkoutUrl = false;
+    $Registration = null;
+    $Login = null;
 
-    $User   = QUI::getUserBySession();
+    $User = QUI::getUserBySession();
     $Orders = QUI\ERP\Order\Handler::getInstance();
 
     if (QUI::getUsers()->isNobodyUser($User)) {
@@ -35,10 +43,10 @@ try {
 
     $Engine->assign([
         'BasketControl' => $BasketControl,
-        'checkoutUrl'   => $checkoutUrl,
-        'Registration'  => $Registration,
-        'Login'         => $Login,
-        'Basket'        => $Basket
+        'checkoutUrl' => $checkoutUrl,
+        'Registration' => $Registration,
+        'Login' => $Login,
+        'Basket' => $Basket
     ]);
 } catch (QUI\DataBase\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/quiqqer', 'exception.error']);

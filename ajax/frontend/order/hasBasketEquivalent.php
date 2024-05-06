@@ -11,6 +11,7 @@
  * @return array
  */
 
+use QUI\ERP\Order\Basket\Product;
 use QUI\ERP\Order\Handler as OrderHandler;
 use QUI\ERP\Products\Field\Types\BasketConditions;
 use QUI\ERP\Products\Utils\Products as ProductUtils;
@@ -20,7 +21,7 @@ QUI::$Ajax->registerFunction(
     function ($orderHash) {
         try {
             $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($orderHash);
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return true;
         }
 
@@ -44,7 +45,7 @@ QUI::$Ajax->registerFunction(
             return false;
         };
 
-        /* @var $Product \QUI\ERP\Order\Basket\Product */
+        /* @var $Product Product */
         foreach ($products as $Product) {
             $condition = ProductUtils::getBasketCondition($Product);
 

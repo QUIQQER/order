@@ -11,6 +11,9 @@
  *
  * @return array
  */
+
+use QUI\ERP\Order\OrderInProcess;
+
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_list',
     function () {
@@ -18,8 +21,8 @@ QUI::$Ajax->registerFunction(
         $Orders = QUI\ERP\Order\Handler::getInstance();
         $orders = $Orders->getOrdersInProcessFromUser($User);
 
-        return \array_map(function ($Order) {
-            /* @var $Order \QUI\ERP\Order\OrderInProcess */
+        return array_map(function ($Order) {
+            /* @var $Order OrderInProcess */
             return $Order->toArray();
         }, $orders);
     },

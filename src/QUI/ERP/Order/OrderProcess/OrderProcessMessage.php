@@ -11,12 +11,12 @@ class OrderProcessMessage
     /**
      * @var string
      */
-    protected $type;
+    protected string $type;
 
     /**
      * @var string
      */
-    protected $msg;
+    protected string $msg;
 
     /**
      * OrderProcessMessage constructor.

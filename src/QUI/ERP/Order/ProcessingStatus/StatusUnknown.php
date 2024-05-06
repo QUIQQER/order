@@ -18,17 +18,17 @@ class StatusUnknown extends Status
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var string
      */
-    protected $color = '#999';
+    protected mixed $color = '#999';
 
     /**
      * @var bool
      */
-    protected $notification = false;
+    protected bool $notification = false;
 
     /**
      * Status constructor
@@ -40,10 +40,10 @@ class StatusUnknown extends Status
     /**
      * Return the title
      *
-     * @param null|QUI\Locale (optional) $Locale
+     * @param null|QUI\Locale $Locale (optional) $Locale
      * @return string
      */
-    public function getTitle($Locale = null)
+    public function getTitle(QUI\Locale $Locale = null): string
     {
         if (!($Locale instanceof QUI\Locale)) {
             $Locale = QUI::getLocale();

@@ -278,7 +278,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         QUILocale.get(lg, 'filter.status', {
                             status: data[i].title
                         }),
-                        data[i].id
+                        data[i].hash
                     );
                 }
 
@@ -348,9 +348,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 name: 'actions',
                 text: QUILocale.get(lg, 'panel.btn.actions'),
                 menuCorner: 'topRight',
-                styles: {
-                    'float': 'right'
-                }
+                position: 'right'
             });
 
             this.$Actions.appendChild({
@@ -594,7 +592,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            const orderId = selected[0].id;
+            const orderId = selected[0].hash;
 
             new QUIConfirm({
                 title: QUILocale.get(lg, 'dialog.order.copy.title'),
@@ -647,7 +645,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }
 
             const self = this,
-                orderId = selected[0].id;
+                orderId = selected[0].hash;
 
             new QUIConfirm({
                 title: QUILocale.get(lg, 'dialog.order.delete.title'),
@@ -701,7 +699,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            this.openOrder(this.$Grid.getSelectedData()[0].id);
+            this.openOrder(this.$Grid.getSelectedData()[0].hash);
         },
 
         /**
@@ -714,7 +712,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            const orderId = selected[0].id;
+            const orderId = selected[0].hash;
 
             new QUIConfirm({
                 title: QUILocale.get(lg, 'dialog.order.createInvoice.title'),
@@ -799,7 +797,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     onSubmit: function(Win) {
                         Win.Loader.show();
 
-                        Orders.createSalesOrder(Row.id).then(function(salesOrderHash) {
+                        Orders.createSalesOrder(Row.hash).then(function(salesOrderHash) {
                             Win.close();
 
                             require([
@@ -839,7 +837,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ParentNode.setStyle('padding', 10);
             ParentNode.set('html', '<div class="fa fa-spinner fa-spin"></div>');
 
-            Orders.getArticleHtml(this.$Grid.getDataByRow(row).id).then(function(result) {
+            Orders.getArticleHtml(this.$Grid.getDataByRow(row).hash).then(function(result) {
                 if (result.indexOf('<table') === -1) {
                     ParentNode.set('html', QUILocale.get(lg, 'message.orders.panel.empty.articles'));
                     return;
@@ -1007,7 +1005,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                             });
                         },
                         onSubmitExisting: (txId, Win) => {
-                            this.linkTransaction(hash,txId).then(function() {
+                            this.linkTransaction(hash, txId).then(function() {
                                 Win.close();
                             }).catch(function() {
                                 Win.Loader.hide();
@@ -1054,7 +1052,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @param {String} txId
          * @return {Promise<void>}
          */
-        linkTransaction: function (orderHash, txId) {
+        linkTransaction: function(orderHash, txId) {
             this.Loader.show();
 
             return Orders.linkTransaction(orderHash, txId).then(() => {
@@ -1259,6 +1257,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 exportData: true,
                 storageKey: 'quiqqer-orders-panel',
                 exportTypes: {
+                    print: true,
+                    pdf: true,
                     csv: true,
                     json: true,
                     xls: true
@@ -1318,7 +1318,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                     text: QUILocale.get(lg, 'panel.orders.contextMenu.open.order'),
                                     events: {
                                         onClick: function() {
-                                            self.openOrder(rowData.id);
+                                            self.openOrder(rowData.hash);
                                         }
                                     }
                                 })
@@ -1378,7 +1378,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                                 'package/quiqqer/order/bin/backend/controls/panels/order/StatusWindow'
                                             ], function(StatusWindow) {
                                                 new StatusWindow({
-                                                    orderId: rowData.id,
+                                                    orderId: rowData.hash,
                                                     events: {
                                                         statusChanged: function() {
                                                             self.refresh();
@@ -1404,7 +1404,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     const selected = self.$Grid.getSelectedData();
 
                     if (selected.length) {
-                        self.openOrder(selected[0].id).catch(function(err) {
+                        self.openOrder(selected[0].hash).catch(function(err) {
                             console.error(err);
                         });
                     }

@@ -7,9 +7,12 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
-use QUI\ERP\Order\Factory;
+use QUI\Database\Exception;
+use QUI\ERP\Order\AbstractOrder;
 use QUI\ERP\Order\Handler;
+use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
+use QUI\ExceptionStack;
 
 use function is_array;
 use function json_decode;
@@ -26,9 +29,9 @@ class Basket
     /**
      * Basket id
      *
-     * @var integer
+     * @var integer|bool
      */
-    protected $id;
+    protected int|bool $id;
 
     /**
      * List of products
@@ -38,14 +41,14 @@ class Basket
     protected ?ProductList $List = null;
 
     /**
-     * @var QUI\Interfaces\Users\User
+     * @var ?QUI\Interfaces\Users\User
      */
-    protected $User;
+    protected ?QUI\Interfaces\Users\User $User = null;
 
     /**
      * @var string
      */
-    protected $hash = null;
+    protected mixed $hash = null;
 
     /**
      * @var QUI\ERP\Comments|null
@@ -55,12 +58,11 @@ class Basket
     /**
      * Basket constructor.
      *
-     * @param integer|bool $basketId - ID of the basket
-     * @param bool|QUI\Users\User $User
-     *
-     * @throws Exception
+     * @param bool|integer $basketId - ID of the basket
+     * @param ?QUI\Interfaces\Users\User $User
+     * @throws ExceptionStack
      */
-    public function __construct($basketId, $User = false)
+    public function __construct(bool|int $basketId, QUI\Interfaces\Users\User $User = null)
     {
         if (!$User) {
             $User = QUI::getUserBySession();
@@ -85,20 +87,6 @@ class Basket
             return;
         }
 
-        if (isset($Exception)) {
-            try {
-                if ($Exception instanceof ExceptionBasketNotFound) {
-                    $Basket = Factory::getInstance()->createBasket($User);
-                    $data = Handler::getInstance()->getBasketData($Basket->getId(), $User);
-                }
-            } catch (QUI\Exception $Exception) {
-                throw new Exception(
-                    $Exception->getMessage(),
-                    $Exception->getCode()
-                );
-            }
-        }
-
         $this->id = $basketId;
         $this->User = $User;
         $this->hash = $data['hash'];
@@ -113,9 +101,9 @@ class Basket
     /**
      * Return the basket ID
      *
-     * @return int
+     * @return bool|int
      */
-    public function getId()
+    public function getId(): bool|int
     {
         return $this->id;
     }
@@ -123,7 +111,7 @@ class Basket
     /**
      * Clear the basket
      */
-    public function clear()
+    public function clear(): void
     {
         $this->List->clear();
     }
@@ -131,7 +119,7 @@ class Basket
     /**
      * Set the basket as ordered successful
      */
-    public function successful()
+    public function successful(): void
     {
         $this->List->clear();
         $this->hash = null;
@@ -150,7 +138,7 @@ class Basket
     /**
      * Return the product list
      *
-     * @return ProductList
+     * @return ProductList|null
      */
     public function getProducts(): ?ProductList
     {
@@ -165,14 +153,14 @@ class Basket
      * @throws QUI\Exception
      * @throws QUI\ERP\Products\Product\Exception
      */
-    public function addProduct(Product $Product)
+    public function addProduct(Product $Product): void
     {
         $this->List->addProduct($Product);
 
         if ($this->hasOrder()) {
             try {
                 $this->getOrder()->addArticle($Product->toArticle());
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
     }
@@ -183,8 +171,9 @@ class Basket
      * Import the products to the basket
      *
      * @param array $products
+     * @throws ExceptionStack
      */
-    public function import(array $products = [])
+    public function import(array $products = []): void
     {
         $this->clear();
 
@@ -199,7 +188,7 @@ class Basket
             $this->List->setOrder($Order);
 
             $OrderOrBasket = $Order;
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
         }
 
         $this->List = QUI\ERP\Order\Utils\Utils::importProductsToBasketList(
@@ -226,7 +215,7 @@ class Basket
     /**
      * Save the basket
      */
-    public function save()
+    public function save(): void
     {
         if (!$this->List) {
             return;
@@ -240,7 +229,7 @@ class Basket
             /* @var $Product Product */
             $fields = $Product->getFields();
 
-            /* @var $Field QUI\ERP\Products\Field\UniqueField */
+            /* @var $Field UniqueField */
             foreach ($fields as $Field) {
                 $Field->setChangeableStatus(false);
             }
@@ -255,7 +244,7 @@ class Basket
                 'fields' => []
             ];
 
-            /* @var $Field QUI\ERP\Products\Field\UniqueField */
+            /* @var $Field UniqueField */
             foreach ($fields as $Field) {
                 if ($Field->isCustomField()) {
                     $productData['fields'][] = $Field->getAttributes();
@@ -274,7 +263,7 @@ class Basket
                 ],
                 [
                     'id' => $this->getId(),
-                    'uid' => $this->User->getId()
+                    'uid' => $this->User->getUUID()
                 ]
             );
         } catch (\Exception $Exception) {
@@ -297,7 +286,7 @@ class Basket
         foreach ($products as $Product) {
             $fields = [];
 
-            /* @var $Field \QUI\ERP\Products\Field\UniqueField */
+            /* @var $Field UniqueField */
             foreach ($Product->getFields() as $Field) {
                 if (!$Field->isPublic() && !$Field->isCustomField()) {
                     continue;
@@ -345,7 +334,7 @@ class Basket
      *
      * @param $hash
      */
-    public function setHash($hash)
+    public function setHash($hash): void
     {
         $this->hash = $hash;
     }
@@ -353,7 +342,7 @@ class Basket
     /**
      * Return the process number
      *
-     * @return string
+     * @return string|null
      */
     public function getHash(): ?string
     {
@@ -373,7 +362,7 @@ class Basket
 
         try {
             $this->getOrder();
-        } catch (QUi\Exception $Exception) {
+        } catch (QUi\Exception) {
             return false;
         }
 
@@ -387,7 +376,7 @@ class Basket
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    public function getOrder()
+    public function getOrder(): QUI\ERP\Order\AbstractOrder
     {
         if (empty($this->hash)) {
             throw new Exception(
@@ -405,7 +394,7 @@ class Basket
      *
      * @throws QUI\Exception
      */
-    public function updateOrder()
+    public function updateOrder(): void
     {
         try {
             $Order = $this->getOrder();
@@ -420,18 +409,20 @@ class Basket
         }
 
         $this->toOrder($Order);
-        $this->setHash($Order->getHash());
+        $this->setHash($Order->getUUID());
     }
 
     /**
-     * @param QUI\ERP\Order\Order|QUI\ERP\Order\OrderInProcess $Order
+     * @param AbstractOrder $Order
      *
+     * @throws ExceptionStack
+     * @throws Exception
      * @throws QUI\ERP\Exception
+     * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
-     * @throws QUI\ExceptionStack
      * @throws QUI\Permissions\Exception
      */
-    public function toOrder($Order)
+    public function toOrder(QUI\ERP\Order\AbstractOrder $Order): void
     {
         try {
             // insert basket products into the articles
@@ -461,7 +452,7 @@ class Basket
 
         $Order->setInvoiceAddress($InvoiceAddress);
         $Order->setDeliveryAddress($DeliveryAddress);
-        $Order->save();
+        $Order->update();
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderBasketToOrder',
@@ -475,7 +466,7 @@ class Basket
         );
 
         $Order->getArticles()->calc();
-        $Order->save();
+        $Order->update();
 
         QUI::getEvents()->fireEvent(
             'quiqqerOrderBasketToOrderEnd',
@@ -498,7 +489,7 @@ class Basket
         try {
             // select the last order in processing
             return $Orders->getLastOrderInProcessFromUser($User);
-        } catch (QUI\Erp\Order\Exception $Exception) {
+        } catch (QUI\Erp\Order\Exception) {
         }
 
         return QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
@@ -513,7 +504,7 @@ class Basket
      *
      * @param string $message
      */
-    public function addFrontendMessage(string $message)
+    public function addFrontendMessage(string $message): void
     {
         $this->FrontendMessages->addComment($message);
     }
@@ -531,7 +522,7 @@ class Basket
     /**
      * Clears the messages and save this status to the database
      */
-    public function clearFrontendMessages()
+    public function clearFrontendMessages(): void
     {
         $this->FrontendMessages->clear();
     }

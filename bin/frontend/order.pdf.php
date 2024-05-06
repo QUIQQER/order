@@ -42,7 +42,7 @@ try {
 }
 
 // is the user allowed to open the invoice
-if ($User->getId() !== $Customer->getId()) {
+if ($User->getUUID() !== $Customer->getUUID()) {
     $Response->setStatusCode(
         \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN
     );
