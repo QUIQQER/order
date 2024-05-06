@@ -9,7 +9,7 @@
 
 QUI::$Ajax->registerFunction(
     'package_quiqqer_order_ajax_backend_createSalesOrder',
-    function (int $orderId) {
+    function ($orderId) {
         // check if invoice is installed
         QUI::getPackage('quiqqer/salesorders');
 
