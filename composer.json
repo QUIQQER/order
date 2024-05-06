@@ -10,22 +10,22 @@
     {
       "name": "Henning Leutz",
       "email": "support@pcsg.de",
-      "homepage": "http://www.pcsg.de",
+      "homepage": "https://www.pcsg.de",
       "role": "Developer"
     }
   ],
   "support": {
     "email": "support@pcsg.de",
-    "url": "http://www.pcsg.de"
+    "url": "httpa://www.pcsg.de"
   },
   "require": {
     "php": "^8",
     "php81_bc/strftime": "^0.7",
     "ramsey/uuid": "^3|^4",
     "quiqqer/core": "^2",
-    "quiqqer/erp": "^3",
-    "quiqqer/countries": "^1",
-    "quiqqer/areas": "^1",
+    "quiqqer/erp": "^3.2",
+    "quiqqer/countries": "^2",
+    "quiqqer/areas": "^2",
     "quiqqer/products": "^2",
     "quiqqer/payments": "^2",
     "quiqqer/tax": "^2",
