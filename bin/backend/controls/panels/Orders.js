@@ -726,7 +726,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
-                    text: QUILocale.get('quiqqer/quiqqer', 'create'),
+                    text: QUILocale.get('quiqqer/core', 'create'),
                     textimage: 'fa fa-money'
                 },
                 events: {
@@ -790,7 +790,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
-                    text: QUILocale.get('quiqqer/quiqqer', 'create'),
+                    text: QUILocale.get('quiqqer/core', 'create'),
                     textimage: 'fa fa-suitcase'
                 },
                 events: {
