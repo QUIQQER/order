@@ -389,7 +389,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.addButton({
                 name: 'save',
                 textimage: 'fa fa-save',
-                text: QUILocale.get('quiqqer/quiqqer', 'save'),
+                text: QUILocale.get('quiqqer/core', 'save'),
                 events: {
                     onClick: this.update
                 }
@@ -717,7 +717,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
          */
         $showLockMessage: function() {
             const self = this;
-            let btnText = QUILocale.get('quiqqer/quiqqer', 'submit');
+            let btnText = QUILocale.get('quiqqer/core', 'submit');
 
             if (window.USER.isSU) {
                 btnText = QUILocale.get(lg, 'button.unlock.order.is.locked');
@@ -1434,7 +1434,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
-                    text: QUILocale.get('quiqqer/quiqqer', 'create'),
+                    text: QUILocale.get('quiqqer/core', 'create'),
                     textimage: 'fa fa-suitcase'
                 },
                 events: {

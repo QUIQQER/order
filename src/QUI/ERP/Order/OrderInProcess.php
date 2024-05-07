@@ -405,7 +405,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
-                QUI::getLocale()->get('quiqqer/quiqqer', 'exception.no.permission'),
+                QUI::getLocale()->get('quiqqer/core', 'exception.no.permission'),
                 403
             );
         }
