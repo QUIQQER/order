@@ -28,9 +28,9 @@ use function json_encode;
 class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
     /**
-     * @var null|integer
+     * @var null|string
      */
-    protected ?int $orderId = null;
+    protected ?string $orderId = null;
 
     /**
      * Order constructor.

@@ -46,9 +46,9 @@ class Basket
     protected ?QUI\Interfaces\Users\User $User = null;
 
     /**
-     * @var string
+     * @var ?string
      */
-    protected mixed $hash = null;
+    protected ?string $hash = null;
 
     /**
      * @var QUI\ERP\Comments|null

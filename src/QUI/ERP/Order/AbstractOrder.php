@@ -1852,7 +1852,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             || !$Shipping->canUsedInErpEntity($this)
             || !$Shipping->canUsedBy($this->getCustomer(), $this)
         ) {
-            $this->shippingId = false;
+            $this->shippingId = null;
 
             throw new QUI\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.shipping.is.not.valid')

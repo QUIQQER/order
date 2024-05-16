@@ -10,6 +10,7 @@ use IntlDateFormatter;
 use QUI;
 use QUI\Exception;
 
+use function class_exists;
 use function dirname;
 use function is_array;
 use function is_string;
@@ -92,7 +93,7 @@ class Mail
         $Shipping = null;
         $DeliveryAddress = null;
 
-        if ($Order->getShipping()) {
+        if (class_exists('QUI\ERP\Shipping\Shipping') && $Order->getShipping()) {
             $Shipping = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
             $DeliveryAddress = $Shipping->getAddress();
 
@@ -222,7 +223,7 @@ class Mail
         $Shipping = null;
         $DeliveryAddress = null;
 
-        if ($Order->getShipping()) {
+        if (class_exists('QUI\ERP\Shipping\Shipping') && $Order->getShipping()) {
             $Shipping = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
             $DeliveryAddress = $Shipping->getAddress();
             $DeliveryAddress->setAttribute(
@@ -335,7 +336,12 @@ class Mail
         $localeVar['trackingNumber'] = '';
         $localeVar['trackingLink'] = '';
 
-        if (!empty($shippingTracking) && isset($shippingTracking['type']) && isset($shippingTracking['number'])) {
+        if (
+            !empty($shippingTracking)
+            && isset($shippingTracking['type'])
+            && isset($shippingTracking['number'])
+            && class_exists('QUI\ERP\Shipping\Tracking\Tracking')
+        ) {
             $localeVar['trackingInfo'] = QUI::getLocale()->get(
                 'quiqqer/order',
                 'shipping.order.mail.body.shippingInformation',
