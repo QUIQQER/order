@@ -8,7 +8,6 @@ use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\PriceFactors\Factor;
 use QUI\ERP\Accounting\PriceFactors\FactorList;
 use QUI\ERP\Order\ProcessingStatus\Handler;
-use QUI\ERP\Shipping\Shipping;
 
 /**
  * Update an order
@@ -142,7 +141,7 @@ QUI::$Ajax->registerFunction(
                 $Order->setShippingStatus($data['shippingStatus']);
 
                 // Send status notification
-                if (!empty($data['notificationShipping'])) {
+                if (!empty($data['notificationShipping']) && class_exists('QUI\ERP\Shipping\Shipping')) {
                     QUI\ERP\Shipping\Shipping::getInstance()->sendStatusChangeNotification(
                         $Order,
                         (int)$data['shippingStatus'],
@@ -160,9 +159,12 @@ QUI::$Ajax->registerFunction(
 
         if (!empty($data['shipping'])) {
             try {
-                if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+                if (
+                    QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+                    && class_exists('QUI\ERP\Shipping\Shipping')
+                ) {
                     $Order->setShipping(
-                        Shipping::getInstance()->getShippingEntry($data['shipping'])
+                        QUI\ERP\Shipping\Shipping::getInstance()->getShippingEntry($data['shipping'])
                     );
                 }
             } catch (QUI\Exception $Exception) {

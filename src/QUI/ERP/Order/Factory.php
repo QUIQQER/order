@@ -217,7 +217,7 @@ class Factory extends QUI\Utils\Singleton
 
         QUI::getDataBase()->insert($table, $orderData);
 
-        return QUI::getDataBase()->getPDO()->lastInsertId();
+        return (int)QUI::getDataBase()->getPDO()->lastInsertId();
     }
 
     /**

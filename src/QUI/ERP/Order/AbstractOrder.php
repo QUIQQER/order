@@ -23,6 +23,7 @@ use QUI\ExceptionStack;
 
 use function array_filter;
 use function array_flip;
+use function class_exists;
 use function date;
 use function is_array;
 use function is_numeric;
@@ -443,7 +444,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             // nothing
         }
 
-        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping') && isset($data['shipping_status'])) {
+        if (
+            QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+            && isset($data['shipping_status'])
+            && class_exists('QUI\ERP\Shipping\ShippingStatus\Handler')
+            && class_exists('QUI\ERP\Shipping\ShippingStatus\Exception')
+        ) {
             try {
                 $this->ShippingStatus = ShippingStatusHandler::getInstance()->getShippingStatus(
                     $data['shipping_status']
@@ -1757,7 +1763,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             return null;
         }
 
-        if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+        if (
+            !QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+            || !class_exists('QUI\ERP\Shipping\Shipping')
+        ) {
             return null;
         }
 
@@ -1843,7 +1852,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             || !$Shipping->canUsedInErpEntity($this)
             || !$Shipping->canUsedBy($this->getCustomer(), $this)
         ) {
-            $this->shippingId = false;
+            $this->shippingId = null;
 
             throw new QUI\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.shipping.is.not.valid')
@@ -2200,7 +2209,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      */
     public function getShippingStatus(): bool|QUI\ERP\Shipping\ShippingStatus\Status|null
     {
-        if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+        if (
+            !QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+            || !class_exists('QUI\ERP\Shipping\ShippingStatus\Handler')
+        ) {
             return false;
         }
 
@@ -2228,10 +2240,19 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * -> when the status changes, it triggers the onShippingStatusChange event
      *
      * @param int|QUI\ERP\Shipping\ShippingStatus\Status $status
+     * @throws QUI\Exception
      */
     public function setShippingStatus(int|QUI\ERP\Shipping\ShippingStatus\Status $status): void
     {
         if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+            return;
+        }
+
+        if (
+            !class_exists('QUI\ERP\Shipping\ShippingStatus\Status')
+            || !class_exists('QUI\ERP\Shipping\ShippingStatus\Handler')
+            || !class_exists('QUI\ERP\Shipping\ShippingStatus\Exception')
+        ) {
             return;
         }
 

@@ -280,7 +280,7 @@ class EventHandling
             $Process = new QUI\ERP\Process($Invoice->getGlobalProcessId());
             $Order = $Process->getOrder();
 
-            if ($Order->isPosted()) {
+            if (!$Order || $Order->isPosted()) {
                 return;
             }
 

@@ -267,7 +267,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency' => $this->getCurrency()->getCode(),
             ],
-            ['uuid' => $TemporaryInvoice->getUUID()]
+            ['hash' => $TemporaryInvoice->getUUID()]
         );
 
         // create the real invoice
@@ -295,7 +295,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
-                ['uuid' => $this->getUUID()]
+                ['hash' => $this->getUUID()]
             );
 
             $this->invoiceId = $Invoice->getUUID();
@@ -488,20 +488,14 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
     {
         $InvoiceAddress = $this->getInvoiceAddress();
         $DeliveryAddress = $this->getDeliveryAddress();
-        $deliveryAddress = '';
+        $deliveryAddress = $DeliveryAddress->toJSON();
 
-        if ($DeliveryAddress) {
-            $deliveryAddress = $DeliveryAddress->toJSON();
-        }
-
-        if ($this->getShipping()) {
+        if ($this->getShipping() && class_exists('QUI\ERP\Shipping\Shipping')) {
             $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
             $Shipping = $ShippingHandler->getShippingByObject($this);
             $Address = $Shipping->getAddress();
-
             $deliveryAddress = $Address->toJSON();
         }
-
 
         // customer
         $Customer = $this->getCustomer();
