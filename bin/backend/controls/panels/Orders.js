@@ -56,7 +56,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$clickCreateInvoice',
             '$onSearchKeyUp',
             '$onAddPaymentButtonClick',
-            '$clickCreateSalesOrder'
+            '$clickCreateSalesOrder',
+            '$onPDFExportButtonClick'
         ],
 
         initialize: function(options) {
@@ -204,6 +205,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             }
 
             const selected = this.$Grid.getSelectedData();
+            const Pdf = this.$Grid.getButton('printPdf');
 
             if (selected.length) {
                 if (selected[0].paid_status === 1 ||
@@ -211,9 +213,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
 
                 this.$Actions.enable();
+                Pdf.enable();
                 return;
             }
 
+            Pdf.disable();
             this.$Actions.disable();
         },
 
@@ -1266,7 +1270,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                 columnModel: this.$getGridColumnModel(),
                 buttons: [
-                    this.$Actions,
                     {
                         name: 'create',
                         text: QUILocale.get(lg, 'panel.btn.createOrder'),
@@ -1282,7 +1285,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 });
                             }
                         }
-                    }
+                    },
+                    {
+                        name: 'printPdf',
+                        text: QUILocale.get(lg, 'order.btn.pdf'),
+                        textimage: 'fa fa-print',
+                        disabled: true,
+                        position: 'right',
+                        events: {
+                            onClick: this.$onPDFExportButtonClick
+                        }
+                    },
+                    this.$Actions
                 ]
             });
 
@@ -1409,6 +1423,28 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         });
                     }
                 }
+            });
+        },
+
+        $onPDFExportButtonClick: function() {
+            var selected = this.$Grid.getSelectedData();
+
+            if (!selected.length) {
+                return;
+            }
+
+            return new Promise((resolve) => {
+                require([
+                    'package/quiqqer/erp/bin/backend/controls/OutputDialog'
+                ], (OutputDialog) => {
+                    new OutputDialog({
+                        entityId: selected[0].hash,
+                        entityType: 'Order',
+                        comments: false
+                    }).open();
+
+                    resolve();
+                });
             });
         }
     });

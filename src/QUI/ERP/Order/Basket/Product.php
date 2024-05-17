@@ -162,9 +162,9 @@ class Product extends UniqueProduct
     }
 
     /**
-     * @return QUI\ERP\Products\Category\Category|null
+     * @return ?QUI\ERP\Products\Interfaces\CategoryInterface
      */
-    public function getCategory(): ?QUI\ERP\Products\Category\Category
+    public function getCategory(): ?QUI\ERP\Products\Interfaces\CategoryInterface
     {
         if (!$this->Category) {
             try {

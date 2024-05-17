@@ -27,10 +27,7 @@ use function json_encode;
  */
 class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
-    /**
-     * @var null|integer
-     */
-    protected ?int $orderId = null;
+    protected null|string|int $orderId = null;
 
     /**
      * Order constructor.
@@ -99,10 +96,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $this->setDataBaseData($data);
     }
 
-    /**
-     * @return int|null
-     */
-    public function getOrderId(): ?int
+    public function getOrderId(): null|int|string
     {
         return $this->orderId;
     }
