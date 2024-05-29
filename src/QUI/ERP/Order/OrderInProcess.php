@@ -649,6 +649,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         }
 
         return [
+            'id_str' => $this->idStr,
             'customerId' => $this->customerId,
             'customer' => json_encode($customer),
             'addressInvoice' => $InvoiceAddress->toJSON(),
