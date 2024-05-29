@@ -1278,13 +1278,13 @@
         <locale name="order.confirmation.admin.body" html="true">
             <de><![CDATA[
             <h2>Bestelldetails</h2>
-            Bestellnummer: [orderPrefixedId]<br />
+            Bestellnummer: [orderId]<br />
             Benutzer-ID: [userId]<br />
             Benutzername: [username]<br />
             ]]></de>
             <en><![CDATA[
             <h2>Order details</h2>
-            Order ID: [orderPrefixedId]<br />
+            Order ID: [orderId]<br />
             User ID: [userId]<br />
             Username: [username]<br />
             ]]></en>
