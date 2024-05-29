@@ -290,7 +290,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
 
         // auto invoice post
         if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
-            $Invoice = $TemporaryInvoice->post();
+            $Invoice = $TemporaryInvoice->post($PermissionUser);
 
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
