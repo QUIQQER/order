@@ -1272,19 +1272,19 @@
         </locale>
 
         <locale name="order.confirmation.admin.subject">
-            <de><![CDATA[Es wurde eine Bestellung aufgegeben: [orderId]]]></de>
-            <en><![CDATA[An order was placed: [orderId]]]></en>
+            <de><![CDATA[Es wurde eine Bestellung aufgegeben: [orderPrefixedId]]]></de>
+            <en><![CDATA[An order was placed: [orderPrefixedId]]]></en>
         </locale>
         <locale name="order.confirmation.admin.body" html="true">
             <de><![CDATA[
             <h2>Bestelldetails</h2>
-            Bestellnummer: [orderId]<br />
+            Bestellnummer: [orderPrefixedId]<br />
             Benutzer-ID: [userId]<br />
             Benutzername: [username]<br />
             ]]></de>
             <en><![CDATA[
             <h2>Order details</h2>
-            Order ID: [orderId]<br />
+            Order ID: [orderPrefixedId]<br />
             User ID: [userId]<br />
             Username: [username]<br />
             ]]></en>
