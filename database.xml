@@ -6,7 +6,7 @@
             <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="VARCHAR(100) DEFAULT NULL">id_prefix</field>
             <field type="VARCHAR(110) DEFAULT NULL">id_str</field>
-            <field type="BIGINT(10) NULL DEFAULT NULL">order_process_id</field>
+            <field type="VARCHAR(50) NULL DEFAULT NULL">order_process_id</field>
             <field type="VARCHAR(50) NULL DEFAULT NULL">global_process_id</field>
 
             <!-- Für aufgesplittete Bestellungen -->
