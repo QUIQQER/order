@@ -58,6 +58,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             const self = this,
                 Elm = this.getElm();
 
+            function ignoreAutoFill(node)
+            {
+                node.role = 'presentation';
+                node.autocomplete = 'off';
+            }
+
             this.$Firstname = Elm.getElement('[name="firstname"]');
             this.$Lastname = Elm.getElement('[name="lastname"]');
             this.$Company = Elm.getElement('[name="company"]');
@@ -83,6 +89,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/Address', [
             this.$Street.disabled = false;
             this.$ZIP.disabled = false;
             this.$City.disabled = false;
+
+            ignoreAutoFill(this.$Firstname);
+            ignoreAutoFill(this.$Lastname);
+            ignoreAutoFill(this.$Company);
+            ignoreAutoFill(this.$Street);
+            ignoreAutoFill(this.$ZIP);
+            ignoreAutoFill(this.$City);
 
             Countries.getCountries().then(function(result) {
                 new Element('option', {
