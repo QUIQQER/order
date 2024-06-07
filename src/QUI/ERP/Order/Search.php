@@ -544,34 +544,34 @@ class Search extends Singleton
 
                 if (!$orderData['customer_id']) {
                     $orderData['customer_id'] = Handler::EMPTY_VALUE;
-                } else {
-                    $orderData['customer_name'] = $Customer->getName();
+                }
 
-                    if (empty($orderData['customer_name'])) {
-                        $orderData['customer_name'] = $Customer->getAttribute('email');
+                $orderData['customer_name'] = $Customer->getName();
+
+                if (empty($orderData['customer_name'])) {
+                    $orderData['customer_name'] = $Customer->getAttribute('email');
+                }
+
+                $Address = $Order->getInvoiceAddress();
+
+                if (empty(trim($orderData['customer_name']))) {
+                    $orderData['customer_name'] = $Address->getAttribute('firstname');
+                    $orderData['customer_name'] .= ' ';
+                    $orderData['customer_name'] .= $Address->getAttribute('lastname');
+
+                    $orderData['customer_name'] = trim($orderData['customer_name']);
+                }
+
+                $address = $Address->getAttributes();
+
+                if (!empty($address['company'])) {
+                    $orderData['customer_name'] = trim($orderData['customer_name']);
+
+                    if (!empty($orderData['customer_name'])) {
+                        $orderData['customer_name'] = ' (' . $orderData['customer_name'] . ')';
                     }
 
-                    $Address = $Order->getInvoiceAddress();
-
-                    if (empty(trim($orderData['customer_name']))) {
-                        $orderData['customer_name'] = $Address->getAttribute('firstname');
-                        $orderData['customer_name'] .= ' ';
-                        $orderData['customer_name'] .= $Address->getAttribute('lastname');
-
-                        $orderData['customer_name'] = trim($orderData['customer_name']);
-                    }
-
-                    $address = $Address->getAttributes();
-
-                    if (!empty($address['company'])) {
-                        $orderData['customer_name'] = trim($orderData['customer_name']);
-
-                        if (!empty($orderData['customer_name'])) {
-                            $orderData['customer_name'] = ' (' . $orderData['customer_name'] . ')';
-                        }
-
-                        $orderData['customer_name'] = $address['company'] . $orderData['customer_name'];
-                    }
+                    $orderData['customer_name'] = $address['company'] . $orderData['customer_name'];
                 }
             }
 

@@ -764,8 +764,9 @@ class Handler extends Singleton
     {
         $result = QUI::getDataBase()->fetch([
             'from' => $this->tableOrderProcess(),
-            'where' => [
-                'id' => $orderId
+            'where_or' => [
+                'id' => $orderId,
+                'hash' => $orderId
             ],
             'limit' => 1
         ]);

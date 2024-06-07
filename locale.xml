@@ -1272,8 +1272,8 @@
         </locale>
 
         <locale name="order.confirmation.admin.subject">
-            <de><![CDATA[Es wurde eine Bestellung aufgegeben: [orderId]]]></de>
-            <en><![CDATA[An order was placed: [orderId]]]></en>
+            <de><![CDATA[Es wurde eine Bestellung aufgegeben: [orderPrefixedId]]]></de>
+            <en><![CDATA[An order was placed: [orderPrefixedId]]]></en>
         </locale>
         <locale name="order.confirmation.admin.body" html="true">
             <de><![CDATA[

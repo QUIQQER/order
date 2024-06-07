@@ -44,7 +44,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         parent::__construct($data);
 
-        $this->orderId = $data['order_id'];
+        $this->orderId = $data['hash'];
 
         // check if an order for the processing order exists
         try {
@@ -649,6 +649,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         }
 
         return [
+            'id_str' => $this->idStr,
             'customerId' => $this->customerId,
             'customer' => json_encode($customer),
             'addressInvoice' => $InvoiceAddress->toJSON(),
