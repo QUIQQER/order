@@ -22,6 +22,7 @@ use function class_exists;
 use function is_array;
 use function is_string;
 use function json_decode;
+use function json_encode;
 
 /**
  * Class OrderBooked
@@ -33,10 +34,19 @@ use function json_decode;
  */
 class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
+    use QUI\ERP\ErpEntityCustomerFiles;
+
     /**
      * @var bool
      */
     protected bool $posted = false;
+
+    /**
+     * variable data for developers
+     *
+     * @var array
+     */
+    protected mixed $customData = [];
 
     /**
      * Order constructor.
@@ -48,9 +58,13 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
      */
     public function __construct($orderId)
     {
-        parent::__construct(
-            Handler::getInstance()->getOrderData($orderId)
-        );
+        $orderData = Handler::getInstance()->getOrderData($orderId);
+
+        parent::__construct($orderData);
+
+        if (!empty($orderData['custom_data'])) {
+            $this->customData = json_decode($orderData['custom_data'], true);
+        }
     }
 
     /**
@@ -1086,4 +1100,60 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             }
         }
     }
+
+    //region custom data
+
+
+    /**
+     * Add a custom data entry
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @throws QUI\Database\Exception
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    public function addCustomDataEntry(string $key, mixed $value): void
+    {
+        $this->customData[$key] = $value;
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            ['custom_data' => json_encode($this->customData)],
+            ['id' => $this->id]
+        );
+
+        QUI::getEvents()->fireEvent(
+            'onQuiqqerOrderAddCustomData',
+            [$this, $this, $this->customData, $key, $value]
+        );
+    }
+
+    /**
+     * Return a wanted custom data entry
+     *
+     * @param $key
+     * @return mixed|null
+     */
+    public function getCustomDataEntry($key): mixed
+    {
+        if (isset($this->customData[$key])) {
+            return $this->customData[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * Return all custom data
+     *
+     * @return array
+     */
+    public function getCustomData(): array
+    {
+        return $this->customData;
+    }
+
+    //endregion
 }
