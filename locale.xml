@@ -32,6 +32,14 @@
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
         </locale>
+        <locale name="erp.panel.order.orderFiles">
+            <de><![CDATA[Dateien]]></de>
+            <en><![CDATA[Files]]></en>
+        </locale>
+        <locale name="erp.panel.order.files_no_customer">
+            <de><![CDATA[Bitte wähle zuerst einen Kunden für diese Bestellung aus, um Dateien verknüpfen zu können.]]></de>
+            <en><![CDATA[Please select a customer for this order first to be able to attach files.]]></en>
+        </locale>
         <locale name="panel.order.currency.title">
             <de><![CDATA[Währung]]></de>
             <en><![CDATA[Currency]]></en>

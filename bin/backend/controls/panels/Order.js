@@ -52,6 +52,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             'openInfo',
             'openHistory',
             'openPreview',
+            'openOrderFiles',
             'openCommunication',
             'openArticles',
             'openDeleteDialog',
@@ -522,6 +523,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 text: QUILocale.get(lg, 'panel.order.category.history'),
                 events: {
                     onClick: this.openHistory
+                }
+            });
+
+            this.addCategory({
+                name: 'orderFiles',
+                icon: 'fa fa-file-text-o',
+                text: QUILocale.get(lg, 'erp.panel.order.orderFiles'),
+                events: {
+                    onClick: this.openOrderFiles
                 }
             });
 
@@ -1262,6 +1272,50 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 return self.$openCategory();
             }).then(function() {
                 self.Loader.hide();
+            });
+        },
+
+        /**
+         * Open order files category.
+         */
+        openOrderFiles: function() {
+            this.Loader.show();
+
+            this.getCategory('orderFiles').setActive();
+
+            return this.$closeCategory().then((Container) => {
+                Container.setStyle('overflow', 'hidden');
+                Container.setStyle('padding', 20);
+                Container.setStyle('height', '100%');
+
+                const customerId = this.$Customer.getValue();
+
+                if (!customerId || customerId == 0) {
+                    new Element('p', {
+                        html: QUILocale.get(lg, 'erp.panel.order.files_no_customer')
+                    }).inject(Container);
+
+                    return;
+                }
+
+                return new Promise((resolve) => {
+                    require(['package/quiqqer/erp/bin/backend/controls/customerFiles/Grid'], (FileGrid) => {
+                        new FileGrid({
+                            hash: this.getAttribute('hash')
+                        }).inject(Container);
+
+                        resolve();
+                    });
+                });
+            }).then(() => {
+                this.Loader.hide();
+
+                return this.$openCategory();
+            }).catch((err) => {
+                console.error('ERROR');
+                console.error(err);
+
+                return this.$openCategory();
             });
         },
 
@@ -2195,5 +2249,4 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
         //endregion
     });
-})
-;
+});
