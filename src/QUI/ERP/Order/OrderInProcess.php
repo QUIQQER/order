@@ -708,7 +708,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $this->delete();
 
         $hash = $this->getUUID();
-        $oldOrderId = $this->getUUID();
+        $oldOrderId = $this->id;
         $newOrderId = QUI\ERP\Order\Factory::getInstance()->createOrderInProcessDataBaseEntry();
 
         QUI::getDataBase()->update(
