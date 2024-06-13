@@ -1182,7 +1182,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             // if something is missing
             if (!empty($missing)) {
                 try {
-                    $Customer = QUI::getUsers()->get($User['id']);
+                    if (!empty($User['uuid'])) {
+                        $Customer = QUI::getUsers()->get($User['uuid']);
+                    } else {
+                        $Customer = QUI::getUsers()->get($User['id']);
+                    }
+
 
                     if (isset($User['address'])) {
                         $address = $User['address'];
