@@ -157,6 +157,10 @@ QUI::$Ajax->registerFunction(
             $Order->setData('shippingTracking', $data['shippingTracking']);
         }
 
+        if (!empty($data['project_name'])) {
+            $Order->setAttribute('project_name', $data['project_name']);
+        }
+
         if (!empty($data['shipping'])) {
             try {
                 if (

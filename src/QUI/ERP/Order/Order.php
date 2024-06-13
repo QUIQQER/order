@@ -238,6 +238,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
         $TemporaryInvoice->setAttributes([
             'order_id' => $this->getUUID(),
             'order_date' => $this->getCreateDate(),
+            'project_name' => $this->getAttribute('project_name'),
             'customer_id' => $this->customerId,
             'payment_method' => $payment,
             'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
@@ -383,6 +384,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             'contact_person' => $ContactPersonAddress ? $ContactPersonAddress->getName() : null,
             'order_date' => $this->getCreateDate(),
             'customer_id' => $Customer->getUUID(),
+            'project_name' => $this->getAttribute('project_name'),
             'payment_method' => $payment,
             'customer_address_id' => $invoiceAddressId,
             'customer_address' => $invoiceAddress,
@@ -574,6 +576,13 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             $shippingStatus = $ShippingStatus ? $ShippingStatus->getId() : null;
         }
 
+        // project name
+        $projectName = '';
+
+        if (!empty($this->getAttribute('project_name'))) {
+            $projectName = $this->getAttribute('project_name');
+        }
+
         return [
             'id_prefix' => $idPrefix,
             'id_str' => $this->getPrefixedNumber(),
@@ -582,6 +591,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             'status' => $this->status,
             'successful' => $this->successful,
             'c_date' => $this->getCreateDate(),
+            'project_name' => $projectName,
 
             'customerId' => $this->customerId,
             'customer' => json_encode($customer),

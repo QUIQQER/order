@@ -48,6 +48,144 @@
     </table>
 </form>
 
+<form>
+    <table class="data-table data-table-flexbox order-data">
+        <thead>
+        <tr>
+            <th>{{textOrderData}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textOrderDate}}">
+                        {{textOrderDate}}
+                    </span>
+                    <span class="field-container-field field-container-field-no-padding">
+                        <input class=""
+                               type="text"
+                               name="date"
+                               value="{{date}}"
+                               disabled
+                               style="width: calc(100% - 50px); float: left"
+                        />
+                        <button type="button" name="edit-date" class="qui-button" style="width: 50px">
+                            <span class="fa fa-edit"></span>
+                        </button>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textProjectName}}">
+                        {{textProjectName}}
+                    </span>
+                    <input class="field-container-field"
+                           type="text"
+                           name="project_name"
+                           value="{{project_name}}"
+                    />
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textOrderedBy}}">
+                        {{textOrderedBy}}
+                    </span>
+                    <input class="field-container-field"
+                           type="text"
+                           name="orderedBy"
+                           value="{{ordered_by}}"
+                           disabled
+                    />
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textStatus}}">
+                        {{textStatus}}
+                    </span>
+                    <span class="field-container-field field-container-field-no-padding order-data-status-field">
+                        <span class="order-data-status-field-colorPreview"></span>
+                        <select name="status" class="order-data-status-field-select" disabled></select>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="data-table data-table-flexbox order-shipping" style="display: none">
+        <thead>
+        <tr>
+            <th>{{textShippingStatusTitle}}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textShippingStatus}}">
+                        {{textShippingStatus}}
+                    </span>
+                    <span class="field-container-field field-container-field-no-padding order-data-shipping-status-field">
+                        <span class="order-data-shipping-status-field-colorPreview"></span>
+                        <select type="text" class="field-container-field" name="shippingStatus" disabled></select>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textShipping}}">
+                        {{textShipping}}
+                    </span>
+                    <select type="text" class="field-container-field" name="shipping"></select>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{textShippingTracking}}">
+                        {{textShippingTracking}}
+                    </span>
+                    <input type="text"
+                           class="field-container-field"
+                           name="shippingTracking"
+                           {{#isShippingInstalled}}
+                           data-qui="package/quiqqer/shipping/bin/backend/controls/TrackingInput"
+                           {{/isShippingInstalled}}
+                    />
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button name="shippingConfirmationButton"
+                        class="qui-button"
+                        style="float: right"
+                        disabled
+                >
+                    <span class="fa fa-truck"></span>
+                    <span>{{textShippingConfirmationButton}}</span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
 <form name="invoice">
     <table class="data-table data-table-flexbox order-invoice"
            data-qui="package/quiqqer/order/bin/backend/controls/panels/order/Address"
@@ -239,130 +377,6 @@
                     </span>
                     <select type="text" class="field-container-field" name="country" disabled></select>
                 </label>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</form>
-
-<form>
-    <table class="data-table data-table-flexbox order-data">
-        <thead>
-        <tr>
-            <th>{{textOrderData}}</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr>
-            <td>
-                <label class="field-container">
-                    <span class="field-container-item" title="{{textOrderDate}}">
-                        {{textOrderDate}}
-                    </span>
-                    <span class="field-container-field field-container-field-no-padding">
-                        <input class=""
-                               type="text"
-                               name="date"
-                               value="{{date}}"
-                               disabled
-                               style="width: calc(100% - 50px); float: left"
-                        />
-                        <button type="button" name="edit-date" class="qui-button" style="width: 50px">
-                            <span class="fa fa-edit"></span>
-                        </button>
-                    </span>
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="field-container">
-                    <span class="field-container-item" title="{{textOrderedBy}}">
-                        {{textOrderedBy}}
-                    </span>
-                    <input class="field-container-field"
-                           type="text"
-                           name="orderedBy"
-                           value="{{ordered_by}}"
-                           disabled
-                    />
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="field-container">
-                    <span class="field-container-item" title="{{textStatus}}">
-                        {{textStatus}}
-                    </span>
-                    <span class="field-container-field field-container-field-no-padding order-data-status-field">
-                        <span class="order-data-status-field-colorPreview"></span>
-                        <select name="status" class="order-data-status-field-select" disabled></select>
-                    </span>
-                </label>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <table class="data-table data-table-flexbox order-shipping" style="display: none">
-        <thead>
-        <tr>
-            <th>{{textShippingStatusTitle}}</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr>
-            <td>
-                <label class="field-container">
-                    <span class="field-container-item" title="{{textShippingStatus}}">
-                        {{textShippingStatus}}
-                    </span>
-                    <span class="field-container-field field-container-field-no-padding order-data-shipping-status-field">
-                        <span class="order-data-shipping-status-field-colorPreview"></span>
-                        <select type="text" class="field-container-field" name="shippingStatus" disabled></select>
-                    </span>
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="field-container">
-                    <span class="field-container-item" title="{{textShipping}}">
-                        {{textShipping}}
-                    </span>
-                    <select type="text" class="field-container-field" name="shipping"></select>
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="field-container">
-                    <span class="field-container-item" title="{{textShippingTracking}}">
-                        {{textShippingTracking}}
-                    </span>
-                    <input type="text"
-                           class="field-container-field"
-                           name="shippingTracking"
-                           {{#isShippingInstalled}}
-                           data-qui="package/quiqqer/shipping/bin/backend/controls/TrackingInput"
-                           {{/isShippingInstalled}}
-                    />
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button name="shippingConfirmationButton"
-                        class="qui-button"
-                        style="float: right"
-                        disabled
-                >
-                    <span class="fa fa-truck"></span>
-                    <span>{{textShippingConfirmationButton}}</span>
-                </button>
             </td>
         </tr>
         </tbody>

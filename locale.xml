@@ -1583,6 +1583,10 @@
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
         </locale>
+        <locale name="panel.order.data.textProjectName">
+            <de><![CDATA[Projektname]]></de>
+            <en><![CDATA[Project name]]></en>
+        </locale>
         <locale name="panel.order.shipping">
             <de><![CDATA[Versandart]]></de>
             <en><![CDATA[Shipping type]]></en>

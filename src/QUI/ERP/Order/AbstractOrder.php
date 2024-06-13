@@ -282,6 +282,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             $this->status = $data['status'];
         }
 
+        if (isset($data['project_name'])) {
+            $this->setAttribute('project_name', $data['project_name']);
+        }
+
         // user
         $this->customerId = $data['customerId'];
 
@@ -695,6 +699,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             'comments' => $this->getComments()->toArray(),
             'statusMails' => $this->getStatusMails()->toArray(),
             'currency' => $this->getCurrency()->toArray(),
+            'project_name' => $this->getAttribute('project_name'),
 
             'articles' => $articles,
             'hasDeliveryAddress' => $this->hasDeliveryAddress(),
