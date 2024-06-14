@@ -232,6 +232,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     this.setAttribute('status', orderData.status);
                     this.setAttribute('shippingStatus', orderData.shippingStatus);
                     this.setAttribute('shippingConfirmation', orderData.shippingConfirmation);
+                    this.setAttribute('project_name', orderData.project_name);
 
                     this.$initialStatus = parseInt(orderData.status);
                     this.$initialShippingStatus = parseInt(orderData.shippingStatus);
@@ -283,6 +284,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 shipping: this.getAttribute('shipping'),
                 shippingTracking: this.getAttribute('shippingTracking'),
                 cDate: this.getAttribute('cDate'),
+                project_name: this.getAttribute('project_name'),
                 priceFactors: this.$serializedList.priceFactors
             };
 
@@ -794,6 +796,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textOrderData: QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate: QUILocale.get(lg, 'panel.order.data.date'),
                         textOrderedBy: QUILocale.get(lg, 'panel.order.data.orderedBy'),
+                        textProjectName: QUILocale.get(lg, 'panel.order.data.textProjectName'),
                         textStatus: QUILocale.get(lg, 'panel.order.data.status'),
                         textPaymentTitle: QUILocale.get(lg, 'order.payment.panel.paymentTitle'),
                         textPayment: QUILocale.get(lg, 'order.payment.panel.payment'),
@@ -823,10 +826,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 const DateField = Content.getElement('[name="date"]');
                 const DateEdit = Content.getElement('[name="edit-date"]');
                 const OrderedByField = Content.getElement('[name="orderedBy"]');
+                const ProjectName = Content.getElement('[name="project_name"]');
                 const customer = self.getAttribute('customer');
 
                 const Currency = Content.getElement('[name="currency"]');
                 Currency.value = self.getAttribute('currency');
+
+                if (self.getAttribute('project_name')) {
+                    ProjectName.value = self.getAttribute('project_name');
+                }
 
                 if (customer) {
                     TaxId.value = '';
@@ -1644,6 +1652,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             const Content = this.getContent(),
                 deliverAddress = Content.getElement('[name="differentDeliveryAddress"]'),
                 PaymentForm = Content.getElement('form[name="payment"]'),
+                ProjectName = Content.getElement('[name="project_name"]'),
                 StatusNode = Content.getElement('[name="status"]'),
                 ShippingStatus = Content.getElement('[name="shippingStatus"]'),
                 Shipping = Content.getElement('[name="shipping"]'),
@@ -1692,6 +1701,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             if (Currency) {
                 this.setAttribute('currency', Currency.value);
+            }
+
+            if (ProjectName) {
+                this.setAttribute('project_name', ProjectName.value);
             }
 
             // customer
