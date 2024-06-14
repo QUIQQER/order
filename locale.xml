@@ -1452,7 +1452,7 @@
 
         <locale name="shipping.order.mail.body.shippingInformation" html="true">
             <de><![CDATA[
-            <p>Du kannst den Versandstatus deiner Bestellunter unter [trackingLink] verfolgen.</p>
+            <p>Du kannst den Versandstatus deiner Bestellung unter [trackingLink] verfolgen.</p>
             ]]></de>
             <en><![CDATA[
             <p>You can track the shipping status of your order under [trackingLink]</p>.
