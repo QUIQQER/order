@@ -6,6 +6,7 @@
 
 namespace QUI\ERP\Order\Controls\Basket;
 
+use Exception;
 use QUI;
 use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Basket\BasketGuest;
@@ -43,8 +44,9 @@ class Small extends QUI\Control
     /**
      * @return string
      * @throws QUI\Exception
+     * @throws Exception
      */
-    protected function onCreate(): string
+    public function getBody(): string
     {
         $Engine = QUI::getTemplateManager()->getEngine();
 
@@ -98,11 +100,15 @@ class Small extends QUI\Control
 
     /**
      * @return QUI\Projects\Project
-     *
+     * @throws Exception
      */
     protected function getProject(): QUI\Projects\Project
     {
-        return $this->Project;
+        if ($this->Project) {
+            return $this->Project;
+        }
+
+        return parent::getProject();
     }
 
     //endregion
