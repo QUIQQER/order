@@ -11,7 +11,6 @@ use Exception;
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
-use QUI\ERP\SalesOrders\Handler;
 use QUI\Smarty\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
