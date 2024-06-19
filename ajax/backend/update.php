@@ -138,7 +138,7 @@ QUI::$Ajax->registerFunction(
 
         if (isset($data['shippingStatus']) && $data['shippingStatus'] !== false) {
             try {
-                $Order->setShippingStatus($data['shippingStatus']);
+                $Order->setShippingStatus((int)$data['shippingStatus']);
 
                 // Send status notification
                 if (!empty($data['notificationShipping']) && class_exists('QUI\ERP\Shipping\Shipping')) {
