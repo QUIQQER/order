@@ -23,6 +23,7 @@
     "php81_bc/strftime": "^0.7",
     "ramsey/uuid": "^3|^4",
     "quiqqer/core": "^2",
+    "quiqqer/qui": "^1.6.7",
     "quiqqer/erp": "^3.2",
     "quiqqer/countries": "^2",
     "quiqqer/areas": "^2",

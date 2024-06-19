@@ -307,7 +307,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     }
 
                     resolve();
-                    this.refresh();
+                    this.showSavedIconAnimation();
                 }).catch((err) => {
                     console.error(err);
 
