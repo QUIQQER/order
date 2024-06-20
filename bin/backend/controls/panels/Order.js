@@ -338,6 +338,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
 
             self.Loader.show();
 
+            require([
+                'package/quiqqer/erp/bin/backend/controls/process/ProcessWindowButton'
+            ], (ProcessWindowButton) => {
+                new ProcessWindowButton({
+                    hash: this.getAttribute('orderId')
+                }).inject(this.getHeader());
+            });
+
             this.$AddProduct = new QUIButtonMultiple({
                 textimage: 'fa fa-plus',
                 text: QUILocale.get(lg, 'panel.order.button.buttonAdd'),
