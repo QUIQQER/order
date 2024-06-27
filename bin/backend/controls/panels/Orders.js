@@ -598,44 +598,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             const orderId = selected[0].hash;
 
-            new QUIConfirm({
-                title: QUILocale.get(lg, 'dialog.order.copy.title'),
-                text: QUILocale.get(lg, 'dialog.order.copy.text'),
-                information: QUILocale.get(lg, 'dialog.order.copy.information', {
-                    id: orderId
-                }),
-                icon: 'fa fa-copy',
-                texticon: 'fa fa-copy',
-                maxHeight: 400,
-                maxWidth: 600,
-                autoclose: false,
-                ok_button: {
-                    text: QUILocale.get('quiqqer/system', 'copy'),
-                    textimage: 'fa fa-copy'
-                },
-                events: {
-                    onSubmit: function(Win) {
-                        Win.Loader.show();
-
-                        Orders.copyOrder(orderId).then(function(newOrderId) {
-                            require([
-                                'package/quiqqer/order/bin/backend/controls/panels/Order',
-                                'utils/Panels'
-                            ], function(Order, PanelUtils) {
-                                const Panel = new Order({
-                                    orderId: newOrderId,
-                                    '#id': newOrderId
-                                });
-
-                                PanelUtils.openPanelInTasks(Panel);
-                                Win.close();
-                            });
-                        }).then(function() {
-                            Win.Loader.hide();
-                        });
-                    }
-                }
-            }).open();
+            require([
+                'package/quiqqer/erp/bin/backend/controls/dialogs/CopyErpEntityDialog'
+            ], (CopyErpEntityDialog) => {
+                new CopyErpEntityDialog({
+                    hash: orderId,
+                    entityPlugin: 'quiqqer/order'
+                }).open();
+            });
         },
 
         /**
