@@ -35,8 +35,9 @@ use function json_encode;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface,
-                                             ErpCopyInterface
+class Order
+    extends AbstractOrder
+    implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface, ErpCopyInterface
 {
     use QUI\ERP\ErpEntityCustomerFiles;
 
