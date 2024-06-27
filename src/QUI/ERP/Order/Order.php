@@ -13,9 +13,9 @@ use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
-use QUI\ERP\ErpEntityInterface;
-use QUI\ERP\ErpTransactionsInterface;
-use QUI\ERP\ErpCopyInterface;
+use QUI\ERP\ErpEntityInterface as ErpEntityI;
+use QUI\ERP\ErpTransactionsInterface as ErpTransactionsI;
+use QUI\ERP\ErpCopyInterface as ErpCopyI;
 use QUI\ExceptionStack;
 use QUI\Interfaces\Users\User;
 
@@ -35,9 +35,7 @@ use function json_encode;
  *
  * @package QUI\ERP\Order
  */
-class Order
-    extends AbstractOrder
-    implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface, ErpCopyInterface
+class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTransactionsI, ErpCopyI
 {
     use QUI\ERP\ErpEntityCustomerFiles;
 
