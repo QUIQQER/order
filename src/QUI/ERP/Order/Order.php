@@ -13,8 +13,11 @@ use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
-use QUI\ERP\ErpEntityInterface;
-use QUI\ERP\ErpTransactionsInterface;
+use QUI\ERP\ErpEntityInterface as ErpEntityI;
+use QUI\ERP\ErpTransactionsInterface as ErpTransactionsI;
+use QUI\ERP\ErpCopyInterface as ErpCopyI;
+use QUI\ExceptionStack;
+use QUI\Interfaces\Users\User;
 
 use function array_map;
 use function array_sum;
@@ -32,7 +35,7 @@ use function json_encode;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
+class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTransactionsI, ErpCopyI
 {
     use QUI\ERP\ErpEntityCustomerFiles;
 
@@ -973,19 +976,42 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
     /**
      * Copy the order and create a new one
      *
+     * @param User|null $PermissionUser
+     * @param bool|string $globalProcessId
      * @return Order
      *
+     * @throws Exception
      * @throws QUI\Exception
+     * @throws ExceptionStack
+     * @throws Exception
      */
-    public function copy(): Order
-    {
+    public function copy(
+        QUI\Interfaces\Users\User $PermissionUser = null,
+        bool|string $globalProcessId = false
+    ): Order {
         $NewOrder = Factory::getInstance()->create();
 
         QUI::getEvents()->fireEvent('quiqqerOrderCopyBegin', [$this]);
 
+        $data = $this->getDataForSaving();
+
+        if (empty($globalProcessId)) {
+            unset($data['id_prefix']);
+            unset($data['id_str']);
+            unset($data['parent_order']);
+            unset($data['invoice_id']);
+            unset($data['c_date']);
+            unset($data['data']);
+
+            $data['history'] = '[]';
+            $data['comments'] = '[]';
+
+            $data['global_process_id'] = $NewOrder->getUUID();
+        }
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            $this->getDataForSaving(),
+            $data,
             ['hash' => $NewOrder->getUUID()]
         );
 
