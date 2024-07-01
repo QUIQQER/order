@@ -339,7 +339,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             ]);
         }
 
-        $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getUUID());
+        $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getGlobalProcessId());
 
         $this->History->addComment(
             QUI::getLocale()->get(
