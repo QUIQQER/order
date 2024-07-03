@@ -38,6 +38,7 @@ use function json_encode;
 class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTransactionsI, ErpCopyI
 {
     use QUI\ERP\ErpEntityCustomerFiles;
+    use QUI\ERP\ErpEntityData;
 
     /**
      * @var bool
@@ -251,6 +252,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'delivery_address_id' => $deliveryAddressId
         ]);
 
+        $TemporaryInvoice->setData('order', $this->getReferenceData());
+
         // pass data to the invoice
         if (!is_array($this->data)) {
             $this->data = [];
@@ -394,6 +397,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'delivery_address' => $deliveryAddress,
             'delivery_address_id' => $deliveryAddressId
         ]);
+
+        $SalesOrder->setData('order', $this->getReferenceData());
 
         // pass data to the sales order
         if (!is_array($this->data)) {
