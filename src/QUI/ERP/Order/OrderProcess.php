@@ -512,6 +512,8 @@ class OrderProcess extends QUI\Control
         $processing = $this->checkProcessing();
 
         if (!empty($processing)) {
+            QUI::getEvents()->fireEvent('quiqqerOrderProcessingStart', [$this]);
+
             return $processing;
         }
 
