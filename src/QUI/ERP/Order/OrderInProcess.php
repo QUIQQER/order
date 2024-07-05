@@ -47,7 +47,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, QUI\ERP\Er
 
         // check if an order for the processing order exists
         try {
-            Handler::getInstance()->get($this->orderId);
+            if ($this->orderId) {
+                Handler::getInstance()->get($this->orderId);
+            }
         } catch (QUI\Exception $Exception) {
             $this->orderId = null;
         }
@@ -691,6 +693,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, QUI\ERP\Er
      */
     public function clear($PermissionUser = null)
     {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
             $Order->clear($PermissionUser);
