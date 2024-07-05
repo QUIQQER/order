@@ -286,6 +286,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             $this->setAttribute('project_name', $data['project_name']);
         }
 
+        if (!empty($data['order_process_id'])) {
+            $this->setAttribute('order_process_id', $data['order_process_id']);
+        }
+
         // user
         $this->customerId = $data['customerId'];
 

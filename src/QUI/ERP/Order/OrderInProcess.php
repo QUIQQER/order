@@ -44,11 +44,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         parent::__construct($data);
 
-        $this->orderId = $data['hash'];
+        $this->orderId = $data['order_id'];
 
         // check if an order for the processing order exists
         try {
-            Handler::getInstance()->get($this->orderId);
+            if ($this->orderId) {
+                Handler::getInstance()->get($this->orderId);
+            }
         } catch (Exception) {
             $this->orderId = null;
         }
@@ -689,6 +691,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      */
     public function clear($PermissionUser = null): void
     {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
             $Order->clear($PermissionUser);
