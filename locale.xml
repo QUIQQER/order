@@ -1732,6 +1732,10 @@
             <en><![CDATA[Payment data]]></en>
         </locale>
         <locale name="grid.hash">
+            <de><![CDATA[Hash]]></de>
+            <en><![CDATA[Hash]]></en>
+        </locale>
+        <locale name="grid.globalProcessId">
             <de><![CDATA[Vorgangsnummer]]></de>
             <en><![CDATA[Procedure number]]></en>
         </locale>
