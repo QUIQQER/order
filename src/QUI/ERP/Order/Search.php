@@ -536,6 +536,8 @@ class Search extends Singleton
 
             $orderData['id'] = (int)$orderData['id'];
             $orderData['hash'] = $Order->getUUID();
+            $orderData['uuid'] = $Order->getUUID();
+            $orderData['globalProcessId'] = $Order->getGlobalProcessId();
             $orderData['prefixed-id'] = $Order->getPrefixedNumber();
 
             // customer data

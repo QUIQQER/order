@@ -1178,16 +1178,23 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 },
                 {
                     header: QUILocale.get(lg, 'grid.hash'),
-                    dataIndex: 'hash',
+                    dataIndex: 'uuid',
                     dataType: 'string',
                     width: 280,
                     className: 'monospace'
                 },
                 {
+                    header: QUILocale.get(lg, 'grid.globalProcessId'),
+                    dataIndex: 'globalProcessId',
+                    dataType: 'string',
+                    width: 280,
+                    className: 'monospace clickable'
+                },
+                {
                     header: QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
                     dataType: 'integer',
-                    width: 80
+                    hidden: true
                 },
                 {
                     dataIndex: 'paymentId',
@@ -1384,6 +1391,23 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                         return;
                     }
+
+                    if (typeof data !== 'undefined' && data.cell.get('data-index') === 'globalProcessId') {
+                        const rowData = self.$Grid.getDataByRow(data.row);
+
+                        if (rowData.globalProcessId && rowData.globalProcessId !== '') {
+                            require([
+                                'package/quiqqer/erp/bin/backend/controls/process/ProcessWindow'
+                            ], function(ProcessWindow) {
+                                new ProcessWindow({
+                                    globalProcessId: rowData.globalProcessId
+                                }).open();
+                            });
+
+                            return;
+                        }
+                    }
+
 
                     const selected = self.$Grid.getSelectedData();
 
