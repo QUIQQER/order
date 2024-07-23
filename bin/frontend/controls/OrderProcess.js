@@ -642,6 +642,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         next: function() {
+            this.setAttribute('direction', 'next');
+
             if (this.$enabled === false) {
                 return Promise.resolve();
             }
@@ -690,6 +692,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
          * @return {Promise}
          */
         previous: function() {
+            this.setAttribute('direction', 'previous');
+
             if (this.$enabled === false) {
                 return Promise.resolve();
             }
