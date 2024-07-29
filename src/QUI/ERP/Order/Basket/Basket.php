@@ -68,16 +68,15 @@ class Basket
             $User = QUI::getUserBySession();
         }
 
+        $this->List = new ProductList();
+        $this->List->duplicate = true;
+
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
             return;
         }
 
-        $this->List = new ProductList();
-        $this->List->duplicate = true;
         $this->List->setUser($User);
-
         $this->FrontendMessages = new QUI\ERP\Comments();
-
 
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
@@ -138,9 +137,9 @@ class Basket
     /**
      * Return the product list
      *
-     * @return ProductList|null
+     * @return ProductList
      */
-    public function getProducts(): ?ProductList
+    public function getProducts(): ProductList
     {
         return $this->List;
     }
