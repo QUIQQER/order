@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <locales xmlns="https://doc.quiqqer.com/xml/quiqqer-quiqqer-locale.xsd">
-
     <groups name="quiqqer/order" datatype="php,js">
         <locale name="package.title">
             <de><![CDATA[QUIQQER - Shop - Bestellungen]]></de>
@@ -2383,20 +2382,19 @@
         </locale>
 
         <locale name="window.status.title">
-            <de><![CDATA[Status Änderung für Bestellung #[orderId]]]></de>
-            <en><![CDATA[Status change for order #[orderId]]]></en>
+            <de><![CDATA[Status Änderung für Bestellung: [orderId]]]></de>
+            <en><![CDATA[Status change for order: [orderId]]]></en>
         </locale>
-        <locale name="window.status.text">
+        <locale name="window.status.text" html="true">
             <de><![CDATA[
-            Wechsel den Status der Bestellung #[orderId].
+            Wechsel den Status der Bestellung <strong>[orderId]</strong>.
             Beachte, Statusänderungen können verschiedene Aktionen auslösen.
             ]]></de>
             <en><![CDATA[
-            Change the status of the order #[orderId].
+            Change the status of the order <strong>[orderId]</strong>.
             Note, status changes can trigger different actions.
             ]]></en>
         </locale>
 
     </groups>
-
 </locales>
