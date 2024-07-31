@@ -36,7 +36,8 @@
             <en><![CDATA[Files]]></en>
         </locale>
         <locale name="erp.panel.order.files_no_customer">
-            <de><![CDATA[Bitte wähle zuerst einen Kunden für diese Bestellung aus, um Dateien verknüpfen zu können.]]></de>
+            <de>
+                <![CDATA[Bitte wähle zuerst einen Kunden für diese Bestellung aus, um Dateien verknüpfen zu können.]]></de>
             <en><![CDATA[Please select a customer for this order first to be able to attach files.]]></en>
         </locale>
         <locale name="panel.order.currency.title">
@@ -437,6 +438,32 @@
             <en><![CDATA[Order copy [orderHash] created from order]]></en>
         </locale>
 
+        <locale name="permission.quiqqer.order._header">
+            <de><![CDATA[Shop - Bestellungen]]></de>
+            <en><![CDATA[Shop - Order]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.order.addPayment">
+            <de><![CDATA[Darf Zahlungsweisen hinzufügen]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.update">
+            <de><![CDATA[Darf Bestellungen editieren]]></de>
+            <en><![CDATA[May add payment methods]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.delete">
+            <de><![CDATA[Darf Bestellungen löschen]]></de>
+            <en><![CDATA[May delete orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.copy">
+            <de><![CDATA[Darf Bestellungen kopieren]]></de>
+            <en><![CDATA[May copy orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.create">
+            <de><![CDATA[Darf Bestellungen erstellen]]></de>
+            <en><![CDATA[May create orders]]></en>
+        </locale>
+        
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
