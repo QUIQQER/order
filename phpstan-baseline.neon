@@ -1,0 +1,431 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#6 \\$User of static method QUI\\\\ERP\\\\Accounting\\\\Payments\\\\Transactions\\\\Factory\\:\\:createPaymentTransaction\\(\\) expects null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
+			count: 1
+			path: ajax/backend/addPayment.php
+
+		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
+			count: 1
+			path: ajax/backend/createSalesOrder.php
+
+		-
+			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
+			count: 1
+			path: ajax/frontend/basket/controls/basket.php
+
+		-
+			message: "#^Parameter \\#1 \\$User of method QUI\\\\ERP\\\\Order\\\\Factory\\:\\:createBasket\\(\\) expects null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
+			count: 1
+			path: ajax/frontend/basket/getBasket.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type QUI\\\\ERP\\\\Products\\\\Product\\\\ProductList\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: ajax/frontend/basket/removePos.php
+
+		-
+			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
+			count: 1
+			path: ajax/frontend/basket/save.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:getView\\(\\)\\.$#"
+			count: 1
+			path: ajax/frontend/order/getOrderControl.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: ajax/frontend/order/getStep.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Order\\\\Controls\\\\AbstractOrderingStep\\:\\:savePayment\\(\\)\\.$#"
+			count: 1
+			path: ajax/frontend/order/processing/savePayment.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: ajax/frontend/order/reload.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: ajax/frontend/order/send.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:setQuantity\\(\\)\\.$#"
+			count: 1
+			path: ajax/frontend/order/setQuantity.php
+
+		-
+			message: "#^Call to method canUsedBy\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method canUsedInErpEntity\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method getId\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method getId\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method isValid\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method setErpEntity\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:getShipping\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:getShippingStatus\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Parameter \\#1 \\$Shipping of method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:validateShipping\\(\\) expects QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\|null, QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\|null given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\ERP\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Parameter \\$Shipping of method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:setShipping\\(\\) has invalid type QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Parameter \\$Shipping of method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:validateShipping\\(\\) has invalid type QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Parameter \\$status of method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:setShippingStatus\\(\\) has invalid type QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Property QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:\\$ShippingStatus has unknown class QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status as its type\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:getProductSetParentUuid\\(\\)\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Basket/Basket.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:getQuantity\\(\\)\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Basket/Basket.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:getUuid\\(\\)\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Basket/Basket.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:toArticle\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/Basket.php
+
+		-
+			message: "#^Class QUI\\\\ERP\\\\Order\\\\Exception referenced with incorrect case\\: QUI\\\\Erp\\\\Order\\\\Exception\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/Basket.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:getQuantity\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/BasketGuest.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:getQuantity\\(\\)\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Basket/BasketOrder.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:setQuantity\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/BasketOrder.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:toArray\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/BasketOrder.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:toArticle\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/BasketOrder.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\FieldInterface\\:\\:getAttributesForUniqueField\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Basket/Product.php
+
+		-
+			message: "#^Instanceof between null and QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary will always evaluate to false\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Controls/Order/Order.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Order\\\\AbstractOrder\\:\\:save\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Controls/OrderProcess/Checkout.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Controls/OrderProcess/Checkout.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Controls/OrderProcess/CustomerData.php
+
+		-
+			message: "#^Parameter \\#2 \\$Step of method QUI\\\\ERP\\\\Order\\\\AbstractOrderProcessProvider\\:\\:getDisplay\\(\\) expects null, \\$this\\(QUI\\\\ERP\\\\Order\\\\Controls\\\\OrderProcess\\\\Processing\\) given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Controls/OrderProcess/Processing.php
+
+		-
+			message: "#^Call to method getData\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Call to method getShipping\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Call to method getShippingStatus\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Instanceof between \\*NEVER\\* and QUI\\\\ERP\\\\Products\\\\Product\\\\Types\\\\VariantChild will always evaluate to false\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Parameter \\$SalesOrder of method QUI\\\\ERP\\\\Order\\\\EventHandling\\:\\:onQuiqqerSalesOrdersSaveEnd\\(\\) has invalid type QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Result of \\|\\| is always true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Comparison operation \"\\!\\=\" between ''\\|'0'\\|array\\{\\}\\|false and 0 results in an error\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Factory.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductTypeInterface\\:\\:getImage\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOrders.php
+
+		-
+			message: "#^Cannot call method getTitle\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOrders.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:getAttribute\\(\\)\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Mail.php
+
+		-
+			message: "#^Method QUI\\\\Interfaces\\\\Users\\\\User\\:\\:getAddress\\(\\) invoked with 0 parameters, 1 required\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Mail.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of method QUI\\\\Projects\\\\Media\\:\\:get\\(\\) expects int, string given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Mail.php
+
+		-
+			message: "#^Call to method getId\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Call to method toJSON\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Call to static method createSalesOrder\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\Handler\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:createSalesOrder\\(\\) has invalid return type QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductInterface\\:\\:toArticle\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Call to method getId\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Call to method toArray\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\ERP\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:getShipping\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderInterface.php
+
+		-
+			message: "#^Parameter \\$Shipping of method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:setShipping\\(\\) has invalid type QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderInterface.php
+
+		-
+			message: "#^Class QUI\\\\ERP\\\\Order\\\\Exception referenced with incorrect case\\: QUI\\\\Erp\\\\Order\\\\Exception\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderProcess.php
+
+		-
+			message: "#^Left side of && is always true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderProcess.php
+
+		-
+			message: "#^Parameter \\#1 \\$User of method QUI\\\\ERP\\\\Order\\\\Factory\\:\\:createBasket\\(\\) expects null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderProcess.php
+
+		-
+			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderProcess.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:getShipping\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:getShippingStatus\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
+			message: "#^Parameter \\$Shipping of method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:setShipping\\(\\) has invalid type QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
+			message: "#^Parameter \\#2 \\$key of method QUI\\\\Config\\:\\:setValue\\(\\) expects string\\|null, int given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/ProcessingStatus/Factory.php
+
+		-
+			message: "#^Parameter \\#2 \\$key of method QUI\\\\Config\\:\\:del\\(\\) expects string\\|null, int given\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/ProcessingStatus/Handler.php
+
+		-
+			message: "#^Parameter \\#2 \\$key of method QUI\\\\Config\\:\\:setValue\\(\\) expects string\\|null, int given\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/ProcessingStatus/Handler.php
+
+		-
+			message: "#^Cannot call method getColor\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Cannot call method getTitle\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Result of closure \\(void\\) is used\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Call to method getPrice\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Utils/DataLayer.php
+
+		-
+			message: "#^Empty array passed to foreach\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Utils/Utils.php
+
+		-
+			message: "#^Class QUI\\\\Database\\\\Exception referenced with incorrect case\\: QUI\\\\DataBase\\\\Exception\\.$#"
+			count: 1
+			path: types/shoppingCart.php
