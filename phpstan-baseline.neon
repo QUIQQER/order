@@ -6,9 +6,29 @@ parameters:
 			path: ajax/backend/addPayment.php
 
 		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: ajax/backend/createInvoice.php
+
+		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 1
+			path: ajax/backend/createInvoice.php
+
+		-
 			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
 			count: 1
 			path: ajax/backend/createSalesOrder.php
+
+		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: ajax/backend/post.php
+
+		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 1
+			path: ajax/backend/post.php
 
 		-
 			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
@@ -77,6 +97,16 @@ parameters:
 
 		-
 			message: "#^Call to method getId\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method getType\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/AbstractOrder.php
+
+		-
+			message: "#^Call to method getType\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/AbstractOrder.php
 
@@ -191,6 +221,11 @@ parameters:
 			path: src/QUI/ERP/Order/Basket/Product.php
 
 		-
+			message: "#^Class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary not found\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Controls/Order/Order.php
+
+		-
 			message: "#^Instanceof between null and QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary will always evaluate to false\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/Controls/Order/Order.php
@@ -221,6 +256,11 @@ parameters:
 			path: src/QUI/ERP/Order/EventHandling.php
 
 		-
+			message: "#^Call to method getGlobalProcessId\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
 			message: "#^Call to method getShipping\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
 			count: 2
 			path: src/QUI/ERP/Order/EventHandling.php
@@ -231,8 +271,28 @@ parameters:
 			path: src/QUI/ERP/Order/EventHandling.php
 
 		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Call to static method getInstance\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Handler\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
 			message: "#^Instanceof between \\*NEVER\\* and QUI\\\\ERP\\\\Products\\\\Product\\\\Types\\\\VariantChild will always evaluate to false\\.$#"
 			count: 1
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Parameter \\$Invoice of method QUI\\\\ERP\\\\Order\\\\EventHandling\\:\\:onQuiqqerInvoiceTemporaryInvoicePostEnd\\(\\) has invalid type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/EventHandling.php
+
+		-
+			message: "#^Parameter \\$InvoiceTemporary of method QUI\\\\ERP\\\\Order\\\\EventHandling\\:\\:onQuiqqerInvoiceTemporaryInvoicePostEnd\\(\\) has invalid type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
 			path: src/QUI/ERP/Order/EventHandling.php
 
 		-
@@ -256,8 +316,28 @@ parameters:
 			path: src/QUI/ERP/Order/Factory.php
 
 		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOpenedOrders.php
+
+		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOpenedOrders.php
+
+		-
 			message: "#^Call to an undefined method QUI\\\\ERP\\\\Products\\\\Interfaces\\\\ProductTypeInterface\\:\\:getImage\\(\\)\\.$#"
 			count: 1
+			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOrders.php
+
+		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOrders.php
+
+		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
 			path: src/QUI/ERP/Order/FrontendUsers/Controls/UserOrders.php
 
 		-
@@ -268,6 +348,21 @@ parameters:
 		-
 			message: "#^Call to an undefined method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:getAttribute\\(\\)\\.$#"
 			count: 2
+			path: src/QUI/ERP/Order/Mail.php
+
+		-
+			message: "#^Call to method createPDF\\(\\) on an unknown class QUI\\\\HtmlToPdf\\\\Document\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Mail.php
+
+		-
+			message: "#^Call to method setContentHTML\\(\\) on an unknown class QUI\\\\HtmlToPdf\\\\Document\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Mail.php
+
+		-
+			message: "#^Instantiated class QUI\\\\HtmlToPdf\\\\Document not found\\.$#"
+			count: 1
 			path: src/QUI/ERP/Order/Mail.php
 
 		-
@@ -291,8 +386,28 @@ parameters:
 			path: src/QUI/ERP/Order/Order.php
 
 		-
+			message: "#^Call to static method addressRequirement\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Utils\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Call to static method addressRequirementThreshold\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Utils\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
 			message: "#^Call to static method createSalesOrder\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\Handler\\.$#"
 			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Call to static method getInstance\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Factory\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Call to static method getInstance\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Handler\\.$#"
+			count: 6
 			path: src/QUI/ERP/Order/Order.php
 
 		-
@@ -306,8 +421,53 @@ parameters:
 			path: src/QUI/ERP/Order/Order.php
 
 		-
+			message: "#^Instantiated class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception not found\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:createInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:createInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
 			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:createSalesOrder\\(\\) has invalid return type QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
 			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:post\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\Order\\:\\:post\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^PHPDoc tag @throws with type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception\\|QUI\\\\Exception is not subtype of Throwable$#"
+			count: 1
+			path: src/QUI/ERP/Order/Order.php
+
+		-
+			message: "#^Throwing object of an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception\\.$#"
+			count: 1
 			path: src/QUI/ERP/Order/Order.php
 
 		-
@@ -331,13 +491,53 @@ parameters:
 			path: src/QUI/ERP/Order/OrderInProcess.php
 
 		-
+			message: "#^Instantiated class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception not found\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderInProcess\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderInProcess\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^PHPDoc tag @throws with type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception\\|QUI\\\\Exception is not subtype of Throwable$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
 			message: "#^Parameter \\#2 \\$User of class QUI\\\\ERP\\\\Order\\\\Basket\\\\BasketOrder constructor expects QUI\\\\Users\\\\User\\|null, QUI\\\\ERP\\\\User\\|null given\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/OrderInProcess.php
 
 		-
+			message: "#^Throwing object of an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderInProcess.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderInterface.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderInterface.php
+
+		-
 			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderInterface\\:\\:getShipping\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
 			count: 2
+			path: src/QUI/ERP/Order/OrderInterface.php
+
+		-
+			message: "#^PHPDoc tag @throws with type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception is not subtype of Throwable$#"
+			count: 1
 			path: src/QUI/ERP/Order/OrderInterface.php
 
 		-
@@ -366,6 +566,16 @@ parameters:
 			path: src/QUI/ERP/Order/OrderProcess.php
 
 		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:getInvoice\\(\\) has invalid return type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
 			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:getShipping\\(\\) has invalid return type QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
 			count: 2
 			path: src/QUI/ERP/Order/OrderView.php
@@ -376,9 +586,49 @@ parameters:
 			path: src/QUI/ERP/Order/OrderView.php
 
 		-
+			message: "#^Method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:toPDF\\(\\) has invalid return type QUI\\\\HtmlToPdf\\\\Document\\.$#"
+			count: 2
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
+			message: "#^PHPDoc tag @throws with type QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Exception\\|QUI\\\\Exception is not subtype of Throwable$#"
+			count: 1
+			path: src/QUI/ERP/Order/OrderView.php
+
+		-
 			message: "#^Parameter \\$Shipping of method QUI\\\\ERP\\\\Order\\\\OrderView\\:\\:setShipping\\(\\) has invalid type QUI\\\\ERP\\\\Shipping\\\\Api\\\\ShippingInterface\\.$#"
 			count: 2
 			path: src/QUI/ERP/Order/OrderView.php
+
+		-
+			message: "#^Access to constant ECC_M on an unknown class chillerlan\\\\QRCode\\\\QRCode\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Output/OutputProviderOrder.php
+
+		-
+			message: "#^Access to constant OUTPUT_IMAGE_PNG on an unknown class chillerlan\\\\QRCode\\\\QRCode\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Output/OutputProviderOrder.php
+
+		-
+			message: "#^Access to constant VERSION_AUTO on an unknown class chillerlan\\\\QRCode\\\\QRCode\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Output/OutputProviderOrder.php
+
+		-
+			message: "#^Call to method render\\(\\) on an unknown class chillerlan\\\\QRCode\\\\QRCode\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Output/OutputProviderOrder.php
+
+		-
+			message: "#^Instantiated class chillerlan\\\\QRCode\\\\QRCode not found\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Output/OutputProviderOrder.php
+
+		-
+			message: "#^Instantiated class chillerlan\\\\QRCode\\\\QROptions not found\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Output/OutputProviderOrder.php
 
 		-
 			message: "#^Parameter \\#2 \\$key of method QUI\\\\Config\\:\\:setValue\\(\\) expects string\\|null, int given\\.$#"
@@ -394,6 +644,26 @@ parameters:
 			message: "#^Parameter \\#2 \\$key of method QUI\\\\Config\\:\\:setValue\\(\\) expects string\\|null, int given\\.$#"
 			count: 2
 			path: src/QUI/ERP/Order/ProcessingStatus/Handler.php
+
+		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
+
+		-
+			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\InvoiceTemporary\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Search.php
 
 		-
 			message: "#^Cannot call method getColor\\(\\) on QUI\\\\ERP\\\\Shipping\\\\ShippingStatus\\\\Status\\|true\\.$#"
@@ -419,6 +689,11 @@ parameters:
 			message: "#^Call to method getPrice\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/Utils/DataLayer.php
+
+		-
+			message: "#^Class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Articles\\\\Text not found\\.$#"
+			count: 1
+			path: src/QUI/ERP/Order/Utils/Utils.php
 
 		-
 			message: "#^Empty array passed to foreach\\.$#"
