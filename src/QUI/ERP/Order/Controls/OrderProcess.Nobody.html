@@ -10,42 +10,121 @@
     >
         {template_event name="quiqqer::order::orderProcess::nobody::begin"}
 
-        <div class="quiqqer-order-ordering-nobody-login">
+        <div class="quiqqer-order-ordering-nobody__aside">
+            <ul>
+                <li class="quiqqer-order-ordering-nobody-asideNav__entry {if $activeEntry == 'login'}active{/if}" data-step-nav="login">
+                    <a href="#login">
+                        <span class="fa fa-right-to-bracket quiqqer-order-ordering-nobody-asideNav__icon"></span>
+                        <div class="quiqqer-order-ordering-nobody-asideNav__label">
+                            <span class="quiqqer-order-ordering-nobody-asideNav__title">
+                                {locale group='quiqqer/order' var='ordering.nobody.nav.login.title'}
+                            </span>
+                            <div class="quiqqer-order-ordering-nobody-asideNav__desc">
+                                {locale group='quiqqer/order' var='ordering.nobody.nav.login.desc'}
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li class="quiqqer-order-ordering-nobody-asideNav__entry {if $activeEntry == 'signup'}active{/if}" data-step-nav="signup">
+                    <a href="#signup">
+                        <span class="fa fa-user-plus quiqqer-order-ordering-nobody-asideNav__icon"></span>
+                        <div class="quiqqer-order-ordering-nobody-asideNav__label">
+                            <span class="quiqqer-order-ordering-nobody-asideNav__title">
+                                {locale group='quiqqer/order' var='ordering.nobody.nav.signup.title'}
+                            </span>
+                            <div class="quiqqer-order-ordering-nobody-asideNav__desc">
+                                {locale group='quiqqer/order' var='ordering.nobody.nav.signup.desc'}
+                            </div>
+                        </div>
+                    </a>
+                </li>
 
-            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.prefix'}}
-            {if $text != ''}
-            <div class="quiqqer-order-ordering-nobody-login-text quiqqer-order-ordering-nobody-login-text__prefix">
-                {$text}
-            </div>
-            {/if}
-
-            {$Login->create()}
-
-            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.suffix'}}
-            {if $text != ''}
-            <div class="quiqqer-order-ordering-nobody-login-text quiqqer-order-ordering-nobody-login-text__suffix">
-                {$text}
-            </div>
-            {/if}
+                {if $guestOrderInstalled}
+                <li class="quiqqer-order-ordering-nobody-asideNav__entry {if $activeEntry == 'guest'}active{/if}" data-step-nav="guest">
+                    <a href="#guest">
+                        <span class="fa fa-bag-shopping quiqqer-order-ordering-nobody-asideNav__icon"></span>
+                        <div class="quiqqer-order-ordering-nobody-asideNav__label">
+                            <span class="quiqqer-order-ordering-nobody-asideNav__title">
+                                {locale group='quiqqer/order' var='ordering.nobody.nav.guest.title'}
+                            </span>
+                            <div class="quiqqer-order-ordering-nobody-asideNav__desc">
+                                {locale group='quiqqer/order' var='ordering.nobody.nav.guest.desc'}
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                {/if}
+            </ul>
         </div>
 
-        <div class="quiqqer-order-ordering-nobody-registration">
+        <div class="quiqqer-order-ordering-nobody__main">
+            <ul class="quiqqer-order-ordering-nobody-main__list">
+                <li class="quiqqer-order-ordering-nobody-main__item {if $activeEntry == 'login'}active{/if}"
+                    {if $activeEntry !== 'login'}style="display: none;"{/if}
+                    id="login"
+                >
+                    {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.prefix'}}
+                    {if $text|trim != ''}
+                        {$text|var_dump}
+                        <div class="quiqqer-order-ordering-nobody-login-text quiqqer-order-ordering-nobody-login-text__prefix">
+                            {$text}
+                        </div>
+                    {/if}
 
-            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.registration.text.prefix'}}
-            {if $text != ''}
-            <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-registration-text__prefix">
-                {$text}
-            </div>
-            {/if}
+                    {$Login->create()}
 
-            {$Registration->create()}
+                    {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.login.text.suffix'}}
+                    {if $text|trim != ''}
+                        <div class="quiqqer-order-ordering-nobody-login-text quiqqer-order-ordering-nobody-login-text__suffix">
+                            {$text}
+                        </div>
+                    {/if}
+                </li>
 
-            {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.registration.text.suffix'}}
-            {if $text != ''}
-            <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-registration-text__suffix">
-                {$text}
-            </div>
-            {/if}
+                <li class="quiqqer-order-ordering-nobody-main__item {if $activeEntry == 'signup'}active{/if}"
+                    {if $activeEntry !== 'signup'}style="display: none;"{/if}
+                    id="signup"
+                >
+                    {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.registration.text.prefix'}}
+                    {if $text|trim != ''}
+                        <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-registration-text__prefix">
+                            {$text}
+                        </div>
+                    {/if}
+
+                    {$Registration->create()}
+
+                    {locale group='quiqqer/order' var='ordering.nobody.registration.text.suffix' assign=text}
+                    {if $text|trim != ''}
+                        <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-registration-text__suffix">
+                            {$text}
+                        </div>
+                    {/if}
+                </li>
+
+                {if $GuestOrder}
+                <li class="quiqqer-order-ordering-nobody-main__item {if $activeEntry == 'guest'}active{/if}"
+                    {if $activeEntry !== 'guest'}style="display: none;"{/if}
+                    id="guest"
+                >
+                    {assign var=text value={locale group='quiqqer/order' var='ordering.nobody.guest.text.prefix'}}
+                    {if $text|trim != ''}
+                        <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-guest-text__prefix">
+                            {$text}
+                        </div>
+                    {/if}
+
+                    {$GuestOrder->create()}
+
+                    {locale group='quiqqer/order' var='ordering.nobody.guest.text.suffix' assign=text}
+                    {if $text|trim != ''}
+                        <div class="quiqqer-order-ordering-nobody-registration-text quiqqer-order-ordering-nobody-guest-text__suffix">
+                            {$text}
+                        </div>
+                    {/if}
+                </li>
+                {/if}
+            </ul>
         </div>
 
         {template_event name="quiqqer::order::orderProcess::nobody::end"}
