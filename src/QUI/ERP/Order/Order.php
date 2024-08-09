@@ -514,7 +514,14 @@ class Order extends AbstractOrder implements OrderInterface, QUI\ERP\ErpEntityIn
         $invoiceId = null;
 
         if ($this->hasInvoice()) {
-            $invoiceId = $this->getInvoice()->getCleanId();
+            $Invoice = $this->getInvoice();
+
+            if (
+                class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+                && $Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice
+            ) {
+                $invoiceId = $Invoice->getCleanId();
+            }
         }
 
         // currency exchange rate
