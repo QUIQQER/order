@@ -383,6 +383,31 @@
             <en><![CDATA[---]]></en>
         </locale>
 
+        <locale name="ordering.nobody.nav.login.title">
+            <de><![CDATA[Anmelden]]></de>
+            <en><![CDATA[Log in]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.login.desc">
+            <de><![CDATA[Ich bin bereits Kunde]]></de>
+            <en><![CDATA[I am already a customer]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.signup.title">
+            <de><![CDATA[Registrieren]]></de>
+            <en><![CDATA[Sign up]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.signup.desc">
+            <de><![CDATA[Ich möchte Kundenkonto anlegen]]></de>
+            <en><![CDATA[I would like to create a customer account]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.guest.title">
+            <de><![CDATA[Als Gast bestellen]]></de>
+            <en><![CDATA[Order as a guest]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.guest.desc">
+            <de><![CDATA[Ich möchte kein Kundenkonto anlegen]]></de>
+            <en><![CDATA[I do not want to create a customer account]]></en>
+        </locale>
+
         <locale name="ordering.nobody.login.text.prefix" html="true">
             <de><![CDATA[ ]]></de>
             <en><![CDATA[ ]]></en>
@@ -399,6 +424,15 @@
             <de><![CDATA[ ]]></de>
             <en><![CDATA[ ]]></en>
         </locale>
+        <locale name="ordering.nobody.guest.text.prefix" html="true">
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.guest.text.suffix" html="true">
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
+        </locale>
+
         <locale name="filter.status.all">
             <de><![CDATA[Status: Alle]]></de>
             <en><![CDATA[Status: all]]></en>
@@ -1504,6 +1538,22 @@
         <locale name="quiqqer.order.checkoutType.step.by.step">
             <de><![CDATA[Step by Step checkout]]></de>
             <en><![CDATA[Step by step checkout]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroText">
+            <de><![CDATA[Titel (nicht eingeloggt)]]></de>
+            <en><![CDATA[Title (not logged in)]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroText.desc">
+            <de><![CDATA[Dieser Titel ist nur für nicht eingeloggte Benutzer sichtbar.]]></de>
+            <en><![CDATA[This title is only visible to users who are not logged in.]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroDesc">
+            <de><![CDATA[Kurzer Text (nicht eingeloggt)]]></de>
+            <en><![CDATA[Short text (not logged in)]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroDesc.desc">
+            <de><![CDATA[Dieser Text ist nur für nicht eingeloggte Benutzer sichtbar.]]></de>
+            <en><![CDATA[This text is only visible to users who are not logged in.]]></en>
         </locale>
     </groups>
 
