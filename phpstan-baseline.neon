@@ -256,11 +256,6 @@ parameters:
 			path: src/QUI/ERP/Order/EventHandling.php
 
 		-
-			message: "#^Call to method getGlobalProcessId\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
-			count: 1
-			path: src/QUI/ERP/Order/EventHandling.php
-
-		-
 			message: "#^Call to method getShipping\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
 			count: 2
 			path: src/QUI/ERP/Order/EventHandling.php
@@ -268,11 +263,6 @@ parameters:
 		-
 			message: "#^Call to method getShippingStatus\\(\\) on an unknown class QUI\\\\ERP\\\\SalesOrders\\\\SalesOrder\\.$#"
 			count: 2
-			path: src/QUI/ERP/Order/EventHandling.php
-
-		-
-			message: "#^Call to method getUUID\\(\\) on an unknown class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Invoice\\.$#"
-			count: 1
 			path: src/QUI/ERP/Order/EventHandling.php
 
 		-

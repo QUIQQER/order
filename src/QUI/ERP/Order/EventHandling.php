@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function array_flip;
 use function array_keys;
+use function class_exists;
 use function count;
 use function defined;
 use function explode;
@@ -279,6 +280,10 @@ class EventHandling
         QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary,
         QUI\ERP\Accounting\Invoice\Invoice $Invoice
     ): void {
+        if (!class_exists('QUI\ERP\Accounting\Invoice\Invoice')) {
+            return;
+        }
+
         try {
             $Process = new QUI\ERP\Process($Invoice->getGlobalProcessId());
             $Order = $Process->getOrder();
