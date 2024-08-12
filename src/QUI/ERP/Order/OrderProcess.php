@@ -501,7 +501,12 @@ class OrderProcess extends QUI\Control
             $nobodyIntroDesc = '';
             $Site = $this->getSite();
 
-            if ($guestOrderInstalled && QUI\ERP\Order\Guest\GuestOrder::isActive()) {
+            if (
+                class_exists('QUI\ERP\Order\Guest\GuestOrder')
+                && class_exists('QUI\ERP\Order\Guest\Controls\GuestOrderButton')
+                && $guestOrderInstalled
+                && QUI\ERP\Order\Guest\GuestOrder::isActive()
+            ) {
                 $GuestOrder = new QUI\ERP\Order\Guest\Controls\GuestOrderButton();
 
                 if ($Site->getAttribute('quiqqer.order.nobody.intro.title')) {
@@ -522,7 +527,12 @@ class OrderProcess extends QUI\Control
                 default => 'login'
             };
 
-            if ($guestOrderInstalled && str_contains($url, '?open=guest') && QUI\ERP\Order\Guest\GuestOrder::isActive()) {
+            if (
+                $guestOrderInstalled
+                && class_exists('QUI\ERP\Order\Guest\GuestOrder')
+                && str_contains($url, '?open=guest')
+                && QUI\ERP\Order\Guest\GuestOrder::isActive()
+            ) {
                 $activeEntry = 'guest';
             }
 
