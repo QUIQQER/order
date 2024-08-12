@@ -10,6 +10,8 @@
 
             <attributes>
                 <attribute>quiqqer.order.checkoutType</attribute>
+                <attribute>quiqqer.order.nobody.intro.title</attribute>
+                <attribute>quiqqer.order.nobody.intro.desc</attribute>
             </attributes>
 
             <settings>
@@ -30,6 +32,28 @@
                                 <locale group="quiqqer/order" var="quiqqer.order.checkoutType.step.by.step"/>
                             </option>
                         </select>
+
+                        <input conf="quiqqer.order.nobody.intro.title" type="text">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="quiqqer.order.nobodyIntroText"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="quiqqer.order.nobodyIntroText.desc"/>
+                            </description>
+                        </input>
+                        <input conf="quiqqer.order.nobody.intro.desc" type="text" data-qui="controls/editors/Input">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="quiqqer.order.nobodyIntroDesc"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="quiqqer.order.nobodyIntroDesc.desc"/>
+                            </description>
+                        </input>
+
                     </settings>
                 </category>
             </settings>

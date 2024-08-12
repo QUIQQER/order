@@ -283,7 +283,11 @@ class EventHandling
             $Process = new QUI\ERP\Process($Invoice->getGlobalProcessId());
             $Order = $Process->getOrder();
 
-            if (!$Order || $Order->isPosted()) {
+            if (!$Order) {
+                return;
+            }
+
+            if ($Order->hasInvoice() && $Order->getInvoice() instanceof QUI\ERP\Accounting\Invoice\Invoice) {
                 return;
             }
 

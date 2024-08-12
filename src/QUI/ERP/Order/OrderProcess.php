@@ -495,11 +495,47 @@ class OrderProcess extends QUI\Control
         $Engine = QUI::getTemplateManager()->getEngine();
 
         if ($isNobody) {
+            $guestOrderInstalled = QUI::getPackageManager()->isInstalled('quiqqer/order-guestorder');
+            $GuestOrder = null;
+            $nobodyIntroTitle = '';
+            $nobodyIntroDesc = '';
+            $Site = $this->getSite();
+
+            if ($guestOrderInstalled && QUI\ERP\Order\Guest\GuestOrder::isActive()) {
+                $GuestOrder = new QUI\ERP\Order\Guest\Controls\GuestOrderButton();
+
+                if ($Site->getAttribute('quiqqer.order.nobody.intro.title')) {
+                    $nobodyIntroTitle = $Site->getAttribute('quiqqer.order.nobody.intro.title');
+                }
+
+                if ($Site->getAttribute('quiqqer.order.nobody.intro.desc')) {
+                    $nobodyIntroDesc = $Site->getAttribute('quiqqer.order.nobody.intro.desc');
+                }
+            }
+
+            $Request = QUI::getRequest();
+            $url = $Request->getRequestUri();
+
+            $activeEntry = match (true) {
+                str_contains($url, '?open=login') => 'login',
+                str_contains($url, '?open=signup') => 'signup',
+                default => 'login'
+            };
+
+            if ($guestOrderInstalled && str_contains($url, '?open=guest') && QUI\ERP\Order\Guest\GuestOrder::isActive()) {
+                $activeEntry = 'guest';
+            }
+
             $Engine->assign([
                 'Registration' => new Controls\Checkout\Registration([
                     'autofill' => false
                 ]),
-                'Login' => new Controls\Checkout\Login()
+                'Login' => new Controls\Checkout\Login(),
+                'guestOrderInstalled' => $guestOrderInstalled,
+                'GuestOrder' => $GuestOrder,
+                'activeEntry' => $activeEntry,
+                'nobodyIntroTitle' => $nobodyIntroTitle,
+                'nobodyIntroDesc' => $nobodyIntroDesc
             ]);
 
             return $Engine->fetch(
