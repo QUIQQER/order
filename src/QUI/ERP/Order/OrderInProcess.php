@@ -464,6 +464,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             ['hash' => $Order->getUUID()]
         );
 
+        // get complete new instance
+        $Order = new Order($Order->getUUID());
+
         $Order->setAttribute('inOrderCreation', true);
         $this->setAttribute('inOrderCreation', true);
 
