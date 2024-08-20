@@ -43,6 +43,7 @@
 
 /** processing / time line
  ============================================*/
+
 .quiqqer-order-ordering-timeline {
     margin-bottom: 2rem;
 }
@@ -389,7 +390,7 @@
     }
 
     .quiqqer-order-ordering-nobody-tabNav {
-        display: flex;
+        /*display: flex;*/
         padding-block: 1rem;
         overflow: auto;
         white-space: nowrap;
