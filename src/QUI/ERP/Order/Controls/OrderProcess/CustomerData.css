@@ -86,6 +86,10 @@
     .quiqqer-order-customerData .qui-select {
         width: 100%;
     }
+
+    .quiqqer-order-customerData-edit-street_no {
+        flex-flow: wrap !important;
+    }
 }
 
 .quiqqer-order-customerData label [name="street"] {

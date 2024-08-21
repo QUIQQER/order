@@ -121,10 +121,10 @@ class OrderProcess extends QUI\Control
         $step = $this->getAttribute('step');
         $Order = $this->getOrder();
 
-        if (
-            $Order->getCustomer()->getUUID() !== $User->getUUID()
-            && !QUI::getUsers()->isSystemUser($User)
-        ) {
+        $customerUUID = $Order->getCustomer()->getUUID();
+        $userUUID = $User->getUUID();
+
+        if ($customerUUID !== $userUUID && !QUI::getUsers()->isSystemUser($User)) {
             throw new QUI\Permissions\Exception([
                 'quiqqer/order',
                 'exception.no.permission.for.this.order'

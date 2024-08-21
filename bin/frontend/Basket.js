@@ -122,7 +122,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
             const products = basket.products;
 
             // if there are no products yet, merge without query
-            if (!products.length) {
+            if (typeof products === 'undefined' || !products.length) {
                 GlobalBasket.setAttribute('mergeLocalStorage', 1);
                 GlobalBasket.load().then(function () {
                     if (QUIQQER_SITE.type !== 'quiqqer/order:types/orderingProcess') {
