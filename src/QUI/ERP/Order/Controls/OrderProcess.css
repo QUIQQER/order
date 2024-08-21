@@ -347,7 +347,7 @@
     }
 
     .quiqqer-order-ordering-nobody__aside ul {
-        display: flex;
+        /*display: flex;*/
         padding-block: 1rem;
         overflow: auto;
         white-space: nowrap;
