@@ -539,10 +539,12 @@ class Search extends Singleton
             $orderData['uuid'] = $Order->getUUID();
             $orderData['globalProcessId'] = $Order->getGlobalProcessId();
             $orderData['prefixed-id'] = $Order->getPrefixedNumber();
+            $orderData['customer_no'] = '';
 
             // customer data
             if (empty($orderData['customer_id'])) {
                 $orderData['customer_id'] = $Customer->getUUID();
+                $orderData['customer_no'] = $Customer->getCustomerNo();
 
                 if (!$orderData['customer_id']) {
                     $orderData['customer_id'] = Handler::EMPTY_VALUE;
