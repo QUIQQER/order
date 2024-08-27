@@ -27,7 +27,10 @@ QUI::$Ajax->registerFunction(
         $Customer = null;
 
         if (isset($data['customerId']) && !isset($data['customer'])) {
-            $Customer = QUI::getUsers()->get($data['customerId']);
+            try {
+                $Customer = QUI::getUsers()->get($data['customerId']);
+            } catch (QUI\Exception) {
+            }
         }
 
         if (!empty($data['cDate'])) {
@@ -44,8 +47,16 @@ QUI::$Ajax->registerFunction(
         }
 
         if (!$Customer && isset($data['customer'])) {
-            if (isset($data['customerId']) && !isset($data['customer']['id'])) {
-                $data['customer']['id'] = $data['customerId'];
+            // refresh customer id data
+            if (isset($data['customerId'])) {
+                try {
+                    $Customer = QUI::getUsers()->get($data['customerId']);
+
+                    $data['customer']['id'] = $Customer->getUUID();
+                    $data['customer']['uuid'] = $Customer->getUUID();
+                    $data['customer']['customerId'] = $Customer->getAttribute('customerId');
+                } catch (QUI\Exception) {
+                }
             }
 
             if (isset($data['addressInvoice']['country']) && !isset($data['customer']['country'])) {

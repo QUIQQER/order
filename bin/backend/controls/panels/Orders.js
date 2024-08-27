@@ -113,6 +113,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             let sortOn = self.$Grid.options.sortOn;
 
             switch (sortOn) {
+                case 'customer_id_view':
                 case 'customer_id':
                     sortOn = 'customerId';
                     break;
@@ -171,6 +172,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 borderColor: entry.shipping_status_color !== '---' ? entry.shipping_status_color : ''
                             }
                         });
+                    }
+
+                    if (typeof entry.customer_no !== 'undefined') {
+                        entry.customer_id_view = entry.customer_no;
                     }
 
                     return entry;
@@ -1078,8 +1083,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 },
                 {
                     header: QUILocale.get(lg, 'grid.customerNo'),
-                    dataIndex: 'customer_id',
-                    dataType: 'integer',
+                    dataIndex: 'customer_id_view',
+                    dataType: 'string',
                     width: 90,
                     className: 'clickable'
                 },
@@ -1200,6 +1205,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     dataIndex: 'paymentId',
                     dataType: 'integer',
                     hidden: true
+                },
+                {
+                    dataIndex: 'customer_id',
+                    dataType: 'string',
+                    hidden: true
                 }
             ]);
 
@@ -1286,6 +1296,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         rowData = self.$Grid.getDataByRow(data.row);
 
                     if (Cell.get('data-index') === 'customer_id' ||
+                        Cell.get('data-index') === 'customer_id_view' ||
                         Cell.get('data-index') === 'customer_name' ||
                         Cell.get('data-index') === 'invoice_id' ||
                         Cell.get('data-index') === 'status') {
