@@ -189,6 +189,10 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $this->getGlobalProcessId()
         );
 
+        if ($this->getCustomer()) {
+            $TemporaryInvoice->setCustomer($this->getCustomer());
+        }
+
         $this->History->addComment(
             QUI::getLocale()->get(
                 'quiqqer/order',
@@ -243,7 +247,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'order_id' => $this->getUUID(),
             'order_date' => $this->getCreateDate(),
             'project_name' => $this->getAttribute('project_name'),
-            'customer_id' => $this->customerId,
+            'customer_id' => $this->getCustomer()?->getUUID(),
+            'customer_data' => $this->getCustomer()?->getAttributes(),
             'payment_method' => $payment,
             'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
             'invoice_address_id' => $invoiceAddressId,
@@ -287,6 +292,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
                 'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData)),
                 'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency' => $this->getCurrency()->getCode(),
+                'customer_id' => $this->getCustomer()?->getUUID(),
+                'customer_data' => json_encode($this->getCustomer()?->getAttributes()),
             ],
             ['hash' => $TemporaryInvoice->getUUID()]
         );
