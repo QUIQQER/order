@@ -151,6 +151,10 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $settings = [];
         }
 
+        if (!empty($settings['company']['required'])) {
+            $this->setJavaScriptControlOption('companyisrequired', 1);
+        }
+
         $settings = QUI\FrontendUsers\Controls\Address\Address::checkSettingsArray($settings);
         $businessTypeIsChangeable = !(QUI\ERP\Utils\Shop::isOnlyB2C() || QUI\ERP\Utils\Shop::isOnlyB2B());
 
