@@ -396,6 +396,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          * @param event
          */
         $onBusinessTypeChange: function(event) {
+            const self = this;
             const Target = event.target;
 
             if (Target.nodeName !== 'SELECT') {
@@ -416,18 +417,24 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     VatId.getElement('input').title = QUILocale.get(lg, 'customer.data.vat.chaning.not.allowed');
                 }
 
+                if (self.getAttribute('companyisrequired')) {
+                    Company.querySelector('input').required = true;
+                }
+
                 moofx(Container).animate({
                     height: Inner.offsetHeight,
                     opacity: 1
                 }, {
                     callback: function() {
-//                        Container.style.height = null;
+                       Container.style.height = null;
                     }
                 });
             }
 
             function hide()
             {
+                Company.querySelector('input').removeAttribute('required');
+
                 moofx(Container).animate({
                     height: 0,
                     opacity: 0
