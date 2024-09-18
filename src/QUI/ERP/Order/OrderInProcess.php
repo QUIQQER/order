@@ -71,7 +71,6 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             }
 
             try {
-                Handler::getInstance()->removeFromInstanceCache($this->orderId);
                 $Order = Handler::getInstance()->get($this->orderId);
 
                 if (!$Order->isSuccessful()) {
