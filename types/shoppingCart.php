@@ -9,8 +9,6 @@
  **/
 
 use QUI\ERP\Order\Basket\BasketGuest;
-use QUI\ERP\Order\Handler;
-use QUI\System\Log;
 
 try {
     $BasketControl = null;
