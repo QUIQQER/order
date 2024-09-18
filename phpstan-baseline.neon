@@ -689,8 +689,3 @@ parameters:
 			message: "#^Empty array passed to foreach\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/Utils/Utils.php
-
-		-
-			message: "#^Class QUI\\\\Database\\\\Exception referenced with incorrect case\\: QUI\\\\DataBase\\\\Exception\\.$#"
-			count: 1
-			path: types/shoppingCart.php
