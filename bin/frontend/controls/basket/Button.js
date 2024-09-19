@@ -90,7 +90,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 'class': 'quiqqer-order-basketButton button--callToAction',
                 'html': '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
                     '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
-                    '<span class="quiqqer-order-basketButton-batch">0</span>',
+                    '<span class="quiqqer-order-basketButton-batch">' +
+                    '   <span class="fa fa-spin fa-spinner"></span>' +
+                    '</span>',
                 disabled: true,
                 'data-qui': 'package/quiqqer/order/bin/frontend/controls/basket/Button'
             });
