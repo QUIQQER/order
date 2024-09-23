@@ -59,6 +59,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 });
             });
 
+            if (QUI.getWindowSize().x < 767) {
+                this.initTabsForMobile();
+
+                return;
+            }
+
             this.initTabs();
         },
 
@@ -330,6 +336,95 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 options.easing   = options.easing || 'easeInQuad';
 
                 animejs(options);
+            });
+        },
+
+        // endregion
+
+        // region tabs for mobile
+
+        /**
+         * Initializes the tabs for mobile devices.
+         *
+         * Handles the click events on the tabs and the back buttons, and toggles the visibility of the tabs and their content.
+         *
+         * @return {void}
+         */
+        initTabsForMobile: function () {
+            const Elm = this.getElm();
+            const self = this;
+
+            this.Tabs = Elm.querySelector('.quiqqer-order-ordering-nobody__tabs');
+            this.Nav = Elm.querySelector('.quiqqer-order-ordering-nobody-tabNav');
+            this.navEntries = Elm.querySelectorAll('.quiqqer-order-ordering-nobody-tabNav__entry');
+            this.Main = Elm.querySelector('.quiqqer-order-ordering-nobody-tabs-main__list');
+            this.mainEntries = Elm.querySelectorAll('.quiqqer-order-ordering-nobody-tabs-main__item');
+            const backBtns = Elm.querySelectorAll('.quiqqer-order-ordering-nobody-tabs-main__btnBack');
+
+            /**
+             * Handles the click event on the tabs for mobile devices.
+             *
+             * @param {object} event - The click event object.
+             * @return {void}
+             */
+            const clickEvent = function (event) {
+                event.stop();
+
+                if (self.clicked) {
+                    return;
+                }
+
+                self.clicked = true;
+
+                let NavItem = event.target;
+
+                if (NavItem.nodeName !== 'LI') {
+                    NavItem = NavItem.getParent('li');
+                }
+
+                let target = NavItem.getElement('a').getAttribute("href");
+
+                if (target.indexOf('#') === 0) {
+                    target = target.substring(1);
+                }
+
+                if (!target) {
+                    self.clicked = false;
+                    return;
+                }
+
+                self.Nav.style.display = 'none';
+
+                self.mainEntries.forEach((MainEntry) => {
+                    if (MainEntry.getAttribute('id') === target) {
+                        MainEntry.style.display = 'block';
+                    } else {
+                        MainEntry.style.display = 'none';
+                    }
+                })
+
+                self.clicked = false;
+            };
+
+            /**
+             * Handles the back button click event on the tabs for mobile devices.
+             *
+             * @return {void}
+             */
+            const backClickEvent = function () {
+                self.mainEntries.forEach((MainEntry) => {
+                    MainEntry.style.display = 'none';
+                });
+
+                self.Nav.style.display = null;
+            }
+
+            this.navEntries.forEach((NavEntry) => {
+                NavEntry.addEvent('click', clickEvent);
+            });
+
+            backBtns.forEach((Btn) => {
+                Btn.addEvent('click', backClickEvent);
             });
         },
 
