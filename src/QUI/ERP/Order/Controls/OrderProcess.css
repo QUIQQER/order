@@ -371,6 +371,12 @@
     width: 100%;
 }
 
+@media screen and (min-width: 768px) {
+    .quiqqer-order-ordering-nobody-tabs-main__btnBack {
+        display: none;
+    }
+}
+
 @media screen and (max-width: 767px) {
     .quiqqer-order-ordering-nobody__intro {
         margin-bottom: 3rem;
