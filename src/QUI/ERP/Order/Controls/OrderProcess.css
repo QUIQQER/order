@@ -391,20 +391,12 @@
         width: 100%
     }
 
-    .quiqqer-order-ordering-nobody-tabNav {
-
-    }
-
     .quiqqer-order-ordering-nobody-tabs-main__item {
         display: none;
     }
 
     .quiqqer-order-ordering form {
         height: initial;
-    }
-
-    .quiqqer-order-ordering-nobody-tabNav__entry > :where(a) {
-        background: #f8f8f8;
     }
 
     /* back btn */

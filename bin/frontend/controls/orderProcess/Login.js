@@ -18,11 +18,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
 
         Binds: [
             '$onImport',
-            '$resize',
-            'toggle',
-            '$mouseMoveHandler',
-            '$mouseDownHandler',
-            '$mouseUpHandler'
+            'toggle'
         ],
 
         initialize: function (options) {
@@ -39,8 +35,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             this.addEvents({
                 onImport: this.$onImport
             });
-
-            QUI.addEvent('resize', this.$resize);
         },
 
         /**
@@ -71,7 +65,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
         // region tabs
 
         /**
-         * Init clickable tabs functionality
+         * Init clickable tabs functionality (for desktop)
          */
         initTabs: function () {
             const Elm = this.getElm();
@@ -87,9 +81,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             if (!this.navEntries || !this.mainEntries) {
                 return;
             }
-
-            // scroll active nav elm to the left by page load
-            this.$setNavItemPos(this.ActiveNavEntry);
 
             const clickEvent = function (event) {
                 event.stop();
@@ -117,7 +108,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                     return;
                 }
 
-                self.$setNavItemPos(NavItem);
                 self.toggle(NavItem, target);
 
                 const url    = window.location.href;
@@ -129,20 +119,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             this.navEntries.forEach((NavEntry) => {
                 NavEntry.addEvent('click', clickEvent);
             });
-
-            this.$resize();
-        },
-
-        $resize: function () {
-            if (this.enableDragToScroll !== 1) {
-                return;
-            }
-
-            if (this.navTab.scrollWidth > this.navTab.clientWidth) {
-                this.navTab.addEventListener('mousedown', this.$mouseDownHandler);
-            } else {
-                this.navTab.removeEventListener('mousedown', this.$mouseDownHandler);
-            }
         },
 
         /**
@@ -290,43 +266,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             });
         },
 
-        /**
-         * Scroll active nav item to the left edge (on mobile)
-         *
-         * @param Item
-         */
-        $setNavItemPos: function (Item) {
-            if (!Item) {
-                return;
-            }
-
-            if (QUI.getWindowSize().x > 767) {
-                return;
-            }
-
-            const paddingLeft = window.getComputedStyle(this.Nav, null).getPropertyValue('padding-left'),
-                marginLeft  = window.getComputedStyle(Item, null).getPropertyValue('padding-left'),
-                itemLeftPos = Item.offsetLeft - this.Nav.getBoundingClientRect().left;
-
-            new Fx.Scroll(this.Nav).start(itemLeftPos - parseInt(paddingLeft) - parseInt(marginLeft), 0);
-        },
-
-        /**
-         * Check if element is in viewport
-         * @param element
-         * @return {boolean}
-         */
-        $isInViewport: function (element) {
-            const rect = element.getBoundingClientRect();
-
-            return (
-                rect.top >= 0 &&
-                rect.left >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-            );
-        },
-
         $animate: function (Target, options) {
             return new Promise(function (resolve) {
                 options          = options || {};
@@ -426,69 +365,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             backBtns.forEach((Btn) => {
                 Btn.addEvent('click', backClickEvent);
             });
-        },
-
-        // endregion
-
-        // region drag to scroll
-
-        /**
-         * Init drag to scroll
-         */
-        $initDragToScroll: function () {
-            if (this.navTab.scrollWidth <= this.navTab.clientWidth) {
-                return;
-            }
-
-            this.navTab.addEventListener('mousedown', this.$mouseDownHandler);
-        },
-
-        /**
-         * Move handler
-         *
-         * @param e
-         */
-        $mouseMoveHandler: function (e) {
-            // How far the mouse has been moved
-            const dx = e.clientX - this.navPos.x;
-
-            if (this.navPos.x !== dx) {
-                this.clicked = true;
-            }
-
-            // Scroll the element
-            this.navTab.scrollLeft = this.navPos.left - dx;
-        },
-
-        /**
-         * Mouse down handler
-         *
-         * @param e
-         */
-        $mouseDownHandler: function (e) {
-            this.navTab.style.userSelect = 'none';
-
-            this.navPos = {
-                left: this.navTab.scrollLeft, // The current scroll
-                x   : e.clientX, // Get the current mouse position
-            };
-
-            document.addEventListener('mousemove', this.$mouseMoveHandler);
-            document.addEventListener('mouseup', this.$mouseUpHandler);
-        },
-
-        /**
-         * Mouse up handler
-         */
-        $mouseUpHandler: function () {
-            document.removeEventListener('mousemove', this.$mouseMoveHandler);
-            document.removeEventListener('mouseup', this.$mouseUpHandler);
-
-            this.navTab.style.removeProperty('user-select');
-
-            setTimeout(() => {
-                this.clicked = false;
-            }, 50);
         },
 
         // endregion
