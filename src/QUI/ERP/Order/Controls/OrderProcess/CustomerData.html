@@ -83,7 +83,7 @@
                 <div class="bt2-labelContainer__inner" {if $isB2B && $isB2C}style="overflow: auto;"{/if}>
                     <label class="quiqqer-order-customerData-edit-company">
                         {assign var=r value=""}
-                        {if $settings.company.required && ($b2bSelected || $isOnlyB2B)}}{assign var=r value="required"}{/if}
+                        {if $settings.company.required && ($b2bSelected || $isOnlyB2B)}{assign var=r value="required"}{/if}
                         <span>
                             {locale group="quiqqer/order" var="company"}
                             {if $settings.company.required}*{/if}
