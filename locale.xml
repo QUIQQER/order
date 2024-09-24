@@ -384,20 +384,20 @@
         </locale>
 
         <locale name="ordering.nobody.nav.login.title">
-            <de><![CDATA[Anmelden]]></de>
-            <en><![CDATA[Log in]]></en>
+            <de><![CDATA[Bereits Kunde]]></de>
+            <en><![CDATA[Already a customer]]></en>
         </locale>
         <locale name="ordering.nobody.nav.login.desc">
-            <de><![CDATA[Ich bin bereits Kunde]]></de>
-            <en><![CDATA[I am already a customer]]></en>
+            <de><![CDATA[Ich habe ein Kundenkonto]]></de>
+            <en><![CDATA[I have already a customer account]]></en>
         </locale>
         <locale name="ordering.nobody.nav.signup.title">
-            <de><![CDATA[Registrieren]]></de>
-            <en><![CDATA[Sign up]]></en>
+            <de><![CDATA[Konto erstellen]]></de>
+            <en><![CDATA[Create an account]]></en>
         </locale>
         <locale name="ordering.nobody.nav.signup.desc">
-            <de><![CDATA[Ich möchte Kundenkonto anlegen]]></de>
-            <en><![CDATA[I would like to create a customer account]]></en>
+            <de><![CDATA[Ich möchte mich registrieren]]></de>
+            <en><![CDATA[I would like to sign up]]></en>
         </locale>
         <locale name="ordering.nobody.nav.guest.title">
             <de><![CDATA[Als Gast bestellen]]></de>
@@ -406,6 +406,10 @@
         <locale name="ordering.nobody.nav.guest.desc">
             <de><![CDATA[Ich möchte kein Kundenkonto anlegen]]></de>
             <en><![CDATA[I do not want to create a customer account]]></en>
+        </locale>
+        <locale name="ordering.nobody.mainContent.btn.back">
+            <de><![CDATA[Zurück]]></de>
+            <en><![CDATA[Back]]></en>
         </locale>
 
         <locale name="ordering.nobody.login.text.prefix" html="true">

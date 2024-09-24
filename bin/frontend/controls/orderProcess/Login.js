@@ -18,11 +18,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
 
         Binds: [
             '$onImport',
-            '$resize',
-            'toggle',
-            '$mouseMoveHandler',
-            '$mouseDownHandler',
-            '$mouseUpHandler'
+            'toggle'
         ],
 
         initialize: function (options) {
@@ -39,8 +35,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             this.addEvents({
                 onImport: this.$onImport
             });
-
-            QUI.addEvent('resize', this.$resize);
         },
 
         /**
@@ -59,13 +53,19 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 });
             });
 
+            if (QUI.getWindowSize().x < 767) {
+                this.initTabsForMobile();
+
+                return;
+            }
+
             this.initTabs();
         },
 
         // region tabs
 
         /**
-         * Init clickable tabs functionality
+         * Init clickable tabs functionality (for desktop)
          */
         initTabs: function () {
             const Elm = this.getElm();
@@ -81,9 +81,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             if (!this.navEntries || !this.mainEntries) {
                 return;
             }
-
-            // scroll active nav elm to the left by page load
-            this.$setNavItemPos(this.ActiveNavEntry);
 
             const clickEvent = function (event) {
                 event.stop();
@@ -111,7 +108,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                     return;
                 }
 
-                self.$setNavItemPos(NavItem);
                 self.toggle(NavItem, target);
 
                 const url    = window.location.href;
@@ -123,20 +119,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             this.navEntries.forEach((NavEntry) => {
                 NavEntry.addEvent('click', clickEvent);
             });
-
-            this.$resize();
-        },
-
-        $resize: function () {
-            if (this.enableDragToScroll !== 1) {
-                return;
-            }
-
-            if (this.navTab.scrollWidth > this.navTab.clientWidth) {
-                this.navTab.addEventListener('mousedown', this.$mouseDownHandler);
-            } else {
-                this.navTab.removeEventListener('mousedown', this.$mouseDownHandler);
-            }
         },
 
         /**
@@ -284,43 +266,6 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             });
         },
 
-        /**
-         * Scroll active nav item to the left edge (on mobile)
-         *
-         * @param Item
-         */
-        $setNavItemPos: function (Item) {
-            if (!Item) {
-                return;
-            }
-
-            if (QUI.getWindowSize().x > 767) {
-                return;
-            }
-
-            const paddingLeft = window.getComputedStyle(this.Nav, null).getPropertyValue('padding-left'),
-                marginLeft  = window.getComputedStyle(Item, null).getPropertyValue('padding-left'),
-                itemLeftPos = Item.offsetLeft - this.Nav.getBoundingClientRect().left;
-
-            new Fx.Scroll(this.Nav).start(itemLeftPos - parseInt(paddingLeft) - parseInt(marginLeft), 0);
-        },
-
-        /**
-         * Check if element is in viewport
-         * @param element
-         * @return {boolean}
-         */
-        $isInViewport: function (element) {
-            const rect = element.getBoundingClientRect();
-
-            return (
-                rect.top >= 0 &&
-                rect.left >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-            );
-        },
-
         $animate: function (Target, options) {
             return new Promise(function (resolve) {
                 options          = options || {};
@@ -335,65 +280,91 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
 
         // endregion
 
-        // region drag to scroll
+        // region tabs for mobile
 
         /**
-         * Init drag to scroll
-         */
-        $initDragToScroll: function () {
-            if (this.navTab.scrollWidth <= this.navTab.clientWidth) {
-                return;
-            }
-
-            this.navTab.addEventListener('mousedown', this.$mouseDownHandler);
-        },
-
-        /**
-         * Move handler
+         * Initializes the tabs for mobile devices.
          *
-         * @param e
-         */
-        $mouseMoveHandler: function (e) {
-            // How far the mouse has been moved
-            const dx = e.clientX - this.navPos.x;
-
-            if (this.navPos.x !== dx) {
-                this.clicked = true;
-            }
-
-            // Scroll the element
-            this.navTab.scrollLeft = this.navPos.left - dx;
-        },
-
-        /**
-         * Mouse down handler
+         * Handles the click events on the tabs and the back buttons, and toggles the visibility of the tabs and their content.
          *
-         * @param e
+         * @return {void}
          */
-        $mouseDownHandler: function (e) {
-            this.navTab.style.userSelect = 'none';
+        initTabsForMobile: function () {
+            const Elm = this.getElm();
+            const self = this;
 
-            this.navPos = {
-                left: this.navTab.scrollLeft, // The current scroll
-                x   : e.clientX, // Get the current mouse position
+            this.Tabs = Elm.querySelector('.quiqqer-order-ordering-nobody__tabs');
+            this.Nav = Elm.querySelector('.quiqqer-order-ordering-nobody-tabNav');
+            this.navEntries = Elm.querySelectorAll('.quiqqer-order-ordering-nobody-tabNav__entry');
+            this.Main = Elm.querySelector('.quiqqer-order-ordering-nobody-tabs-main__list');
+            this.mainEntries = Elm.querySelectorAll('.quiqqer-order-ordering-nobody-tabs-main__item');
+            const backBtns = Elm.querySelectorAll('.quiqqer-order-ordering-nobody-tabs-main__btnBack');
+
+            /**
+             * Handles the click event on the tabs for mobile devices.
+             *
+             * @param {object} event - The click event object.
+             * @return {void}
+             */
+            const clickEvent = function (event) {
+                event.stop();
+
+                if (self.clicked) {
+                    return;
+                }
+
+                self.clicked = true;
+
+                let NavItem = event.target;
+
+                if (NavItem.nodeName !== 'LI') {
+                    NavItem = NavItem.getParent('li');
+                }
+
+                let target = NavItem.getElement('a').getAttribute("href");
+
+                if (target.indexOf('#') === 0) {
+                    target = target.substring(1);
+                }
+
+                if (!target) {
+                    self.clicked = false;
+                    return;
+                }
+
+                self.Nav.style.display = 'none';
+
+                self.mainEntries.forEach((MainEntry) => {
+                    if (MainEntry.getAttribute('id') === target) {
+                        MainEntry.style.display = 'block';
+                    } else {
+                        MainEntry.style.display = 'none';
+                    }
+                })
+
+                self.clicked = false;
             };
 
-            document.addEventListener('mousemove', this.$mouseMoveHandler);
-            document.addEventListener('mouseup', this.$mouseUpHandler);
-        },
+            /**
+             * Handles the back button click event on the tabs for mobile devices.
+             *
+             * @return {void}
+             */
+            const backClickEvent = function () {
+                self.mainEntries.forEach((MainEntry) => {
+                    MainEntry.style.display = 'none';
+                });
 
-        /**
-         * Mouse up handler
-         */
-        $mouseUpHandler: function () {
-            document.removeEventListener('mousemove', this.$mouseMoveHandler);
-            document.removeEventListener('mouseup', this.$mouseUpHandler);
+                self.Nav.style.display = null;
+            }
 
-            this.navTab.style.removeProperty('user-select');
+            this.navEntries.forEach((NavEntry) => {
+                NavEntry.addEvent('click', clickEvent);
+            });
 
-            setTimeout(() => {
-                this.clicked = false;
-            }, 50);
+            backBtns.forEach((Btn) => {
+                Btn.addEvent('click', backClickEvent);
+            });
         },
 
         // endregion
