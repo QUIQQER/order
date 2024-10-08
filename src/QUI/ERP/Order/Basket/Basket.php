@@ -305,9 +305,11 @@ class Basket
 
         // calc data
         $calculations = [];
+        $unformatted = [];
 
         try {
             $data = $Products->getFrontendView()->toArray();
+            $unformatted = $Products->toArray();
 
             unset($data['attributes']);
             unset($data['products']);
@@ -321,7 +323,8 @@ class Basket
         return [
             'id' => $this->getId(),
             'products' => $result,
-            'calculations' => $calculations
+            'calculations' => $calculations,
+            'unformatted' => unformatted
         ];
     }
 
