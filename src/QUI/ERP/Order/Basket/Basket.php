@@ -31,7 +31,7 @@ class Basket
      *
      * @var integer|bool
      */
-    protected int|bool $id;
+    protected int|bool $id = false;
 
     /**
      * List of products
