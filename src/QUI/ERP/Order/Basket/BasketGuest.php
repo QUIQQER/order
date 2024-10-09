@@ -84,13 +84,13 @@ class BasketGuest
 
     //endregion
 
-    /**
+     /**
      * Import the products to the basket
      *
-     * @param array $products
+     * @param array|null $products
      * @throws ExceptionStack
      */
-    public function import(array $products = []): void
+    public function import(array|null $products = []): void
     {
         $this->clear();
 
