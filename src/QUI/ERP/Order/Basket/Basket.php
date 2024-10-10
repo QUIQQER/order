@@ -324,7 +324,7 @@ class Basket
             'id' => $this->getId(),
             'products' => $result,
             'calculations' => $calculations,
-            'unformatted' => unformatted
+            'unformatted' => $unformatted
         ];
     }
 
