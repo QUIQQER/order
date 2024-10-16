@@ -353,17 +353,41 @@
 }
 
 /* main: signup */
+/* 1. fix - it have to be fix in quiqqer/frontend-users */
 .quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-registrationSignUp {
     margin-top: 0;
     margin-bottom: 0;
+    display: grid; /* 1 */
+    justify-content: initial;
+    width: 100%;
 }
 
+/* 1. fix - it have to be fix in quiqqer/frontend-users */
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-frontendUsers-login {
+    width: 100%;
+    grid-column: 1 / 1; /* 1 */
+    grid-row: 1 / 1; /* 1 */
+}
+
+/* 1. fix - it have to be fix in quiqqer/frontend-users */
 .quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-registrationSignUp-registration-content {
     padding: 0;
+    grid-column: 1 / 1; /* 1 */
+    grid-row: 1 / 1; /* 1 */
 }
 
 .quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-order-ordering-nobody-guestOrder-email button {
     margin-top: 1rem;
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-login-forget-password-reset [type="submit"] {
+    margin-top: 1rem;
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-login-forget-password-reset [name="cancel"] {
+    position: initial;
+    margin-top: 1rem;
+    width: 100%;
 }
 
 /* main: guest */
