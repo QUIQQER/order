@@ -6,10 +6,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
 
     'qui/QUI',
     'qui/controls/Control',
-    URL_OPT_DIR + 'bin/quiqqer-asset/animejs/animejs/lib/anime.min.js',
+    URL_OPT_DIR + 'bin/quiqqer-asset/animejs/animejs/lib/anime.min.js'
 
-], function (QUI, QUIControl, animejs) {
-    "use strict";
+], function(QUI, QUIControl, animejs) {
+    'use strict';
 
     return new Class({
 
@@ -21,7 +21,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             'toggle'
         ],
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.parent(options);
 
             this.Nav = null;
@@ -40,15 +40,15 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
         /**
          * event: on import
          */
-        $onImport: function () {
+        $onImport: function() {
             var self = this;
 
-            this.getSignUpControl().then(function (Signup) {
+            this.getSignUpControl().then(function(Signup) {
                 if (!Signup) {
                     return;
                 }
 
-                self.getMailRegisterNode(Signup).then(function (MailRegister) {
+                self.getMailRegisterNode(Signup).then(function(MailRegister) {
                     MailRegister.set('data-no-blur-check', 1);
                 });
             });
@@ -67,7 +67,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
         /**
          * Init clickable tabs functionality (for desktop)
          */
-        initTabs: function () {
+        initTabs: function() {
             const Elm = this.getElm();
             const self = this;
 
@@ -82,7 +82,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 return;
             }
 
-            const clickEvent = function (event) {
+            const clickEvent = function(event) {
                 event.stop();
 
                 if (self.clicked) {
@@ -97,7 +97,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                     NavItem = NavItem.getParent('li');
                 }
 
-                let target = NavItem.getElement('a').getAttribute("href");
+                let target = NavItem.getElement('a').getAttribute('href');
 
                 if (target.indexOf('#') === 0) {
                     target = target.substring(1);
@@ -110,10 +110,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
 
                 self.toggle(NavItem, target);
 
-                const url    = window.location.href;
-                const newUrl = url.split('?')[0] + '?open=' + target;
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
 
-                history.pushState(null, null, newUrl);
+                params.set('open', target);
+                url.search = params.toString();
+
+                history.pushState(null, null, url.toString());
             };
 
             this.navEntries.forEach((NavEntry) => {
@@ -127,7 +130,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param NavItem HTMLNode
          * @param target string
          */
-        toggle: function (NavItem, target) {
+        toggle: function(NavItem, target) {
             if (NavItem.hasClass('active')) {
                 this.clicked = false;
                 return;
@@ -147,7 +150,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
             Promise.all([
                 this.disableNavItem(this.ActiveNavEntry),
                 this.hideContent(this.ActiveMainEntry)
-            ]).then(function () {
+            ]).then(function() {
                 Content.setStyle('display', null);
 
                 return Promise.all([
@@ -155,7 +158,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                     self.showContent(Content),
                     self.$setHeight(Content.offsetHeight)
                 ]);
-            }).then(function () {
+            }).then(function() {
                 self.clicked = false;
                 self.Main.setStyle('height', null);
             });
@@ -167,7 +170,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Item HTMLNode
          * @return Promise
          */
-        disableNavItem: function (Item) {
+        disableNavItem: function(Item) {
             Item.removeClass('active');
 
             return Promise.resolve();
@@ -179,7 +182,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Item HTMLNode
          * @return Promise
          */
-        enableNavItem: function (Item) {
+        enableNavItem: function(Item) {
             Item.addClass('active');
             this.ActiveNavEntry = Item;
 
@@ -192,9 +195,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Item HTMLNode
          * @return Promise
          */
-        hideContent: function (Item) {
+        hideContent: function(Item) {
             return new Promise((resolve) => {
-                this.$slideFadeOut(Item).then(function () {
+                this.$slideFadeOut(Item).then(function() {
                     Item.removeClass('active');
                     Item.setStyle('display', 'none');
 
@@ -209,7 +212,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Item HTMLNode
          * @return Promise
          */
-        showContent: function (Item) {
+        showContent: function(Item) {
             return new Promise((resolve) => {
                 this.$slideFadeIn(Item).then(() => {
                     Item.style.display = null;
@@ -228,7 +231,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param height integer
          * @return Promise
          */
-        $setHeight: function (height) {
+        $setHeight: function(height) {
             return this.$animate(this.Main, {
                 height: height
             });
@@ -240,10 +243,10 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Item HTMLNode
          * @return Promise
          */
-        $slideFadeOut: function (Item) {
+        $slideFadeOut: function(Item) {
             return this.$animate(Item, {
-                opacity   : 0,
-                translateX: -5,
+                opacity: 0,
+                translateX: -5
 
             });
         },
@@ -254,25 +257,25 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Item HTMLNode
          * @return Promise
          */
-        $slideFadeIn: function (Item) {
+        $slideFadeIn: function(Item) {
             Item.setStyles({
                 transform: 'translateX(-5px)',
-                opacity  : 0
+                opacity: 0
             });
 
             return this.$animate(Item, {
                 translateX: 0,
-                opacity   : 1
+                opacity: 1
             });
         },
 
-        $animate: function (Target, options) {
-            return new Promise(function (resolve) {
-                options          = options || {};
-                options.targets  = Target;
+        $animate: function(Target, options) {
+            return new Promise(function(resolve) {
+                options = options || {};
+                options.targets = Target;
                 options.complete = resolve;
                 options.duration = options.duration || 250;
-                options.easing   = options.easing || 'easeInQuad';
+                options.easing = options.easing || 'easeInQuad';
 
                 animejs(options);
             });
@@ -289,7 +292,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          *
          * @return {void}
          */
-        initTabsForMobile: function () {
+        initTabsForMobile: function() {
             const Elm = this.getElm();
             const self = this;
 
@@ -306,7 +309,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
              * @param {object} event - The click event object.
              * @return {void}
              */
-            const clickEvent = function (event) {
+            const clickEvent = function(event) {
                 event.stop();
 
                 if (self.clicked) {
@@ -321,7 +324,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                     NavItem = NavItem.getParent('li');
                 }
 
-                let target = NavItem.getElement('a').getAttribute("href");
+                let target = NavItem.getElement('a').getAttribute('href');
 
                 if (target.indexOf('#') === 0) {
                     target = target.substring(1);
@@ -340,7 +343,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                     } else {
                         MainEntry.style.display = 'none';
                     }
-                })
+                });
 
                 self.clicked = false;
             };
@@ -350,13 +353,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
              *
              * @return {void}
              */
-            const backClickEvent = function () {
+            const backClickEvent = function() {
                 self.mainEntries.forEach((MainEntry) => {
                     MainEntry.style.display = 'none';
                 });
 
                 self.Nav.style.display = null;
-            }
+            };
 
             this.navEntries.forEach((NavEntry) => {
                 NavEntry.addEvent('click', clickEvent);
@@ -372,7 +375,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
         /**
          * @return {Promise|*}
          */
-        getSignUpControl: function () {
+        getSignUpControl: function() {
             var SignUp = this.getElm().getElement('.quiqqer-fu-registrationSignUp');
 
             if (SignUp.get('data-quiid')) {
@@ -381,8 +384,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 );
             }
 
-            return new Promise(function (resolve) {
-                SignUp.addEvent('load', function () {
+            return new Promise(function(resolve) {
+                SignUp.addEvent('load', function() {
                     resolve(QUI.Controls.getById(SignUp.get('data-quiid')));
                 });
             });
@@ -392,8 +395,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
          * @param Signup
          * @return {Promise}
          */
-        getMailRegisterNode: function (Signup) {
-            var fetchMailControl = function () {
+        getMailRegisterNode: function(Signup) {
+            var fetchMailControl = function() {
                 var EmailRegister = Signup.getElm().getElement(
                     '.quiqqer-fu-registrationSignUp-registration-email [name="email"]'
                 );
@@ -410,8 +413,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
                 return fetchMailControl();
             }
 
-            return new Promise(function (resolve) {
-                Signup.addEvent('onLoaded', function () {
+            return new Promise(function(resolve) {
+                Signup.addEvent('onLoaded', function() {
                     fetchMailControl().then(resolve);
                 });
             });
