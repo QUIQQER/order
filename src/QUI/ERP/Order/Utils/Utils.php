@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\Utils;
 
 use QUI;
 use QUI\Database\Exception;
+use QUI\ERP\Accounting\Payments\Types\PaymentInterface;
 use QUI\ERP\Products\Field\Types\BasketConditions;
 use QUI\Projects\Project;
 
@@ -252,12 +253,16 @@ class Utils
     /**
      * Can another payment method be chosen if the payment method does not work in an order?
      *
-     * @param QUI\ERP\Accounting\Payments\Types\PaymentInterface $Payment
+     * @param PaymentInterface|null $Payment
      * @return bool
      */
     public static function isPaymentChangeable(
-        QUI\ERP\Accounting\Payments\Types\PaymentInterface $Payment
+        ?QUI\ERP\Accounting\Payments\Types\PaymentInterface $Payment
     ): bool {
+        if (!$Payment) {
+            return true;
+        }
+
         $Settings = QUI\ERP\Order\Settings::getInstance();
 
         return (bool)$Settings->get('paymentChangeable', $Payment->getId());
