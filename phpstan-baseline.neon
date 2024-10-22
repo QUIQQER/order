@@ -36,11 +36,6 @@ parameters:
 			path: ajax/frontend/basket/controls/basket.php
 
 		-
-			message: "#^Parameter \\#1 \\$User of method QUI\\\\ERP\\\\Order\\\\Factory\\:\\:createBasket\\(\\) expects null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
-			count: 1
-			path: ajax/frontend/basket/getBasket.php
-
-		-
 			message: "#^Using nullsafe method call on non\\-nullable type QUI\\\\ERP\\\\Products\\\\Product\\\\ProductList\\. Use \\-\\> instead\\.$#"
 			count: 1
 			path: ajax/frontend/basket/removePos.php
@@ -542,11 +537,6 @@ parameters:
 
 		-
 			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: src/QUI/ERP/Order/OrderProcess.php
-
-		-
-			message: "#^Parameter \\#1 \\$User of method QUI\\\\ERP\\\\Order\\\\Factory\\:\\:createBasket\\(\\) expects null, QUI\\\\Interfaces\\\\Users\\\\User given\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/OrderProcess.php
 

@@ -46,7 +46,7 @@ try {
         'Login' => $Login,
         'Basket' => $Basket
     ]);
-} catch (QUI\DataBase\Exception $Exception) {
+} catch (QUI\Database\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/core', 'exception.error']);
 
     QUI\System\Log::writeException($Exception);
