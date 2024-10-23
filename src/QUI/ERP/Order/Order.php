@@ -638,10 +638,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     }
 
     /**
-     * @param null|QUI\Interfaces\Users\User $PermissionUser
      * @throws QUI\Exception
      */
-    public function update($PermissionUser = null): void
+    public function update(?User $PermissionUser = null): void
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -787,10 +786,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Alias for update()
      *
-     * @param null $PermissionUser
      * @throws QUI\Exception
      */
-    public function save($PermissionUser = null): void
+    public function save(?User $PermissionUser = null): void
     {
         $this->update($PermissionUser);
     }
