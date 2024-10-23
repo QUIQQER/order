@@ -469,7 +469,7 @@ class Mail
 
             foreach ($attachments as $attachment) {
                 try {
-                    $Item = $Media->get($attachment);
+                    $Item = $Media->get((int)$attachment);
                     $Mail->addAttachment($Item->getFullPath());
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());

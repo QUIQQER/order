@@ -356,11 +356,6 @@ parameters:
 			path: src/QUI/ERP/Order/Mail.php
 
 		-
-			message: "#^Parameter \\#1 \\$id of method QUI\\\\Projects\\\\Media\\:\\:get\\(\\) expects int, string given\\.$#"
-			count: 1
-			path: src/QUI/ERP/Order/Mail.php
-
-		-
 			message: "#^Call to method getId\\(\\) on an unknown class QUI\\\\ERP\\\\Shipping\\\\Types\\\\ShippingEntry\\.$#"
 			count: 1
 			path: src/QUI/ERP/Order/Order.php
