@@ -155,6 +155,16 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                 return;
             }
 
+            if (QUI.getAttribute('QUIQQER_ORDER_BASKET_MERGE')) {
+                GlobalBasket.setAttribute(
+                    'mergeLocalStorage',
+                    QUI.getAttribute('QUIQQER_ORDER_BASKET_MERGE')
+                );
+
+                GlobalBasket.load();
+                return;
+            }
+
             GlobalBasket.showMergeWindow();
         });
     } else {
