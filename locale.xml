@@ -295,6 +295,10 @@
             <de><![CDATA[Zurück zum Shop]]></de>
             <en><![CDATA[Back to the Shop]]></en>
         </locale>
+        <locale name="ordering.btn.backToBasket">
+            <de><![CDATA[Zurück zum Warenkorb]]></de>
+            <en><![CDATA[Back to shopping cart]]></en>
+        </locale>
         <locale name="ordering.btn.changePayment">
             <de><![CDATA[Bezahlungsweise ändern]]></de>
             <en><![CDATA[Change payment method]]></en>
