@@ -79,8 +79,19 @@ class DataLayer
 
     public static function parseArticle(QUI\ERP\Accounting\Article $Article, QUI\Locale $Locale = null): array
     {
-        $Product = Products::getProduct($Article->getId());
-        $item = self::parseProduct($Product);
+        try {
+            $Product = Products::getProduct($Article->getId());
+            $item = self::parseProduct($Product);
+        } catch (QUI\Exception) {
+            // text article
+            $item = [
+                'item_id' => '',
+                'item_name' => $Article->getTitle(),
+                'category' => '',
+                'manufacturer' => '',
+                'variant' => ''
+            ];
+        }
 
         $item['price'] = $Article->getPrice()->getValue();
         $item['currency'] = $Article->getPrice()->getCurrency()->getCode();
