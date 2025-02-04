@@ -18,7 +18,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/quiqqer/order/bin/backend/controls/settings/Payments',
+        Type: 'package/quiqqer/order/bin/backend/controls/settings/Payments',
 
         Binds: [
             '$onImport',
@@ -28,7 +28,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$Input     = null;
+            this.$Input = null;
             this.$Container = null;
 
             this.addEvents({
@@ -42,7 +42,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
          * @return Promise
          */
         refresh: function () {
-            var self    = this,
+            var self = this,
                 current = QUILocale.getCurrent();
 
             return new Promise(function (resolve) {
@@ -52,8 +52,8 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                     });
                 }).then(function (result) {
                     var payments = result[0],
-                        list     = result[1],
-                        data     = [];
+                        list = result[1],
+                        data = [];
 
                     var i, len, title, paymentData;
 
@@ -63,7 +63,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
 
                     for (i = 0, len = payments.length; i < len; i++) {
                         paymentData = payments[i];
-                        title       = paymentData.title;
+                        title = paymentData.title;
 
                         if (typeOf(title) === 'object' && current in title) {
                             title = title[current];
@@ -76,9 +76,9 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                                     onChange: onChange
                                 }
                             }),
-                            id    : paymentData.id,
-                            title : title,
-                            type  : paymentData.paymentType.title
+                            id: paymentData.id,
+                            title: title,
+                            type: paymentData.paymentType.title
                         });
                     }
 
@@ -102,50 +102,50 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
             this.$Container = new Element('div', {
                 styles: {
                     opacity: 0,
-                    width  : '100%'
+                    width: '100%'
                 }
             }).wraps(this.$Input);
 
 
             var Container = new Element('div', {
                 styles: {
-                    height : 300,
-                    width  : '100%',
+                    height: 300,
+                    width: '100%',
                     outline: '1px solid red'
                 }
             }).inject(this.$Container);
 
 
             this.$Grid = new Grid(Container, {
-                height     : 300,
-                width      : self.$Container.getSize().x,
+                height: 300,
+                width: self.$Container.getSize().x,
                 columnModel: [{
-                    header   : '&nbsp;',
+                    header: '&nbsp;',
                     dataIndex: 'status',
-                    dataType : 'QUI',
-                    width    : 60
+                    dataType: 'QUI',
+                    width: 60
                 }, {
-                    header   : QUILocale.get('quiqqer/system', 'id'),
+                    header: QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
-                    dataType : 'integer',
-                    width    : 60
+                    dataType: 'integer',
+                    width: 60
                 }, {
-                    header   : QUILocale.get('quiqqer/system', 'title'),
+                    header: QUILocale.get('quiqqer/system', 'title'),
                     dataIndex: 'title',
-                    dataType : 'text',
-                    width    : 140
+                    dataType: 'text',
+                    width: 140
                 }, {
-                    header   : QUILocale.get('quiqqer/system', 'type'),
+                    header: QUILocale.get('quiqqer/system', 'type'),
                     dataIndex: 'type',
-                    dataType : 'text',
-                    width    : 140
+                    dataType: 'text',
+                    width: 140
                 }],
-                onrefresh  : this.refresh
+                onrefresh: this.refresh
             });
 
             this.refresh().then(function () {
                 var header = self.$Grid.container.getElements('.th'),
-                    el     = header[1];
+                    el = header[1];
 
                 el.click(); // workaround
                 el.click(); // workaround
@@ -166,7 +166,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
          * Save the current settings
          */
         save: function () {
-            var data   = this.$Grid.getData();
+            var data = this.$Grid.getData();
             var result = {};
 
             for (var i = 0, len = data.length; i < len; i++) {
@@ -185,7 +185,7 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_backend_settings_paymentChangeable_list', resolve, {
                     'package': 'quiqqer/order',
-                    onError  : reject
+                    onError: reject
                 });
             });
         },
@@ -199,8 +199,8 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_order_ajax_backend_settings_paymentChangeable_save', resolve, {
                     'package': 'quiqqer/order',
-                    onError  : reject,
-                    data     : JSON.encode(data)
+                    onError: reject,
+                    data: JSON.encode(data)
                 });
             });
         }
