@@ -13,8 +13,11 @@ use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\SalesOrders\Handler as SalesOrdersHandler;
 use QUI\ERP\SalesOrders\SalesOrder;
-use QUI\ERP\ErpEntityInterface;
-use QUI\ERP\ErpTransactionsInterface;
+use QUI\ERP\ErpEntityInterface as ErpEntityI;
+use QUI\ERP\ErpTransactionsInterface as ErpTransactionsI;
+use QUI\ERP\ErpCopyInterface as ErpCopyI;
+use QUI\ExceptionStack;
+use QUI\Interfaces\Users\User;
 
 use function array_map;
 use function array_sum;
@@ -22,6 +25,7 @@ use function class_exists;
 use function is_array;
 use function is_string;
 use function json_decode;
+use function json_encode;
 
 /**
  * Class OrderBooked
@@ -31,12 +35,22 @@ use function json_decode;
  *
  * @package QUI\ERP\Order
  */
-class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
+class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTransactionsI, ErpCopyI
 {
+    use QUI\ERP\ErpEntityCustomerFiles;
+    use QUI\ERP\ErpEntityData;
+
     /**
      * @var bool
      */
     protected bool $posted = false;
+
+    /**
+     * variable data for developers
+     *
+     * @var array
+     */
+    protected mixed $customData = [];
 
     /**
      * Order constructor.
@@ -48,9 +62,13 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
      */
     public function __construct($orderId)
     {
-        parent::__construct(
-            Handler::getInstance()->getOrderData($orderId)
-        );
+        $orderData = Handler::getInstance()->getOrderData($orderId);
+
+        parent::__construct($orderData);
+
+        if (!empty($orderData['custom_data'])) {
+            $this->customData = json_decode($orderData['custom_data'], true);
+        }
     }
 
     /**
@@ -171,6 +189,10 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             $this->getGlobalProcessId()
         );
 
+        if ($this->getCustomer()) {
+            $TemporaryInvoice->setCustomer($this->getCustomer());
+        }
+
         $this->History->addComment(
             QUI::getLocale()->get(
                 'quiqqer/order',
@@ -224,7 +246,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
         $TemporaryInvoice->setAttributes([
             'order_id' => $this->getUUID(),
             'order_date' => $this->getCreateDate(),
-            'customer_id' => $this->customerId,
+            'project_name' => $this->getAttribute('project_name'),
+            'customer_id' => $this->getCustomer()?->getUUID(),
+            'customer_data' => $this->getCustomer()?->getAttributes(),
             'payment_method' => $payment,
             'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
             'invoice_address_id' => $invoiceAddressId,
@@ -232,6 +256,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             'delivery_address' => $deliveryAddress,
             'delivery_address_id' => $deliveryAddressId
         ]);
+
+        $TemporaryInvoice->setData('order', $this->getReferenceData());
 
         // pass data to the invoice
         if (!is_array($this->data)) {
@@ -266,6 +292,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
                 'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData)),
                 'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency' => $this->getCurrency()->getCode(),
+                'customer_id' => $this->getCustomer()?->getUUID(),
+                'customer_data' => json_encode($this->getCustomer()?->getAttributes()),
             ],
             ['hash' => $TemporaryInvoice->getUUID()]
         );
@@ -290,7 +318,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
 
         // auto invoice post
         if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
-            $Invoice = $TemporaryInvoice->post();
+            $Invoice = $TemporaryInvoice->post($PermissionUser);
 
             QUI::getDataBase()->update(
                 Handler::getInstance()->table(),
@@ -321,7 +349,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             ]);
         }
 
-        $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getUUID());
+        $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getGlobalProcessId());
 
         $this->History->addComment(
             QUI::getLocale()->get(
@@ -369,12 +397,15 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             'contact_person' => $ContactPersonAddress ? $ContactPersonAddress->getName() : null,
             'order_date' => $this->getCreateDate(),
             'customer_id' => $Customer->getUUID(),
+            'project_name' => $this->getAttribute('project_name'),
             'payment_method' => $payment,
             'customer_address_id' => $invoiceAddressId,
             'customer_address' => $invoiceAddress,
             'delivery_address' => $deliveryAddress,
             'delivery_address_id' => $deliveryAddressId
         ]);
+
+        $SalesOrder->setData('order', $this->getReferenceData());
 
         // pass data to the sales order
         if (!is_array($this->data)) {
@@ -560,6 +591,13 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             $shippingStatus = $ShippingStatus ? $ShippingStatus->getId() : null;
         }
 
+        // project name
+        $projectName = '';
+
+        if (!empty($this->getAttribute('project_name'))) {
+            $projectName = $this->getAttribute('project_name');
+        }
+
         return [
             'id_prefix' => $idPrefix,
             'id_str' => $this->getPrefixedNumber(),
@@ -568,6 +606,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             'status' => $this->status,
             'successful' => $this->successful,
             'c_date' => $this->getCreateDate(),
+            'project_name' => $projectName,
 
             'customerId' => $this->customerId,
             'customer' => json_encode($customer),
@@ -599,10 +638,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
     }
 
     /**
-     * @param null|QUI\Interfaces\Users\User $PermissionUser
      * @throws QUI\Exception
      */
-    public function update($PermissionUser = null): void
+    public function update(?User $PermissionUser = null): void
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -748,10 +786,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
     /**
      * Alias for update()
      *
-     * @param null $PermissionUser
      * @throws QUI\Exception
      */
-    public function save($PermissionUser = null): void
+    public function save(?User $PermissionUser = null): void
     {
         $this->update($PermissionUser);
     }
@@ -949,19 +986,42 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
     /**
      * Copy the order and create a new one
      *
+     * @param User|null $PermissionUser
+     * @param bool|string $globalProcessId
      * @return Order
      *
+     * @throws Exception
      * @throws QUI\Exception
+     * @throws ExceptionStack
+     * @throws Exception
      */
-    public function copy(): Order
-    {
+    public function copy(
+        QUI\Interfaces\Users\User $PermissionUser = null,
+        bool|string $globalProcessId = false
+    ): Order {
         $NewOrder = Factory::getInstance()->create();
 
         QUI::getEvents()->fireEvent('quiqqerOrderCopyBegin', [$this]);
 
+        $data = $this->getDataForSaving();
+
+        if (empty($globalProcessId)) {
+            unset($data['id_prefix']);
+            unset($data['id_str']);
+            unset($data['parent_order']);
+            unset($data['invoice_id']);
+            unset($data['c_date']);
+            unset($data['data']);
+
+            $data['history'] = '[]';
+            $data['comments'] = '[]';
+
+            $data['global_process_id'] = $NewOrder->getUUID();
+        }
+
         QUI::getDataBase()->update(
             Handler::getInstance()->table(),
-            $this->getDataForSaving(),
+            $data,
             ['hash' => $NewOrder->getUUID()]
         );
 
@@ -1086,4 +1146,60 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityInterface,
             }
         }
     }
+
+    //region custom data
+
+
+    /**
+     * Add a custom data entry
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @throws QUI\Database\Exception
+     * @throws QUI\Exception
+     * @throws QUI\ExceptionStack
+     */
+    public function addCustomDataEntry(string $key, mixed $value): void
+    {
+        $this->customData[$key] = $value;
+
+        QUI::getDataBase()->update(
+            Handler::getInstance()->table(),
+            ['custom_data' => json_encode($this->customData)],
+            ['id' => $this->id]
+        );
+
+        QUI::getEvents()->fireEvent(
+            'onQuiqqerOrderAddCustomData',
+            [$this, $this, $this->customData, $key, $value]
+        );
+    }
+
+    /**
+     * Return a wanted custom data entry
+     *
+     * @param $key
+     * @return mixed|null
+     */
+    public function getCustomDataEntry($key): mixed
+    {
+        if (isset($this->customData[$key])) {
+            return $this->customData[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * Return all custom data
+     *
+     * @return array
+     */
+    public function getCustomData(): array
+    {
+        return $this->customData;
+    }
+
+    //endregion
 }

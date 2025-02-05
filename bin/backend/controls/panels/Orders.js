@@ -113,6 +113,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             let sortOn = self.$Grid.options.sortOn;
 
             switch (sortOn) {
+                case 'customer_id_view':
                 case 'customer_id':
                     sortOn = 'customerId';
                     break;
@@ -171,6 +172,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                                 borderColor: entry.shipping_status_color !== '---' ? entry.shipping_status_color : ''
                             }
                         });
+                    }
+
+                    if (typeof entry.customer_no !== 'undefined') {
+                        entry.customer_id_view = entry.customer_no;
                     }
 
                     return entry;
@@ -598,44 +603,14 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             const orderId = selected[0].hash;
 
-            new QUIConfirm({
-                title: QUILocale.get(lg, 'dialog.order.copy.title'),
-                text: QUILocale.get(lg, 'dialog.order.copy.text'),
-                information: QUILocale.get(lg, 'dialog.order.copy.information', {
-                    id: orderId
-                }),
-                icon: 'fa fa-copy',
-                texticon: 'fa fa-copy',
-                maxHeight: 400,
-                maxWidth: 600,
-                autoclose: false,
-                ok_button: {
-                    text: QUILocale.get('quiqqer/system', 'copy'),
-                    textimage: 'fa fa-copy'
-                },
-                events: {
-                    onSubmit: function(Win) {
-                        Win.Loader.show();
-
-                        Orders.copyOrder(orderId).then(function(newOrderId) {
-                            require([
-                                'package/quiqqer/order/bin/backend/controls/panels/Order',
-                                'utils/Panels'
-                            ], function(Order, PanelUtils) {
-                                const Panel = new Order({
-                                    orderId: newOrderId,
-                                    '#id': newOrderId
-                                });
-
-                                PanelUtils.openPanelInTasks(Panel);
-                                Win.close();
-                            });
-                        }).then(function() {
-                            Win.Loader.hide();
-                        });
-                    }
-                }
-            }).open();
+            require([
+                'package/quiqqer/erp/bin/backend/controls/dialogs/CopyErpEntityDialog'
+            ], (CopyErpEntityDialog) => {
+                new CopyErpEntityDialog({
+                    hash: orderId,
+                    entityPlugin: 'quiqqer/order'
+                }).open();
+            });
         },
 
         /**
@@ -1108,8 +1083,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 },
                 {
                     header: QUILocale.get(lg, 'grid.customerNo'),
-                    dataIndex: 'customer_id',
-                    dataType: 'integer',
+                    dataIndex: 'customer_id_view',
+                    dataType: 'string',
                     width: 90,
                     className: 'clickable'
                 },
@@ -1208,20 +1183,32 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 },
                 {
                     header: QUILocale.get(lg, 'grid.hash'),
-                    dataIndex: 'hash',
+                    dataIndex: 'uuid',
                     dataType: 'string',
                     width: 280,
                     className: 'monospace'
                 },
                 {
+                    header: QUILocale.get(lg, 'grid.globalProcessId'),
+                    dataIndex: 'globalProcessId',
+                    dataType: 'string',
+                    width: 280,
+                    className: 'monospace clickable'
+                },
+                {
                     header: QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
                     dataType: 'integer',
-                    width: 80
+                    hidden: true
                 },
                 {
                     dataIndex: 'paymentId',
                     dataType: 'integer',
+                    hidden: true
+                },
+                {
+                    dataIndex: 'customer_id',
+                    dataType: 'string',
                     hidden: true
                 }
             ]);
@@ -1309,6 +1296,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         rowData = self.$Grid.getDataByRow(data.row);
 
                     if (Cell.get('data-index') === 'customer_id' ||
+                        Cell.get('data-index') === 'customer_id_view' ||
                         Cell.get('data-index') === 'customer_name' ||
                         Cell.get('data-index') === 'invoice_id' ||
                         Cell.get('data-index') === 'status') {
@@ -1414,6 +1402,23 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
                         return;
                     }
+
+                    if (typeof data !== 'undefined' && data.cell.get('data-index') === 'globalProcessId') {
+                        const rowData = self.$Grid.getDataByRow(data.row);
+
+                        if (rowData.globalProcessId && rowData.globalProcessId !== '') {
+                            require([
+                                'package/quiqqer/erp/bin/backend/controls/process/ProcessWindow'
+                            ], function(ProcessWindow) {
+                                new ProcessWindow({
+                                    globalProcessId: rowData.globalProcessId
+                                }).open();
+                            });
+
+                            return;
+                        }
+                    }
+
 
                     const selected = self.$Grid.getSelectedData();
 

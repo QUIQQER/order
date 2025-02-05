@@ -42,14 +42,14 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         ],
 
         options: {
-            open: 2, // 0 = nothing, 1 = order window, 2 = order process
+            action: 'openSmallBasket', // openSmallBasket, openOrderProcessUrl, openOrderProcess (qui popup). These options are only used on desktop. Mobile always opens order process page
             text: true,
             styles: false,
             batchPosition: {
                 right: -16,
                 top: -10
             },
-            showMiniBasketOnMouseOver: true
+            showMiniBasketOnMouseOver: false
         },
 
         initialize: function(options) {
@@ -90,7 +90,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 'class': 'quiqqer-order-basketButton button--callToAction',
                 'html': '<span class="quiqqer-order-basketButton-icon fa fa-spinner fa-spin"></span>' +
                     '<span class="quiqqer-order-basketButton-text">' + text + '</span>' +
-                    '<span class="quiqqer-order-basketButton-batch">0</span>',
+                    '<span class="quiqqer-order-basketButton-batch">' +
+                    '   <span class="fa fa-spin fa-spinner"></span>' +
+                    '</span>',
                 disabled: true,
                 'data-qui': 'package/quiqqer/order/bin/frontend/controls/basket/Button'
             });
@@ -131,14 +133,26 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
             Elm.addEvent('click', function() {
-                if (self.getAttribute('open') === 0) {
-                    return;
-                }
-
-                if (self.getAttribute('open') === 2) {
+                // on mobile always go to order process page
+                if (QUI.getWindowSize().x <= 768) {
                     Orders.getOrderProcessUrl().then(function(url) {
                         window.location = url;
                     });
+
+                    return;
+                }
+
+                if (self.getAttribute('action') === 'openSmallBasket') {
+                    self.showSmallBasket();
+
+                    return;
+                }
+
+                if (self.getAttribute('action') === 'openOrderProcessUrl') {
+                    Orders.getOrderProcessUrl().then(function(url) {
+                        window.location = url;
+                    });
+
                     return;
                 }
 

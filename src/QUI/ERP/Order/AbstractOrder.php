@@ -282,6 +282,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             $this->status = $data['status'];
         }
 
+        if (isset($data['project_name'])) {
+            $this->setAttribute('project_name', $data['project_name']);
+        }
+
+        if (!empty($data['order_process_id'])) {
+            $this->setAttribute('order_process_id', $data['order_process_id']);
+        }
+
         // user
         $this->customerId = $data['customerId'];
 
@@ -695,6 +703,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             'comments' => $this->getComments()->toArray(),
             'statusMails' => $this->getStatusMails()->toArray(),
             'currency' => $this->getCurrency()->toArray(),
+            'project_name' => $this->getAttribute('project_name'),
 
             'articles' => $articles,
             'hasDeliveryAddress' => $this->hasDeliveryAddress(),
@@ -965,9 +974,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the customer of the order
      *
-     * @return QUI\ERP\User
+     * @return null|QUI\ERP\User
      */
-    public function getCustomer(): QUI\ERP\User
+    public function getCustomer(): ?QUI\ERP\User
     {
         $Nobody = QUI\ERP\User::convertUserToErpUser(QUI::getUsers()->getNobody());
 
@@ -1177,7 +1186,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             // if something is missing
             if (!empty($missing)) {
                 try {
-                    $Customer = QUI::getUsers()->get($User['id']);
+                    if (!empty($User['uuid'])) {
+                        $Customer = QUI::getUsers()->get($User['uuid']);
+                    } else {
+                        $Customer = QUI::getUsers()->get($User['id']);
+                    }
+
 
                     if (isset($User['address'])) {
                         $address = $User['address'];

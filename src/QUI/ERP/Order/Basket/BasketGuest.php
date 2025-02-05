@@ -84,13 +84,13 @@ class BasketGuest
 
     //endregion
 
-    /**
+     /**
      * Import the products to the basket
      *
-     * @param array $products
+     * @param array|null $products
      * @throws ExceptionStack
      */
-    public function import(array $products = []): void
+    public function import(array|null $products = []): void
     {
         $this->clear();
 
@@ -190,9 +190,11 @@ class BasketGuest
 
         // calc data
         $calculations = [];
+        $unformatted = [];
 
         try {
             $data = $Products->getFrontendView()->toArray();
+            $unformatted = $Products->toArray();
 
             unset($data['attributes']);
             unset($data['products']);
@@ -204,7 +206,8 @@ class BasketGuest
 
         return [
             'products' => $result,
-            'calculations' => $calculations
+            'calculations' => $calculations,
+            'unformatted' => $unformatted
         ];
     }
 

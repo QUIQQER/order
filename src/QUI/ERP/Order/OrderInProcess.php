@@ -48,7 +48,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         // check if an order for the processing order exists
         try {
-            Handler::getInstance()->get($this->orderId);
+            if ($this->orderId) {
+                Handler::getInstance()->get($this->orderId);
+            }
         } catch (Exception) {
             $this->orderId = null;
         }
@@ -69,7 +71,6 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             }
 
             try {
-                Handler::getInstance()->removeFromInstanceCache($this->orderId);
                 $Order = Handler::getInstance()->get($this->orderId);
 
                 if (!$Order->isSuccessful()) {
@@ -462,6 +463,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             ['hash' => $Order->getUUID()]
         );
 
+        // get complete new instance
+        $Order = new Order($Order->getUUID());
+
         $Order->setAttribute('inOrderCreation', true);
         $this->setAttribute('inOrderCreation', true);
 
@@ -649,6 +653,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         }
 
         return [
+            'id_str' => $this->idStr,
             'customerId' => $this->customerId,
             'customer' => json_encode($customer),
             'addressInvoice' => $InvoiceAddress->toJSON(),
@@ -688,6 +693,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      */
     public function clear($PermissionUser = null): void
     {
+        if ($PermissionUser === null) {
+            $PermissionUser = QUI::getUserBySession();
+        }
+
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());
             $Order->clear($PermissionUser);
@@ -707,7 +716,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $this->delete();
 
         $hash = $this->getUUID();
-        $oldOrderId = $this->getUUID();
+        $oldOrderId = $this->id;
         $newOrderId = QUI\ERP\Order\Factory::getInstance()->createOrderInProcessDataBaseEntry();
 
         QUI::getDataBase()->update(

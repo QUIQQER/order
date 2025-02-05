@@ -7,6 +7,10 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\Database\Exception;
+use QUI\ERP\Order\Basket\Basket;
+use QUI\ExceptionStack;
+use QUI\Interfaces\Users\User;
 
 use function date;
 
@@ -79,7 +83,7 @@ class Factory extends QUI\Utils\Singleton
         $Config = QUI::getPackage('quiqqer/order')->getConfig();
         $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
 
-        if (empty($orderId)) {
+        if (empty($orderId) && $orderId != 0) {
             $orderId = 0;
         } else {
             $orderId = (int)$orderId + 1;
@@ -223,12 +227,13 @@ class Factory extends QUI\Utils\Singleton
     /**
      * Create a new Basket for the user
      *
-     * @param null $User
-     * @return QUI\ERP\Order\Basket\Basket
+     * @param User|null $User
+     * @return Basket
      *
-     * @throws QUI\Database\Exception|QUI\ExceptionStack
+     * @throws Exception
+     * @throws ExceptionStack
      */
-    public function createBasket($User = null): Basket\Basket
+    public function createBasket(?QUI\Interfaces\Users\User $User = null): Basket
     {
         if ($User === null) {
             $User = QUI::getUserBySession();
@@ -241,7 +246,7 @@ class Factory extends QUI\Utils\Singleton
 
         $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
 
-        return new Basket\Basket($lastId, $User);
+        return new Basket($lastId, $User);
     }
 
     /**

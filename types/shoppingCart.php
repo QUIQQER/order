@@ -9,8 +9,6 @@
  **/
 
 use QUI\ERP\Order\Basket\BasketGuest;
-use QUI\ERP\Order\Handler;
-use QUI\System\Log;
 
 try {
     $BasketControl = null;
@@ -48,7 +46,7 @@ try {
         'Login' => $Login,
         'Basket' => $Basket
     ]);
-} catch (QUI\DataBase\Exception $Exception) {
+} catch (QUI\Database\Exception $Exception) {
     $ExceptionReplacement = new QUI\Exception(['quiqqer/core', 'exception.error']);
 
     QUI\System\Log::writeException($Exception);

@@ -269,7 +269,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Config = QUI::getPackage('quiqqer/erp')->getConfig();
             $values = $Config->get('sites', $config);
             $Project = $this->getProject();
-        } catch (QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return '';
         }
 

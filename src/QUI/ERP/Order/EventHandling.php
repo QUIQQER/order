@@ -17,10 +17,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function array_flip;
 use function array_keys;
+use function class_exists;
 use function count;
 use function defined;
 use function explode;
+use function is_array;
 use function is_numeric;
+use function is_string;
+use function json_decode;
 use function ltrim;
 use function mb_strpos;
 use function parse_url;
@@ -276,11 +280,19 @@ class EventHandling
         QUI\ERP\Accounting\Invoice\InvoiceTemporary $InvoiceTemporary,
         QUI\ERP\Accounting\Invoice\Invoice $Invoice
     ): void {
+        if (!class_exists('QUI\ERP\Accounting\Invoice\Invoice')) {
+            return;
+        }
+
         try {
             $Process = new QUI\ERP\Process($Invoice->getGlobalProcessId());
             $Order = $Process->getOrder();
 
-            if (!$Order || $Order->isPosted()) {
+            if (!$Order) {
+                return;
+            }
+
+            if ($Order->hasInvoice() && $Order->getInvoice() instanceof QUI\ERP\Accounting\Invoice\Invoice) {
                 return;
             }
 
@@ -508,6 +520,60 @@ class EventHandling
         }
     }
 
+    public static function onQuiqqerSalesOrdersSaveEnd(QUI\ERP\SalesOrders\SalesOrder $SalesOrder): void
+    {
+        $orderId = $SalesOrder->getData('orderId');
+
+        if (empty($orderId)) {
+            return;
+        }
+
+        try {
+            $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);
+        } catch (QUI\Exception) {
+            return;
+        }
+
+        // sales order shipping
+        $shippingTracking = $Order->getDataEntry('shippingTracking');
+        $soShippingTracking = $SalesOrder->getData('shippingTracking');
+
+        if (is_string($soShippingTracking)) {
+            $soShippingTracking = json_decode($soShippingTracking, true);
+        }
+
+        if (is_string($shippingTracking)) {
+            $shippingTracking = json_decode($shippingTracking, true);
+        }
+
+        try {
+            // set shipping tracking
+            if (
+                is_array($soShippingTracking)
+                && is_array($shippingTracking)
+                && isset($soShippingTracking['number'])
+                && isset($shippingTracking['number'])
+                && isset($soShippingTracking['type'])
+                && isset($shippingTracking['type'])
+                && ($soShippingTracking['number'] !== $shippingTracking['number']
+                    || $soShippingTracking['type'] !== $shippingTracking['type'])
+            ) {
+                $Order->setData('shippingTracking', $soShippingTracking);
+            }
+
+            // set shipping
+            if ($SalesOrder->getShipping()) {
+                $Order->setShipping($SalesOrder->getShipping());
+            }
+
+            $Order->update(QUI::getUsers()->getSystemUser());
+
+            if ($SalesOrder->getShippingStatus()) {
+                $Order->setShippingStatus($SalesOrder->getShippingStatus()); // triggers update :-/
+            }
+        } catch (QUI\Exception) {
+        }
+    }
 
     /**
      * @throws QUI\Database\Exception

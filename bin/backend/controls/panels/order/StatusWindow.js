@@ -7,11 +7,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/StatusWindow', [
     'qui/QUI',
     'qui/controls/windows/Confirm',
     'package/quiqqer/order/bin/backend/ProcessingStatus',
+    'package/quiqqer/erp/bin/backend/utils/ERPEntities',
     'package/quiqqer/order/bin/backend/Orders',
     'Locale',
     'Ajax'
 
-], function(QUI, QUIConfirm, ProcessingStatus, Orders, QUILocale, QUIAjax) {
+], function(QUI, QUIConfirm, ProcessingStatus, ERPEntities, Orders, QUILocale, QUIAjax) {
     'use strict';
 
     const lg = 'quiqqer/order';
@@ -56,21 +57,35 @@ define('package/quiqqer/order/bin/backend/controls/panels/order/StatusWindow', [
             this.Loader.show();
             this.getContent().set('html', '');
 
-            new Element('p', {
-                html: QUILocale.get(lg, 'window.status.text', {
-                    orderId: this.getAttribute('orderId')
-                })
-            }).inject(this.getContent());
+            let Select;
 
-            const Select = new Element('select', {
-                styles: {
-                    display: 'block',
-                    margin: '20px auto 0',
-                    width: '80%'
-                }
-            }).inject(this.getContent());
+            return ERPEntities.getEntity(this.getAttribute('orderId'), 'quiqqer/order').then((data) => {
+                this.setAttributes({
+                    icon: 'fa fa-check',
+                    title: QUILocale.get(lg, 'window.status.title', {
+                        orderId: data.prefixedNumber
+                    })
+                });
 
-            return ProcessingStatus.getList().then((statusList) => {
+                this.refresh();
+
+                new Element('p', {
+                    html: QUILocale.get(lg, 'window.status.text', {
+                        orderId: data.prefixedNumber
+                    })
+                }).inject(this.getContent());
+
+                Select = new Element('select', {
+                    styles: {
+                        display: 'block',
+                        margin: '20px auto 0',
+                        width: '80%'
+                    }
+                }).inject(this.getContent());
+
+            }).then(() => {
+                return ProcessingStatus.getList();
+            }).then((statusList) => {
                 statusList = statusList.data;
 
                 new Element('option', {

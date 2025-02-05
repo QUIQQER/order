@@ -43,11 +43,6 @@ class Handler extends Singleton
     protected array $cache = [];
 
     /**
-     * @var array
-     */
-    protected array $orders = [];
-
-    /**
      * Return all order process Provider
      *
      * @return array
@@ -103,22 +98,6 @@ class Handler extends Singleton
         return $result;
     }
 
-    /**
-     * Remove an order instance
-     *
-     * @param $orderId
-     */
-    public function removeFromInstanceCache($orderId): void
-    {
-        if (isset($this->orders[$orderId])) {
-            unset($this->orders[$orderId]);
-        }
-
-        if (isset($this->cache[$orderId])) {
-            unset($this->cache[$orderId]);
-        }
-    }
-
     //region Order
 
     /**
@@ -142,11 +121,7 @@ class Handler extends Singleton
      */
     public function get(int|string $orderId): Order
     {
-        if (!isset($this->orders[$orderId])) {
-            $this->orders[$orderId] = new Order($orderId);
-        }
-
-        return $this->orders[$orderId];
+        return new Order($orderId);
     }
 
     /**
@@ -615,11 +590,7 @@ class Handler extends Singleton
      */
     public function getOrderInProcess($orderId): OrderInProcess
     {
-        if (!isset($this->cache[$orderId])) {
-            $this->cache[$orderId] = new OrderInProcess($orderId);
-        }
-
-        return $this->cache[$orderId];
+        return new OrderInProcess($orderId);
     }
 
     /**
@@ -764,8 +735,9 @@ class Handler extends Singleton
     {
         $result = QUI::getDataBase()->fetch([
             'from' => $this->tableOrderProcess(),
-            'where' => [
-                'id' => $orderId
+            'where_or' => [
+                'id' => $orderId,
+                'hash' => $orderId
             ],
             'limit' => 1
         ]);

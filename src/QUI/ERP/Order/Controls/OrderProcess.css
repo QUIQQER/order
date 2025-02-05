@@ -43,6 +43,7 @@
 
 /** processing / time line
  ============================================*/
+
 .quiqqer-order-ordering-timeline {
     margin-bottom: 2rem;
 }
@@ -242,101 +243,193 @@
     }
 }
 
-/** nobody login / registration
- ============================================*/
+/*******************************/
+/* nobody login / registration */
+/*******************************/
 .quiqqer-order-ordering-nobody {
-    display: flex;
-    width: 100%;
+    max-width: 1000px;
+    margin-inline: auto;
 }
 
-
-.quiqqer-fu-login-container,
-.quiqqer-fu-registrationSignUp {
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
-
-.quiqqer-order-ordering-nobody h2 {
+.quiqqer-order-ordering-nobody__intro {
     text-align: center;
+    margin-bottom: 6rem;
 }
 
-.quiqqer-order-ordering-nobody form {
-    height: initial;
+.quiqqer-order-ordering-nobody__introTitle,
+.quiqqer-order-ordering-nobody__introDesc {
+    max-width: 60ch;
+    margin-inline: auto;
 }
 
-.quiqqer-order-ordering-nobody-login,
-.quiqqer-order-ordering-nobody-registration {
+/* tabs */
+.quiqqer-order-ordering-nobody__tabs {
     display: flex;
-    width: 50%;
-    flex-direction: column;
+    gap: 4rem;
 }
 
-.quiqqer-order-ordering-nobody-login {
-    margin-right: 1rem;
+/* aside */
+.quiqqer-order-ordering-nobody-tabs__aside {
+    width: min(30%, 300px);
 }
 
-.quiqqer-order-ordering-nobody-registration {
-    margin-left: 1rem;
-}
-
-.quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp,
-.quiqqer-order-ordering-nobody .quiqqer-fu-login {
-    margin: 0;
-}
-
-.quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp-info,
-.quiqqer-order-ordering-nobody .quiqqer-fu-registrationSignUp-registration {
+.quiqqer-order-ordering-nobody-tabNav {
+    list-style: none;
     padding: 0;
 }
 
-.quiqqer-order-ordering-nobody .quiqqer-fu-login .quiqqer-fu-login-social form {
-    height: 50px;
+.quiqqer-order-ordering-nobody-tabNav__entry {
+    margin-bottom: 1em;
 }
 
-.quiqqer-fu-login-email-buttons button,
-.quiqqer-fu-registrationSignUp-email-buttons button {
-    padding: 0.75rem;
+.quiqqer-order-ordering-nobody-tabNav__entry > :where(a) {
+    display: flex;
+    gap: 1rem;
+    padding: 1em;
+    border-radius: 0.5em;
+    outline-offset: -1px;
+    color: inherit;
+    text-decoration: none;
 }
 
-.quiqqer-order-ordering-nobody-login-text,
-.quiqqer-order-ordering-nobody-registration-text {
-    margin-bottom: 2rem
+.quiqqer-order-ordering-nobody-tabNav__entry:where(.active) :where(a) {
+    outline: 1px solid;
 }
+
+.quiqqer-order-ordering-nobody-tabNav__icon {
+    width: 1.5em;
+    font-size: 1.5em;
+}
+
+.quiqqer-order-ordering-nobody-tabNav__label {
+    grid-area: title;
+}
+
+.quiqqer-order-ordering-nobody-tabNav__title {
+    display: block;
+    font-weight: bold;
+    font-size: 1.125em;
+    line-height: 1.25;
+}
+
+.quiqqer-order-ordering-nobody-tabNav__desc {
+    font-size: 0.915rem;
+    opacity: 0.75;
+    line-height: 1.5;
+}
+
+/* main */
+.quiqqer-order-ordering-nobody-tabs__main {
+    flex-grow: 1;
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__list {
+    list-style: none;
+    padding: 0;
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__item {
+    max-width: 360px;
+    margin-inline: auto;
+}
+
+.quiqqer-order-ordering-nobody-login-text__prefix,
+.quiqqer-order-ordering-nobody-registration-text__prefix,
+.quiqqer-order-ordering-nobody-guest-text__prefix {
+    margin-bottom: 2rem;
+}
+
 
 .quiqqer-order-ordering-nobody-login-text__suffix,
-.quiqqer-order-ordering-nobody-registration-text__suffix {
+.quiqqer-order-ordering-nobody-registration-text__suffix,
+.quiqqer-order-ordering-nobody-guest-text__suffix {
     margin-top: 2rem;
 }
 
-.quiqqer-order-ordering-nobody-registration .quiqqer-fu-login-container-width {
+/* main: login */
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-login {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* main: signup */
+/* 1. fix - it have to be fix in quiqqer/frontend-users */
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-registrationSignUp {
+    margin-top: 0;
+    margin-bottom: 0;
+    display: grid; /* 1 */
+    justify-content: initial;
     width: 100%;
 }
 
+/* 1. fix - it have to be fix in quiqqer/frontend-users */
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-frontendUsers-login {
+    width: 100%;
+    grid-column: 1 / 1; /* 1 */
+    grid-row: 1 / 1; /* 1 */
+}
+
+/* 1. fix - it have to be fix in quiqqer/frontend-users */
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-registrationSignUp-registration-content {
+    padding: 0;
+    grid-column: 1 / 1; /* 1 */
+    grid-row: 1 / 1; /* 1 */
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-order-ordering-nobody-guestOrder-email button {
+    margin-top: 1rem;
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-login-forget-password-reset [type="submit"] {
+    margin-top: 1rem;
+}
+
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-fu-login-forget-password-reset [name="cancel"] {
+    position: initial;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+/* main: guest */
+.quiqqer-order-ordering-nobody-tabs-main__item .quiqqer-order-ordering-nobody-guestOrder button {
+    width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+    .quiqqer-order-ordering-nobody-tabs-main__btnBack {
+        display: none;
+    }
+}
+
 @media screen and (max-width: 767px) {
-    .quiqqer-order-ordering-nobody {
-        flex-direction: column;
+    .quiqqer-order-ordering-nobody__intro {
+        margin-bottom: 3rem;
     }
 
-    .quiqqer-fu-login-container,
-    .quiqqer-order-ordering-nobody-login,
-    .quiqqer-order-ordering-nobody-registration {
-        margin-left: 0;
-        margin-right: 0;
+    .quiqqer-order-ordering-nobody__tabs {
+        display: block;
     }
 
-    .quiqqer-order-ordering-nobody-registration {
+    .quiqqer-order-ordering-nobody-tabs__aside,
+    .quiqqer-order-ordering-nobody-tabs__main {
+        width: 100%
     }
 
-    .quiqqer-order-ordering-nobody-login {
-        margin-bottom: 1rem;
+    .quiqqer-order-ordering-nobody-tabs-main__item {
+        display: none;
     }
 
-    .quiqqer-order-ordering-nobody-login,
-    .quiqqer-order-ordering-nobody-registration {
-        width: 100%;
+    .quiqqer-order-ordering form {
+        height: initial;
     }
 
-    .qui-window-popup .quiqqer-order-ordering-nobody-registration {
-        margin-bottom: 40px;
+    /* back btn */
+    .quiqqer-order-ordering-nobody-tabs-main__btnBack {
+        display: inline-block;
+        margin-top: 1rem;
+    }
+
+    .quiqqer-order-ordering-nobody-tabs-main__btnBack > .fa {
+        margin-right: 0.5em;
     }
 }

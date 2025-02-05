@@ -31,7 +31,7 @@ class Basket
      *
      * @var integer|bool
      */
-    protected int|bool $id;
+    protected int|bool $id = false;
 
     /**
      * List of products
@@ -68,16 +68,15 @@ class Basket
             $User = QUI::getUserBySession();
         }
 
+        $this->List = new ProductList();
+        $this->List->duplicate = true;
+
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
             return;
         }
 
-        $this->List = new ProductList();
-        $this->List->duplicate = true;
         $this->List->setUser($User);
-
         $this->FrontendMessages = new QUI\ERP\Comments();
-
 
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
@@ -138,9 +137,9 @@ class Basket
     /**
      * Return the product list
      *
-     * @return ProductList|null
+     * @return ProductList
      */
-    public function getProducts(): ?ProductList
+    public function getProducts(): ProductList
     {
         return $this->List;
     }
@@ -167,13 +166,13 @@ class Basket
 
     //endregion
 
-    /**
+     /**
      * Import the products to the basket
      *
-     * @param array $products
+     * @param array|null $products
      * @throws ExceptionStack
      */
-    public function import(array $products = []): void
+    public function import(array|null $products = []): void
     {
         $this->clear();
 
@@ -306,9 +305,11 @@ class Basket
 
         // calc data
         $calculations = [];
+        $unformatted = [];
 
         try {
             $data = $Products->getFrontendView()->toArray();
+            $unformatted = $Products->toArray();
 
             unset($data['attributes']);
             unset($data['products']);
@@ -322,7 +323,8 @@ class Basket
         return [
             'id' => $this->getId(),
             'products' => $result,
-            'calculations' => $calculations
+            'calculations' => $calculations,
+            'unformatted' => $unformatted
         ];
     }
 

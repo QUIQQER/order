@@ -168,7 +168,9 @@ window.whenQuiLoaded().then(function() {
             require(['package/quiqqer/order/bin/frontend/Basket'], function(Basket) {
                 Basket.addEvent('onAdd', function() {
                     getBasketData(Basket).then(function(data) {
-                        window.qTrack('event', 'add_to_cart', data);
+                        if (Basket.isLoaded()) {
+                            window.qTrack('event', 'add_to_cart', data);
+                        }
                     });
                 });
 
@@ -219,7 +221,9 @@ window.whenQuiLoaded().then(function() {
 
         QUI.addEvent('onQuiqqerOrderProductAdd', function(OrderProcess) {
             getOrderData(OrderProcess).then((order) => {
-                window.qTrack('event', 'add_to_cart', order);
+                if (OrderProcess.isLoaded()) {
+                    window.qTrack('event', 'add_to_cart', order);
+                }
             });
         });
 

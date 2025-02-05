@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <locales xmlns="https://doc.quiqqer.com/xml/quiqqer-quiqqer-locale.xsd">
-
     <groups name="quiqqer/order" datatype="php,js">
         <locale name="package.title">
             <de><![CDATA[QUIQQER - Shop - Bestellungen]]></de>
@@ -31,6 +30,15 @@
         <locale name="erp.panel.order.list.text">
             <de><![CDATA[Bestellungen]]></de>
             <en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="erp.panel.order.orderFiles">
+            <de><![CDATA[Dateien]]></de>
+            <en><![CDATA[Files]]></en>
+        </locale>
+        <locale name="erp.panel.order.files_no_customer">
+            <de>
+                <![CDATA[Bitte wähle zuerst einen Kunden für diese Bestellung aus, um Dateien verknüpfen zu können.]]></de>
+            <en><![CDATA[Please select a customer for this order first to be able to attach files.]]></en>
         </locale>
         <locale name="panel.order.currency.title">
             <de><![CDATA[Währung]]></de>
@@ -287,6 +295,10 @@
             <de><![CDATA[Zurück zum Shop]]></de>
             <en><![CDATA[Back to the Shop]]></en>
         </locale>
+        <locale name="ordering.btn.backToBasket">
+            <de><![CDATA[Zurück zum Warenkorb]]></de>
+            <en><![CDATA[Back to shopping cart]]></en>
+        </locale>
         <locale name="ordering.btn.changePayment">
             <de><![CDATA[Bezahlungsweise ändern]]></de>
             <en><![CDATA[Change payment method]]></en>
@@ -375,6 +387,35 @@
             <en><![CDATA[---]]></en>
         </locale>
 
+        <locale name="ordering.nobody.nav.login.title">
+            <de><![CDATA[Bereits Kunde]]></de>
+            <en><![CDATA[Already a customer]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.login.desc">
+            <de><![CDATA[Ich habe ein Kundenkonto]]></de>
+            <en><![CDATA[I have already a customer account]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.signup.title">
+            <de><![CDATA[Konto erstellen]]></de>
+            <en><![CDATA[Create an account]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.signup.desc">
+            <de><![CDATA[Ich möchte mich registrieren]]></de>
+            <en><![CDATA[I would like to sign up]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.guest.title">
+            <de><![CDATA[Als Gast bestellen]]></de>
+            <en><![CDATA[Order as a guest]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.guest.desc">
+            <de><![CDATA[Ich möchte kein Kundenkonto anlegen]]></de>
+            <en><![CDATA[I do not want to create a customer account]]></en>
+        </locale>
+        <locale name="ordering.nobody.mainContent.btn.back">
+            <de><![CDATA[Zurück]]></de>
+            <en><![CDATA[Back]]></en>
+        </locale>
+
         <locale name="ordering.nobody.login.text.prefix" html="true">
             <de><![CDATA[ ]]></de>
             <en><![CDATA[ ]]></en>
@@ -391,6 +432,15 @@
             <de><![CDATA[ ]]></de>
             <en><![CDATA[ ]]></en>
         </locale>
+        <locale name="ordering.nobody.guest.text.prefix" html="true">
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.guest.text.suffix" html="true">
+            <de><![CDATA[ ]]></de>
+            <en><![CDATA[ ]]></en>
+        </locale>
+
         <locale name="filter.status.all">
             <de><![CDATA[Status: Alle]]></de>
             <en><![CDATA[Status: all]]></en>
@@ -430,6 +480,32 @@
             <en><![CDATA[Order copy [orderHash] created from order]]></en>
         </locale>
 
+        <locale name="permission.quiqqer.order._header">
+            <de><![CDATA[Shop - Bestellungen]]></de>
+            <en><![CDATA[Shop - Order]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.order.addPayment">
+            <de><![CDATA[Darf Zahlungsweisen hinzufügen]]></de>
+            <en><![CDATA[]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.update">
+            <de><![CDATA[Darf Bestellungen editieren]]></de>
+            <en><![CDATA[May add payment methods]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.delete">
+            <de><![CDATA[Darf Bestellungen löschen]]></de>
+            <en><![CDATA[May delete orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.copy">
+            <de><![CDATA[Darf Bestellungen kopieren]]></de>
+            <en><![CDATA[May copy orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.create">
+            <de><![CDATA[Darf Bestellungen erstellen]]></de>
+            <en><![CDATA[May create orders]]></en>
+        </locale>
+        
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -1272,8 +1348,8 @@
         </locale>
 
         <locale name="order.confirmation.admin.subject">
-            <de><![CDATA[Es wurde eine Bestellung aufgegeben: [orderId]]]></de>
-            <en><![CDATA[An order was placed: [orderId]]]></en>
+            <de><![CDATA[Es wurde eine Bestellung aufgegeben: [orderPrefixedId]]]></de>
+            <en><![CDATA[An order was placed: [orderPrefixedId]]]></en>
         </locale>
         <locale name="order.confirmation.admin.body" html="true">
             <de><![CDATA[
@@ -1444,7 +1520,7 @@
 
         <locale name="shipping.order.mail.body.shippingInformation" html="true">
             <de><![CDATA[
-            <p>Du kannst den Versandstatus deiner Bestellunter unter [trackingLink] verfolgen.</p>
+            <p>Du kannst den Versandstatus deiner Bestellung unter [trackingLink] verfolgen.</p>
             ]]></de>
             <en><![CDATA[
             <p>You can track the shipping status of your order under [trackingLink]</p>.
@@ -1470,6 +1546,22 @@
         <locale name="quiqqer.order.checkoutType.step.by.step">
             <de><![CDATA[Step by Step checkout]]></de>
             <en><![CDATA[Step by step checkout]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroText">
+            <de><![CDATA[Titel (nicht eingeloggt)]]></de>
+            <en><![CDATA[Title (not logged in)]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroText.desc">
+            <de><![CDATA[Dieser Titel ist nur für nicht eingeloggte Benutzer sichtbar.]]></de>
+            <en><![CDATA[This title is only visible to users who are not logged in.]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroDesc">
+            <de><![CDATA[Kurzer Text (nicht eingeloggt)]]></de>
+            <en><![CDATA[Short text (not logged in)]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroDesc.desc">
+            <de><![CDATA[Dieser Text ist nur für nicht eingeloggte Benutzer sichtbar.]]></de>
+            <en><![CDATA[This text is only visible to users who are not logged in.]]></en>
         </locale>
     </groups>
 
@@ -1574,6 +1666,10 @@
         <locale name="panel.order.data.status">
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
+        </locale>
+        <locale name="panel.order.data.textProjectName">
+            <de><![CDATA[Projektname]]></de>
+            <en><![CDATA[Project name]]></en>
         </locale>
         <locale name="panel.order.shipping">
             <de><![CDATA[Versandart]]></de>
@@ -1720,6 +1816,10 @@
             <en><![CDATA[Payment data]]></en>
         </locale>
         <locale name="grid.hash">
+            <de><![CDATA[Hash]]></de>
+            <en><![CDATA[Hash]]></en>
+        </locale>
+        <locale name="grid.globalProcessId">
             <de><![CDATA[Vorgangsnummer]]></de>
             <en><![CDATA[Procedure number]]></en>
         </locale>
@@ -2367,20 +2467,19 @@
         </locale>
 
         <locale name="window.status.title">
-            <de><![CDATA[Status Änderung für Bestellung #[orderId]]]></de>
-            <en><![CDATA[Status change for order #[orderId]]]></en>
+            <de><![CDATA[Status Änderung für Bestellung: [orderId]]]></de>
+            <en><![CDATA[Status change for order: [orderId]]]></en>
         </locale>
-        <locale name="window.status.text">
+        <locale name="window.status.text" html="true">
             <de><![CDATA[
-            Wechsel den Status der Bestellung #[orderId].
+            Wechsel den Status der Bestellung <strong>[orderId]</strong>.
             Beachte, Statusänderungen können verschiedene Aktionen auslösen.
             ]]></de>
             <en><![CDATA[
-            Change the status of the order #[orderId].
+            Change the status of the order <strong>[orderId]</strong>.
             Note, status changes can trigger different actions.
             ]]></en>
         </locale>
 
     </groups>
-
 </locales>

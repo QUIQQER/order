@@ -68,8 +68,14 @@
     width: 100%;
 }
 
+.td.clickable:hover .order-status {
+    border-color: #fff !important;
+    color: #fff !important;
+}
+
 /** product details
  ================================================= */
+
 .orders-order-details {
     border: 1px solid #DDDDDD;
     float: left;

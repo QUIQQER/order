@@ -122,7 +122,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
             const products = basket.products;
 
             // if there are no products yet, merge without query
-            if (!products.length) {
+            if (typeof products === 'undefined' || !products.length) {
                 GlobalBasket.setAttribute('mergeLocalStorage', 1);
                 GlobalBasket.load().then(function () {
                     if (QUIQQER_SITE.type !== 'quiqqer/order:types/orderingProcess') {
@@ -152,6 +152,16 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                         Instance.reload();
                     });
                 });
+                return;
+            }
+
+            if (QUI.getAttribute('QUIQQER_ORDER_BASKET_MERGE')) {
+                GlobalBasket.setAttribute(
+                    'mergeLocalStorage',
+                    QUI.getAttribute('QUIQQER_ORDER_BASKET_MERGE')
+                );
+
+                GlobalBasket.load();
                 return;
             }
 

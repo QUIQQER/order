@@ -26,7 +26,7 @@ QUI::$Ajax->registerFunction(
             $paymentId = $Payment->getId();
 
             if (!isset($section[$paymentId])) {
-                $result[$paymentId] = 1;
+                $result[$paymentId] = 0;
                 continue;
             }
 

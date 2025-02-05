@@ -536,42 +536,46 @@ class Search extends Singleton
 
             $orderData['id'] = (int)$orderData['id'];
             $orderData['hash'] = $Order->getUUID();
+            $orderData['uuid'] = $Order->getUUID();
+            $orderData['globalProcessId'] = $Order->getGlobalProcessId();
             $orderData['prefixed-id'] = $Order->getPrefixedNumber();
+            $orderData['customer_no'] = '';
 
             // customer data
             if (empty($orderData['customer_id'])) {
                 $orderData['customer_id'] = $Customer->getUUID();
+                $orderData['customer_no'] = $Customer->getCustomerNo();
 
                 if (!$orderData['customer_id']) {
                     $orderData['customer_id'] = Handler::EMPTY_VALUE;
-                } else {
-                    $orderData['customer_name'] = $Customer->getName();
+                }
 
-                    if (empty($orderData['customer_name'])) {
-                        $orderData['customer_name'] = $Customer->getAttribute('email');
+                $orderData['customer_name'] = $Customer->getName();
+
+                if (empty($orderData['customer_name'])) {
+                    $orderData['customer_name'] = $Customer->getAttribute('email');
+                }
+
+                $Address = $Order->getInvoiceAddress();
+
+                if (empty(trim($orderData['customer_name']))) {
+                    $orderData['customer_name'] = $Address->getAttribute('firstname');
+                    $orderData['customer_name'] .= ' ';
+                    $orderData['customer_name'] .= $Address->getAttribute('lastname');
+
+                    $orderData['customer_name'] = trim($orderData['customer_name']);
+                }
+
+                $address = $Address->getAttributes();
+
+                if (!empty($address['company'])) {
+                    $orderData['customer_name'] = trim($orderData['customer_name']);
+
+                    if (!empty($orderData['customer_name'])) {
+                        $orderData['customer_name'] = ' (' . $orderData['customer_name'] . ')';
                     }
 
-                    $Address = $Order->getInvoiceAddress();
-
-                    if (empty(trim($orderData['customer_name']))) {
-                        $orderData['customer_name'] = $Address->getAttribute('firstname');
-                        $orderData['customer_name'] .= ' ';
-                        $orderData['customer_name'] .= $Address->getAttribute('lastname');
-
-                        $orderData['customer_name'] = trim($orderData['customer_name']);
-                    }
-
-                    $address = $Address->getAttributes();
-
-                    if (!empty($address['company'])) {
-                        $orderData['customer_name'] = trim($orderData['customer_name']);
-
-                        if (!empty($orderData['customer_name'])) {
-                            $orderData['customer_name'] = ' (' . $orderData['customer_name'] . ')';
-                        }
-
-                        $orderData['customer_name'] = $address['company'] . $orderData['customer_name'];
-                    }
+                    $orderData['customer_name'] = $address['company'] . $orderData['customer_name'];
                 }
             }
 

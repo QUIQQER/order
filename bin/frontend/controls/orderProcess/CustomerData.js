@@ -10,15 +10,15 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
     'Ajax',
     'Locale'
 
-], function (QUI, QUIControl, Orders, QUIAjax, QUILocale) {
-    "use strict";
+], function(QUI, QUIControl, Orders, QUIAjax, QUILocale) {
+    'use strict';
 
     const lg = 'quiqqer/order';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData',
+        Type: 'package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData',
 
         Binds: [
             'openAddressEdit',
@@ -28,7 +28,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             '$onCountryChange'
         ],
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.parent(options);
 
             this.$CheckTimeout = null;
@@ -43,10 +43,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
         /**
          * event: on import
          */
-        $onImport: function () {
-            var self         = this,
+        $onImport: function() {
+            const self = this,
                 BusinessType = this.getElm().getElements('[name="businessType"]'),
-                VatId        = this.getElm().getElements('[name="vatId"]');
+                businessFields = this.getElm().getElements('[name="company"],[name="vatId"],[name="chUID"]'),
+                VatId = this.getElm().getElements('[name="vatId"]');
 
             this.EditButton = this.getElm().getElements('[name="open-edit"]');
 
@@ -56,9 +57,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             this.$Close = this.getElm().getElement('.quiqqer-order-customerData-edit-close');
             this.$Close.addEvent('click', this.closeAddressEdit);
 
-            var EditContainer = this.getElm().getElement('.quiqqer-order-customerData-edit');
+            const EditContainer = this.getElm().getElement('.quiqqer-order-customerData-edit');
 
-            EditContainer.getElements('input,select').addEvent('change', function () {
+            EditContainer.getElements('input,select').addEvent('change', function() {
                 if (self.isValid()) {
                     self.$Close.setStyle('display', null);
                     return;
@@ -69,34 +70,41 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             if (BusinessType) {
                 BusinessType.addEvent('change', this.$onBusinessTypeChange);
+
+                businessFields.addEvent('change', () => {
+                    for (let i = 0, len = businessFields.length; i < len; i++) {
+                        if (businessFields[i].value !== '') {
+                            BusinessType[0].value = 'b2b';
+                            this.openAddressEdit().catch(() => {
+                            });
+                            break;
+                        }
+                    }
+                });
             }
 
             // VatId.addEvent('change', this.$onVatIdChange);
             // VatId.addEvent('keyup', this.$onVatIdChange);
             VatId.addEvent('blur', this.$onVatIdChange);
 
-            var val = parseInt(this.getElm().get('data-validate'));
+            const val = parseInt(this.getElm().get('data-validate'));
 
             if (isNaN(val) || !val) {
-                this.openAddressEdit().catch(function (err) {
+                this.openAddressEdit().catch(function(err) {
                     console.error(err);
                 });
             }
 
             // country edit
-            var Country = self.getElm().getElement('[name="country"]');
+            const Country = self.getElm().getElement('[name="country"]');
 
             if (Country.get('data-qui') && !Country.get('data-quiid')) {
-                QUI.parse(this.getElm()).then(function () {
-                    QUI.Controls
-                       .getById(Country.get('data-quiid'))
-                       .addEvent('onCountryChange', self.$onCountryChange);
+                QUI.parse(this.getElm()).then(function() {
+                    QUI.Controls.getById(Country.get('data-quiid')).addEvent('onCountryChange', self.$onCountryChange);
                 });
             } else {
                 if (Country.get('data-quiid')) {
-                    QUI.Controls
-                       .getById(Country.get('data-quiid'))
-                       .addEvent('onCountryChange', self.$onCountryChange);
+                    QUI.Controls.getById(Country.get('data-quiid')).addEvent('onCountryChange', self.$onCountryChange);
                 } else {
                     Country.addEvent('change', self.$onCountryChange);
                 }
@@ -110,13 +118,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          *
          * @return {Promise}
          */
-        save: function () {
+        save: function() {
             // address data
-            var Parent = this.getElm().getElement('.quiqqer-order-customerData-edit');
-            var formElms = Parent.getElements('input,select');
-            var address = {};
+            const Parent = this.getElm().getElement('.quiqqer-order-customerData-edit');
+            const formElms = Parent.getElements('input,select');
+            const address = {};
 
-            var i, len, forElement;
+            let i, len, forElement;
 
             for (i = 0, len = formElms.length; i < len; i++) {
                 forElement = formElms[i];
@@ -129,11 +137,12 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             }
 
             // get order process for loader
-            var self         = this,
-                Loader       = null,
+            const self = this;
+
+            let Loader = null,
                 OrderProcess = null;
 
-            var OrderProcessNode = this.getElm().getParent(
+            const OrderProcessNode = this.getElm().getParent(
                 '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
             );
 
@@ -159,8 +168,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
             }
 
             // save the data
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_save', function (valid) {
+            return new Promise(function(resolve, reject) {
+                QUIAjax.post('package_quiqqer_order_ajax_frontend_order_address_save', function(valid) {
                     if (Loader) {
                         Loader.hide();
                     }
@@ -178,9 +187,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 }, {
                     'package': 'quiqqer/order',
                     addressId: address.addressId,
-                    data     : JSON.encode(address),
-                    onError  : function (err) {
-                        QUI.getMessageHandler().then(function (MH) {
+                    data: JSON.encode(address),
+                    onError: function(err) {
+                        QUI.getMessageHandler().then(function(MH) {
                             MH.addError(err.getMessage());
                         });
 
@@ -200,27 +209,27 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          * @param {DOMEvent} [event]
          * @return {Promise}
          */
-        openAddressEdit: function (event) {
+        openAddressEdit: function(event) {
             if (typeOf(event) === 'domevent') {
                 event.stop();
             }
 
             moofx(this.EditButton).animate({
-                opacity   : 0,
+                opacity: 0,
                 visibility: 'hidden'
             });
 
-            var self             = this,
-                Elm              = this.getElm(),
-                Container        = Elm.getElement('.quiqqer-order-customerData__container'),
+            const self = this,
+                Elm = this.getElm(),
+                Container = Elm.getElement('.quiqqer-order-customerData__container'),
                 DisplayContainer = Elm.getElement('.quiqqer-order-customerData-display'),
-                EditWrapper      = Elm.getElement('.quiqqer-order-customerData__edit-wrapper'),
-                Edit    = Elm.getElement('.quiqqer-order-customerData-edit');
+                EditWrapper = Elm.getElement('.quiqqer-order-customerData__edit-wrapper'),
+                Edit = Elm.getElement('.quiqqer-order-customerData-edit');
 
             Container.style.height = Container.offsetHeight + 'px';
 
-            var BusinessType = Elm.getElement('[name="businessType"]');
-            var OrderProcess = self.$getOrderProcess();
+            const BusinessType = Elm.getElement('[name="businessType"]');
+            const OrderProcess = self.$getOrderProcess();
 
             if (BusinessType) {
                 self.$onBusinessTypeChange({
@@ -238,17 +247,17 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
             return this.$fx(DisplayContainer, {
                 opacity: 0
-            }).then(function () {
+            }).then(function() {
                 DisplayContainer.style.display = 'none';
 
                 return self.$fx(Container, {
                     height: Edit.getComputedSize().height
                 });
-            }).then(function () {
+            }).then(function() {
                 // save event
-                Edit.getElement('[type="submit"]').addEvent('click', function (event) {
+                Edit.getElement('[type="submit"]').addEvent('click', function(event) {
                     event.stop();
-                    self.save().catch(function () {
+                    self.save().catch(function() {
                         // nothing
                     });
                 });
@@ -257,14 +266,14 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
 
                 self.$Close.style.display = null;
                 moofx(self.$Close).animate({
-                    opacity   : 1,
+                    opacity: 1,
                     visibility: null
                 });
 
                 return self.$fx(Edit, {
                     opacity: 1
                 });
-            }).then(function () {
+            }).then(function() {
                 Container.setStyle('height', null);
 
                 if (OrderProcess) {
@@ -279,20 +288,20 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          * @param {DOMEvent} [event]
          * @return {Promise}
          */
-        closeAddressEdit: function (event) {
+        closeAddressEdit: function(event) {
             if (typeOf(event) === 'domevent') {
                 event.stop();
             }
 
-            var self             = this,
-                Elm              = this.getElm(),
-                Container        = Elm.getElement('.quiqqer-order-customerData__container'),
+            const self = this,
+                Elm = this.getElm(),
+                Container = Elm.getElement('.quiqqer-order-customerData__container'),
                 DisplayContainer = Elm.getElement('.quiqqer-order-customerData-display'),
-                EditWrapper      = Elm.getElement('.quiqqer-order-customerData__edit-wrapper'),
-                Edit    = Elm.getElement('.quiqqer-order-customerData-edit');
+                EditWrapper = Elm.getElement('.quiqqer-order-customerData__edit-wrapper'),
+                Edit = Elm.getElement('.quiqqer-order-customerData-edit');
 
             moofx(this.$Close).animate({
-                opacity   : 0,
+                opacity: 0,
                 visibility: 'hidden'
             }, {
                 callback: function() {
@@ -300,13 +309,13 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 }
             });
 
-            var OrderProcess = self.$getOrderProcess();
+            const OrderProcess = self.$getOrderProcess();
 
             Container.style.height = Container.offsetHeight + 'px';
 
             return this.$fx(Edit, {
                 opacity: 0
-            }).then(function () {
+            }).then(function() {
 
                 DisplayContainer.style.opacity = 0;
                 DisplayContainer.style.display = null;
@@ -314,18 +323,18 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 return self.$fx(Container, {
                     height: DisplayContainer.getComputedSize().height
                 });
-            }).then(function () {
+            }).then(function() {
                 EditWrapper.style.height = 0;
 
                 moofx(self.EditButton).animate({
-                    opacity   : 1,
+                    opacity: 1,
                     visibility: null
                 });
 
 
                 return self.$fx(DisplayContainer, {
                     opacity: 1
-                }).then(function () {
+                }).then(function() {
                     Container.setStyle('height', null);
 
                     if (OrderProcess) {
@@ -339,16 +348,16 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          *
          * @param event
          */
-        $onVatIdChange: function (event) {
-            var Target = event.target,
-                vatId  = Target.value;
+        $onVatIdChange: function(event) {
+            const Target = event.target,
+                vatId = Target.value;
 
             if (this.$CheckTimeout) {
                 clearTimeout(this.$CheckTimeout);
             }
 
-            this.$CheckTimeout = (function () {
-                var Loader = Target.getParent().getElement(
+            this.$CheckTimeout = (function() {
+                let Loader = Target.getParent().getElement(
                     '.quiqqer-order-customerData-tax-validation-loader'
                 );
 
@@ -361,7 +370,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 Loader.removeClass('fa-check');
                 Loader.addClass('fa-spinner fa-spin');
 
-                Orders.validateVatId(vatId).then(function (result) {
+                Orders.validateVatId(vatId).then(function(result) {
                     if (result) {
                         Loader.removeClass('fa-spinner fa-spin');
                         Loader.addClass('fa-check');
@@ -369,9 +378,9 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     }
 
                     Loader.destroy();
-                }).catch(function (err) {
+                }).catch(function(err) {
                     if (typeof err !== 'undefined' && typeof err.getMessage === 'function') {
-                        QUI.getMessageHandler().then(function (MH) {
+                        QUI.getMessageHandler().then(function(MH) {
                             MH.addError(err.getMessage(), Target);
                         });
                     }
@@ -386,25 +395,30 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          *
          * @param event
          */
-        $onBusinessTypeChange: function (event) {
-            var Target = event.target;
+        $onBusinessTypeChange: function(event) {
+            const self = this;
+            const Target = event.target;
 
             if (Target.nodeName !== 'SELECT') {
                 return;
             }
 
-            var businessType = Target.value;
+            const businessType = Target.value;
             const Container = this.getElm().querySelector('.bt2-labelContainer'),
-                  Inner = this.getElm().querySelector('.bt2-labelContainer__inner');
+                Inner = this.getElm().querySelector('.bt2-labelContainer__inner');
 
+            const Company = this.getElm().getElement('.quiqqer-order-customerData-edit-company');
+            const VatId = this.getElm().getElement('.quiqqer-order-customerData-edit-vatId');
 
-            var Company = this.getElm().getElement('.quiqqer-order-customerData-edit-company');
-            var VatId = this.getElm().getElement('.quiqqer-order-customerData-edit-vatId');
-
-            function show() {
+            function show()
+            {
                 if (VatId.getElement('input').value !== '') {
                     VatId.getElement('input').disabled = true;
                     VatId.getElement('input').title = QUILocale.get(lg, 'customer.data.vat.chaning.not.allowed');
+                }
+
+                if (self.getAttribute('companyisrequired')) {
+                    Company.querySelector('input').required = true;
                 }
 
                 moofx(Container).animate({
@@ -412,16 +426,19 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                     opacity: 1
                 }, {
                     callback: function() {
-//                        Container.style.height = null;
+                       Container.style.height = null;
                     }
                 });
             }
 
-            function hide() {
+            function hide()
+            {
+                Company.querySelector('input').removeAttribute('required');
+
                 moofx(Container).animate({
                     height: 0,
                     opacity: 0
-                })
+                });
             }
 
             if (businessType === 'b2c') {
@@ -430,8 +447,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 show();
             }
 
-            (function () {
-                var OrderProcess = this.$getOrderProcess();
+            (function() {
+                const OrderProcess = this.$getOrderProcess();
 
                 if (OrderProcess) {
                     OrderProcess.resize();
@@ -442,11 +459,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
         /**
          * event: on country change
          */
-        $onCountryChange: function () {
-            var VatId = this.getElm().getElements('.quiqqer-order-customerData-edit-vatId');
-            var chUID = this.getElm().getElements('.quiqqer-order-customerData-edit-chUID');
+        $onCountryChange: function() {
+            const VatId = this.getElm().getElements('.quiqqer-order-customerData-edit-vatId');
+            const chUID = this.getElm().getElements('.quiqqer-order-customerData-edit-chUID');
 
-            var Country = this.getElm().getElement('[name="country"]');
+            const Country = this.getElm().getElement('[name="country"]');
 
             if (Country.value === 'CH') {
                 VatId.setStyle('display', 'none');
@@ -464,11 +481,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          * @param styles
          * @param options
          */
-        $fx: function (Node, styles, options) {
+        $fx: function(Node, styles, options) {
             options = options || {};
-            var duration = options.duration || 250;
+            const duration = options.duration || 250;
 
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 moofx(Node).animate(styles, {
                     duration: duration,
                     callback: resolve
@@ -481,8 +498,8 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          *
          * @return {null}
          */
-        $getOrderProcess: function () {
-            var OrderProcessNode = this.getElm().getParent(
+        $getOrderProcess: function() {
+            const OrderProcessNode = this.getElm().getParent(
                 '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
             );
 
@@ -490,7 +507,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 return null;
             }
 
-            var OrderProcess = QUI.Controls.getById(OrderProcessNode.get('data-quiid'));
+            const OrderProcess = QUI.Controls.getById(OrderProcessNode.get('data-quiid'));
 
             if (!OrderProcess) {
                 return null;
@@ -505,11 +522,11 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          *
          * @return {boolean}
          */
-        isValid: function () {
-            var Required = this.getElm().getElements('[required]');
+        isValid: function() {
+            const Required = this.getElm().getElements('[required]');
 
             if (Required.length) {
-                var i, len, Field;
+                let i, len, Field;
 
                 for (i = 0, len = Required.length; i < len; i++) {
                     Field = Required[i];
@@ -518,7 +535,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                         continue;
                     }
 
-                    if (!("checkValidity" in Field)) {
+                    if (!('checkValidity' in Field)) {
                         continue;
                     }
 
@@ -538,7 +555,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
          *
          * @return {Promise}
          */
-        validate: function () {
+        validate: function() {
             if (this.isValid() === false) {
                 return this.openAddressEdit();
             }

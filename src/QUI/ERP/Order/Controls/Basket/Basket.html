@@ -9,6 +9,11 @@
         >
             {locale group="quiqqer/erp" var="article.list.articles.header.pos"}
         </th>
+        <th class="quiqqer-order-basket-articles-header-image"
+            title="{locale group='quiqqer/erp' var='article.list.articles.header.image'}"
+        >
+            {locale group="quiqqer/erp" var="article.list.articles.header.image"}
+        </th>
         <th class="quiqqer-order-basket-articles-header-information"
             title="{locale group='quiqqer/erp' var='article.list.articles.header.description'}"
         >
@@ -42,6 +47,11 @@
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.pos'}"
         >
             {$pos}
+        </td>
+        <td class="quiqqer-order-basket-articles-article-image"
+            data-label="{locale group='quiqqer/erp' var='article.list.articles.header.image'}"
+        >
+            {image src=$product.imageSrc width=200 height=200 class="quiqqer-order-basket-articles-article-image__img"}
         </td>
         <td class="quiqqer-order-basket-articles-article-data"
             data-label="{locale group='quiqqer/erp' var='article.list.articles.header.description'}"
