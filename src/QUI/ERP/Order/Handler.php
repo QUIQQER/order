@@ -119,7 +119,7 @@ class Handler extends Singleton
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Exception
      */
-    public function get(int|string $orderId): Order
+    public function get(int | string $orderId): Order
     {
         return new Order($orderId);
     }
@@ -135,7 +135,7 @@ class Handler extends Singleton
      * @throws QUI\Exception
      * @throws Exception
      */
-    public function getOrderByHash(string $hash): OrderInProcess|Order
+    public function getOrderByHash(string $hash): OrderInProcess | Order
     {
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
@@ -182,7 +182,7 @@ class Handler extends Singleton
      * @throws QUI\Exception
      * @throws Exception
      */
-    public function getOrderByGlobalProcessId(int|string $id): Order
+    public function getOrderByGlobalProcessId(int | string $id): Order
     {
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
@@ -251,7 +251,7 @@ class Handler extends Singleton
      * @throws QUI\Exception
      * @throws Exception
      */
-    public function getOrderById(int|string $id): OrderInProcess|Order
+    public function getOrderById(int | string $id): OrderInProcess | Order
     {
         $result = QUI::getDataBase()->fetch([
             'select' => 'id',
@@ -308,7 +308,7 @@ class Handler extends Singleton
      *
      * @throws QUI\Database\Exception|QUI\ERP\Order\Exception
      */
-    public function getOrderData(int|string $orderId): array
+    public function getOrderData(int | string $orderId): array
     {
         $result = QUI::getDataBase()->fetch([
             'from' => $this->table(),
@@ -731,7 +731,7 @@ class Handler extends Singleton
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Database\Exception
      */
-    public function getOrderProcessData(int|string $orderId): array
+    public function getOrderProcessData(int | string $orderId): array
     {
         $result = QUI::getDataBase()->fetch([
             'from' => $this->tableOrderProcess(),
@@ -781,7 +781,7 @@ class Handler extends Singleton
      * @throws QUI\Database\Exception
      * @throws QUI\Exception
      */
-    public function getBasket(int|string $str, $User = null): Basket
+    public function getBasket(int | string $str, $User = null): Basket
     {
         if (is_numeric($str)) {
             return self::getBasketById($str, $User);
@@ -800,7 +800,7 @@ class Handler extends Singleton
      * @throws QUI\Database\Exception
      * @throws QUI\Exception
      */
-    public function getBasketById(int|string $basketId, $User = null): Basket
+    public function getBasketById(int | string $basketId, $User = null): Basket
     {
         $data = QUI::getDataBase()->fetch([
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
@@ -916,7 +916,7 @@ class Handler extends Singleton
      * @throws QUI\Database\Exception
      * @throws QUI\Exception
      */
-    public function getBasketData(int|string $basketId, QUI\Interfaces\Users\User $User = null): array
+    public function getBasketData(int | string $basketId, null | QUI\Interfaces\Users\User $User = null): array
     {
         if ($User === null) {
             $User = QUI::getUserBySession();

@@ -40,7 +40,7 @@ class Delivery extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|Locale $Locale
      * @return string
      */
-    public function getName(Locale $Locale = null): string
+    public function getName(null | Locale $Locale = null): string
     {
         return 'Delivery';
     }
