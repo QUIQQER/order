@@ -78,6 +78,14 @@ class Basket
         $this->List->setUser($User);
         $this->FrontendMessages = new QUI\ERP\Comments();
 
+        if (is_bool($basketId)) {
+            try {
+                $Basket = Handler::getInstance()->getBasketFromUser(QUI::getUserBySession());
+                $basketId = $Basket->getId();
+            } catch (QUI\Exception) {
+            }
+        }
+
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
         } catch (QUI\Exception $Exception) {
@@ -217,6 +225,10 @@ class Basket
     public function save(): void
     {
         if (!$this->List) {
+            return;
+        }
+
+        if (!$this->User) {
             return;
         }
 
