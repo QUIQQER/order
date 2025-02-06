@@ -20,7 +20,7 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
      * @param Locale|null $Locale
      * @return string
      */
-    public function getTitle(QUI\Locale $Locale = null): string
+    public function getTitle(null | QUI\Locale $Locale = null): string
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();

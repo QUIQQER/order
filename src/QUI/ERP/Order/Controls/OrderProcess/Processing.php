@@ -138,7 +138,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null): string
+    public function getName(null | QUI\Locale $Locale = null): string
     {
         return 'Processing';
     }
@@ -203,7 +203,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param Locale|null $Locale
      * @return string
      */
-    public function getTitle(QUI\Locale $Locale = null): string
+    public function getTitle(null | QUI\Locale $Locale = null): string
     {
         if (!empty($this->title)) {
             return $this->title;
@@ -254,7 +254,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param Locale|null $Locale
      * @return string|null
      */
-    public function getContent(QUI\Locale $Locale = null): ?string
+    public function getContent(null | QUI\Locale $Locale = null): ?string
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();

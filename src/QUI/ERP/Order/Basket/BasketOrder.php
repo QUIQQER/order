@@ -50,7 +50,7 @@ class BasketOrder
     /**
      * @var int|null
      */
-    protected int|null $id = null;
+    protected int | null $id = null;
 
     /**
      * @var QUI\ERP\Comments|null
@@ -66,7 +66,7 @@ class BasketOrder
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function __construct(string $orderHash, QUI\Interfaces\Users\User $User = null)
+    public function __construct(string $orderHash, null | QUI\Interfaces\Users\User $User = null)
     {
         if (!$User) {
             $User = QUI::getUserBySession();

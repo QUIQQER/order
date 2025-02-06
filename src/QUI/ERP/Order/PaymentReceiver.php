@@ -24,7 +24,7 @@ class PaymentReceiver implements PaymentReceiverInterface
     /**
      * @var ?AbstractOrder
      */
-    protected AbstractOrder|null $Order = null;
+    protected AbstractOrder | null $Order = null;
 
     /**
      * Get entity type descriptor
@@ -42,7 +42,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      * @param Locale|null $Locale $Locale (optional) - If omitted use \QUI::getLocale()
      * @return string
      */
-    public static function getTypeTitle(Locale $Locale = null): string
+    public static function getTypeTitle(null | Locale $Locale = null): string
     {
         if (empty($Locale)) {
             $Locale = QUI::getLocale();
@@ -92,7 +92,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      *
      * @return Address|false
      */
-    public function getDebtorAddress(): bool|Address
+    public function getDebtorAddress(): bool | Address
     {
         return $this->Order->getCustomer()->getStandardAddress();
     }
@@ -142,7 +142,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      *
      * @return DateTime|false
      */
-    public function getDueDate(): DateTime|bool
+    public function getDueDate(): DateTime | bool
     {
         $date = $this->Order->getAttribute('payment_time');
 
@@ -200,7 +200,7 @@ class PaymentReceiver implements PaymentReceiverInterface
      *
      * @return PaymentInterface|false
      */
-    public function getPaymentMethod(): bool|PaymentInterface
+    public function getPaymentMethod(): bool | PaymentInterface
     {
         try {
             return QUI\ERP\Accounting\Payments\Payments::getInstance()->getPayment(
