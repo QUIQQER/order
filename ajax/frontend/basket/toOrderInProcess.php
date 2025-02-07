@@ -42,10 +42,7 @@ QUI::$Ajax->registerFunction(
             }
         }
 
-        if ($Order) {
-            $Basket->toOrder($Order);
-        }
-
+        $Basket->toOrder($Order);
 
         return $Order->getUUID();
     },
