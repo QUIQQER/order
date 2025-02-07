@@ -4,6 +4,8 @@
  * This file contains package_quiqqer_order_ajax_frontend_basket_toOrderInProcess
  */
 
+use QUI\ERP\Order\Factory;
+
 /**
  * Saves the basket to the temporary order
  *
@@ -35,15 +37,12 @@ QUI::$Ajax->registerFunction(
         if ($Order === null) {
             try {
                 $Order = $OrderHandler->getLastOrderInProcessFromUser($User);
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
+            } catch (QUI\Exception) {
+                $Order = Factory::getInstance()->createOrderInProcess();
             }
         }
 
-        if ($Order) {
-            $Basket->toOrder($Order);
-        }
-
+        $Basket->toOrder($Order);
 
         return $Order->getUUID();
     },
