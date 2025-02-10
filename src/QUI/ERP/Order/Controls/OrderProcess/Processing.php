@@ -50,6 +50,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $this->setAttribute('nodeName', 'section');
 
         $this->addCSSClass('quiqqer-order-step-processing');
+        $this->addCSSClass('default-content');
         $this->addCSSClass('quiqqer-order-step-processing-gateway');
         $this->addCSSFile(dirname(__FILE__) . '/Processing.css');
     }
