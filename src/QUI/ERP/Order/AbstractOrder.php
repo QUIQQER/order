@@ -1695,6 +1695,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             ]
         );
 
+        /*
+         * If the paid status was erroneous and a new transaction is added to the order,
+         * we have to change the status to open because otherwise the payment status
+         * would not be set to "successful" by the calculation service.
+         */
+        if ($this->getAttribute('paid_status') === QUI\ERP\Constants::PAYMENT_STATUS_ERROR) {
+            $this->setAttribute('paid_status', QUI\ERP\Constants::PAYMENT_STATUS_OPEN);
+        }
+
         $this->calculatePayments();
 
         QUI::getEvents()->fireEvent(
