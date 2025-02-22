@@ -2321,7 +2321,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         // TODO: Implement clearCustomerFiles() method.
     }
 
-    public function getCustomerFiles(): array
+    public function getCustomerFiles(bool $parsing = false): array
     {
         // TODO: Implement getCustomerFiles() method.
         return [];
