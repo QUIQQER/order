@@ -17,13 +17,13 @@ interface OrderingStepInterface
      * @param null|Locale $Locale
      * @return string
      */
-    public function getName(Locale $Locale = null): string;
+    public function getName(null | Locale $Locale = null): string;
 
     /**
      * @param null|Locale $Locale $Locale
      * @return mixed
      */
-    public function getTitle(Locale $Locale = null): mixed;
+    public function getTitle(null | Locale $Locale = null): mixed;
 
     /**
      * @throws Exception

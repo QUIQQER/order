@@ -31,7 +31,7 @@ class Basket
      *
      * @var integer|bool
      */
-    protected int|bool $id = false;
+    protected int | bool $id = false;
 
     /**
      * List of products
@@ -62,7 +62,7 @@ class Basket
      * @param ?QUI\Interfaces\Users\User $User
      * @throws ExceptionStack
      */
-    public function __construct(bool|int $basketId, QUI\Interfaces\Users\User $User = null)
+    public function __construct(bool | int $basketId, null | QUI\Interfaces\Users\User $User = null)
     {
         if (!$User) {
             $User = QUI::getUserBySession();
@@ -77,6 +77,14 @@ class Basket
 
         $this->List->setUser($User);
         $this->FrontendMessages = new QUI\ERP\Comments();
+
+        if (is_bool($basketId)) {
+            try {
+                $Basket = Handler::getInstance()->getBasketFromUser(QUI::getUserBySession());
+                $basketId = $Basket->getId();
+            } catch (QUI\Exception) {
+            }
+        }
 
         try {
             $data = Handler::getInstance()->getBasketData($basketId, $User);
@@ -102,7 +110,7 @@ class Basket
      *
      * @return bool|int
      */
-    public function getId(): bool|int
+    public function getId(): bool | int
     {
         return $this->id;
     }
@@ -166,13 +174,13 @@ class Basket
 
     //endregion
 
-     /**
+    /**
      * Import the products to the basket
      *
      * @param array|null $products
      * @throws ExceptionStack
      */
-    public function import(array|null $products = []): void
+    public function import(array | null $products = []): void
     {
         $this->clear();
 
@@ -217,6 +225,10 @@ class Basket
     public function save(): void
     {
         if (!$this->List) {
+            return;
+        }
+
+        if (!$this->User) {
             return;
         }
 

@@ -403,7 +403,7 @@ class OrderProcess extends QUI\Control
      *
      * @throws QUI\Exception|\Exception
      */
-    protected function executePayableStatus(): bool|string
+    protected function executePayableStatus(): bool | string
     {
         $template = dirname(__FILE__) . '/Controls/OrderProcess.html';
         $Engine = QUI::getTemplateManager()->getEngine();
@@ -720,7 +720,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function checkProcessing(): bool|string
+    protected function checkProcessing(): bool | string
     {
         $Current = $this->getCurrentStep();
         $Order = $this->getOrder();
@@ -922,7 +922,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws Exception
      */
-    public function getCurrentStep(): Controls\OrderProcess\Processing|AbstractOrderingStep
+    public function getCurrentStep(): Controls\OrderProcess\Processing | AbstractOrderingStep
     {
         $steps = $this->getSteps();
         $current = $this->getCurrentStepName();
@@ -976,8 +976,9 @@ class OrderProcess extends QUI\Control
      *
      * @throws Exception
      */
-    public function getNextStep(AbstractOrderingStep $StartStep = null): FinishControl|bool|AbstractOrderingStep
-    {
+    public function getNextStep(
+        null | AbstractOrderingStep $StartStep = null
+    ): FinishControl | bool | AbstractOrderingStep {
         if ($StartStep === null) {
             $step = $this->getCurrentStepName();
         } else {
@@ -1038,7 +1039,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    public function getPreviousStep(AbstractOrderingStep $StartStep = null): ?AbstractOrderingStep
+    public function getPreviousStep(null | AbstractOrderingStep $StartStep = null): ?AbstractOrderingStep
     {
         if ($StartStep === null) {
             $step = $this->getCurrentStepName();
@@ -1102,7 +1103,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getStepByName(string $name): bool|AbstractOrderingStep
+    protected function getStepByName(string $name): bool | AbstractOrderingStep
     {
         $steps = $this->getSteps();
 
@@ -1148,7 +1149,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getNextStepName(AbstractOrderingStep $StartStep = null): bool|string
+    protected function getNextStepName(null | AbstractOrderingStep $StartStep = null): bool | string
     {
         $Next = $this->getNextStep($StartStep);
 
@@ -1168,7 +1169,7 @@ class OrderProcess extends QUI\Control
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getPreviousStepName(AbstractOrderingStep $StartStep = null): bool|string
+    protected function getPreviousStepName(null | AbstractOrderingStep $StartStep = null): bool | string
     {
         $Prev = $this->getPreviousStep($StartStep);
 
@@ -1340,7 +1341,7 @@ class OrderProcess extends QUI\Control
     /**
      * @return Basket\Basket|Basket\BasketGuest|QUI\ERP\Order\Basket\BasketOrder
      */
-    protected function getBasket(): Basket\BasketGuest|Basket\Basket|Basket\BasketOrder
+    protected function getBasket(): Basket\BasketGuest | Basket\Basket | Basket\BasketOrder
     {
         if ($this->getAttribute('basketId')) {
             try {

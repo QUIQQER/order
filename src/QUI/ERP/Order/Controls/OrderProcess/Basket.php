@@ -27,7 +27,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @var BasketClass|BasketOrder|BasketGuest
      */
-    protected BasketClass|BasketOrder|BasketGuest $Basket;
+    protected BasketClass | BasketOrder | BasketGuest $Basket;
 
     /**
      * Basket constructor.
@@ -71,7 +71,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName(QUI\Locale $Locale = null): string
+    public function getName(null | QUI\Locale $Locale = null): string
     {
         return 'Basket';
     }
@@ -87,7 +87,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return BasketGuest|BasketClass|BasketOrder
      */
-    public function getBasket(): BasketGuest|BasketClass|BasketOrder
+    public function getBasket(): BasketGuest | BasketClass | BasketOrder
     {
         return $this->Basket;
     }

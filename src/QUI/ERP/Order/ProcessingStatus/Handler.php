@@ -100,7 +100,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @throws Exception
      */
-    public function getProcessingStatus($id): StatusUnknown|Status
+    public function getProcessingStatus($id): StatusUnknown | Status
     {
         if ($id === 0) {
             return new StatusUnknown();
@@ -115,7 +115,7 @@ class Handler extends QUI\Utils\Singleton
      * @return Status|StatusUnknown
      * @throws Exception
      */
-    public function getCancelledStatus(): Status|StatusUnknown
+    public function getCancelledStatus(): Status | StatusUnknown
     {
         $cancelledStatusId = $this->OrderConfig->get('orderStatus', 'cancelled');
 
@@ -136,7 +136,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @todo permissions
      */
-    public function deleteProcessingStatus(int|string $id): void
+    public function deleteProcessingStatus(int | string $id): void
     {
         $Status = $this->getProcessingStatus($id);
 
@@ -183,7 +183,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @todo permissions
      */
-    public function updateProcessingStatus(int|string $id, int|string $color, array $title): void
+    public function updateProcessingStatus(int | string $id, int | string $color, array $title): void
     {
         $Status = $this->getProcessingStatus($id);
 
@@ -271,8 +271,11 @@ class Handler extends QUI\Utils\Singleton
      *
      * @throws QUI\Exception
      */
-    public function sendStatusChangeNotification(AbstractOrder $Order, int $statusId, string $message = null): void
-    {
+    public function sendStatusChangeNotification(
+        AbstractOrder $Order,
+        int $statusId,
+        null | string $message = null
+    ): void {
         $Customer = $Order->getCustomer();
         $customerEmail = $Customer->getAttribute('email');
 

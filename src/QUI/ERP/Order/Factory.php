@@ -36,8 +36,8 @@ class Factory extends QUI\Utils\Singleton
      * @throws QUI\ERP\Order\Exception
      */
     public function create(
-        QUI\Interfaces\Users\User $PermissionUser = null,
-        bool|string $hash = false,
+        null | QUI\Interfaces\Users\User $PermissionUser = null,
+        bool | string $hash = false,
         ?int $id = null,
         string $globalProcessId = ''
     ): Order {
@@ -162,7 +162,7 @@ class Factory extends QUI\Utils\Singleton
      * @throws QUI\Exception
      * @throws QUI\ERP\Order\Exception
      */
-    public function createOrderInProcess(QUI\Interfaces\Users\User $PermissionUser = null): OrderInProcess
+    public function createOrderInProcess(null | QUI\Interfaces\Users\User $PermissionUser = null): OrderInProcess
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -185,7 +185,7 @@ class Factory extends QUI\Utils\Singleton
      * @return int - OrderInProcess ID
      * @throws QUI\Database\Exception
      */
-    public function createOrderInProcessDataBaseEntry(QUI\Interfaces\Users\User $PermissionUser = null): int
+    public function createOrderInProcessDataBaseEntry(null | QUI\Interfaces\Users\User $PermissionUser = null): int
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();

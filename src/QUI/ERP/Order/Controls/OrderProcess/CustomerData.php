@@ -183,7 +183,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName(QUI\Locale $Locale = null): string
+    public function getName(null | QUI\Locale $Locale = null): string
     {
         return 'Customer';
     }
@@ -466,7 +466,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @throws Exception
      * @throws QUI\Permissions\Exception
      */
-    protected function getAddressById(int|string $addressId): bool|QUI\Users\Address|null
+    protected function getAddressById(int | string $addressId): bool | QUI\Users\Address | null
     {
         $User = QUI::getUserBySession();
         $Address = null;
@@ -499,7 +499,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @return null|QUI\Users\Address
      */
-    protected function getInvoiceAddress(): Address|null
+    protected function getInvoiceAddress(): Address | null
     {
         $Order = $this->getOrder();
         $Customer = $Order->getCustomer();
