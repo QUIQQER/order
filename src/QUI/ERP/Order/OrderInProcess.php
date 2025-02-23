@@ -246,8 +246,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         foreach ($products as $Product) {
             try {
-                /* @var QUI\ERP\Order\Basket\Product $Product */
-                $ArticleList->addArticle($Product->toArticle(null, false));
+                if (method_exists($Product, 'toArticle')) {
+                    $ArticleList->addArticle($Product->toArticle(null, false));
+                }
             } catch (Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
@@ -640,16 +641,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $shippingData = '';
         $shippingStatus = null;
 
-        $Shipping = $this->getShipping();
+        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry')) {
+            $Shipping = $this->getShipping();
 
-        if ($Shipping) {
-            $shippingId = $Shipping->getId();
-            $shippingData = $Shipping->toArray();
+            if ($Shipping) {
+                $shippingId = $Shipping->getId();
+                $shippingData = $Shipping->toArray();
+            }
         }
 
-        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+        if (class_exists('QUI\ERP\Shipping\ShippingStatus\Status')) {
             $ShippingStatus = $this->getShippingStatus();
-            $shippingStatus = $ShippingStatus ? $ShippingStatus->getId() : null;
+            $shippingStatus = $ShippingStatus?->getId();
         }
 
         return [

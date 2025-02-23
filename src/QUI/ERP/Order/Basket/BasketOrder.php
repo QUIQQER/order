@@ -61,7 +61,7 @@ class BasketOrder
      * Basket constructor.
      *
      * @param string $orderHash - ID of the order
-     * @param ?QUI\Users\User $User
+     * @param ?QUI\Interfaces\Users\User $User
      *
      * @throws Exception
      * @throws QUI\Exception

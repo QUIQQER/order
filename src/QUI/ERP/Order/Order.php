@@ -216,10 +216,6 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         // set the data to the temporary invoice
         $payment = '';
-
-        $invoiceAddress = '';
-        $invoiceAddressId = '';
-
         $deliveryAddress = '';
         $deliveryAddressId = '';
 
@@ -227,16 +223,14 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $payment = $this->getPayment()->getId();
         }
 
-        if ($this->getInvoiceAddress()) {
-            $invoiceAddress = $this->getInvoiceAddress()->toJSON();
-            $invoiceAddressId = $this->getInvoiceAddress()->getUUID();
-        }
+        $invoiceAddress = $this->getInvoiceAddress()->toJSON();
+        $invoiceAddressId = $this->getInvoiceAddress()->getUUID();
 
         if (empty($invoiceAddressId)) {
             $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getUUID();
         }
 
-        if ($this->getDeliveryAddress()) {
+        if ($this->getDeliveryAddress()->getUUID()) {
             $deliveryAddress = $this->getDeliveryAddress()->toJSON();
             $deliveryAddressId = $this->getDeliveryAddress()->getUUID();
 
@@ -579,16 +573,18 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         $shippingData = '';
         $shippingStatus = null;
 
-        $Shipping = $this->getShipping();
+        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry')) {
+            $Shipping = $this->getShipping();
 
-        if ($Shipping) {
-            $shippingId = $Shipping->getId();
-            $shippingData = $Shipping->toJSON();
+            if ($Shipping) {
+                $shippingId = $Shipping->getId();
+                $shippingData = $Shipping->toJSON();
+            }
         }
 
-        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+        if (class_exists('QUI\ERP\Shipping\ShippingStatus\Status')) {
             $ShippingStatus = $this->getShippingStatus();
-            $shippingStatus = $ShippingStatus ? $ShippingStatus->getId() : null;
+            $shippingStatus = $ShippingStatus?->getId();
         }
 
         // project name
