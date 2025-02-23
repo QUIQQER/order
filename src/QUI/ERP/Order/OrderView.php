@@ -177,7 +177,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * @return bool|QUI\ERP\Shipping\ShippingStatus\Status
      */
-    public function getShippingStatus(): bool|QUI\ERP\Shipping\ShippingStatus\Status
+    public function getShippingStatus(): bool | QUI\ERP\Shipping\ShippingStatus\Status
     {
         return $this->Order->getShippingStatus();
     }
@@ -210,7 +210,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @param null|QUI\Locale $Locale
      * @return string|bool
      */
-    public function getDate(QUI\Locale $Locale = null): string|bool
+    public function getDate(null | QUI\Locale $Locale = null): string | bool
     {
         if ($Locale === null) {
             $Locale = QUI::getLocale();
@@ -306,7 +306,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
+    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
         return $this->Order->getInvoice();
     }

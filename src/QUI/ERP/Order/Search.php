@@ -44,7 +44,7 @@ class Search extends Singleton
     /**
      * @var array|bool
      */
-    protected array|bool $limit = [0, 20];
+    protected array | bool $limit = [0, 20];
 
     /**
      * @var string
@@ -78,7 +78,7 @@ class Search extends Singleton
      * @param string $filter
      * @param array|string|null $value
      */
-    public function setFilter(string $filter, array|string|null $value): void
+    public function setFilter(string $filter, array | string | null $value): void
     {
         if ($value === null) {
             return;
@@ -157,7 +157,7 @@ class Search extends Singleton
      * @param int|string $from
      * @param int|string $to
      */
-    public function limit(int|string $from, int|string $to): void
+    public function limit(int | string $from, int | string $to): void
     {
         $this->limit = [(int)$from, (int)$to];
     }

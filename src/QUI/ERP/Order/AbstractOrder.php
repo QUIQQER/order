@@ -609,7 +609,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      */
-    abstract public function clear(QUI\Interfaces\Users\User $PermissionUser = null);
+    abstract public function clear(null | QUI\Interfaces\Users\User $PermissionUser = null);
 
     /**
      * Refresh the order data
@@ -623,14 +623,14 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      * @throws QUI\Exception
      */
-    abstract public function update(QUI\Interfaces\Users\User $PermissionUser = null);
+    abstract public function update(null | QUI\Interfaces\Users\User $PermissionUser = null);
 
     /**
      * Delete the order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
      */
-    abstract public function delete(QUI\Interfaces\Users\User $PermissionUser = null);
+    abstract public function delete(null | QUI\Interfaces\Users\User $PermissionUser = null);
 
     /**
      * Is the order posted / submitted

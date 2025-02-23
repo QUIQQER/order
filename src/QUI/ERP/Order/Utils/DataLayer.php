@@ -77,7 +77,7 @@ class DataLayer
         return $product;
     }
 
-    public static function parseArticle(QUI\ERP\Accounting\Article $Article, QUI\Locale $Locale = null): array
+    public static function parseArticle(QUI\ERP\Accounting\Article $Article, null | QUI\Locale $Locale = null): array
     {
         try {
             $Product = Products::getProduct($Article->getId());
@@ -104,7 +104,7 @@ class DataLayer
         return $item;
     }
 
-    public static function parseOrder(QUI\ERP\Order\OrderInterface $Order, QUI\Locale $Locale = null): array
+    public static function parseOrder(QUI\ERP\Order\OrderInterface $Order, null | QUI\Locale $Locale = null): array
     {
         $calculations = $Order->getArticles()->getCalculations();
         $tax = 0;

@@ -90,7 +90,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
      * @throws QUI\Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
+    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
         if (!Settings::getInstance()->isInvoiceInstalled()) {
             throw new QUI\Exception([
@@ -140,8 +140,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
      * @throws QUI\Exception
      */
     public function createInvoice(
-        QUI\Interfaces\Users\User $PermissionUser = null
-    ): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary {
+        null | QUI\Interfaces\Users\User $PermissionUser = null
+    ): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary {
         if (Settings::getInstance()->forceCreateInvoice() === false && $this->isPosted()) {
             return $this->getInvoice();
         }
@@ -504,7 +504,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
      * @throws QUI\Exception
      * @deprecated use createInvoice
      */
-    public function post(): Invoice|InvoiceTemporary
+    public function post(): Invoice | InvoiceTemporary
     {
         return $this->createInvoice(QUI::getUsers()->getSystemUser());
     }
@@ -996,8 +996,8 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
      * @throws Exception
      */
     public function copy(
-        QUI\Interfaces\Users\User $PermissionUser = null,
-        bool|string $globalProcessId = false
+        null | QUI\Interfaces\Users\User $PermissionUser = null,
+        bool | string $globalProcessId = false
     ): Order {
         $NewOrder = Factory::getInstance()->create();
 

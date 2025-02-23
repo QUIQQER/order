@@ -278,7 +278,7 @@ class Utils
     public static function importProductsToBasketList(
         QUI\ERP\Products\Product\ProductList $List,
         array $products = [],
-        QUI\ERP\Order\AbstractOrder|QUI\ERP\Order\Basket\Basket $Order = null
+        null | QUI\ERP\Order\AbstractOrder | QUI\ERP\Order\Basket\Basket $Order = null
     ): QUI\ERP\Products\Product\ProductList {
         if (!is_array($products)) {
             $products = [];
