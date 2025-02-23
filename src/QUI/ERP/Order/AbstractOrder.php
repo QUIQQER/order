@@ -85,7 +85,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * @var Status|StatusUnknown|null
      */
-    protected Status|StatusUnknown|null $Status = null;
+    protected Status | StatusUnknown | null $Status = null;
 
     /**
      * @var null|QUI\ERP\Shipping\ShippingStatus\Status
@@ -102,12 +102,12 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @var int|bool|string
      */
-    protected string|int|bool|null $invoiceId = false;
+    protected string | int | bool | null $invoiceId = false;
 
     /**
      * @var string|int|null
      */
-    protected null|int|string $customerId;
+    protected null | int | string $customerId;
 
     /**
      * @var array|null
@@ -153,7 +153,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @var integer|string
      */
-    protected int|string $cUser;
+    protected int | string $cUser;
 
     /**
      * @var ArticleList|null
@@ -1074,7 +1074,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @param array|QUI\ERP\Address $address
      */
-    public function setDeliveryAddress(array|QUI\ERP\Address $address): void
+    public function setDeliveryAddress(array | QUI\ERP\Address $address): void
     {
         if ($address instanceof QUI\ERP\Address) {
             $this->addressDelivery = $address->getAttributes();
@@ -1097,7 +1097,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @param array|QUI\ERP\Address|QUI\Users\Address $address
      */
-    public function setInvoiceAddress(array|QUI\ERP\Address|QUI\Users\Address $address): void
+    public function setInvoiceAddress(array | QUI\ERP\Address | QUI\Users\Address $address): void
     {
         if ($address instanceof QUI\Users\Address) {
             $this->addressInvoice = $address->getAttributes();
@@ -1170,7 +1170,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * @throws QUI\Exception
      * @throws ExceptionStack
      */
-    public function setCustomer(QUI\Interfaces\Users\User|array|User $User): void
+    public function setCustomer(QUI\Interfaces\Users\User | array | User $User): void
     {
         $oldCustomerId = $this->customerId;
 
@@ -1429,7 +1429,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @todo Payment->canBeUsed() noch implementieren
      */
-    public function setPayment(int|string $paymentId): void
+    public function setPayment(int | string $paymentId): void
     {
         $Payments = Payments::getInstance();
 
@@ -2193,7 +2193,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @param int|ProcessingStatus\Status $status
      */
-    public function setProcessingStatus(ProcessingStatus\Status|int $status): void
+    public function setProcessingStatus(ProcessingStatus\Status | int $status): void
     {
         if ($status instanceof ProcessingStatus\Status) {
             $Status = $status;
@@ -2230,7 +2230,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      *
      * @return QUI\ERP\Shipping\ShippingStatus\Status|null
      */
-    public function getShippingStatus(): QUI\ERP\Shipping\ShippingStatus\Status|null
+    public function getShippingStatus(): QUI\ERP\Shipping\ShippingStatus\Status | null
     {
         if (
             !QUI::getPackageManager()->isInstalled('quiqqer/shipping')
@@ -2265,7 +2265,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * @param int|QUI\ERP\Shipping\ShippingStatus\Status $status
      * @throws QUI\Exception
      */
-    public function setShippingStatus(int|QUI\ERP\Shipping\ShippingStatus\Status $status): void
+    public function setShippingStatus(int | QUI\ERP\Shipping\ShippingStatus\Status $status): void
     {
         if (!QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
             return;

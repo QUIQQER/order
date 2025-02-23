@@ -581,7 +581,7 @@ class Mail
      * @param $date
      * @return false|string
      */
-    public static function dateFormat($date): bool|string
+    public static function dateFormat($date): bool | string
     {
         // date
         $localeCode = QUI::getLocale()->getLocalesByLang(
