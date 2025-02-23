@@ -149,7 +149,7 @@ class Handler extends QUI\Utils\Singleton
         QUI\Translator::publish('quiqqer/order');
 
         // update config
-        $this->OrderConfig->del('processing_status', $Status->getId());
+        $this->OrderConfig->del('processing_status', (string)$Status->getId());
         $this->OrderConfig->save();
     }
 
@@ -168,7 +168,7 @@ class Handler extends QUI\Utils\Singleton
         $Status = $this->getProcessingStatus($id);
 
         // update config
-        $this->OrderConfig->setValue('processing_status_notification', $Status->getId(), $notify ? "1" : "0");
+        $this->OrderConfig->setValue('processing_status_notification', (string)$Status->getId(), $notify ? "1" : "0");
         $this->OrderConfig->save();
     }
 
@@ -213,7 +213,7 @@ class Handler extends QUI\Utils\Singleton
         QUI\Translator::publish('quiqqer/order');
 
         // update config
-        $this->OrderConfig->setValue('processing_status', $Status->getId(), $color);
+        $this->OrderConfig->setValue('processing_status', (string)$Status->getId(), $color);
         $this->OrderConfig->save();
     }
 

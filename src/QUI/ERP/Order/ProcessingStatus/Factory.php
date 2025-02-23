@@ -31,7 +31,7 @@ class Factory extends QUI\Utils\Singleton
      * @throws QUI\Exception
      * @todo permissions
      */
-    public function createProcessingStatus(int|string $id, string $color, array $title): void
+    public function createProcessingStatus(int | string $id, string $color, array $title): void
     {
         $list = Handler::getInstance()->getList();
         $id = (int)$id;
@@ -48,7 +48,7 @@ class Factory extends QUI\Utils\Singleton
         $Package = QUI::getPackage('quiqqer/order');
         $Config = $Package->getConfig();
 
-        $Config->setValue('processing_status', $id, $color);
+        $Config->setValue('processing_status', (string)$id, $color);
         $Config->save();
 
         // translations
