@@ -2228,15 +2228,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Return the shipping status
      * -> This method only works if shipping is installed
      *
-     * @return bool|QUI\ERP\Shipping\ShippingStatus\Status|null
+     * @return QUI\ERP\Shipping\ShippingStatus\Status|null
      */
-    public function getShippingStatus(): bool|QUI\ERP\Shipping\ShippingStatus\Status|null
+    public function getShippingStatus(): QUI\ERP\Shipping\ShippingStatus\Status|null
     {
         if (
             !QUI::getPackageManager()->isInstalled('quiqqer/shipping')
             || !class_exists('QUI\ERP\Shipping\ShippingStatus\Handler')
         ) {
-            return false;
+            return null;
         }
 
         if ($this->ShippingStatus !== null) {
@@ -2251,7 +2251,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
 
         // use default status
         if ($this->ShippingStatus === null) {
-            return false;
+            return null;
         }
 
         return $this->ShippingStatus;

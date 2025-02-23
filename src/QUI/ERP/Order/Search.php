@@ -527,7 +527,7 @@ class Search extends Singleton
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeException($Exception);
 
-                $result[] = $fillFields($entry);
+                $fillFields($entry);
                 continue;
             }
 
@@ -604,12 +604,14 @@ class Search extends Singleton
                 $orderData['shipping_status_title'] = Handler::EMPTY_VALUE;
                 $orderData['shipping_status_color'] = '';
 
-                $ShippingStatus = $Order->getShippingStatus();
+                if (class_exists('QUI\ERP\Shipping\ShippingStatus\Status')) {
+                    $ShippingStatus = $Order->getShippingStatus();
 
-                if ($ShippingStatus) {
-                    $orderData['shipping_status_id'] = $ShippingStatus->getId();
-                    $orderData['shipping_status_title'] = $ShippingStatus->getTitle();
-                    $orderData['shipping_status_color'] = $ShippingStatus->getColor();
+                    if ($ShippingStatus) {
+                        $orderData['shipping_status_id'] = $ShippingStatus->getId();
+                        $orderData['shipping_status_title'] = $ShippingStatus->getTitle();
+                        $orderData['shipping_status_color'] = $ShippingStatus->getColor();
+                    }
                 }
             }
 

@@ -119,7 +119,7 @@ class DataLayer
             'tax' => $tax
         ];
 
-        if ($Order->getShipping()) {
+        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry') && $Order->getShipping()) {
             $order['shipping'] = $Order->getShipping()->getPrice();
         }
 

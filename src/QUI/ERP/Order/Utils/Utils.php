@@ -429,6 +429,7 @@ class Utils
     {
         $newProductList = [];
         $getProductIndex = function ($product) use (&$newProductList) {
+            // @phpstan-ignore-next-line
             foreach ($newProductList as $index => $p) {
                 $p1 = serialize(self::getCompareProductArray($product));
                 $p2 = serialize(self::getCompareProductArray($p));
