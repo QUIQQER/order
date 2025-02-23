@@ -212,6 +212,16 @@ class BasketOrder
         $foundProduct = false;
 
         foreach ($Products as $P) {
+            if (
+                !method_exists($Product, 'toArray')
+                || !method_exists($Product, 'getQuantity')
+                || !method_exists($P, 'toArray')
+                || !method_exists($P, 'getQuantity')
+                || !method_exists($P, 'setQuantity')
+            ) {
+                continue;
+            }
+
             $p1 = OrderProductUtils::getCompareProductArray($Product->toArray());
             $p2 = OrderProductUtils::getCompareProductArray($P->toArray());
 
@@ -352,7 +362,6 @@ class BasketOrder
         $products = $Products->getProducts();
         $result = [];
 
-        /* @var $Product Product */
         foreach ($products as $Product) {
             $fields = [];
 
@@ -371,7 +380,7 @@ class BasketOrder
 
             $attributes = [
                 'id' => $Product->getId(),
-                'quantity' => $Product->getQuantity(),
+                'quantity' => method_exists($Product, 'getQuantity') ? $Product->getQuantity() : 1,
                 'fields' => $fields
             ];
 
@@ -457,8 +466,9 @@ class BasketOrder
 
         foreach ($products as $Product) {
             try {
-                /* @var QUI\ERP\Order\Basket\Product $Product */
-                $this->Order->addArticle($Product->toArticle(null, false));
+                if (method_exists($Product, 'toArticle')) {
+                    $this->Order->addArticle($Product->toArticle(null, false));
+                }
             } catch (QUI\Users\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }

@@ -237,10 +237,17 @@ class Basket
         $products = $this->List->getProducts();
 
         foreach ($products as $Product) {
-            /* @var $Product Product */
+            if (
+                !method_exists($Product, 'getUuid')
+                || !method_exists($Product, 'getProductSetParentUuid')
+                || !method_exists($Product, 'getQuantity')
+                || !method_exists($Product, 'toArticle')
+            ) {
+                continue;
+            }
+
             $fields = $Product->getFields();
 
-            /* @var $Field UniqueField */
             foreach ($fields as $Field) {
                 $Field->setChangeableStatus(false);
             }
@@ -255,7 +262,6 @@ class Basket
                 'fields' => []
             ];
 
-            /* @var $Field UniqueField */
             foreach ($fields as $Field) {
                 if ($Field->isCustomField()) {
                     $productData['fields'][] = $Field->getAttributes();
@@ -293,11 +299,17 @@ class Basket
         $products = $Products->getProducts();
         $result = [];
 
-        /* @var $Product Product */
         foreach ($products as $Product) {
+            if (
+                !method_exists($Product, 'getUuid')
+                || !method_exists($Product, 'getProductSetParentUuid')
+                || !method_exists($Product, 'getQuantity')
+            ) {
+                continue;
+            }
+
             $fields = [];
 
-            /* @var $Field UniqueField */
             foreach ($Product->getFields() as $Field) {
                 if (!$Field->isPublic() && !$Field->isCustomField()) {
                     continue;
@@ -456,8 +468,11 @@ class Basket
         $Order->clear();
 
         foreach ($products as $Product) {
+            if (!method_exists($Product, 'toArticle')) {
+                continue;
+            }
+
             try {
-                /* @var QUI\ERP\Order\Basket\Product $Product */
                 $Order->addArticle($Product->toArticle(null, false));
             } catch (QUI\Users\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
@@ -503,7 +518,7 @@ class Basket
         try {
             // select the last order in processing
             return $Orders->getLastOrderInProcessFromUser($User);
-        } catch (QUI\Erp\Order\Exception) {
+        } catch (QUI\ERP\Order\Exception) {
         }
 
         return QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
