@@ -6,6 +6,7 @@
 
 namespace QUI\ERP\Order;
 
+use QUI\ERP\Order\Controls\AbstractOrderingStep;
 use QUI\ERP\Order\Utils\OrderProcessSteps;
 
 /**
@@ -45,10 +46,10 @@ abstract class AbstractOrderProcessProvider
      * The processing order provider can display a separate step in the order processing
      *
      * @param AbstractOrder $Order
-     * @param null $Step
+     * @param AbstractOrderingStep|null $Step
      * @return string
      */
-    public function getDisplay(AbstractOrder $Order, $Step = null): string
+    public function getDisplay(AbstractOrder $Order, null | AbstractOrderingStep $Step = null): string
     {
         return '';
     }

@@ -83,7 +83,7 @@ class Factory extends QUI\Utils\Singleton
         $Config = QUI::getPackage('quiqqer/order')->getConfig();
         $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
 
-        if (empty($orderId) && $orderId != 0) {
+        if (empty($orderId)) {
             $orderId = 0;
         } else {
             $orderId = (int)$orderId + 1;

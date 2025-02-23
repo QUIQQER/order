@@ -175,9 +175,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return bool|QUI\ERP\Shipping\ShippingStatus\Status
+     * @return null|QUI\ERP\Shipping\ShippingStatus\Status
      */
-    public function getShippingStatus(): bool | QUI\ERP\Shipping\ShippingStatus\Status
+    public function getShippingStatus(): null | QUI\ERP\Shipping\ShippingStatus\Status
     {
         return $this->Order->getShippingStatus();
     }
