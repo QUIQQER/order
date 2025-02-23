@@ -474,9 +474,10 @@ class OutputProviderOrder implements OutputProviderInterface
 
 
         // Prefer bank account set in SEPA module if available
-        if (class_exists('QUI\ERP\Payments\SEPA\Provider') && QUI::getPackageManager()->isInstalled(
-                'quiqqer/payment-sepa'
-            )) {
+        if (
+            class_exists('QUI\ERP\Payments\SEPA\Provider')
+            && QUI::getPackageManager()->isInstalled('quiqqer/payment-sepa')
+        ) {
             $creditorBankAccount = QUI\ERP\Payments\SEPA\Provider::getCreditorBankAccount();
         } else {
             $creditorBankAccount = BankAccounts::getCompanyBankAccount();
