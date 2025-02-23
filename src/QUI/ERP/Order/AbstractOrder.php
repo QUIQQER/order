@@ -439,6 +439,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
 
             // validate shipping
             try {
+                // @phpstan-ignore-next-line
                 $this->validateShipping($this->getShipping());
             } catch (QUI\Exception) {
                 $this->shippingId = null;
@@ -473,7 +474,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * @param QUI\Interfaces\Users\User|null $PermissionUser
      * @return ErpEntityInterface|null
      */
-    public function reversal(string $reason = '', QUI\Interfaces\Users\User $PermissionUser = null): ?ErpEntityInterface
+    public function reversal(string $reason = '', null | QUI\Interfaces\Users\User $PermissionUser = null): ?ErpEntityInterface
     {
         $this->delete($PermissionUser);
         return null;
@@ -673,13 +674,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        if ($this->getShippingStatus()) {
+        if (class_exists('QUI\ERP\Shipping\ShippingStatus\Status') && $this->getShippingStatus()) {
             $shippingStatus = $this->getShippingStatus()->getId();
         }
 
         $shipping = '';
 
-        if ($this->getShipping()) {
+        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry') && $this->getShipping()) {
             $shipping = $this->getShipping()->getId();
         }
 
