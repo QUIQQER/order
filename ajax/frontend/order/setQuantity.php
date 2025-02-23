@@ -30,7 +30,7 @@ QUI::$Ajax->registerFunction(
         $Products = $Basket->getProducts();
         $products = $Products->getProducts(); // get as array
 
-        if (isset($products[$pos])) {
+        if (isset($products[$pos]) && method_exists($products[$pos], 'setQuantity')) {
             $products[$pos]->setQuantity($quantity);
         }
 

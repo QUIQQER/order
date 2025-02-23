@@ -28,11 +28,6 @@ QUI::$Ajax->registerFunction(
             ]);
 
             $Current = $OrderProcess->getCurrentStep();
-
-            if (!$Current) {
-                $Current = $OrderProcess->getFirstStep();
-            }
-
             $OrderProcess->setAttribute('step', $Current->getName());
 
             $html = $OrderProcess->create();

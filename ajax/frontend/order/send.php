@@ -32,11 +32,7 @@ QUI::$Ajax->registerFunction(
             ]);
 
             $result = $OrderProcess->create();
-            $current = false;
-
-            if ($OrderProcess->getCurrentStep()) {
-                $current = $OrderProcess->getCurrentStep()->getName();
-            }
+            $current = $OrderProcess->getCurrentStep()->getName();
 
             return [
                 'html' => $result,

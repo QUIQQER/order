@@ -25,10 +25,6 @@ QUI::$Ajax->registerFunction(
         $Order = $OrderProcess->getOrder();
         $Current = $OrderProcess->getCurrentStep();
 
-        if (!$Current) {
-            $Current = $OrderProcess->getFirstStep();
-        }
-
         $OrderProcess->setAttribute('step', $Current->getName());
         $OrderProcess->setAttribute('orderHash', $Order->getUUID());
 
