@@ -54,7 +54,7 @@ class OutputProviderOrder implements OutputProviderInterface
     /**
      * Get title for the output entity
      *
-     * @param Locale|null $Locale $Locale (optional) - If ommitted use \QUI::getLocale()
+     * @param Locale|null $Locale $Locale (optional) - If omitted use \QUI::getLocale()
      * @return string
      */
     public static function getEntityTypeTitle(null | Locale $Locale = null): string
