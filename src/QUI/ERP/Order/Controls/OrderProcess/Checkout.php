@@ -254,7 +254,9 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Order->setData('orderedWithCosts', 1);
         $Order->setData('orderedWithCostsPayment', $Payment->getId());
 
-        $Order->save();
+        if (method_exists($Order, 'save')) {
+            $Order->save();
+        }
     }
 
     /**

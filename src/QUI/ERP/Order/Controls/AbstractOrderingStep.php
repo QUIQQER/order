@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Controls;
 
 use QUI;
+use QUI\ERP\Order\AbstractOrder;
 use QUI\Locale;
 use ReflectionClass;
 
@@ -48,11 +49,15 @@ abstract class AbstractOrderingStep extends QUI\Control implements OrderingStepI
     /**
      * Return the current order
      *
-     * @return QUI\ERP\Order\AbstractOrder
+     * @return AbstractOrder|null
      */
-    public function getOrder(): QUI\ERP\Order\AbstractOrder
+    public function getOrder(): ?QUI\ERP\Order\AbstractOrder
     {
-        return $this->getAttribute('Order');
+        if ($this->getAttribute('Order') instanceof QUI\ERP\Order\AbstractOrder) {
+            return $this->getAttribute('Order');
+        }
+
+        return null;
     }
 
     /**
