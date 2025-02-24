@@ -27,7 +27,7 @@ use function json_encode;
  */
 class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityInterface, ErpTransactionsInterface
 {
-    protected null|string|int $orderId = null;
+    protected null | string | int $orderId = null;
 
     /**
      * Order constructor.
@@ -97,7 +97,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $this->setDataBaseData($data);
     }
 
-    public function getOrderId(): null|int|string
+    public function getOrderId(): null | int | string
     {
         return $this->orderId;
     }
@@ -130,7 +130,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @throws Exception
      * @throws QUI\Permissions\Exception
      */
-    public function save(QUI\Interfaces\Users\User $PermissionUser = null): void
+    public function save(null | QUI\Interfaces\Users\User $PermissionUser = null): void
     {
         $this->update($PermissionUser);
     }
@@ -141,7 +141,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @throws QUI\Permissions\Exception
      * @throws Exception
      */
-    public function update(QUI\Interfaces\Users\User $PermissionUser = null): void
+    public function update(null | QUI\Interfaces\Users\User $PermissionUser = null): void
     {
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
@@ -246,8 +246,9 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         foreach ($products as $Product) {
             try {
-                /* @var QUI\ERP\Order\Basket\Product $Product */
-                $ArticleList->addArticle($Product->toArticle(null, false));
+                if (method_exists($Product, 'toArticle')) {
+                    $ArticleList->addArticle($Product->toArticle(null, false));
+                }
             } catch (Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
@@ -349,7 +350,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @throws QUI\Permissions\Exception
      * @throws QUI\Database\Exception
      */
-    public function delete(QUI\Interfaces\Users\User $PermissionUser = null): void
+    public function delete(null | QUI\Interfaces\Users\User $PermissionUser = null): void
     {
         if ($this->hasPermissions($PermissionUser) === false) {
             throw new QUI\Permissions\Exception(
@@ -394,7 +395,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @throws Exception
      * @throws Exception
      */
-    public function createOrder(QUI\Interfaces\Users\User $PermissionUser = null): Order
+    public function createOrder(null | QUI\Interfaces\Users\User $PermissionUser = null): Order
     {
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Create Order');
 
@@ -571,7 +572,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @param null|QUI\Interfaces\Users\User $PermissionUser
      * @return bool
      */
-    protected function hasPermissions(QUI\Interfaces\Users\User $PermissionUser = null): bool
+    protected function hasPermissions(null | QUI\Interfaces\Users\User $PermissionUser = null): bool
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -640,16 +641,18 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $shippingData = '';
         $shippingStatus = null;
 
-        $Shipping = $this->getShipping();
+        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry')) {
+            $Shipping = $this->getShipping();
 
-        if ($Shipping) {
-            $shippingId = $Shipping->getId();
-            $shippingData = $Shipping->toArray();
+            if ($Shipping) {
+                $shippingId = $Shipping->getId();
+                $shippingData = $Shipping->toArray();
+            }
         }
 
-        if (QUI::getPackageManager()->isInstalled('quiqqer/shipping')) {
+        if (class_exists('QUI\ERP\Shipping\ShippingStatus\Status')) {
             $ShippingStatus = $this->getShippingStatus();
-            $shippingStatus = $ShippingStatus ? $ShippingStatus->getId() : null;
+            $shippingStatus = $ShippingStatus?->getId();
         }
 
         return [
@@ -691,7 +694,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @throws Exception
      * @throws QUI\ExceptionStack
      */
-    public function clear($PermissionUser = null): void
+    public function clear(null | QUI\Interfaces\Users\User $PermissionUser = null): void
     {
         if ($PermissionUser === null) {
             $PermissionUser = QUI::getUserBySession();
@@ -761,7 +764,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * @throws Exception
      * @throws QUI\ERP\Accounting\Invoice\Exception
      */
-    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
+    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->getOrderId());

@@ -824,6 +824,7 @@ class OrderProcess extends QUI\Control
         $paymentIsSuccessful = false;
         $Payment = $Order->getPayment();
 
+        // @phpstan-ignore-next-line
         if ($Payment && $Payment->isSuccessful($Order->getUUID())) {
             $paymentIsSuccessful = true;
         }
@@ -1316,7 +1317,7 @@ class OrderProcess extends QUI\Control
                     return $this->Order;
                 }
             }
-        } catch (QUI\Erp\Order\Exception) {
+        } catch (QUI\ERP\Order\Exception) {
         }
 
 
@@ -1327,7 +1328,7 @@ class OrderProcess extends QUI\Control
             if (!$OrderInProcess->getOrderId()) {
                 $this->Order = $OrderInProcess;
             }
-        } catch (QUI\Erp\Order\Exception) {
+        } catch (QUI\ERP\Order\Exception) {
         }
 
         if ($this->Order === null) {

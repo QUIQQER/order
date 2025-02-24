@@ -278,7 +278,7 @@ class Utils
     public static function importProductsToBasketList(
         QUI\ERP\Products\Product\ProductList $List,
         array $products = [],
-        QUI\ERP\Order\AbstractOrder|QUI\ERP\Order\Basket\Basket $Order = null
+        null | QUI\ERP\Order\AbstractOrder | QUI\ERP\Order\Basket\Basket $Order = null
     ): QUI\ERP\Products\Product\ProductList {
         if (!is_array($products)) {
             $products = [];
@@ -429,6 +429,7 @@ class Utils
     {
         $newProductList = [];
         $getProductIndex = function ($product) use (&$newProductList) {
+            // @phpstan-ignore-next-line
             foreach ($newProductList as $index => $p) {
                 $p1 = serialize(self::getCompareProductArray($product));
                 $p2 = serialize(self::getCompareProductArray($p));
