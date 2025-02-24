@@ -37,6 +37,17 @@
                 </conf>
             </section>
 
+            <section name="userProfile">
+                <conf name="showArticleImage">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
+                <conf name="disableProductLinks">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue><![CDATA[0]]></defaultvalue>
+                </conf>
+            </section>
+
             <section name="mails">
                 <!-- Datenschutz -->
                 <conf name="privacyPolicy">
@@ -230,6 +241,36 @@
                             <description>
                                 <locale group="quiqqer/order"
                                         var="order.settings.order.prefix.description"/>
+                            </description>
+                        </input>
+                    </settings>
+
+                    <settings>
+                        <title>
+                            <locale group="quiqqer/order" var="order.settings.userProfile.title"/>
+                        </title>
+
+                        <input type="checkbox" conf="userProfile.showArticleImage">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.userProfile.showArticleImage"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.userProfile.showArticleImage.desc"
+                                />
+                            </description>
+                        </input>
+
+                        <input type="checkbox" conf="userProfile.disableProductLinks">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.userProfile.disableProductLinks"/>
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.userProfile.disableProductLinks.desc"
+                                />
                             </description>
                         </input>
                     </settings>

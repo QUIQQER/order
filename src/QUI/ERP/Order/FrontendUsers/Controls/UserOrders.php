@@ -216,6 +216,9 @@ class UserOrders extends Control implements ControlInterface
      */
     public function renderArticle(QUI\ERP\Accounting\Article $Article): string
     {
+        $Settings = QUI\ERP\Order\Settings::getInstance();
+        $showImage = $Settings->get('userProfile', 'showArticleImage');
+        $noLink = $Settings->get('userProfile', 'disableProductLinks');
         $Engine = QUI::getTemplateManager()->getEngine();
         $Product = null;
         $Image = null;
@@ -244,6 +247,8 @@ class UserOrders extends Control implements ControlInterface
             'Article' => $Article,
             'Product' => $Product,
             'Image' => $Image,
+            'showImage' => $showImage,
+            'noLink' => $noLink,
             'Project' => QUI::getProjectManager()->get()
         ]);
 
