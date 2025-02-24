@@ -90,9 +90,8 @@ class Product extends UniqueProduct
         // set missing fields
         $productFields = $Product->getFields();
 
-        /* @var $Field QUI\ERP\Products\Field\Field */
         foreach ($productFields as $Field) {
-            if (!isset($fieldList[$Field->getId()])) {
+            if (!isset($fieldList[$Field->getId()]) && method_exists($Field, 'getAttributesForUniqueField')) {
                 $fieldList[$Field->getId()] = $Field->getAttributesForUniqueField();
             }
         }
@@ -108,7 +107,7 @@ class Product extends UniqueProduct
      * @param $fieldValue
      * @return null|QUI\ERP\Products\Field\Field|UniqueField
      */
-    protected function importFieldData($fieldId, $fieldValue): QUI\ERP\Products\Field\Field|UniqueField|null
+    protected function importFieldData($fieldId, $fieldValue): QUI\ERP\Products\Field\Field | UniqueField | null
     {
         try {
             if (is_array($fieldValue) && isset($fieldValue['identifier'])) {

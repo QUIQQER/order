@@ -84,13 +84,13 @@ class BasketGuest
 
     //endregion
 
-     /**
+    /**
      * Import the products to the basket
      *
      * @param array|null $products
      * @throws ExceptionStack
      */
-    public function import(array|null $products = []): void
+    public function import(array | null $products = []): void
     {
         $this->clear();
 
@@ -164,11 +164,13 @@ class BasketGuest
         $products = $Products->getProducts();
         $result = [];
 
-        /* @var $Product Product */
         foreach ($products as $Product) {
+            if (!method_exists($Product, 'getQuantity')) {
+                continue;
+            }
+
             $fields = [];
 
-            /* @var $Field UniqueField */
             foreach ($Product->getFields() as $Field) {
                 if (!$Field->isPublic()) {
                     continue;

@@ -179,7 +179,7 @@ class UserOrders extends Control implements ControlInterface
         $shippingStatus = false;
 
         if (
-            QUI::getPackageManager()->isInstalled('quiqqer/shipping')
+            class_exists('QUI\ERP\Shipping\ShippingStatus\Status')
             && $Order->getShippingStatus()
         ) {
             $shippingStatus = $Order->getShippingStatus()->getTitle();
@@ -216,6 +216,9 @@ class UserOrders extends Control implements ControlInterface
      */
     public function renderArticle(QUI\ERP\Accounting\Article $Article): string
     {
+        $Settings = QUI\ERP\Order\Settings::getInstance();
+        $showImage = $Settings->get('userProfile', 'showArticleImage');
+        $noLink = $Settings->get('userProfile', 'disableProductLinks');
         $Engine = QUI::getTemplateManager()->getEngine();
         $Product = null;
         $Image = null;
@@ -230,7 +233,9 @@ class UserOrders extends Control implements ControlInterface
 
         if (!empty($Product)) {
             try {
-                $Image = $Product->getImage();
+                if (method_exists($Product, 'getImage')) {
+                    $Image = $Product->getImage();
+                }
             } catch (QUI\Exception) {
             }
         }
@@ -242,6 +247,8 @@ class UserOrders extends Control implements ControlInterface
             'Article' => $Article,
             'Product' => $Product,
             'Image' => $Image,
+            'showImage' => $showImage,
+            'noLink' => $noLink,
             'Project' => QUI::getProjectManager()->get()
         ]);
 

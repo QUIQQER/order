@@ -64,14 +64,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         if (!$Address) {
-            try {
-                /* @var $User User */
-                $Address = $User->getStandardAddress();
-            } catch (QUI\Exception) {
-                // user has no address
-                // create a new standard address
-                $Address = $User->addAddress();
-            }
+            $Address = $User->getStandardAddress();
         }
 
         try {
@@ -83,10 +76,6 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
 
         $isUserB2B = function () use ($User) {
-            if (!$User) {
-                return '';
-            }
-
             if ($User->getAttribute('quiqqer.erp.isNettoUser') === QUI\ERP\Utils\User::IS_NETTO_USER) {
                 return ' selected="selected"';
             }

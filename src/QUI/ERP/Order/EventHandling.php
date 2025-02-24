@@ -11,6 +11,7 @@ use Exception;
 use QUI;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
+use QUI\ERP\Products\Interfaces\ProductTypeInterface;
 use QUI\Smarty\Collector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -392,7 +393,7 @@ class EventHandling
      */
     public static function onDetailEquipmentButtons(
         Collector $Collection,
-        QUI\ERP\Products\Product\Types\AbstractType $Product
+        ProductTypeInterface $Product
     ): void {
         // add to basket -> only for complete products
         // variant products cant be added directly
@@ -400,7 +401,6 @@ class EventHandling
             $Product instanceof QUI\ERP\Products\Product\Product
             || $Product instanceof QUI\ERP\Products\Product\Types\VariantChild
         ) {
-            /* @var $Product QUI\ERP\Products\Product\Product */
             $AddToBasket = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
                 'Product' => $Product,
                 'input' => false
@@ -563,6 +563,7 @@ class EventHandling
 
             // set shipping
             if ($SalesOrder->getShipping()) {
+                // @phpstan-ignore-next-line
                 $Order->setShipping($SalesOrder->getShipping());
             }
 

@@ -20,10 +20,15 @@ QUI::$Ajax->registerFunction(
         $Output = new QUI\Output();
         $result = $OrderProcess->create();
         $css = QUI\Control\Manager::getCSS();
+        $View = null;
+
+        if (method_exists($OrderProcess->getOrder(), 'getView')) {
+            $View = $OrderProcess->getOrder()->getView();
+        }
 
         return [
             'html' => $Output->parse($css . $result),
-            'data' => $OrderProcess->getOrder()->getView()->toArray()
+            'data' => $View?->toArray()
         ];
     },
     ['orderHash']

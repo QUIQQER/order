@@ -22,12 +22,13 @@ QUI::$Ajax->registerFunction(
             'step' => $Processing->getName()
         ]);
 
-        /* @var $Processing Processing */
         $Processing = $OrderProcess->getCurrentStep();
         $Order = $OrderProcess->getOrder();
-
         $Processing->setAttribute('Order', $Order);
-        $Processing->savePayment($payment);
+
+        if (method_exists($Processing, 'savePayment')) {
+            $Processing->savePayment($payment);
+        }
     },
     ['orderHash', 'payment']
 );

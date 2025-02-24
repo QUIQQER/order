@@ -357,9 +357,17 @@
             <de><![CDATA[Meine Bestellungen]]></de>
             <en><![CDATA[My orders]]></en>
         </locale>
+        <locale name="control.frontendUsers.orders.title">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
         <locale name="profile.opened.orders.title">
-            <de><![CDATA[Meine offene Bestellungen]]></de>
+            <de><![CDATA[Meine offenen Bestellungen]]></de>
             <en><![CDATA[My open orders]]></en>
+        </locale>
+        <locale name="control.frontendUsers.opened.orders.title">
+            <de><![CDATA[Offene Bestellungen]]></de>
+            <en><![CDATA[Open orders]]></en>
         </locale>
         <locale name="message.orders.panel.empty.articles">
             <de><![CDATA[Die Bestellung besitzt keine Artikel.]]></de>
@@ -833,6 +841,28 @@
             <de><![CDATA[Vorgehen bei gescheiterter Zahlung]]></de>
             <en><![CDATA[Procedure for failed payment]]></en>
         </locale>
+
+        <locale name="order.settings.userProfile.title">
+            <de><![CDATA[Benutezrprofil]]></de>
+            <en><![CDATA[User profile]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.showArticleImage">
+            <de><![CDATA[Artikelbilder anzeigen]]></de>
+            <en><![CDATA[Show article images]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.showArticleImage.desc">
+            <de><![CDATA[Wenn aktiviert, werden Artikelbilder im Benutzerprofil im Bereich "Bestellungen" und "Offene Bestellungen" angezeigt.]]></de>
+            <en><![CDATA[When enabled, product images are displayed in the user profile's order history and open orders section.]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.disableProductLinks">
+            <de><![CDATA[Keine Prodeuktlinks]]></de>
+            <en><![CDATA[Disable product links]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.disableProductLinks.desc">
+            <de><![CDATA[Wenn aktiviert, werden keine Links zu den Produkten im Benutzerprofil angezeigt.]]></de>
+            <en><![CDATA[When enabled, no links to products will be displayed in the user profile.]]></en>
+        </locale>
+
         <locale name="order.settings.mails.attachments">
             <de><![CDATA[Automatische Mailanhänge]]></de>
             <en><![CDATA[Automatic mail attachments]]></en>
@@ -1090,9 +1120,17 @@
             <de><![CDATA[Bestellstatus]]></de>
             <en><![CDATA[Order status]]></en>
         </locale>
-        <locale name="control.profile.orders.order.invoice">
+        <locale name="control.profile.orders.order.invoice.label">
             <de><![CDATA[Rechnung]]></de>
             <en><![CDATA[Invoice]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.invoice">
+            <de><![CDATA[Rechnung herunterladen]]></de>
+            <en><![CDATA[Download invoice]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.continuePayment.label">
+            <de><![CDATA[Benötigte Aktion]]></de>
+            <en><![CDATA[Required action]]></en>
         </locale>
         <locale name="control.profile.orders.order.continuePayment">
             <de><![CDATA[Bezahlung fortführen]]></de>

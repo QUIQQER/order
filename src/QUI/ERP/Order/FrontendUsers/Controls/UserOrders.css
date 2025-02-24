@@ -1,110 +1,124 @@
-.quiqqer-order-profile-orders,
+.quiqqer-frontendUsers-section--userOrders {
+    --_label-color: var(--label-color, #999);
+    --_label-fontSize: var(--label-fontSize, 0.875rem);
+    --_box-padding: var(--box-padding, 0.75rem);
+    --_box-bgColor: var(--box-bgColor, #f6f6f6);
+    --_borderColor: var(--borderColor, #ddd);
+    --_borderWidth: var(--borderWidth, 1px);
+    --_order-borderRadius: var(--order-borderRadius, 0.5rem);
+    --_scrollMarginTop: var(--scrollMarginTop,var(--_qui-template-scrollMarginTop, 0px));
+}
+
 .quiqqer-order-profile-orders-list {
-    float: left;
-    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+:where(.quiqqer-order-profile-orders-order__label) {
+    color: var(--_label-color);
+    font-size: var(--_label-fontSize);
 }
 
 /** One Order
  =============================================== */
+:where(.quiqqer-order-profile-orders-order) {
+    container-type: inline-size;
+    container-name: quiqqer-order-profile-orders-order;
 
-.quiqqer-order-profile-orders-order {
-    border: 1px #ddd solid;
-    clear: both;
-    float: left;
-    margin-bottom: 10px;
-    width: 100%;
+    overflow: hidden;
+    border-radius: var(--_order-borderRadius);
+    border: var(--_borderWidth) solid var(--_borderColor);
+    min-width: 0;
 }
 
-.quiqqer-order-profile-orders-order header {
-    background: #f6f6f6;
-    border-bottom: 1px #ddd solid;
-    float: left;
-    padding: 10px;
-    width: 100%;
+/* header */
+:where(.quiqqer-order-profile-orders-order__header) {
+    background: var(--_box-bgColor);
+    border-bottom: var(--_borderWidth) solid var(--_borderColor);
+    padding: var(--_box-padding);
+    display: flex;
+    justify-content: space-between;
 }
 
-.quiqqer-order-profile-orders-order-header-date,
-.quiqqer-order-profile-orders-order-header-total,
-.quiqqer-order-profile-orders-order-header-addressInvoice,
-.quiqqer-order-profile-orders-order-header-addressDelivery {
-    float: left;
-    position: relative;
-    width: 25%;
+:where(.quiqqer-order-profile-orders-order__header .quiqqer-order-profile-orders-order__orderId) {
+    text-align: right;
 }
 
-.quiqqer-order-profile-orders-order-header-date span,
-.quiqqer-order-profile-orders-order-header-total span,
-.quiqqer-order-profile-orders-order-header-addressInvoice span,
-.quiqqer-order-profile-orders-order-header-addressDelivery span {
-    clear: both;
-    float: left;
-}
-
-.quiqqer-order-profile-orders-order-header-addressInvoice {
-    cursor: pointer;
-}
-
-.quiqqer-order-profile-orders-order-header-addressInvoice address {
-    cursor: default;
-    display: none;
-    background: #ffffff;
-    border: 1px #ddd solid;
-    left: 0;
-    top: 35px;
-    padding: 10px;
-    position: absolute;
-    width: 100%;
-}
-
-.quiqqer-order-profile-orders-order-header-addressInvoice:is(:hover, :active) address {
-    display: inline-block;
-}
-
-.quiqqer-order-profile-orders-order-header-addressInvoice span {
-    text-align: left;
-}
-
+/* article list */
 .quiqqer-order-profile-orders-order-articles {
-    float: left;
-    padding: 10px;
-    width: 100%;
+    padding: var(--_box-padding);
+    display: grid;
+    gap: 1rem;
 }
 
+/* single article */
 .quiqqer-order-profile-orders-order-articles-article {
-    float: left;
-    width: 100%;
+    display: flex;
+    gap: 1rem;
+    min-width: 0;
 }
 
-.quiqqer-order-profile-orders-order-articles-information {
-    padding-top: 10px;
+:where(.quiqqer-order-profile-orders-order-articles-image) {
+    width: calc(10rem - 0.5rem);
+    height: calc(10rem - 0.5rem);
+    background: var(--_box-bgColor);
+    border-radius: var(--_order-borderRadius);
+    overflow: hidden;
+    display: grid;
+    place-content: center;
+    padding: var(--_box-padding);
+    flex-shrink: 0;
 }
 
-.quiqqer-order-profile-orders-order-articles-image {
-    float: left;
-    margin-right: 10px;
+.quiqqer-order-profile-orders-order-articles-data {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.quiqqer-order-profile-orders-order-articles-description {
-    margin: 5px 0;
+:where(.quiqqer-order-profile-orders-order-articles-title) {
+    font-weight: bolder;
 }
 
-.quiqqer-order-profile-orders-order-footer-paymentType {
-    margin-top: 10px;
+.quiqqer-order-profile-orders-order-articles-buttons {
+    margin-top: auto;
 }
 
-.quiqqer-order-profile-orders-order footer {
-    background: #f6f6f6;
-    border-top: 1px #ddd solid;
-    float: left;
-    padding: 10px;
-    width: 100%;
+/* footer  */
+:where(.quiqqer-order-profile-orders-order__footer) {
+    border-top: var(--_borderWidth) solid var(--_borderColor);
+    padding: var(--_box-padding);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+:where(.quiqqer-order-profile-orders-order__group) {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: 0.5rem;
+}
+
+@container quiqqer-order-profile-orders-order (max-width: 25rem) {
+    .quiqqer-order-profile-orders-order-articles-article {
+        flex-direction: column;
+    }
+
+    :where(.quiqqer-order-profile-orders-order-articles-article:not(:first-child)) {
+        border-top: var(--_borderWidth) solid var(--_borderColor);
+        padding-top: 1rem;
+    }
+
+    :where(.quiqqer-order-profile-orders-order__group) {
+        display: block;
+    }
 }
 
 /** Pagination
  =============================================== */
-
 .quiqqer-order-profile-orders-pagination {
-    float: left;
     width: 100%;
 }
 
@@ -112,56 +126,17 @@
     text-align: right;
 }
 
-@media (max-width: 768px) {
-    .quiqqer-order-profile-orders-order-header-date,
-    .quiqqer-order-profile-orders-order-header-total,
-    .quiqqer-order-profile-orders-order-header-addressInvoice,
-    .quiqqer-order-profile-orders-order-header-addressDelivery {
-        width: 100%;
-    }
+.quiqqer-sheets-mobile {
+    margin-top: 2rem;
+    width: 100%;
+}
 
-    .quiqqer-order-profile-orders-order-header-orderId {
-        float: left;
-        margin-top: 10px;
-        width: 100%;
-    }
+/* Back btn */
+.quiqqer-order-control-order-backButton {
+    margin-top: 1rem;
+}
 
-    .quiqqer-order-profile-orders-order-header-date > span,
-    .quiqqer-order-profile-orders-order-header-total > span,
-    .quiqqer-order-profile-orders-order-header-orderId > span,
-    .quiqqer-order-profile-orders-order-header-orderId > a,
-    .quiqqer-order-profile-orders-order-header-addressInvoice > span {
-        clear: none;
-        float: left;
-        width: 50%;
-    }
-
-    .quiqqer-order-profile-orders-order-header-addressInvoice address {
-        top: 100%;
-        z-index: 1;
-    }
-
-    .quiqqer-order-profile-orders .quiqqer-order-profile-orders-pagination:first-child {
-        margin-bottom: 20px;
-    }
-
-    .quiqqer-order-control-order-information-invoiceAddress,
-    .quiqqer-order-control-order-information-orderData,
-    .quiqqer-order-control-order-information-payment {
-        clear: both;
-        width: 100%;
-    }
-
-    .quiqqer-order-control-order-information-payment-icon {
-        margin-bottom: 10px;
-        max-width: 100%;
-    }
-
-    .quiqqer-order-control-order-information-orderData-placeholder td {
-        font-size: 1px;
-        height: 2px;
-        display: block;
-        padding: 0;
-        margin: 0;
-    }
+/* container for order details (open per click on order number) */
+.quiqqer-order-profile-orders-order-container {
+    scroll-margin-top: var(--_scrollMarginTop);
 }

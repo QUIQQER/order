@@ -530,14 +530,17 @@ class Mail
     //region mail helper
 
     /**
-     * @param OrderInterface $Order
+     * @param QUI\ERP\ErpEntityInterface $Order
      * @param QUI\Interfaces\Users\User $Customer
      * @return array
-     * @throws Exception
      */
-    protected static function getOrderLocaleVar(OrderInterface $Order, QUI\Interfaces\Users\User $Customer): array
+    protected static function getOrderLocaleVar(QUI\ERP\ErpEntityInterface $Order, QUI\Interfaces\Users\User $Customer): array
     {
-        $Address = $Customer->getAddress();
+        if ($Customer instanceof QUI\ERP\User) {
+            $Address = $Customer->getAddress();
+        } else {
+            $Address = $Customer->getStandardAddress();
+        }
 
         // customer name
         $user = $Customer->getName();
@@ -581,7 +584,7 @@ class Mail
      * @param $date
      * @return false|string
      */
-    public static function dateFormat($date): bool|string
+    public static function dateFormat($date): bool | string
     {
         // date
         $localeCode = QUI::getLocale()->getLocalesByLang(
