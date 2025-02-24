@@ -5,6 +5,7 @@
     --_box-bgColor: var(--box-bgColor, #f6f6f6);
     --_borderColor: var(--borderColor, #ddd);
     --_borderWidth: var(--borderWidth, 1px);
+    --_order-borderRadius: var(--order-borderRadius, 0.5rem);
     --_scrollMarginTop: var(--scrollMarginTop,var(--_qui-template-scrollMarginTop, 0px));
 }
 
@@ -19,6 +20,18 @@
     font-size: var(--_label-fontSize);
 }
 
+/** One Order
+ =============================================== */
+:where(.quiqqer-order-profile-orders-order) {
+    container-type: inline-size;
+    container-name: quiqqer-order-profile-orders-order;
+
+    overflow: hidden;
+    border-radius: var(--_order-borderRadius);
+    border: var(--_borderWidth) solid var(--_borderColor);
+    min-width: 0;
+}
+
 /* header */
 :where(.quiqqer-order-profile-orders-order__header) {
     background: var(--_box-bgColor);
@@ -30,17 +43,6 @@
 
 :where(.quiqqer-order-profile-orders-order__header .quiqqer-order-profile-orders-order__orderId) {
     text-align: right;
-}
-
-/** One Order
- =============================================== */
-
-:where(.quiqqer-order-profile-orders-order) {
-    container-type: inline-size;
-    container-name: quiqqer-order-profile-orders-order;
-
-    border: var(--_borderWidth) solid var(--_borderColor);
-    min-width: 0;
 }
 
 /* article list */
@@ -61,7 +63,7 @@
     width: calc(10rem - 0.5rem);
     height: calc(10rem - 0.5rem);
     background: var(--_box-bgColor);
-    border-radius: 0.5rem;
+    border-radius: var(--_order-borderRadius);
     overflow: hidden;
     display: grid;
     place-content: center;

@@ -89,7 +89,9 @@
         {if isset($orderStatus)}
             <div class="quiqqer-order-profile-orders-order__group quiqqer-order-profile-orders-order-footer-orderStatus">
                 <span class="quiqqer-order-profile-orders-order__label">{locale group="quiqqer/order" var="control.profile.orders.order.orderStatus"}:</span>
-                <div class="quiqqer-order-profile-orders-order__value">{$orderStatus}</div>
+                <div class="quiqqer-order-profile-orders-order__value">
+                    <span class="badge badge-primary">{$orderStatus}</span>
+                </div>
             </div>
         {/if}
     </footer>
