@@ -250,8 +250,8 @@
             <en><![CDATA[Copy from order #[orderId]]]></en>
         </locale>
         <locale name="message.basket.is.empty">
-            <de><![CDATA[Ihr Warenkorb enthält keine Produkte.]]></de>
-            <en><![CDATA[There are no products in your shopping cart.]]></en>
+            <de><![CDATA[Ihr Warenkorb enthält keine Produkte]]></de>
+            <en><![CDATA[There are no products in your shopping cart]]></en>
         </locale>
 
         <locale name="control.basket.buttonAdd.text">

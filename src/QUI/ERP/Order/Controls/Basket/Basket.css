@@ -1,5 +1,162 @@
+.quiqqer-order-controls-basket {
+    --_min-Height: var(--min-Height, 30dvh);
+    --_decorative-element-height: var(--decorative-element-height, 1rem);
+    --_decorative-element-width: var(--decorative-element-width, 0.25rem);
+    --_decorative-element-rotation: var(--decorative-element-rotation, 35deg);
+
+    min-height: var(--_min-Height);
+}
+
 :where(.quiqqer-order-basket-articles .offer-original-price) {
     display: block;
     font-size: 0.875rem;
     text-decoration: line-through;
+}
+
+:where(.quiqqer-order-controls-basket .quiqqer-order-basket-isEmpty) {
+    text-align: center;
+    min-height: var(--_min-Height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+:where(.quiqqer-order-controls-basket .quiqqer-order-basket-isEmpty__iconContainer) {
+    font-size: 5rem;
+    opacity: 0.5;
+}
+
+:where(.quiqqer-order-controls-basket .quiqqer-order-basket-isEmpty__text) {
+    max-width: 40ch;
+    margin-inline: auto;
+    margin-top: 1rem;
+    font-size: 1.25rem;
+
+    opacity: 0;
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+    animation-delay: 0.25s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+}
+
+:where(.quiqqer-order-controls-basket .quiqqer-order-basket-isEmpty__icon) {
+    opacity: 0;
+    animation-name: fadeInIcon;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.35s;
+    animation-timing-function: ease;
+}
+
+:where(.quiqqer-order-controls-basket .decorative-element) {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    gap: 0.5rem;
+}
+
+:where(.quiqqer-order-controls-basket .decorative-element__line) {
+    display: inline-block;
+    width: var(--_decorative-element-width);
+    height: var(--_decorative-element-height);
+    background: currentColor;
+    flex-shrink: 0;
+    border-radius: 0.25rem;
+    opacity: 0;
+
+    animation-name: fadeInWithSlideDecorationEls;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+}
+
+:where(.quiqqer-order-controls-basket .decorative-element__line--1) {
+    --transform-start: translateY(5px) rotate(calc(var(--_decorative-element-rotation) * -1)) scaleY(0);
+    --transform-end: translateY(0) rotate(calc(var(--_decorative-element-rotation) * -1)) scaleY(1);
+
+    transform-origin: bottom left;
+    transform: var(--transform-start);
+    animation-delay: 0.5s;
+}
+
+:where(.quiqqer-order-controls-basket .decorative-element__line--2) {
+    --transform-start: translateY(5px) scaleY(0);
+    --transform-end: translateY(0) scaleY(1);
+
+    transform-origin: bottom center;
+    height: calc(var(--_decorative-element-height) * 1.35);
+    transform: var(--transform-start);
+    animation-delay: 0.45s;
+}
+
+:where(.quiqqer-order-controls-basket .decorative-element__line--3) {
+    --transform-start: translateY(5px) rotate(var(--_decorative-element-rotation)) scaleY(0);
+    --transform-end: translateY(0) rotate(var(--_decorative-element-rotation)) scaleY(1);
+
+    transform-origin: bottom right;
+    transform: var(--transform-start);
+    animation-delay: 0.55s;
+}
+
+/* state: loading */
+:where(.quiqqer-order-basket-isLoading) {
+    min-height: var(--_min-Height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    opacity: 0.5;
+}
+
+/* keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInIcon {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeInWithSlideDecorationEls {
+    from {
+        opacity: 0;
+        transform: var(--transform-start);
+    }
+
+    to {
+        opacity: 0.75;
+        transform: var(--transform-end);
+    }
+}
+
+/* disable animation */
+@media (prefers-reduced-motion: reduce) {
+    .animation {
+        animation: none;
+    }
+
+    .decorative-element__line.animation {
+        opacity: 0.75;
+        transform: var(--transform-end)
+    }
+
+    .quiqqer-order-basket-isEmpty__text.animation {
+        opacity: 1;
+    }
 }

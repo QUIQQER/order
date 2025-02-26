@@ -51,6 +51,8 @@ class Basket extends QUI\Control
 
         $this->addCSSFile(dirname(__FILE__) . '/Basket.css');
 
+        $this->addCSSClass('quiqqer-order-controls-basket');
+
         $this->setAttributes([
             'data-qui' => 'package/quiqqer/order/bin/frontend/controls/basket/Basket'
         ]);
