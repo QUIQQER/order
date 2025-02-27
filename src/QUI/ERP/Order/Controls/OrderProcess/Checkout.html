@@ -81,6 +81,8 @@ Order=$Order
         {$Articles->render()}
     </div>
 
+    {template_event name="quiqqer::order::orderProcessCheckoutArticleListAfter" User=$User Order=$Order}
+
     <div class="quiqqer-order-step-checkout-notice">
         <label>
             <input type="checkbox" name="termsAndConditions" required/>
@@ -90,8 +92,4 @@ Order=$Order
 
 </section>
 
-{template_event
-name="quiqqer::order::orderProcessCheckoutEnd"
-User=$User
-Order=$Order
-}
+{template_event name="quiqqer::order::orderProcessCheckoutEnd" User=$User Order=$Order}
