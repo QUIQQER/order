@@ -65,8 +65,8 @@
     background: var(--_box-bgColor);
     border-radius: var(--_order-borderRadius);
     overflow: hidden;
-    display: grid;
     place-content: center;
+    text-align: center;
     padding: var(--_box-padding);
     flex-shrink: 0;
 }
