@@ -113,7 +113,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
                 $Current = $OrderProcess->getCurrentStep();
 
                 // if current step is basket, we need no cleanup ... only later
-                if ($Current instanceof QUI\ERP\Order\Controls\Basket\Basket) {
+                if ($Current instanceof QUI\ERP\Order\Controls\OrderProcess\Basket) {
                     return;
                 }
             }
