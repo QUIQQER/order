@@ -153,15 +153,15 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('orderHash', $Order->getUUID());
 
         // set order currency
-        $UserCurrency = QUI\ERP\Defaults::getUserCurrency();
+        $UserCurrency = QUI\ERP\Currency\Handler::getRuntimeCurrency();
 
-        if ($UserCurrency && $UserCurrency->getCode() !== $Order->getCurrency()->getCode()) {
+        if ($UserCurrency->getCode() !== $Order->getCurrency()->getCode()) {
             $Order->setCurrency($UserCurrency);
             $Order->update();
         }
 
         // order is successful, so no other step must be shown
-        if ($Order && $Order->isSuccessful()) {
+        if ($Order->isSuccessful()) {
             $LastStep = end($steps);
 
             $this->setAttribute('step', $LastStep->getName());
@@ -1426,6 +1426,7 @@ class OrderProcess extends QUI\Control
         } catch (QUI\Exception) {
         }
 
+        // @todo process step sich merken, sonst 1000 neue objekte
         return new Controls\OrderProcess\Processing([
             'Order' => $this->getOrder(),
             'priority' => 40
