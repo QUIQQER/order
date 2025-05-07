@@ -87,7 +87,10 @@ class UserOrders extends Control implements ControlInterface
 
             $Invoice = $View->getInvoice();
 
-            if (!($Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice)) {
+            if (
+                !class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+                || !($Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice)
+            ) {
                 $View->setAttribute('downloadLink', false);
             }
 
