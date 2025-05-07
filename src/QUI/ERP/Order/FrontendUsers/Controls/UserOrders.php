@@ -85,6 +85,15 @@ class UserOrders extends Control implements ControlInterface
                 URL_OPT_DIR . 'quiqqer/order/bin/frontend/order.pdf.php?order=' . $View->getHash()
             );
 
+            $Invoice = $View->getInvoice();
+
+            if (
+                !class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+                || !($Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice)
+            ) {
+                $View->setAttribute('downloadLink', false);
+            }
+
             $orders[] = $View;
         }
 
