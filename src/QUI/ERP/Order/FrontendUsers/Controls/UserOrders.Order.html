@@ -27,7 +27,7 @@
     </div>
 
     <footer class="quiqqer-order-profile-orders-order__footer">
-        {if $Order->isPosted()}
+        {if $Order->isPosted() && $Order->getAttribute('downloadLink')}
         <div class="quiqqer-order-profile-orders-order__group quiqqer-order-profile-orders-order-invoice">
             <span class="quiqqer-order-profile-orders-order__label">
                 {locale group="quiqqer/order" var="control.profile.orders.order.invoice.label"}
