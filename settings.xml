@@ -92,6 +92,10 @@
                 <conf name="backToShopUrl">
                     <type><![CDATA[string]]></type>
                 </conf>
+                <conf name="mandatoryLinksDisplay">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue><![CDATA[1]]></defaultvalue>
+                </conf>
             </section>
 
             <section name="paymentsChangeable"/>
@@ -147,6 +151,31 @@
                                         var="order.settings.orderProcess.backToShopUrl.description"/>
                             </description>
                         </input>
+
+                        <select conf="orderProcess.mandatoryLinksDisplay">
+                            <text>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.mandatoryLinksDisplay"
+                                />
+                            </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.mandatoryLinksDisplay.description"
+                                />
+                            </description>
+
+
+                            <option value="single_checkbox">
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.mandatoryLinksDisplay.single_checkbox"
+                                />
+                            </option>
+                            <option value="multiple_checkboxes">
+                                <locale group="quiqqer/order"
+                                        var="order.settings.orderProcess.mandatoryLinksDisplay.multiple_checkboxes"
+                                />
+                            </option>
+                        </select>
                     </settings>
 
                     <settings title="order" name="order">
