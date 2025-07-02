@@ -732,7 +732,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
-         * Check / valdate the step
+         * Check / validate the step
          * html5 validation
          *
          * @param {boolean} [stepCheck] - optional

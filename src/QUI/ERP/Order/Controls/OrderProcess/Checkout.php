@@ -6,6 +6,7 @@
 
 namespace QUI\ERP\Order\Controls\OrderProcess;
 
+use Exception;
 use QUI;
 use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Basket\BasketOrder;
@@ -26,7 +27,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * @var Basket|BasketOrder|BasketGuest
      */
-    protected Basket|BasketOrder|BasketGuest $Basket;
+    protected Basket | BasketOrder | BasketGuest $Basket;
 
     /**
      * Basket constructor.
@@ -102,18 +103,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Articles = $ArticleList->toUniqueList();
         $Articles->hideHeader();
 
-        $text = QUI::getLocale()->get(
-            'quiqqer/order',
-            'ordering.step.checkout.checkoutAcceptText',
-            [
-                'terms_and_conditions' => $this->getLinkOf('terms_and_conditions')
-            ]
-        );
-
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderOrderProcessCheckoutOutput',
-            [$this, &$text]
-        );
+        $this->generateCheckboxLinks($Engine);
 
         // comment
         $comment = '';
@@ -151,8 +141,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             'Shipping' => $Order->getShipping(),
             'comment' => $comment,
             'Articles' => $Articles,
-            'Order' => $Order,
-            'text' => $text
+            'Order' => $Order
         ]);
 
         return $Engine->fetch(dirname(__FILE__) . '/Checkout.html');
@@ -162,7 +151,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null): string
+    public function getName(null | QUI\Locale $Locale = null): string
     {
         return 'Checkout';
     }
@@ -305,5 +294,117 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             data-project="' . $project . '" 
             data-lang="' . $lang . '" 
             data-id="' . $id . '">' . $title . '</a>';
+    }
+
+    public function generateCheckboxLinks($Engine): void
+    {
+        $termsAndConditionsLink = $this->getLinkOf('terms_and_conditions');
+        $revocationLink = $this->getLinkOf('revocation');
+        $privacyPolicyLink = $this->getLinkOf('privacy_policy');
+
+        $checkboxes = [];
+        $checkboxEntries = [];
+        $localeLinks = [];
+
+        if (!empty($termsAndConditionsLink)) {
+            $localeLinks['terms_and_conditions'] = $termsAndConditionsLink;
+        }
+
+        if (!empty($privacyPolicyLink)) {
+            $localeLinks['privacy_policy'] = $privacyPolicyLink;
+        }
+
+        if (!empty($revocationLink)) {
+            $localeLinks['revocation'] = $revocationLink;
+        }
+
+        if (!empty($termsAndConditionsLink)) {
+            $checkboxEntries[] = QUI::getLocale()->get(
+                'quiqqer/order',
+                'ordering.step.checkout.termsAndConditionsEntry',
+                $localeLinks
+            );
+
+            $checkboxes[] = [
+                'name' => 'termsAndConditions',
+                'text' => QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'ordering.step.checkout.termsAndConditionsAcceptText',
+                    $localeLinks
+                )
+            ];
+        }
+
+        if (!empty($privacyPolicyLink)) {
+            $checkboxEntries[] = QUI::getLocale()->get(
+                'quiqqer/order',
+                'ordering.step.checkout.privacyPolicyEntry',
+                $localeLinks
+            );
+
+            $checkboxes[] = [
+                'name' => 'privacyPolicy',
+                'text' => QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'ordering.step.checkout.privacyPolicyAcceptText',
+                    ['privacy_policy' => $privacyPolicyLink]
+                )
+            ];
+        }
+
+        if (!empty($revocationLink)) {
+            $checkboxEntries[] = QUI::getLocale()->get(
+                'quiqqer/order',
+                'ordering.step.checkout.revocationEntry',
+                $localeLinks
+            );
+
+            $checkboxes[] = [
+                'name' => 'revocation',
+                'text' => QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'ordering.step.checkout.revocationAcceptText',
+                    ['revocation' => $revocationLink]
+                )
+            ];
+        }
+
+        // terms and conditions
+        $and = ' ' . QUI::getLocale()->get('quiqqer/order', 'ordering.step.checkout.and') . ' ';
+
+        if (count($checkboxEntries) === 1) {
+            $links = $checkboxEntries[0];
+        } elseif (count($checkboxEntries) === 2) {
+            $links = $checkboxEntries[0] . $and . $checkboxEntries[1];
+        } else {
+            $last = array_pop($checkboxEntries);
+            $links = implode(', ', $checkboxEntries) . $and . $last;
+        }
+
+        $acceptText = QUI::getLocale()->get(
+            'quiqqer/order',
+            'ordering.step.checkout.checkoutAcceptText',
+            [
+                'links' => $links
+            ]
+        );
+
+        QUI::getEvents()->fireEvent(
+            'quiqqerOrderOrderProcessCheckoutOutput',
+            [$this, &$acceptText]
+        );
+
+        try {
+            $mandatoryLinksDisplay = 'single_checkbox';
+            $Config = QUI::getPackage('quiqqer/order')->getConfig();
+            $mandatoryLinksDisplay = $Config->get('orderProcess', 'mandatoryLinksDisplay');
+        } catch (Exception) {
+        }
+
+        $Engine->assign([
+            'checkboxes' => $checkboxes,
+            'acceptText' => $acceptText,
+            'mandatoryLinksDisplay' => $mandatoryLinksDisplay
+        ]);
     }
 }
