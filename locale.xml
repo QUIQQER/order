@@ -513,7 +513,7 @@
             <de><![CDATA[Darf Bestellungen erstellen]]></de>
             <en><![CDATA[May create orders]]></en>
         </locale>
-        
+
     </groups>
 
     <groups name="quiqqer/order" datatype="php">
@@ -746,18 +746,67 @@
             ]]></en>
         </locale>
 
-        <locale name="ordering.step.checkout.checkoutAcceptText">
+
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay">
+            <de><![CDATA[Darstellung der Pflichtlinks]]></de>
+            <en><![CDATA[Display of mandatory links]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay.description">
             <de><![CDATA[
-                Ich habe die [terms_and_conditions] gelesen und akzeptiere sie.
+            Legt fest, ob die Pflichtlinks (z.B. AGB, Datenschutz, Widerrufsbelehrung)
+            als einzelne Checkboxen oder zusammengefasst in einer Checkbox angezeigt werden.
             ]]></de>
             <en><![CDATA[
-                I have read the [terms_and_conditions] and accept it.
+            Determines whether the mandatory links (e.g. terms and conditions, privacy policy, revocation instructions)
+            are displayed as individual checkboxes or combined in a single checkbox.
             ]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay.single_checkbox">
+            <de><![CDATA[Als eine Checkbox darstellen]]></de>
+            <en><![CDATA[Display as one checkbox]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay.multiple_checkboxes">
+            <de><![CDATA[Als mehrere Checkboxen darstellen]]></de>
+            <en><![CDATA[Display as multiple checkboxes]]></en>
+        </locale>
+
+        <locale name="ordering.step.checkout.checkoutAcceptText">
+            <de><![CDATA[Ich habe [links] gelesen und akzeptiere sie.]]></de>
+            <en><![CDATA[I have read [links] and accept it.]]></en>
         </locale>
         <locale name="exception.order.termsAndConditions.missing">
             <de><![CDATA[Bitte bestätigen Sie die Allgemeine Geschäftsbedingungen.]]></de>
             <en><![CDATA[Please confirm the General Terms and Conditions.]]></en>
         </locale>
+        <locale name="ordering.step.checkout.termsAndConditionsAcceptText">
+            <de><![CDATA[Ich habe die [terms_and_conditions] gelesen und akzeptiere sie.]]></de>
+            <en><![CDATA[I have read the [terms_and_conditions] and accept it.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.privacyPolicyAcceptText">
+            <de><![CDATA[Ich habe den [privacy_policy] gelesen und akzeptiere ihn.]]></de>
+            <en><![CDATA[I have read the [privacy_policy] and accept it.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.revocationAcceptText">
+            <de><![CDATA[Ich habe die [revocation] gelesen und akzeptiere sie.]]></de>
+            <en><![CDATA[I have read the [revocation] and accept it.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.termsAndConditionsEntry">
+            <de><![CDATA[die [terms_and_conditions]]]></de>
+            <en><![CDATA[the [terms_and_conditions]]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.privacyPolicyEntry">
+            <de><![CDATA[den [privacy_policy]]]></de>
+            <en><![CDATA[the [privacy_policy]]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.revocationEntry">
+            <de><![CDATA[die [revocation]]]></de>
+            <en><![CDATA[the [revocation]]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.and">
+            <de><![CDATA[und]]></de>
+            <en><![CDATA[and]]></en>
+        </locale>
+
 
         <locale name="ordering.step.checkoutPayment.text" html="true">
             <de><![CDATA[
@@ -851,8 +900,10 @@
             <en><![CDATA[Show article images]]></en>
         </locale>
         <locale name="order.settings.userProfile.showArticleImage.desc">
-            <de><![CDATA[Wenn aktiviert, werden Artikelbilder im Benutzerprofil im Bereich "Bestellungen" und "Offene Bestellungen" angezeigt.]]></de>
-            <en><![CDATA[When enabled, product images are displayed in the user profile's order history and open orders section.]]></en>
+            <de>
+                <![CDATA[Wenn aktiviert, werden Artikelbilder im Benutzerprofil im Bereich "Bestellungen" und "Offene Bestellungen" angezeigt.]]></de>
+            <en>
+                <![CDATA[When enabled, product images are displayed in the user profile's order history and open orders section.]]></en>
         </locale>
         <locale name="order.settings.userProfile.disableProductLinks">
             <de><![CDATA[Keine Prodeuktlinks]]></de>
