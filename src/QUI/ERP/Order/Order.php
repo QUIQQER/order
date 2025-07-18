@@ -146,6 +146,13 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             return $this->getInvoice();
         }
 
+        // nochmal check über die db
+        $this->refresh();
+
+        if (Settings::getInstance()->forceCreateInvoice() === false && $this->isPosted()) {
+            return $this->getInvoice();
+        }
+
         if (!Settings::getInstance()->isInvoiceInstalled()) {
             throw new QUI\Exception(['quiqqer/order', 'exception.invoice.is.not.installed']);
         }
