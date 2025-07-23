@@ -142,7 +142,14 @@ class Settings extends QUI\Utils\Singleton
             return false;
         }
 
-        return $Config->get('order', 'autoInvoice') === 'onPaid';
+        if (
+            $Config->get('order', 'autoInvoice') === 'onPaid'
+            || $Config->get('order', 'autoInvoice') === 'byPayment'
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
