@@ -1692,8 +1692,16 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             )
         );
 
-        if ($this->hasInvoice() && method_exists($this->getInvoice(), 'linkTransaction')) {
-            $this->getInvoice()->linkTransaction($Transaction);
+        if (
+            $this->hasInvoice()
+            && class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+            && class_exists('QUI\ERP\Accounting\Invoice\InvoiceTemporary')
+        ) {
+            $invoice = $this->getInvoice();
+
+            if (method_exists($invoice, 'linkTransaction')) {
+                $invoice->linkTransaction($Transaction);
+            }
         }
 
         QUI::getEvents()->fireEvent(
