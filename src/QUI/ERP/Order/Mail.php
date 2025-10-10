@@ -67,7 +67,10 @@ class Mail
         }
 
         // mail
-        $Mailer = QUI::getMailManager()->getMailer();
+        $Mailer = QUI::getMailManager()->getMailer([
+            'Project' => QUI::getRewrite()->getProject()
+        ]);
+
         $Mailer->addRecipient($email);
 
         if (Settings::getInstance()->get('order', 'sendOrderConfirmationToAdmin')) {
@@ -534,8 +537,10 @@ class Mail
      * @param QUI\Interfaces\Users\User $Customer
      * @return array
      */
-    protected static function getOrderLocaleVar(QUI\ERP\ErpEntityInterface $Order, QUI\Interfaces\Users\User $Customer): array
-    {
+    protected static function getOrderLocaleVar(
+        QUI\ERP\ErpEntityInterface $Order,
+        QUI\Interfaces\Users\User $Customer
+    ): array {
         if ($Customer instanceof QUI\ERP\User) {
             $Address = $Customer->getAddress();
         } else {
