@@ -67,9 +67,19 @@ class Mail
         }
 
         // mail
-        $Mailer = QUI::getMailManager()->getMailer([
-            'Project' => QUI::getRewrite()->getProject()
-        ]);
+        $reflection = new \ReflectionMethod('\QUI\Mail\Manager', 'getMailer');
+        $paramCount = $reflection->getNumberOfParameters();
+
+        if ($paramCount > 0) {
+            // Methode akzeptiert Parameter (neue Version)
+            $Mailer = QUI::getMailManager()->getMailer([
+                'Project' => QUI::getRewrite()->getProject()
+            ]);
+        } else {
+            // Methode akzeptiert keine Parameter (alte Version)
+            $Mailer = QUI::getMailManager()->getMailer();
+        }
+
 
         $Mailer->addRecipient($email);
 
