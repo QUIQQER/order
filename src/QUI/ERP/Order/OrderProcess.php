@@ -125,10 +125,10 @@ class OrderProcess extends QUI\Control
         $userUUID = $User->getUUID();
 
         if ($customerUUID !== $userUUID && !QUI::getUsers()->isSystemUser($User)) {
-            throw new QUI\Permissions\Exception([
-                'quiqqer/order',
-                'exception.no.permission.for.this.order'
-            ]);
+            // order is not from this user
+            // so we use a new order in process
+            $Order = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+            $this->Order = $Order;
         }
 
         if ($Order->isSuccessful()) {
@@ -137,7 +137,6 @@ class OrderProcess extends QUI\Control
 
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getUUID());
-
             return;
         }
 
