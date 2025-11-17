@@ -73,7 +73,6 @@ class Mail
 
         if ($paramCount > 0) {
             // Methode akzeptiert Parameter (neue Version)
-            // @phpstan-ignore-next-line
             $Mailer = $mailer->getMailer([
                 'Project' => QUI::getRewrite()->getProject()
             ]);
