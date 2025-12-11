@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData
- * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', [
 
@@ -68,7 +67,7 @@ define('package/quiqqer/order/bin/frontend/controls/orderProcess/CustomerData', 
                 self.$Close.setStyle('display', 'none');
             });
 
-            if (BusinessType) {
+            if (BusinessType && BusinessType.length) {
                 BusinessType.addEvent('change', this.$onBusinessTypeChange);
 
                 businessFields.addEvent('change', () => {
