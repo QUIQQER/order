@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/orderProcess/Login
- * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/frontend/controls/orderProcess/Login', [
 

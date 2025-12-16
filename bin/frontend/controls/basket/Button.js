@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/basket/Button
- * @author www.pcsg.de (Henning Leutz)
  *
  * @event onCreate [self]
  * @event onShowBasketBegin [self, pos, height]

@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/backend/controls/settings/Payments
- * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
 

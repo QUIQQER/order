@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
- * @author www.pcsg.de (Henning Leutz)
  *
  * @event QUI Event: onQuiqqerOrderProcessLoad  [this]
  * @event QUI Event: onQuiqqerOrderProcessOpenStep  [this, step]
