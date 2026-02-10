@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/frontendusers/Orders
- * @author www.pcsg.de (Henning Leutz)
  */
 
 require.config({

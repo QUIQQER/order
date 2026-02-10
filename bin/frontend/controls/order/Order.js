@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/order/Order
- * @author www.pcsg.de (Henning Leutz)
  *
  * Shows a specific order in a qui window
  */

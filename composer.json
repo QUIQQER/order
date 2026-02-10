@@ -6,14 +6,7 @@
     "GPL-3.0+",
     "PCSG QEL-1.0"
   ],
-  "authors": [
-    {
-      "name": "Henning Leutz",
-      "email": "support@pcsg.de",
-      "homepage": "https://www.pcsg.de",
-      "role": "Developer"
-    }
-  ],
+  "authors": [],
   "support": {
     "email": "support@pcsg.de",
     "url": "httpa://www.pcsg.de"

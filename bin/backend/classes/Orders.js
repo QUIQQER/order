@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/backend/classes/Orders
- * @author www.pcsg.de (Henning Leutz)
  *
  * @event onOrderCreate [self, newId]
  * @event onOrderDelete [self, orderId]
