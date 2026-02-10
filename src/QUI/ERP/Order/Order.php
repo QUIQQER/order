@@ -284,6 +284,15 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         $TemporaryInvoice->save($PermissionUser);
 
+
+        // if one transaction, we can set the transaction to the temp invoice
+        $transactions = $this->getTransactions();
+
+        if (count($transactions) === 1) {
+            $TemporaryInvoice->linkTransaction($transactions[0]);
+        }
+
+
         // save payment data
         QUI::getDataBase()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),

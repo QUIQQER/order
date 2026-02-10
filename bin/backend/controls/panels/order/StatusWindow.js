@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/backend/controls/panels/order/StatusWindow
- * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/backend/controls/panels/order/StatusWindow', [
 

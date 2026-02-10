@@ -2,10 +2,9 @@
  * Select an order status status
  *
  * @module package/quiqqer/order/bin/backend/utils/StatusSelect
- * @author www.pcsg.de (Patrick Müller)
  *
  * @event onChange [value, this]
- * @event onLoaded [this] - Fires if all statusses have been loaded
+ * @event onLoaded [this] - Fires if all status have been loaded
  */
 define('package/quiqqer/order/bin/backend/utils/StatusSelect', [
 
