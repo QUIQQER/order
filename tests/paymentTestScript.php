@@ -2,7 +2,7 @@
 
 define('SYSTEM_INTERN', true);
 
-require_once 'bootstrap.php';
+require_once 'phpunit-bootstrap.php';
 
 // Order
 $Order = QUI\ERP\Order\Handler::getInstance()->get('115');
