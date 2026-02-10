@@ -1,5 +1,7 @@
 <?php
 
+namespace QUIQQER;
+
 use PHPUnit\Framework\TestCase;
 
 final class PaymentTest extends TestCase
