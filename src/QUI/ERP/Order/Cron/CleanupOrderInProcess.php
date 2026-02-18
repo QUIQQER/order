@@ -34,10 +34,6 @@ class CleanupOrderInProcess
     {
         $days = 14; // 14 days
 
-        if (!is_array($params)) {
-            $params = [];
-        }
-
         if (!empty($params['days'])) {
             $days = (int)$params['days'];
         }

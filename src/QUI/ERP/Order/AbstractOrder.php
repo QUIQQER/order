@@ -1109,9 +1109,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             return;
         }
 
-        if (is_array($address)) {
-            $this->addressInvoice = $this->parseAddressData($address);
-        }
+        $this->addressInvoice = $this->parseAddressData($address);
     }
 
     /**
@@ -1283,22 +1281,20 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             return;
         }
 
-        if ($User instanceof QUI\Interfaces\Users\User) {
-            $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
-            $this->customerId = $this->Customer->getUUID();
+        $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
+        $this->customerId = $this->Customer->getUUID();
 
-            if (empty($this->addressInvoice)) {
-                $this->setInvoiceAddress($this->Customer->getStandardAddress());
-            }
-
-            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
-
-            if ($this->customerId !== $oldCustomerId) {
-                QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
-            }
-
-            $this->Articles?->setUser($this->Customer);
+        if (empty($this->addressInvoice)) {
+            $this->setInvoiceAddress($this->Customer->getStandardAddress());
         }
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
+
+        if ($this->customerId !== $oldCustomerId) {
+            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
+        }
+
+        $this->Articles?->setUser($this->Customer);
     }
 
     /**
