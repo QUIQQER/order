@@ -14,7 +14,6 @@ use QUI\Exception;
 use QUI\ExceptionStack;
 
 use function boolval;
-use function is_array;
 
 /**
  * Class BasketOrder
@@ -213,9 +212,7 @@ class BasketOrder
 
         foreach ($Products as $P) {
             if (
-                !method_exists($Product, 'toArray')
-                || !method_exists($Product, 'getQuantity')
-                || !method_exists($P, 'toArray')
+                !method_exists($P, 'toArray')
                 || !method_exists($P, 'getQuantity')
                 || !method_exists($P, 'setQuantity')
             ) {
@@ -278,10 +275,6 @@ class BasketOrder
     public function import(array $products = []): void
     {
         $this->clear();
-
-        if (!is_array($products)) {
-            $products = [];
-        }
 
         $Package = QUI::getPackage('quiqqer/order');
         $Config = $Package->getConfig();

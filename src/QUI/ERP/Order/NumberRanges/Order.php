@@ -9,8 +9,6 @@ namespace QUI\ERP\Order\NumberRanges;
 use QUI;
 use QUI\ERP\Api\NumberRangeInterface;
 
-use function is_numeric;
-
 /**
  * Class Order
  * - Order range
@@ -55,10 +53,6 @@ class Order implements NumberRangeInterface
      */
     public function setRange(int $range): void
     {
-        if (!is_numeric($range)) {
-            return;
-        }
-
         $Config = QUI::getPackage('quiqqer/order')->getConfig();
         $Config->set('order', 'orderCurrentIdIndex', $range);
         $Config->save();
