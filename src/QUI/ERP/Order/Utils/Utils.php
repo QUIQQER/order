@@ -13,10 +13,8 @@ use QUI\ERP\Products\Field\Types\BasketConditions;
 use QUI\Projects\Project;
 
 use function date;
-use function is_array;
 use function mb_strlen;
 use function mb_substr;
-use function method_exists;
 use function serialize;
 use function str_replace;
 use function strpos;
@@ -280,10 +278,6 @@ class Utils
         array $products = [],
         null | QUI\ERP\Order\AbstractOrder | QUI\ERP\Order\Basket\Basket $Order = null
     ): QUI\ERP\Products\Product\ProductList {
-        if (!is_array($products)) {
-            $products = [];
-        }
-
         $count = count($products);
 
         foreach ($products as $productData) {
@@ -346,7 +340,7 @@ class Utils
                         ]
                     );
 
-                    if ($Order && method_exists($Order, 'addFrontendMessage')) {
+                    if ($Order) {
                         $Order->addFrontendMessage($message);
                     } else {
                         if (!QUI::getUsers()->isSystemUser(QUI::getUserBySession())) {
