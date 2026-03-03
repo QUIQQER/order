@@ -15,7 +15,7 @@
     "php": "^8",
     "php81_bc/strftime": "^0.7",
     "ramsey/uuid": "^3|^4",
-    "quiqqer/core": "^2",
+    "quiqqer/core": "^2.9",
     "quiqqer/currency": "^2.2",
     "quiqqer/qui": "^1.6.7",
     "quiqqer/erp": "^3.7.1",

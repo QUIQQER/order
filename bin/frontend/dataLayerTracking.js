@@ -16,7 +16,7 @@ window.whenQuiLoaded().then(function() {
          */
         function getBasketData(Basket)
         {
-            if (!parseInt(QUIQQER_USER.id)) {
+            if (!QUIQQER_USER.isLoggedIn) {
                 return new Promise(function(resolve) {
                     let products = [];
                     let basketProducts = Basket.getProducts();
