@@ -108,6 +108,11 @@ class OrderProcess extends QUI\Control
         $this->addCSSFile(dirname(__FILE__) . '/Controls/OrderProcess.css');
         $this->Events = new QUI\Events\Event();
 
+        if (isset($attributes['events'])) {
+            $this->Events->addEvents($attributes['events']);
+            unset($attributes['events']);
+        }
+
         $User = QUI::getUserBySession();
         $isNobody = QUI::getUsers()->isNobodyUser($User);
 
@@ -843,7 +848,8 @@ class OrderProcess extends QUI\Control
         }
 
         if (
-            $Finish->getName() === $Current->getName()
+            $Finish
+            && $Finish->getName() === $Current->getName()
             && $this->getOrder()->getDataEntry('orderedWithCosts')
         ) {
             return $render();
@@ -1449,6 +1455,7 @@ class OrderProcess extends QUI\Control
         $Basket = $this->Basket;
 
         QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
+        $this->Events->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
 
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
             $Steps->append(
@@ -1460,6 +1467,7 @@ class OrderProcess extends QUI\Control
             );
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+            $this->Events->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
             return $Steps;
         }
@@ -1477,6 +1485,7 @@ class OrderProcess extends QUI\Control
             $Steps->append($Finish);
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+            $this->Events->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
             return $Steps;
         }
@@ -1533,6 +1542,7 @@ class OrderProcess extends QUI\Control
 
 
         QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+        $this->Events->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
         return $Steps;
     }
