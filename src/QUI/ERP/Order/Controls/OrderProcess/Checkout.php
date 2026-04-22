@@ -369,30 +369,34 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             ];
         }
 
-        // terms and conditions
-        $and = ' ' . QUI::getLocale()->get('quiqqer/order', 'ordering.step.checkout.and') . ' ';
+        $hasMandatoryLinks = !empty($checkboxEntries);
+        $acceptText = '';
 
-        if (count($checkboxEntries) === 1) {
-            $links = $checkboxEntries[0];
-        } elseif (count($checkboxEntries) === 2) {
-            $links = $checkboxEntries[0] . $and . $checkboxEntries[1];
-        } else {
-            $last = array_pop($checkboxEntries);
-            $links = implode(', ', $checkboxEntries) . $and . $last;
+        if ($hasMandatoryLinks) {
+            $and = ' ' . QUI::getLocale()->get('quiqqer/order', 'ordering.step.checkout.and') . ' ';
+
+            if (count($checkboxEntries) === 1) {
+                $links = $checkboxEntries[0];
+            } elseif (count($checkboxEntries) === 2) {
+                $links = $checkboxEntries[0] . $and . $checkboxEntries[1];
+            } else {
+                $last = array_pop($checkboxEntries);
+                $links = implode(', ', $checkboxEntries) . $and . $last;
+            }
+
+            $acceptText = QUI::getLocale()->get(
+                'quiqqer/order',
+                'ordering.step.checkout.checkoutAcceptText',
+                [
+                    'links' => $links
+                ]
+            );
+
+            QUI::getEvents()->fireEvent(
+                'quiqqerOrderOrderProcessCheckoutOutput',
+                [$this, &$acceptText]
+            );
         }
-
-        $acceptText = QUI::getLocale()->get(
-            'quiqqer/order',
-            'ordering.step.checkout.checkoutAcceptText',
-            [
-                'links' => $links
-            ]
-        );
-
-        QUI::getEvents()->fireEvent(
-            'quiqqerOrderOrderProcessCheckoutOutput',
-            [$this, &$acceptText]
-        );
 
         try {
             $mandatoryLinksDisplay = 'single_checkbox';
@@ -404,6 +408,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine->assign([
             'checkboxes' => $checkboxes,
             'acceptText' => $acceptText,
+            'hasMandatoryLinks' => $hasMandatoryLinks,
             'mandatoryLinksDisplay' => $mandatoryLinksDisplay
         ]);
     }

@@ -83,6 +83,7 @@ Order=$Order
 
     {template_event name="quiqqer::order::orderProcessCheckoutArticleListAfter" User=$User Order=$Order}
 
+    {if $hasMandatoryLinks}
     {if $mandatoryLinksDisplay === 'multiple_checkboxes'}
     <div class="quiqqer-order-step-checkout-notice">
         {foreach $checkboxes as $checkbox}
@@ -99,6 +100,7 @@ Order=$Order
             {$acceptText}
         </label>
     </div>
+    {/if}
     {/if}
 
 </section>
