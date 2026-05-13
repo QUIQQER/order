@@ -81,17 +81,28 @@ Order=$Order
         {$Articles->render()}
     </div>
 
+    {template_event name="quiqqer::order::orderProcessCheckoutArticleListAfter" User=$User Order=$Order}
+
+    {if $hasMandatoryLinks}
+    {if $mandatoryLinksDisplay === 'multiple_checkboxes'}
+    <div class="quiqqer-order-step-checkout-notice">
+        {foreach $checkboxes as $checkbox}
+        <label>
+            <input type="checkbox" name="{$checkbox.name}" required/>
+            {$checkbox.text}
+        </label>
+        {/foreach}
+    </div>
+    {else}
     <div class="quiqqer-order-step-checkout-notice">
         <label>
             <input type="checkbox" name="termsAndConditions" required/>
-            {$text}
+            {$acceptText}
         </label>
     </div>
+    {/if}
+    {/if}
 
 </section>
 
-{template_event
-name="quiqqer::order::orderProcessCheckoutEnd"
-User=$User
-Order=$Order
-}
+{template_event name="quiqqer::order::orderProcessCheckoutEnd" User=$User Order=$Order}

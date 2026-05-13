@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/classes/Basket
- * @author www.pcsg.de (Henning Leutz)
  *
  * @event onLoad [self]
  * @event onRemoveBegin [self]

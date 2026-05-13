@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/orderProcess/Window
- * @author www.pcsg.de (Henning Leutz)
  *
  * Opens the order process in a qui window
  */

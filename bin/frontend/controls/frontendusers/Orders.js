@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/frontendusers/Orders
- * @author www.pcsg.de (Henning Leutz)
  */
 
 require.config({
@@ -63,9 +62,10 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
          */
         $onImport: function () {
             var self = this,
-                Elm  = this.getElm();
+                Elm  = this.getElm(),
+            SectionContainer = Elm.querySelector('[data-ref="section-container"]');
 
-            this.$List = Elm.getElement('.quiqqer-order-profile-orders-list');
+            this.$List = Elm.getElement('[data-ref="order-list"]');
 
             this.$OrderContainer = new Element('div', {
                 'class': 'quiqqer-order-profile-orders-order-container',
@@ -74,9 +74,16 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                     opacity : 0,
                     position: 'relative'
                 }
-            }).inject(this.getElm());
+            });
 
-            this.Loader.inject(Elm);
+            if (SectionContainer) {
+                this.$OrderContainer.inject(SectionContainer);
+                this.Loader.inject(SectionContainer);
+            } else {
+                this.$OrderContainer.inject(Elm);
+                this.Loader.inject(Elm);
+            }
+
             this.$setEvents();
 
             // pagination events
@@ -179,6 +186,11 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
                         onLoad: function () {
                             self.Loader.hide();
                             self.$hideList().then(function () {
+                                self.$OrderContainer.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "start"
+                                });
+
                                 return self.$showOrderContainer();
                             });
                         }
@@ -245,9 +257,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
          */
         $setEvents: function () {
             var self       = this;
-            var orderLinks = this.getElm().getElements(
-                '.quiqqer-order-profile-orders-order-header-orderId a'
-            );
+            var orderLinks = this.getElm().getElements('[data-ref="order-link"]');
 
             orderLinks.addEvent('click', function (event) {
                 var Target = event.target;
@@ -298,6 +308,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             );
 
             elements.push(self.$List);
+            elements.push(...this.getElm().querySelectorAll('[data-ref="order-text"]'))
 
             return new Promise(function (resolve) {
                 elements.setStyle('position', 'relative');
@@ -328,6 +339,7 @@ define('package/quiqqer/order/bin/frontend/controls/frontendusers/Orders', [
             );
 
             elements.push(self.$List);
+            elements.push(...this.getElm().querySelectorAll('[data-ref="order-text"]'))
 
             elements.setStyle('display', null);
 

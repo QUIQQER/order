@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/backend/classes/ProcessingStatus
- * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/backend/classes/ProcessingStatus', [
 

@@ -146,6 +146,13 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             return $this->getInvoice();
         }
 
+        // nochmal check über die db
+        $this->refresh();
+
+        if (Settings::getInstance()->forceCreateInvoice() === false && $this->isPosted()) {
+            return $this->getInvoice();
+        }
+
         if (!Settings::getInstance()->isInvoiceInstalled()) {
             throw new QUI\Exception(['quiqqer/order', 'exception.invoice.is.not.installed']);
         }
@@ -276,6 +283,15 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         );
 
         $TemporaryInvoice->save($PermissionUser);
+
+
+        // if one transaction, we can set the transaction to the temp invoice
+        $transactions = $this->getTransactions();
+
+        if (count($transactions) === 1) {
+            $TemporaryInvoice->linkTransaction($transactions[0]);
+        }
+
 
         // save payment data
         QUI::getDataBase()->update(

@@ -1,52 +1,65 @@
 <article class="quiqqer-order-profile-orders-order-articles-article"
          data-qui="package/quiqqer/order/bin/frontend/controls/frontendusers/Article"
 >
-    <div class="quiqqer-order-profile-orders-order-articles-image">
-        {if !empty($Image)}
-        {image image=$Image width="200" height=200}
-        {else}
-        {image image=$Project->getMedia()->getPlaceholderImage()}
-        {/if}
-    </div>
-
-    <div class="quiqqer-order-profile-orders-order-articles-information">
-        {if !empty($Product)}
-        <a href="{$Product->getUrl()}"
-           class="quiqqer-order-profile-orders-order-articles-title"
-           target="_blank"
-        >
-            {$Article->getTitle()}
-        </a>
-        {else}
-        <div class="quiqqer-order-profile-orders-order-articles-title">
-            {$Article->getTitle()}
+    {if $showImage}
+        <div class="quiqqer-order-profile-orders-order-articles-image">
+            {if !$noLink && !empty($Product) && $Product->getUrl()}
+            <a href="{$Product->getUrl()}"
+               class="quiqqer-order-profile-orders-order-articles-image__link"
+               target="_blank"
+            >
+                {/if}
+                {if !empty($Image)}
+                    {image image=$Image width="200" height=200}
+                {else}
+                    {image image=$Project->getMedia()->getPlaceholderImage()}
+                {/if}
+                {if !$noLink && !empty($Product) && $Product->getUrl()}
+            </a>
+            {/if}
         </div>
-        {/if}
-
-        <div class="quiqqer-order-profile-orders-order-articles-description">
-            {$Article->getDescription()}
-        </div>
-    </div>
-
-    <div class="quiqqer-order-profile-orders-order-articles-price">
-        {$Article->getPrice()->getDisplayPrice()}
-    </div>
-
-    {if !empty($Product) && $Product->isActive()}
-    <noscript>
-        <style>
-            .quiqqer-order-profile-orders-order-articles-rebuy {
-                display: none
-            }
-        </style>
-    </noscript>
-    <button class="quiqqer-order-profile-orders-order-articles-rebuy"
-            data-articleno="{$Article->getArticleNo()}"
-            disabled
-    >
-        {locale group="quiqqer/order" var="controls.UsedOrders.Article.buy_again"}
-    </button>
     {/if}
 
-    <div class="quiqqer-order-profile-orders-order-articles-buttons"></div>
+    <div class="quiqqer-order-profile-orders-order-articles-data">
+        <div class="quiqqer-order-profile-orders-order-articles-information">
+            {if !$noLink &&!empty($Product)}
+                <a href="{$Product->getUrl()}"
+                   class="quiqqer-order-profile-orders-order-articles-title"
+                   target="_blank"
+                >
+                    {$Article->getTitle()}
+                </a>
+            {else}
+                <div class="quiqqer-order-profile-orders-order-articles-title">
+                    {$Article->getTitle()}
+                </div>
+            {/if}
+
+            <div class="quiqqer-order-profile-orders-order-articles-description">
+                {$Article->getDescription()}
+            </div>
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-articles-price">
+            {$Article->getPrice()->getDisplayPrice()}
+        </div>
+
+        <div class="quiqqer-order-profile-orders-order-articles-buttons">
+            {if !empty($Product) && $Product->isActive()}
+                <noscript>
+                    <style>
+                        .quiqqer-order-profile-orders-order-articles-rebuy {
+                            display: none
+                        }
+                    </style>
+                </noscript>
+                <button class="quiqqer-order-profile-orders-order-articles-rebuy btn btn-primary"
+                        data-articleno="{$Article->getArticleNo()}"
+                        disabled
+                >
+                    {locale group="quiqqer/order" var="controls.UsedOrders.Article.buy_again"}
+                </button>
+            {/if}
+        </div>
+    </div>
 </article>

@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/backend/controls/panels/Orders
- * @author www.pcsg.de (Henning Leutz)
  */
 define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
@@ -965,24 +964,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 'package/quiqqer/payment-transactions/bin/backend/controls/IncomingPayments/AddPaymentWindow'
             ], (AddPaymentWindow) => {
                 new AddPaymentWindow({
-                    entityId: selectedData[0]['prefixed-id'],
+                    entityId: selectedData[0].uuid,
                     entityType: 'Order',
                     paymentId: selectedData[0].paymentId,
                     events: {
-                        onSubmit: (Win, data) => {
-                            Win.Loader.show();
-
-                            this.addPayment(
-                                hash,
-                                data.amount,
-                                data.payment_method,
-                                data.date
-                            ).then(function() {
-                                Win.close();
-                            }).catch(function() {
-                                Win.Loader.hide();
-                            });
-                        },
                         onSubmitExisting: (txId, Win) => {
                             this.linkTransaction(hash, txId).then(function() {
                                 Win.close();

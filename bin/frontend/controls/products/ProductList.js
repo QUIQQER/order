@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/products/ProductList
- * @author www.pcsg.de (Henning Leutz)
  *
  * List of Products
  *

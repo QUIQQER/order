@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/controls/OrderProcess
- * @author www.pcsg.de (Henning Leutz)
  *
  * @event QUI Event: onQuiqqerOrderProcessLoad  [this]
  * @event QUI Event: onQuiqqerOrderProcessOpenStep  [this, step]
@@ -732,7 +731,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
-         * Check / valdate the step
+         * Check / validate the step
          * html5 validation
          *
          * @param {boolean} [stepCheck] - optional
@@ -1684,7 +1683,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     const products = basket.products;
 
                     // if there are no products yet, merge without query
-                    if (!products.length) {
+                    if (!products || !products.length) {
                         GlobalBasket.setAttribute('mergeLocalStorage', 1);
                         GlobalBasket.load().then(function() {
                             window.location.reload();

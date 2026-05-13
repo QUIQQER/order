@@ -1,15 +1,18 @@
 <?php
 
+use QUI\System\Log;
+use Symfony\Component\HttpFoundation\Response;
+
 define('QUIQQER_SYSTEM', true);
 
-require_once dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/header.php';
+require_once dirname(__FILE__, 5) . '/header.php';
 
 $Response = QUI::getGlobalResponse();
 $User = QUI::getUserBySession();
 
 if (!isset($_REQUEST['order'])) {
     $Response->setStatusCode(
-        \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        Response::HTTP_BAD_REQUEST
     );
 
     echo $Response->getContent();
@@ -19,7 +22,7 @@ if (!isset($_REQUEST['order'])) {
 
 if (QUI::getUsers()->isAuth($User) === false) {
     $Response->setStatusCode(
-        \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN
+        Response::HTTP_FORBIDDEN
     );
 
     echo $Response->getContent();
@@ -31,9 +34,20 @@ try {
     $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($_REQUEST['order']);
     $Invoice = $Order->getInvoice();
     $Customer = $Invoice->getCustomer();
-} catch (\Exception $Exception) {
+} catch (Exception $Exception) {
     $Response->setStatusCode(
-        \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        Response::HTTP_BAD_REQUEST
+    );
+
+    echo $Response->getContent();
+    $Response->send();
+    exit;
+}
+
+// only real invoices
+if (!($Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice)) {
+    $Response->setStatusCode(
+        Response::HTTP_BAD_REQUEST
     );
 
     echo $Response->getContent();
@@ -44,7 +58,7 @@ try {
 // is the user allowed to open the invoice
 if ($User->getUUID() !== $Customer->getUUID()) {
     $Response->setStatusCode(
-        \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN
+        Response::HTTP_FORBIDDEN
     );
 
     echo $Response->getContent();
@@ -56,11 +70,11 @@ if ($User->getUUID() !== $Customer->getUUID()) {
 try {
     $HtmlPdfDocument = $Invoice->getView()->toPDF();
     $HtmlPdfDocument->download();
-} catch (\Exception $Exception) {
-    \QUI\System\Log::writeException($Exception);
+} catch (Exception $Exception) {
+    Log::writeException($Exception);
 
     $Response->setStatusCode(
-        \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        Response::HTTP_BAD_REQUEST
     );
 
     echo $Response->getContent();

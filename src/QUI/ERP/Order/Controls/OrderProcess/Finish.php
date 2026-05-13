@@ -40,11 +40,16 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order = $this->getOrder();
         $Handler = QUI\ERP\Order\Handler::getInstance();
-        $Basket = $Handler->getBasketFromUser(QUI::getUserBySession());
 
-        $Basket->clear();
-        $Basket->setHash('');
-        $Basket->save();
+        try {
+            $Basket = $Handler->getBasketFromUser(QUI::getUserBySession());
+
+            $Basket->clear();
+            $Basket->setHash('');
+            $Basket->save();
+        } catch (QUI\Exception) {
+            // no basket? all is fine
+        }
 
         $Order->recalculate();
 
@@ -67,7 +72,7 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * @param null|QUI\Locale $Locale
      * @return string
      */
-    public function getName($Locale = null): string
+    public function getName(QUI\Locale | null $Locale = null): string
     {
         return 'Finish';
     }

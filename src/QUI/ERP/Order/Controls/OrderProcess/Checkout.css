@@ -43,6 +43,12 @@
     display: block;
 }
 
+.quiqqer-order-step-checkout-notice {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+}
+
 .quiqqer-order-step-checkout-notice a {
     display: contents;
 }

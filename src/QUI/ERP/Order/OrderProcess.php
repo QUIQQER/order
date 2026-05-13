@@ -108,6 +108,11 @@ class OrderProcess extends QUI\Control
         $this->addCSSFile(dirname(__FILE__) . '/Controls/OrderProcess.css');
         $this->Events = new QUI\Events\Event();
 
+        if (isset($attributes['events'])) {
+            $this->Events->addEvents($attributes['events']);
+            unset($attributes['events']);
+        }
+
         $User = QUI::getUserBySession();
         $isNobody = QUI::getUsers()->isNobodyUser($User);
 
@@ -125,10 +130,10 @@ class OrderProcess extends QUI\Control
         $userUUID = $User->getUUID();
 
         if ($customerUUID !== $userUUID && !QUI::getUsers()->isSystemUser($User)) {
-            throw new QUI\Permissions\Exception([
-                'quiqqer/order',
-                'exception.no.permission.for.this.order'
-            ]);
+            // order is not from this user
+            // so we use a new order in process
+            $Order = QUI\ERP\Order\Factory::getInstance()->createOrderInProcess();
+            $this->Order = $Order;
         }
 
         if ($Order->isSuccessful()) {
@@ -137,7 +142,6 @@ class OrderProcess extends QUI\Control
 
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getUUID());
-
             return;
         }
 
@@ -153,15 +157,15 @@ class OrderProcess extends QUI\Control
         $this->setAttribute('orderHash', $Order->getUUID());
 
         // set order currency
-        $UserCurrency = QUI\ERP\Defaults::getUserCurrency();
+        $UserCurrency = QUI\ERP\Currency\Handler::getRuntimeCurrency();
 
-        if ($UserCurrency && $UserCurrency->getCode() !== $Order->getCurrency()->getCode()) {
+        if ($UserCurrency->getCode() !== $Order->getCurrency()->getCode()) {
             $Order->setCurrency($UserCurrency);
             $Order->update();
         }
 
         // order is successful, so no other step must be shown
-        if ($Order && $Order->isSuccessful()) {
+        if ($Order->isSuccessful()) {
             $LastStep = end($steps);
 
             $this->setAttribute('step', $LastStep->getName());
@@ -382,7 +386,7 @@ class OrderProcess extends QUI\Control
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        if ($this->Basket && method_exists($this->Basket, 'successful')) {
+        if ($this->Basket) {
             $this->Basket->successful();
             $this->Basket->save();
         } else {
@@ -844,7 +848,8 @@ class OrderProcess extends QUI\Control
         }
 
         if (
-            $Finish->getName() === $Current->getName()
+            $Finish
+            && $Finish->getName() === $Current->getName()
             && $this->getOrder()->getDataEntry('orderedWithCosts')
         ) {
             return $render();
@@ -1426,6 +1431,7 @@ class OrderProcess extends QUI\Control
         } catch (QUI\Exception) {
         }
 
+        // @todo process step sich merken, sonst 1000 neue objekte
         return new Controls\OrderProcess\Processing([
             'Order' => $this->getOrder(),
             'priority' => 40
@@ -1449,6 +1455,7 @@ class OrderProcess extends QUI\Control
         $Basket = $this->Basket;
 
         QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
+        $this->Events->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
 
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
             $Steps->append(
@@ -1460,6 +1467,7 @@ class OrderProcess extends QUI\Control
             );
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+            $this->Events->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
             return $Steps;
         }
@@ -1477,6 +1485,7 @@ class OrderProcess extends QUI\Control
             $Steps->append($Finish);
 
             QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+            $this->Events->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
             return $Steps;
         }
@@ -1533,6 +1542,7 @@ class OrderProcess extends QUI\Control
 
 
         QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
+        $this->Events->fireEvent('onQuiqqerOrderProcessStepsEnd', [$this, $Order, $Steps]);
 
         return $Steps;
     }

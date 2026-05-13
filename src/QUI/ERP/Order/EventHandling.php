@@ -151,7 +151,7 @@ class EventHandling
             $steps[] = $Processing->getName();
             $steps = array_flip($steps);
 
-            if (!isset($parts[1]) || !isset($steps[$parts[1]]) || !isset($parts[2])) {
+            if (!isset($steps[$parts[1]])) {
                 $Redirect = new RedirectResponse($CheckoutSite->getUrlRewritten());
                 $Redirect->setStatusCode(Response::HTTP_BAD_REQUEST);
 

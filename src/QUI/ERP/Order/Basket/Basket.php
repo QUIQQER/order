@@ -76,6 +76,7 @@ class Basket
         }
 
         $this->List->setUser($User);
+        $this->List->setCurrency(QUI\ERP\Currency\Handler::getRuntimeCurrency());
         $this->FrontendMessages = new QUI\ERP\Comments();
 
         if (is_bool($basketId)) {
@@ -101,8 +102,6 @@ class Basket
         if (!empty($data['products'])) {
             $this->import(json_decode($data['products'], true));
         }
-
-        $this->List->setCurrency(QUI\ERP\Defaults::getUserCurrency());
     }
 
     /**
@@ -461,11 +460,17 @@ class Basket
 
         // update the data
         $products = $Products->getProducts();
+        $Currency = $Products->getCurrency();
+
+        if (!$Currency) {
+            $Currency = QUI\ERP\Currency\Handler::getRuntimeCurrency();
+        }
 
         $InvoiceAddress = $Order->getInvoiceAddress();
         $DeliveryAddress = $Order->getDeliveryAddress();
 
         $Order->clear();
+        $Order->setCurrency($Currency);
 
         foreach ($products as $Product) {
             if (!method_exists($Product, 'toArticle')) {
@@ -478,6 +483,7 @@ class Basket
                 QUI\System\Log::writeDebugException($Exception);
             }
         }
+
 
         $Order->setInvoiceAddress($InvoiceAddress);
         $Order->setDeliveryAddress($DeliveryAddress);

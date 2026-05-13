@@ -474,8 +474,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * @param QUI\Interfaces\Users\User|null $PermissionUser
      * @return ErpEntityInterface|null
      */
-    public function reversal(string $reason = '', null | QUI\Interfaces\Users\User $PermissionUser = null): ?ErpEntityInterface
-    {
+    public function reversal(
+        string $reason = '',
+        null | QUI\Interfaces\Users\User $PermissionUser = null
+    ): ?ErpEntityInterface {
         $this->delete($PermissionUser);
         return null;
     }
@@ -1107,9 +1109,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             return;
         }
 
-        if (is_array($address)) {
-            $this->addressInvoice = $this->parseAddressData($address);
-        }
+        $this->addressInvoice = $this->parseAddressData($address);
     }
 
     /**
@@ -1167,7 +1167,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Set a customer to the order
      *
      * @param array|User|QUI\Interfaces\Users\User $User
-     * @throws Exception
      * @throws QUI\Exception
      * @throws ExceptionStack
      */
@@ -1264,6 +1263,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
             }
 
+            $this->Articles?->setUser($this->Customer);
             return;
         }
 
@@ -1277,23 +1277,24 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
             }
 
+            $this->Articles?->setUser($this->Customer);
             return;
         }
 
-        if ($User instanceof QUI\Interfaces\Users\User) {
-            $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
-            $this->customerId = $this->Customer->getUUID();
+        $this->Customer = QUI\ERP\User::convertUserToErpUser($User);
+        $this->customerId = $this->Customer->getUUID();
 
-            if (empty($this->addressInvoice)) {
-                $this->setInvoiceAddress($this->Customer->getStandardAddress());
-            }
-
-            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
-
-            if ($this->customerId !== $oldCustomerId) {
-                QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
-            }
+        if (empty($this->addressInvoice)) {
+            $this->setInvoiceAddress($this->Customer->getStandardAddress());
         }
+
+        QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerSet', [$this]);
+
+        if ($this->customerId !== $oldCustomerId) {
+            QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
+        }
+
+        $this->Articles?->setUser($this->Customer);
     }
 
     /**
@@ -1303,6 +1304,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     {
         $this->Customer = null;
         $this->customerId = 0;
+        $this->Articles->setUser(null);
 
         try {
             QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
@@ -1690,6 +1692,18 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 ]
             )
         );
+
+        if (
+            $this->hasInvoice()
+            && class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+            && class_exists('QUI\ERP\Accounting\Invoice\InvoiceTemporary')
+        ) {
+            $invoice = $this->getInvoice();
+
+            if (method_exists($invoice, 'linkTransaction')) {
+                $invoice->linkTransaction($Transaction);
+            }
+        }
 
         QUI::getEvents()->fireEvent(
             'addTransaction',

@@ -1,6 +1,5 @@
 /**
  * @module package/quiqqer/order/bin/frontend/classes/Product
- * @author www.pcsg.de (Henning Leutz)
  *
  * @event onChange
  * @event onRefresh

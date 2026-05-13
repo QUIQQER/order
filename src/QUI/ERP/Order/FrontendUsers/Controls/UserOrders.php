@@ -79,11 +79,23 @@ class UserOrders extends Control implements ControlInterface
 
         foreach ($result as $Order) {
             $View = $Order->getView();
+            $Invoice = null;
 
             $View->setAttribute(
                 'downloadLink',
                 URL_OPT_DIR . 'quiqqer/order/bin/frontend/order.pdf.php?order=' . $View->getHash()
             );
+
+            if ($View->hasInvoice()) {
+                $Invoice = $View->getInvoice();
+            }
+
+            if (
+                !class_exists('QUI\ERP\Accounting\Invoice\Invoice')
+                || !($Invoice instanceof QUI\ERP\Accounting\Invoice\Invoice)
+            ) {
+                $View->setAttribute('downloadLink', false);
+            }
 
             $orders[] = $View;
         }
@@ -216,6 +228,9 @@ class UserOrders extends Control implements ControlInterface
      */
     public function renderArticle(QUI\ERP\Accounting\Article $Article): string
     {
+        $Settings = QUI\ERP\Order\Settings::getInstance();
+        $showImage = $Settings->get('userProfile', 'showArticleImage');
+        $noLink = $Settings->get('userProfile', 'disableProductLinks');
         $Engine = QUI::getTemplateManager()->getEngine();
         $Product = null;
         $Image = null;
@@ -244,6 +259,8 @@ class UserOrders extends Control implements ControlInterface
             'Article' => $Article,
             'Product' => $Product,
             'Image' => $Image,
+            'showImage' => $showImage,
+            'noLink' => $noLink,
             'Project' => QUI::getProjectManager()->get()
         ]);
 
