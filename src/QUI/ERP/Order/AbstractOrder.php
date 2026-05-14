@@ -1597,6 +1597,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         );
 
         $this->setPaymentStatus($calculation['paidStatus'], true);
+
+        QUI::getEvents()->fireEvent('quiqqerOrderLinkTransaction', [
+            $this,
+            $Transaction
+        ]);
     }
 
     /**
