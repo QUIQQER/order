@@ -444,7 +444,14 @@ class Handler extends Singleton
             $this->getLocaleVarsForOrderMail($Order)
         );
 
-        $Mailer = QUI::getMailManager()->getMailer();
+        $mailerAttributes = [];
+        $Project = $this->getProjectForCustomerMail($Order);
+
+        if ($Project) {
+            $mailerAttributes['Project'] = $Project;
+        }
+
+        $Mailer = QUI::getMailManager()->getMailer($mailerAttributes);
 
         $Mailer->setSubject($subject);
         $Mailer->setBody($body);
@@ -562,6 +569,40 @@ class Handler extends Singleton
             'firstname' => $Address->getAttribute('firstname'),
             'lastname' => $Address->getAttribute('lastname')
         ];
+    }
+
+    /**
+     * Resolve the best matching project for customer-facing order mails.
+     */
+    protected function getProjectForCustomerMail(AbstractOrder $Order): null | QUI\Projects\Project
+    {
+        $projectName = $Order->getAttribute('project_name') ?: false;
+        $customerLang = false;
+
+        try {
+            $Customer = $Order->getCustomer();
+            $customerLang = $Customer->getLang() ?: false;
+        } catch (\Exception) {
+        }
+
+        if ($projectName) {
+            try {
+                $Project = QUI::getRewrite()->getProject();
+
+                if (!$Project || $Project->getName() !== $projectName) {
+                    $Project = QUI::getProjectManager()->getProject($projectName);
+                }
+
+                if ($customerLang && in_array($customerLang, $Project->getLanguages(), true)) {
+                    return QUI::getProjectManager()->getProject($projectName, $customerLang);
+                }
+
+                return $Project;
+            } catch (\Exception) {
+            }
+        }
+
+        return QUI::getRewrite()->getProject() ?: null;
     }
 
     //endregion
