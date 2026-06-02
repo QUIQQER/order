@@ -12,6 +12,7 @@ use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Basket\Exception;
 use QUI\ERP\Order\Basket\ExceptionBasketNotFound;
 use QUI\ExceptionStack;
+use QUI\Interfaces\Users\User;
 use QUI\Utils\Singleton;
 
 use function array_merge;
@@ -444,7 +445,14 @@ class Handler extends Singleton
             $this->getLocaleVarsForOrderMail($Order)
         );
 
-        $Mailer = QUI::getMailManager()->getMailer();
+        $mailerAttributes = [];
+        $Project = $this->getProjectForCustomerMail($Order);
+
+        if ($Project) {
+            $mailerAttributes['Project'] = $Project;
+        }
+
+        $Mailer = QUI::getMailManager()->getMailer($mailerAttributes);
 
         $Mailer->setSubject($subject);
         $Mailer->setBody($body);
@@ -564,6 +572,40 @@ class Handler extends Singleton
         ];
     }
 
+    /**
+     * Resolve the best matching project for customer-facing order mails.
+     */
+    protected function getProjectForCustomerMail(AbstractOrder $Order): null | QUI\Projects\Project
+    {
+        $projectName = $Order->getAttribute('project_name') ?: false;
+        $customerLang = false;
+
+        try {
+            $Customer = $Order->getCustomer();
+            $customerLang = $Customer->getLang() ?: false;
+        } catch (\Exception) {
+        }
+
+        if ($projectName) {
+            try {
+                $Project = QUI::getRewrite()->getProject();
+
+                if (!$Project || $Project->getName() !== $projectName) {
+                    $Project = QUI::getProjectManager()->getProject($projectName);
+                }
+
+                if ($customerLang && in_array($customerLang, $Project->getLanguages(), true)) {
+                    return QUI::getProjectManager()->getProject($projectName, $customerLang);
+                }
+
+                return $Project;
+            } catch (\Exception) {
+            }
+        }
+
+        return QUI::getRewrite()->getProject() ?: null;
+    }
+
     //endregion
 
     //region Order Process
@@ -637,6 +679,7 @@ class Handler extends Singleton
         $result = [];
 
         $list = QUI::getDataBase()->fetch([
+            'select' => 'hash',
             'from' => $this->tableOrderProcess(),
             'where' => [
                 'customerId' => $User->getUUID()
@@ -692,6 +735,7 @@ class Handler extends Singleton
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User): OrderInProcess
     {
         $result = QUI::getDataBase()->fetch([
+            'select' => 'hash',
             'from' => $this->tableOrderProcess(),
             'where' => [
                 'customerId' => $User->getUUID(),
@@ -771,17 +815,16 @@ class Handler extends Singleton
      * Can be a basket id or a basket hash
      *
      * @param integer|string $str - hash or basket id
-     * @param null $User - optional, user of the basket
+     * @param User|null $User - optional, user of the basket
      *
      * @return Basket
      *
-     * @throws Exception
      * @throws ExceptionBasketNotFound
      * @throws ExceptionStack
      * @throws QUI\Database\Exception
      * @throws QUI\Exception
      */
-    public function getBasket(int | string $str, $User = null): Basket
+    public function getBasket(int | string $str, null | QUI\Interfaces\Users\User $User = null): Basket
     {
         if (is_numeric($str)) {
             return self::getBasketById($str, $User);
@@ -792,17 +835,19 @@ class Handler extends Singleton
 
     /**
      * @param int|string $basketId
-     * @param null $User - optional, user of the basket
+     * @param User|null $User - optional, user of the basket
      *
      * @return Basket
      *
+     * @throws ExceptionBasketNotFound
      * @throws ExceptionStack
      * @throws QUI\Database\Exception
      * @throws QUI\Exception
      */
-    public function getBasketById(int | string $basketId, $User = null): Basket
+    public function getBasketById(int | string $basketId, null | QUI\Interfaces\Users\User $User = null): Basket
     {
         $data = QUI::getDataBase()->fetch([
+            'select' => ['id', 'uid'],
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
                 'id' => $basketId
@@ -831,19 +876,19 @@ class Handler extends Singleton
 
     /**
      * @param string $hash
-     * @param null $User - optional, user of the basket
+     * @param User|null $User - optional, user of the basket
      *
      * @return Basket
      *
-     * @throws Exception
      * @throws ExceptionBasketNotFound
      * @throws ExceptionStack
      * @throws QUI\Database\Exception
      * @throws QUI\Exception
      */
-    public function getBasketByHash(string $hash, $User = null): Basket
+    public function getBasketByHash(string $hash, null | QUI\Interfaces\Users\User $User = null): Basket
     {
         $data = QUI::getDataBase()->fetch([
+            'select' => ['id', 'uid'],
             'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
             'where' => [
                 'hash' => $hash
