@@ -37,6 +37,7 @@ class Mail
     public static function sendOrderConfirmationMail(Order $Order): void
     {
         $Customer = $Order->getCustomer();
+        $CustomerLocale = $Customer->getLocale();
         $email = $Customer->getAttribute('email');
 
         if (empty($email)) {
@@ -67,20 +68,7 @@ class Mail
         }
 
         // mail
-        $mailer = QUI::getMailManager();
-        $reflection = new \ReflectionMethod($mailer, 'getMailer');
-        $paramCount = $reflection->getNumberOfParameters();
-
-        if ($paramCount > 0) {
-            // Methode akzeptiert Parameter (neue Version)
-            $Mailer = $mailer->getMailer([
-                'Project' => QUI::getRewrite()->getProject()
-            ]);
-        } else {
-            // Methode akzeptiert keine Parameter (alte Version)
-            $Mailer = $mailer->getMailer();
-        }
-
+        $Mailer = self::getMailerForCustomerMail($Order);
 
         $Mailer->addRecipient($email);
 
@@ -89,7 +77,7 @@ class Mail
         }
 
         $Mailer->setSubject(
-            QUI::getLocale()->get(
+            $CustomerLocale->get(
                 'quiqqer/order',
                 'order.confirmation.subject',
                 self::getOrderLocaleVar($Order, $Customer)
@@ -145,7 +133,7 @@ class Mail
             'Articles' => $Articles,
             'Address' => $Address,
 
-            'message' => QUI::getLocale()->get(
+            'message' => $CustomerLocale->get(
                 'quiqqer/order',
                 'order.confirmation.body',
                 self::getOrderLocaleVar($Order, $Customer)
@@ -299,6 +287,7 @@ class Mail
     public static function sendOrderShippingConfirmation(AbstractOrder $Order): void
     {
         $Customer = $Order->getCustomer();
+        $CustomerLocale = $Customer->getLocale();
         $Address = $Customer->getAddress();
         $email = $Customer->getAttribute('email');
         $Country = $Customer->getCountry();
@@ -356,7 +345,7 @@ class Mail
             && isset($shippingTracking['number'])
             && class_exists('QUI\ERP\Shipping\Tracking\Tracking')
         ) {
-            $localeVar['trackingInfo'] = QUI::getLocale()->get(
+            $localeVar['trackingInfo'] = $CustomerLocale->get(
                 'quiqqer/order',
                 'shipping.order.mail.body.shippingInformation',
                 [
@@ -379,11 +368,11 @@ class Mail
 
 
         // mail
-        $Mailer = QUI::getMailManager()->getMailer();
+        $Mailer = self::getMailerForCustomerMail($Order);
         $Mailer->addRecipient($email);
 
         $Mailer->setSubject(
-            QUI::getLocale()->get(
+            $CustomerLocale->get(
                 'quiqqer/order',
                 'shipping.order.mail.subject',
                 $localeVar
@@ -391,7 +380,7 @@ class Mail
         );
 
         $Mailer->setBody(
-            QUI::getLocale()->get(
+            $CustomerLocale->get(
                 'quiqqer/order',
                 'shipping.order.mail.body',
                 $localeVar
@@ -582,7 +571,7 @@ class Mail
             'orderId' => $Order->getUUID(),
             'orderPrefixedId' => $Order->getPrefixedNumber(),
             'hash' => $Order->getAttribute('hash'),
-            'date' => self::dateFormat($Order->getAttribute('date')),
+            'date' => self::dateFormat($Order->getAttribute('date'), $Customer->getLocale()),
             'systemCompany' => self::getCompanyName(),
             'user' => $user,
             'name' => $user,
@@ -597,14 +586,12 @@ class Mail
     }
 
     /**
-     * @param $date
-     * @return false|string
+     * Format dates for order mails using the target locale with SHORT date and no time.
      */
-    public static function dateFormat($date): bool | string
+    public static function dateFormat($date, QUI\Locale $Locale): bool | string
     {
-        // date
-        $localeCode = QUI::getLocale()->getLocalesByLang(
-            QUI::getLocale()->getCurrent()
+        $localeCode = $Locale->getLocalesByLang(
+            $Locale->getCurrent()
         );
 
         $Formatter = new IntlDateFormatter(
@@ -635,6 +622,57 @@ class Mail
         }
 
         return $Customer->getName();
+    }
+
+    /**
+     * Create a mailer for customer-facing order mails with the best matching project context.
+     *
+     * @throws QUI\Exception
+     */
+    protected static function getMailerForCustomerMail(AbstractOrder $Order): QUI\Mail\Mailer
+    {
+        $mailerAttributes = [];
+        $Project = self::getProjectForCustomerMail($Order);
+
+        if ($Project) {
+            $mailerAttributes['Project'] = $Project;
+        }
+
+        return QUI::getMailManager()->getMailer($mailerAttributes);
+    }
+
+    /**
+     * Resolve the best matching project for customer-facing order mails.
+     */
+    protected static function getProjectForCustomerMail(AbstractOrder $Order): null | QUI\Projects\Project
+    {
+        $projectName = $Order->getAttribute('project_name') ?: false;
+        $customerLang = false;
+
+        try {
+            $Customer = $Order->getCustomer();
+            $customerLang = $Customer->getLang() ?: false;
+        } catch (\Exception) {
+        }
+
+        if ($projectName) {
+            try {
+                $Project = QUI::getRewrite()->getProject();
+
+                if (!$Project || $Project->getName() !== $projectName) {
+                    $Project = QUI::getProjectManager()->getProject($projectName);
+                }
+
+                if ($customerLang && in_array($customerLang, $Project->getLanguages(), true)) {
+                    return QUI::getProjectManager()->getProject($projectName, $customerLang);
+                }
+
+                return $Project;
+            } catch (\Exception) {
+            }
+        }
+
+        return QUI::getRewrite()->getProject() ?: null;
     }
 
     /**

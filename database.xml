@@ -56,6 +56,8 @@
             <auto_increment>id</auto_increment>
             <index>invoice_id</index>
             <index>customerId</index>
+            <index>customerId,c_date</index>
+            <index>global_process_id</index>
             <index>hash</index>
         </table>
 
@@ -107,6 +109,8 @@
             <auto_increment>id</auto_increment>
             <index>invoice_id</index>
             <index>customerId</index>
+            <index>customerId,successful,c_date</index>
+            <index>c_date</index>
             <index>hash</index>
         </table>
 
@@ -120,6 +124,7 @@
 
             <primary>id</primary>
             <auto_increment>id</auto_increment>
+            <index>uid</index>
             <index>hash</index>
         </table>
     </global>

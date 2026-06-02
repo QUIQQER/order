@@ -9,6 +9,7 @@ namespace QUI\ERP\Order\ProcessingStatus;
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
 
+use function in_array;
 use function is_array;
 
 /**
@@ -293,8 +294,15 @@ class Handler extends QUI\Utils\Singleton
             $message = $Status->getStatusChangeNotificationText($Order);
         }
 
-        $Mailer = new QUI\Mail\Mailer();
         $Locale = $Order->getCustomer()->getLocale();
+        $mailerAttributes = [];
+        $Project = $this->getProjectForCustomerMail($Order);
+
+        if ($Project) {
+            $mailerAttributes['Project'] = $Project;
+        }
+
+        $Mailer = new QUI\Mail\Mailer($mailerAttributes);
 
         $Mailer->setSubject(
             $Locale->get('quiqqer/order', 'processing.status.notification.subject', [
@@ -311,5 +319,39 @@ class Handler extends QUI\Utils\Singleton
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
+    }
+
+    /**
+     * Resolve the best matching project for customer-facing order mails.
+     */
+    protected function getProjectForCustomerMail(AbstractOrder $Order): null | QUI\Projects\Project
+    {
+        $projectName = $Order->getAttribute('project_name') ?: false;
+        $customerLang = false;
+
+        try {
+            $Customer = $Order->getCustomer();
+            $customerLang = $Customer->getLang() ?: false;
+        } catch (\Exception) {
+        }
+
+        if ($projectName) {
+            try {
+                $Project = QUI::getRewrite()->getProject();
+
+                if (!$Project || $Project->getName() !== $projectName) {
+                    $Project = QUI::getProjectManager()->getProject($projectName);
+                }
+
+                if ($customerLang && in_array($customerLang, $Project->getLanguages(), true)) {
+                    return QUI::getProjectManager()->getProject($projectName, $customerLang);
+                }
+
+                return $Project;
+            } catch (\Exception) {
+            }
+        }
+
+        return QUI::getRewrite()->getProject() ?: null;
     }
 }
