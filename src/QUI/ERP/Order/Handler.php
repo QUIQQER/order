@@ -735,6 +735,7 @@ class Handler extends Singleton
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User): OrderInProcess
     {
         $result = QUI::getDataBase()->fetch([
+            'select' => 'hash',
             'from' => $this->tableOrderProcess(),
             'where' => [
                 'customerId' => $User->getUUID(),
