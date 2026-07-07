@@ -121,7 +121,7 @@
         </locale>
         <locale name="exception.missing.payment">
             <de><![CDATA[Bitte wählen Sie eine Zahlungsart aus, um mit der Bestellung fortzufahren.]]></de>
-            <en><![CDATA[Please select a payment method to proceed the order.]]></en>
+            <en><![CDATA[Please select a payment type to proceed the order.]]></en>
         </locale>
         <locale name="exception.basket.has.no.articles">
             <de><![CDATA[Ihr Warenkorb enthält leider keine Artikel.]]></de>
@@ -152,7 +152,7 @@
             Bitte fügen Sie eine Zahlungsart zur Bestellung hinzu, um die Rechnungserstellung abzuschließen.
             ]]></de>
             <en><![CDATA[
-            Please add a payment method to the order to complete the billing process.
+            Please add a payment type to the order to complete the billing process.
             ]]></en>
         </locale>
         <locale name="exception.missing.address.for.invoice">
@@ -301,7 +301,7 @@
         </locale>
         <locale name="ordering.btn.changePayment">
             <de><![CDATA[Zahlungsart ändern]]></de>
-            <en><![CDATA[Change payment method]]></en>
+            <en><![CDATA[Change payment type]]></en>
         </locale>
         <locale name="ordering.title">
             <de><![CDATA[Bestellung]]></de>
@@ -495,11 +495,11 @@
 
         <locale name="permission.quiqqer.order.addPayment">
             <de><![CDATA[Darf Zahlungen hinzufügen]]></de>
-            <en><![CDATA[]]></en>
+            <en><![CDATA[May add payments]]></en>
         </locale>
         <locale name="permission.quiqqer.order.update">
             <de><![CDATA[Darf Bestellungen editieren]]></de>
-            <en><![CDATA[May add payment methods]]></en>
+            <en><![CDATA[May edit orders]]></en>
         </locale>
         <locale name="permission.quiqqer.order.delete">
             <de><![CDATA[Darf Bestellungen löschen]]></de>
@@ -666,15 +666,15 @@
 
         <locale name="ordering.processing.change.payment.title">
             <de><![CDATA[Zahlungsart ändern]]></de>
-            <en><![CDATA[Change payment]]></en>
+            <en><![CDATA[Change payment type]]></en>
         </locale>
         <locale name="ordering.processing.change.payment.message" html="true">
             <de><![CDATA[Falls Ihre Bezahlung nicht geklappt hat können Sie eine alternative Zahlungsart wählen.]]></de>
-            <en><![CDATA[If your payment did not work you can choose an alternative method of payment.]]></en>
+            <en><![CDATA[If your payment did not work you can choose an alternative payment type.]]></en>
         </locale>
         <locale name="ordering.processing.change.payment.button">
             <de><![CDATA[Zahlungsart ändern und übernehmen]]></de>
-            <en><![CDATA[Change and accept the payment method]]></en>
+            <en><![CDATA[Change and accept the payment type]]></en>
         </locale>
 
         <locale name="ordering.step.title.CustomerData.customerNo">
@@ -953,7 +953,7 @@
         </locale>
         <locale name="order.settings.paymentsChangeable.title">
             <de><![CDATA[Zahlungsart änderbar]]></de>
-            <en><![CDATA[Payment is changeable]]></en>
+            <en><![CDATA[Payment type is changeable]]></en>
         </locale>
         <locale name="order.settings.autoInvoice">
             <de><![CDATA[Rechnung automatisch erstellen]]></de>
@@ -973,7 +973,7 @@
         </locale>
         <locale name="order.settings.autoInvoice.byPayment">
             <de><![CDATA[Bestimmung durch Zahlungsart]]></de>
-            <en><![CDATA[Determination by payment method]]></en>
+            <en><![CDATA[Determination by payment type]]></en>
         </locale>
         <locale name="order.settings.processingStatus.title">
             <de><![CDATA[Bestellstatus]]></de>
@@ -1846,7 +1846,7 @@
         </locale>
         <locale name="grid.paymentMethod">
             <de><![CDATA[Zahlungsart]]></de>
-            <en><![CDATA[Payment method]]></en>
+            <en><![CDATA[Payment type]]></en>
         </locale>
         <locale name="grid.paymentStatus">
             <de><![CDATA[Zahlungsstatus]]></de>
@@ -1940,7 +1940,7 @@
             <en><![CDATA[Payment informations]]></en>
         </locale>
         <locale name="order.payment.panel.payment">
-            <de><![CDATA[Zahlugsart]]></de>
+            <de><![CDATA[Zahlungsart]]></de>
             <en><![CDATA[Payment method]]></en>
         </locale>
 
@@ -2211,7 +2211,7 @@
         </locale>
         <locale name="dialog.add.payment.paymentMethod">
             <de><![CDATA[Zahlungsart]]></de>
-            <en><![CDATA[Payment method]]></en>
+            <en><![CDATA[Payment type]]></en>
         </locale>
         <locale name="dialog.add.payment.date">
             <de><![CDATA[Datum]]></de>
