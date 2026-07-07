@@ -892,7 +892,7 @@
         </locale>
 
         <locale name="order.settings.userProfile.title">
-            <de><![CDATA[Benutezrprofil]]></de>
+            <de><![CDATA[Benutzerprofil]]></de>
             <en><![CDATA[User profile]]></en>
         </locale>
         <locale name="order.settings.userProfile.showArticleImage">
@@ -906,7 +906,7 @@
                 <![CDATA[When enabled, product images are displayed in the user profile's order history and open orders section.]]></en>
         </locale>
         <locale name="order.settings.userProfile.disableProductLinks">
-            <de><![CDATA[Keine Prodeuktlinks]]></de>
+            <de><![CDATA[Keine Produktlinks]]></de>
             <en><![CDATA[Disable product links]]></en>
         </locale>
         <locale name="order.settings.userProfile.disableProductLinks.desc">
