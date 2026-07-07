@@ -138,6 +138,7 @@ class UserOrders extends Control implements ControlInterface
 
         $paidStatus = $Order->getAttribute('paid_status');
         $paidDate = $Order->getAttribute('paid_date');
+        $showContinuePayment = (int)$paidStatus !== QUI\ERP\Constants::PAYMENT_STATUS_PAID;
 
         $Articles->calc();
 
@@ -145,6 +146,10 @@ class UserOrders extends Control implements ControlInterface
             $Invoice = $Order->getInvoice();
             $paidStatus = $Invoice->getAttribute('paid_status');
             $paidDate = $Invoice->getAttribute('paid_date');
+
+            if ((int)$paidStatus === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
+                $showContinuePayment = false;
+            }
         }
 
         switch ((int)$paidStatus) {
@@ -207,6 +212,7 @@ class UserOrders extends Control implements ControlInterface
             'articles' => $Articles->getArticles(),
             'order' => $Articles->toArray(),
             'paymentStatus' => $paymentStatus,
+            'showContinuePayment' => $showContinuePayment,
             'orderStatusId' => $orderStatusId,
             'orderStatus' => $orderStatus,
             'shippingStatus' => $shippingStatus,
