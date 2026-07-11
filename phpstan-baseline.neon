@@ -216,4 +216,3 @@ parameters:
         -
             message: "#^Class QUI\\\\ERP\\\\Accounting\\\\Invoice\\\\Articles\\\\Text not found\\.$#"
             path: src/QUI/ERP/Order/Utils/Utils.php
-            
