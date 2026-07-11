@@ -12,7 +12,7 @@ use QUI\ERP\Accounting\Payments\Types\Payment;
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_settings_paymentChangeable_list',
     function () {
         $Config = QUI::getPackage('quiqqer/order')->getConfig();

@@ -11,7 +11,7 @@
  * @param string $options
  * @return bool
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_basketGuest',
     function ($products, $options = '', $editable = true) {
         if (isset($options) && !is_array($options)) {

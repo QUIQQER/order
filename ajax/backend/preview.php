@@ -7,7 +7,7 @@
 /**
  * Preview of an order
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_preview',
     function ($orderId, $onlyArticles) {
         try {

@@ -10,7 +10,7 @@
  * @param integer $productId
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_removePos',
     function ($basketId, $pos) {
         $User = QUI::getUserBySession();

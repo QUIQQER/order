@@ -11,7 +11,7 @@
  * @param string $current
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_send',
     function ($current, $orderHash, $formData) {
         try {

@@ -4,7 +4,7 @@
  * This file contains package_quiqqer_order_ajax_backend_panel_getCategories
  */
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_panel_getCategories',
     function () {
         try {

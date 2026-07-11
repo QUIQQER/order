@@ -10,7 +10,7 @@
  * @param integer $productId
  * @return bool
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_controls_small',
     function ($basketId) {
         try {

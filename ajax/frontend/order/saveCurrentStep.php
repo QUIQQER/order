@@ -12,7 +12,7 @@
  * @param string $data - JSON data
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_saveCurrentStep',
     function ($step, $data, $orderHash) {
         $data = json_decode($data, true);

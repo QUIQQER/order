@@ -12,7 +12,7 @@ use QUI\ERP\Accounting\Payments\Types\Payment;
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_settings_paymentChangeable_save',
     function ($data) {
         $data = json_decode($data, true);

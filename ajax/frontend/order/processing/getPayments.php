@@ -13,7 +13,7 @@
 
 use QUI\ERP\Order\Controls\OrderProcess\Processing;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_processing_getPayments',
     function ($orderHash) {
         $Processing = new QUI\ERP\Order\Controls\OrderProcess\Processing();

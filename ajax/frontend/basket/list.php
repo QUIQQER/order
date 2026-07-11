@@ -14,7 +14,7 @@
 
 use QUI\ERP\Order\OrderInProcess;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_list',
     function () {
         $User = QUI::getUserBySession();
