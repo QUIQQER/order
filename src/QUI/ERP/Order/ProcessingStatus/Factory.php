@@ -25,7 +25,7 @@ class Factory extends QUI\Utils\Singleton
      *
      * @param integer|string $id - processing ID
      * @param string $color - color of the status
-     * @param array $title - title
+     * @param array<string, string> $title - title
      *
      * @throws Exception
      * @throws QUI\Exception

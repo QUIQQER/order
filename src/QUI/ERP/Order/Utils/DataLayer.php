@@ -36,6 +36,10 @@ use QUI\ERP\Products\Product\Types\VariantChild;
  */
 class DataLayer
 {
+    /**
+     * @param QUI\Locale|null $Locale
+     * @return array<string, mixed>
+     */
     public static function parseProduct(Product $Product, $Locale = null): array
     {
         $manufacturer = '';
@@ -77,6 +81,9 @@ class DataLayer
         return $product;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function parseArticle(QUI\ERP\Accounting\Article $Article, null | QUI\Locale $Locale = null): array
     {
         try {
@@ -104,6 +111,9 @@ class DataLayer
         return $item;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function parseOrder(QUI\ERP\Order\OrderInterface $Order, null | QUI\Locale $Locale = null): array
     {
         $calculations = $Order->getArticles()->getCalculations();

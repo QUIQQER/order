@@ -252,7 +252,7 @@ class Factory extends QUI\Utils\Singleton
     /**
      * Return the needles for an order construct
      *
-     * @return array
+     * @return list<string>
      */
     public function getOrderConstructNeedles(): array
     {

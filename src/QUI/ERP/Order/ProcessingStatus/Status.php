@@ -153,7 +153,7 @@ class Status
      * Status as array
      *
      * @param null|QUI\Locale $Locale - optional. if no locale, all translations would be returned
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(null | QUI\Locale $Locale = null): array
     {

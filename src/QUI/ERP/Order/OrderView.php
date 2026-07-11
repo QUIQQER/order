@@ -61,7 +61,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -155,7 +155,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<\QUI\ERP\Accounting\Payments\Transactions\Transaction>
      */
     public function getTransactions(): array
     {
@@ -199,7 +199,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getData(): array
     {
@@ -272,7 +272,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      * @throws \QUI\ERP\Exception|QUI\Exception
      */
     public function getPaidStatusInformation(): array
@@ -525,6 +525,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     public function setShipping(ShippingInterface $Shipping)
     {
@@ -540,6 +542,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     public function removeShipping()
     {
@@ -549,6 +553,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     protected function saveFrontendMessages()
     {
@@ -571,6 +577,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     public function clearFrontendMessages()
     {

@@ -39,14 +39,14 @@ class Handler extends Singleton
     const EMPTY_VALUE = '---';
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $cache = [];
 
     /**
      * Return all order process Provider
      *
-     * @return array
+     * @return list<AbstractOrderProcessProvider>
      */
     public function getOrderProcessProvider(): array
     {
@@ -305,7 +305,7 @@ class Handler extends Singleton
      * Return the data of a wanted order
      *
      * @param integer|string $orderId
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws QUI\Database\Exception|QUI\ERP\Order\Exception
      */
@@ -341,7 +341,7 @@ class Handler extends Singleton
 
     /**
      * @param QUI\Interfaces\Users\User $User
-     * @param array $params
+     * @param array<string, mixed> $params
      *
      * @return Order[]
      */
@@ -470,7 +470,7 @@ class Handler extends Singleton
      * Get all placeholder variables for order mails.
      *
      * @param AbstractOrder $Order
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getLocaleVarsForOrderMail(AbstractOrder $Order): array
     {
@@ -623,7 +623,7 @@ class Handler extends Singleton
     /**
      * Return an Order which is in processing
      *
-     * @param $orderId
+     * @param int|string $orderId
      * @return OrderInProcess
      *
      * @throws QUI\ERP\Order\Exception
@@ -670,7 +670,7 @@ class Handler extends Singleton
      * Return all orders in process from a user
      *
      * @param QUI\Interfaces\Users\User $User
-     * @return array
+     * @return list<OrderInProcess>
      *
      * @throws QUI\Database\Exception
      */
@@ -770,7 +770,7 @@ class Handler extends Singleton
      * Return the data of a wanted order
      *
      * @param integer|string $orderId
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Database\Exception
@@ -954,7 +954,7 @@ class Handler extends Singleton
      *
      * @param integer|string $basketId
      * @param null|QUI\Interfaces\Users\User $User
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws Exception
      * @throws ExceptionBasketNotFound
