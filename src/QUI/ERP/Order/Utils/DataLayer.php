@@ -84,8 +84,10 @@ class DataLayer
     /**
      * @return array<string, mixed>
      */
-    public static function parseArticle(QUI\ERP\Accounting\Article $Article, null | QUI\Locale $Locale = null): array
-    {
+    public static function parseArticle(
+        QUI\ERP\Accounting\ArticleInterface $Article,
+        null | QUI\Locale $Locale = null
+    ): array {
         try {
             $Product = Products::getProduct($Article->getId());
             $item = self::parseProduct($Product);
