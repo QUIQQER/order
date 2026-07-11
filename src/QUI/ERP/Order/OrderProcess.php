@@ -71,7 +71,7 @@ class OrderProcess extends QUI\Control
     /**
      * List of order process steps
      *
-     * @var array
+     * @var array<string, Controls\AbstractOrderingStep>
      */
     protected array $steps = [];
 
@@ -83,7 +83,7 @@ class OrderProcess extends QUI\Control
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @throws Exception
      * @throws QUI\Exception
@@ -1204,7 +1204,7 @@ class OrderProcess extends QUI\Control
     /**
      * Return the url for a step
      *
-     * @param $step
+     * @param string $step
      * @return string
      */
     public function getStepUrl($step): string
@@ -1392,7 +1392,7 @@ class OrderProcess extends QUI\Control
     /**
      * Return all steps
      *
-     * @return array
+     * @return array<string, Controls\AbstractOrderingStep>
      *
      * @throws Exception
      * @throws QUI\Exception
@@ -1549,7 +1549,7 @@ class OrderProcess extends QUI\Control
 
     /**
      * @param OrderProcessSteps $Steps
-     * @return array
+     * @return array<string, Controls\AbstractOrderingStep>
      * @throws Exception
      * @throws QUI\Exception
      */

@@ -41,7 +41,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -169,7 +169,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Save the payment to the order
      *
-     * @param $payment
+     * @param int|string $payment
      * @return void
      *
      * @throws QUI\ERP\Order\Exception

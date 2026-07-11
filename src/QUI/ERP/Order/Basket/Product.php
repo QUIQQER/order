@@ -25,7 +25,7 @@ class Product extends UniqueProduct
      * Product constructor.
      *
      * @param int $pid - Product ID
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @throws QUI\Exception
      * @throws QUI\ERP\Products\Product\Exception
@@ -103,8 +103,8 @@ class Product extends UniqueProduct
     }
 
     /**
-     * @param $fieldId
-     * @param $fieldValue
+     * @param int|string $fieldId
+     * @param mixed $fieldValue
      * @return null|QUI\ERP\Products\Field\Field|UniqueField
      */
     protected function importFieldData($fieldId, $fieldValue): QUI\ERP\Products\Field\Field | UniqueField | null
@@ -145,7 +145,7 @@ class Product extends UniqueProduct
     }
 
     /**
-     * @return array
+     * @return array<QUI\ERP\Products\Interfaces\CategoryInterface>
      */
     public function getCategories(): array
     {

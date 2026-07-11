@@ -32,7 +32,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -296,6 +296,9 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             data-id="' . $id . '">' . $title . '</a>';
     }
 
+    /**
+     * @param QUI\Interfaces\Template\EngineInterface $Engine
+     */
     public function generateCheckboxLinks($Engine): void
     {
         $termsAndConditionsLink = $this->getLinkOf('terms_and_conditions');

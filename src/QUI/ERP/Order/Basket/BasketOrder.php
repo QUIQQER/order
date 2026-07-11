@@ -268,7 +268,7 @@ class BasketOrder
     /**
      * Import the products to the basket
      *
-     * @param array $products
+     * @param array<int, array<string, mixed>> $products
      * @throws Exception
      * @throws ExceptionStack
      */
@@ -347,7 +347,7 @@ class BasketOrder
     /**
      * Return the basket as array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

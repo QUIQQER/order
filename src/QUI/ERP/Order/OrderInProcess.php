@@ -214,7 +214,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     /**
      * Add price factors to the order
      *
-     * @param array $priceFactors
+     * @param array<int, array<string, mixed>> $priceFactors
      *
      * @throws Exception
      * @throws Exception
@@ -596,7 +596,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     /**
      * Return the order data for saving
      *
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getDataForSaving(): array
     {

@@ -44,7 +44,7 @@ class EventHandling
      *
      * @param QUI\ERP\Products\Interfaces\ProductInterface $Product
      * @param Collection $Collection
-     * @param $ProductControl
+     * @param QUI\Control|null $ProductControl
      */
     public static function onQuiqqerProductsProductViewButtons(
         QUI\ERP\Products\Interfaces\ProductInterface $Product,

@@ -535,7 +535,7 @@ class Mail
     /**
      * @param QUI\ERP\ErpEntityInterface $Order
      * @param QUI\Interfaces\Users\User $Customer
-     * @return array
+     * @return array<string, mixed>
      */
     protected static function getOrderLocaleVar(
         QUI\ERP\ErpEntityInterface $Order,
@@ -587,6 +587,8 @@ class Mail
 
     /**
      * Format dates for order mails using the target locale with SHORT date and no time.
+     *
+     * @param int|string|null $date
      */
     public static function dateFormat($date, QUI\Locale $Locale): bool | string
     {

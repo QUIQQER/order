@@ -24,7 +24,7 @@ class UserOrders extends Control implements ControlInterface
     /**
      * UserOrders constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {

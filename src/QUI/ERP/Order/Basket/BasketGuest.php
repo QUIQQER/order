@@ -87,7 +87,7 @@ class BasketGuest
     /**
      * Import the products to the basket
      *
-     * @param array|null $products
+     * @param array<int, array<string, mixed>>|null $products
      * @throws ExceptionStack
      */
     public function import(array | null $products = []): void
@@ -147,6 +147,8 @@ class BasketGuest
 
     /**
      * placeholder
+     *
+     * @return void
      */
     public function save()
     {
@@ -156,7 +158,7 @@ class BasketGuest
     /**
      * Return the basket as array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -228,6 +230,7 @@ class BasketGuest
     /**
      * placeholder
      *
+     * @return never
      * @throws Exception
      */
     public function getOrder()
@@ -240,6 +243,8 @@ class BasketGuest
 
     /**
      * Placeholder for compatibility to the main basket class
+     *
+     * @return void
      */
     public function updateOrder()
     {

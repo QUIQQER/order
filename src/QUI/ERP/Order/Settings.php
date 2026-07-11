@@ -27,7 +27,7 @@ class Settings extends QUI\Utils\Singleton
     protected bool $forceCreateInvoice = false;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $settings = [];
 

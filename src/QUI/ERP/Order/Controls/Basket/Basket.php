@@ -37,7 +37,7 @@ class Basket extends QUI\Control
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -102,7 +102,7 @@ class Basket extends QUI\Control
     }
 
     /**
-     * @param $fieldValueText
+     * @param mixed $fieldValueText
      * @return mixed|string
      */
     public function getValueText($fieldValueText): mixed

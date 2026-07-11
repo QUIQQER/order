@@ -27,7 +27,7 @@ class CleanupOrderInProcess
     /**
      * Execute the cron
      *
-     * @param array $params - cron parameter
+     * @param array<string, mixed> $params - cron parameter
      * @throws QUI\Exception
      */
     public static function run(array $params = []): void

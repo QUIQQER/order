@@ -118,7 +118,7 @@ class OutputProviderOrder implements OutputProviderInterface
      * Fill the OutputTemplate with appropriate entity data
      *
      * @param int|string $entityId
-     * @return array
+     * @return array<string, mixed>
      * @throws QUI\Exception
      */
     public static function getTemplateData(int | string $entityId): array
@@ -279,9 +279,9 @@ class OutputProviderOrder implements OutputProviderInterface
     }
 
     /**
-     * @param $Order
+     * @param QUI\ERP\Order\Order $Order
      * @param QUI\ERP\User $Customer
-     * @return array
+     * @return array<string, mixed>
      */
     protected static function getOrderLocaleVar($Order, QUI\ERP\User $Customer): array
     {
@@ -371,7 +371,7 @@ class OutputProviderOrder implements OutputProviderInterface
 
     /**
      * @param QUI\ERP\User $Customer
-     * @return array
+     * @return array<string, mixed>
      */
     public static function getCustomerVariables(QUI\ERP\User $Customer): array
     {
@@ -415,7 +415,7 @@ class OutputProviderOrder implements OutputProviderInterface
     }
 
     /**
-     * @param $date
+     * @param int|string|null $date
      * @return false|string
      */
     public static function dateFormat($date): bool | string

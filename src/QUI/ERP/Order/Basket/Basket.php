@@ -176,7 +176,7 @@ class Basket
     /**
      * Import the products to the basket
      *
-     * @param array|null $products
+     * @param array<int, array<string, mixed>>|null $products
      * @throws ExceptionStack
      */
     public function import(array | null $products = []): void
@@ -290,7 +290,7 @@ class Basket
     /**
      * Return the basket as array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -357,7 +357,7 @@ class Basket
      * Set the process number
      * - Vorgangsnummer
      *
-     * @param $hash
+     * @param string $hash
      */
     public function setHash($hash): void
     {

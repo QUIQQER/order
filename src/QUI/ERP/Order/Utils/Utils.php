@@ -124,7 +124,7 @@ class Utils
 
     /**
      * @param QUI\Projects\Project $Project
-     * @param $hash
+     * @param string $hash
      * @return string
      *
      * @throws QUI\ERP\Order\Exception
@@ -268,7 +268,7 @@ class Utils
 
     /**
      * @param QUI\ERP\Products\Product\ProductList $List
-     * @param array $products
+     * @param array<int, array<string, mixed>> $products
      * @param null|QUI\ERP\Order\AbstractOrder|QUI\ERP\Order\Basket\Basket $Order - optional, to add messages to the order if needed
      *
      * @return QUI\ERP\Products\Product\ProductList
@@ -388,8 +388,8 @@ class Utils
     /**
      * Return a product array with all important fields, to compare a product with another
      *
-     * @param $product
-     * @return array
+     * @param array<string, mixed> $product
+     * @return array<string, mixed>
      */
     public static function getCompareProductArray($product): array
     {
@@ -419,8 +419,8 @@ class Utils
     /**
      * Takes a product array and brings together all products that can be brought together
      *
-     * @param $products
-     * @return array
+     * @param array<int, array<string, mixed>> $products
+     * @return array<int, array<string, mixed>>
      */
     public static function getMergedProductList($products): array
     {
@@ -454,7 +454,7 @@ class Utils
     }
 
     /**
-     * @param $product
+     * @param array<string, mixed> $product
      * @return bool
      */
     public static function isBasketProductEditable($product): bool

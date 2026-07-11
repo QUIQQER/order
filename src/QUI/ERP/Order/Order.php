@@ -48,7 +48,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * variable data for developers
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected mixed $customData = [];
 
@@ -522,7 +522,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Return the order data for saving
      *
-     * @return array
+     * @return array<string, mixed>
      * @throws QUI\Exception
      */
     protected function getDataForSaving(): array
@@ -1191,7 +1191,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Return a wanted custom data entry
      *
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
     public function getCustomDataEntry($key): mixed
@@ -1206,7 +1206,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Return all custom data
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getCustomData(): array
     {

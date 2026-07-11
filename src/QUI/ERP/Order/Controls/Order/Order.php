@@ -26,7 +26,7 @@ class Order extends QUI\Control
     /**
      * Order constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
