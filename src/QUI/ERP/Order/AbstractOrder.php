@@ -110,31 +110,31 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     protected null | int | string $customerId;
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     protected ?array $customer = [];
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     protected ?array $addressInvoice = [];
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     protected ?array $addressDelivery = [];
 
     /**
-     * @var array
+     * @var array<int, array<string, mixed>>
      */
     protected array $articles = [];
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      */
     protected ?array $data;
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $paymentData = [];
 
@@ -217,7 +217,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Order constructor.
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      *
      * @throws Exception
      * @throws QUI\ERP\Exception
@@ -265,7 +265,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Set the db data to the order object
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      *
      * @throws QUI\ERP\Exception|\Exception
      */
@@ -521,7 +521,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Recalculate all article prices
      *
-     * @param $Basket - optional
+     * @param Basket\Basket|Basket\BasketOrder|null $Basket - optional
      *
      * @throws Basket\Exception
      * @throws QUI\ERP\Exception
@@ -611,12 +611,15 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Clears the complete order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @return void
      */
     abstract public function clear(null | QUI\Interfaces\Users\User $PermissionUser = null);
 
     /**
      * Refresh the order data
      * fetch the data from the database
+     *
+     * @return void
      */
     abstract public function refresh();
 
@@ -624,6 +627,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Updates the order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @return void
      * @throws QUI\Exception
      */
     abstract public function update(null | QUI\Interfaces\Users\User $PermissionUser = null);
@@ -632,6 +636,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * Delete the order
      *
      * @param QUI\Interfaces\Users\User|null $PermissionUser - optional, permission user, default = session user
+     * @return void
      */
     abstract public function delete(null | QUI\Interfaces\Users\User $PermissionUser = null);
 
@@ -649,7 +654,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the order as an array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -933,7 +938,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return extra data array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getData(): array
     {
@@ -1075,7 +1080,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Set the delivery address
      *
-     * @param array|QUI\ERP\Address $address
+     * @param array<string, mixed>|QUI\ERP\Address $address
      */
     public function setDeliveryAddress(array | QUI\ERP\Address $address): void
     {
@@ -1098,7 +1103,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Set the invoice address
      *
-     * @param array|QUI\ERP\Address|QUI\Users\Address $address
+     * @param array<string, mixed>|QUI\ERP\Address|QUI\Users\Address $address
      */
     public function setInvoiceAddress(array | QUI\ERP\Address | QUI\Users\Address $address): void
     {
@@ -1113,8 +1118,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     }
 
     /**
-     * @param array $address
-     * @return array
+     * @param array<string, mixed> $address
+     * @return array<string, mixed>
      */
     protected function parseAddressData(array $address): array
     {
@@ -1166,7 +1171,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Set a customer to the order
      *
-     * @param array|User|QUI\Interfaces\Users\User $User
+     * @param array<string, mixed>|User|QUI\Interfaces\Users\User $User
      * @throws QUI\Exception
      * @throws ExceptionStack
      */
@@ -1314,7 +1319,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     }
 
     /**
-     * @param $date
+     * @param string $date
      */
     public function setCreationDate($date): void
     {
@@ -1397,7 +1402,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * - How many has already been paid
      * - How many must be paid
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws QUI\ERP\Exception
      * @throws QUI\Exception
@@ -1477,7 +1482,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the complete payment data array (decrypted)
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getPaymentData(): array
     {
@@ -1487,7 +1492,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return an entry in the payment data (decrypted)
      *
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
     public function getPaymentDataEntry($key): mixed
@@ -1768,6 +1773,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
 
     /**
      * Alias for getTransactions
+     *
+     * @return array<Transaction>
      */
     public function getPayments(): array
     {

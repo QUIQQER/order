@@ -30,7 +30,7 @@ use function trim;
 class Search extends Singleton
 {
     /**
-     * @var array
+     * @var array<int, array{filter: string, value: mixed}>
      */
     protected array $filter = [];
 
@@ -42,7 +42,7 @@ class Search extends Singleton
     protected ?string $search = null;
 
     /**
-     * @var array|bool
+     * @var array{int, int}|bool
      */
     protected array | bool $limit = [0, 20];
 
@@ -52,7 +52,7 @@ class Search extends Singleton
     protected string $order = 'id DESC';
 
     /**
-     * @var array
+     * @var list<string>
      */
     protected array $allowedFilters = [
         'from',
@@ -61,7 +61,7 @@ class Search extends Singleton
     ];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $cache = [];
 
@@ -76,7 +76,7 @@ class Search extends Singleton
      * Set a filter
      *
      * @param string $filter
-     * @param array|string|null $value
+     * @param array<int, mixed>|string|null $value
      */
     public function setFilter(string $filter, array | string | null $value): void
     {
@@ -165,7 +165,7 @@ class Search extends Singleton
     /**
      * Set the order
      *
-     * @param $order
+     * @param string $order
      */
     public function order($order): void
     {
@@ -190,7 +190,7 @@ class Search extends Singleton
     /**
      * Execute the search and return the order list
      *
-     * @return array
+     * @return list<array<string, mixed>>
      *
      * @throws QUI\Exception
      */
@@ -202,7 +202,7 @@ class Search extends Singleton
     /**
      * Execute the search and return the order list for a grid control
      *
-     * @return array
+     * @return array<string, mixed>
      * @throws QUI\Exception
      */
     public function searchForGrid(): array
@@ -262,7 +262,7 @@ class Search extends Singleton
 
     /**
      * @param bool $count - Use count select, or not
-     * @return array
+     * @return array{query: string, binds: array<string, array{value: mixed, type: int}>}
      * @throws Exception
      */
     protected function getQuery(bool $count = false): array
@@ -421,7 +421,7 @@ class Search extends Singleton
     }
 
     /**
-     * @return array
+     * @return array{query: string, binds: array<string, array{value: mixed, type: int}>}
      * @throws Exception
      */
     protected function getQueryCount(): array
@@ -430,8 +430,8 @@ class Search extends Singleton
     }
 
     /**
-     * @param array $queryData
-     * @return array
+     * @param array<string, mixed> $queryData
+     * @return array<int, array<string, mixed>>
      * @throws QUI\Exception
      */
     protected function executeQueryParams(array $queryData = []): array
@@ -459,8 +459,8 @@ class Search extends Singleton
     }
 
     /**
-     * @param array $data
-     * @return array
+     * @param list<array<string, mixed>> $data
+     * @return list<array<string, mixed>>
      */
     protected function parseListForGrid(array $data): array
     {
@@ -708,7 +708,7 @@ class Search extends Singleton
 
 
     /**
-     * @return array
+     * @return list<string>
      */
     protected function getAllowedFields(): array
     {
