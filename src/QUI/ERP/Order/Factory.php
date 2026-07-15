@@ -239,14 +239,13 @@ class Factory extends QUI\Utils\Singleton
             $User = QUI::getUserBySession();
         }
 
-        QUI::getDataBase()->insert(
+        $Connection = QUI::getDataBaseConnection();
+        $Connection->insert(
             Handler::getInstance()->tableBasket(),
             ['uid' => $User->getUUID()]
         );
 
-        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
-
-        return new Basket($lastId, $User);
+        return new Basket((int)$Connection->lastInsertId(), $User);
     }
 
     /**
