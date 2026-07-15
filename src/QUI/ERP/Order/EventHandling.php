@@ -578,6 +578,7 @@ class EventHandling
 
     /**
      * @throws QUI\Database\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     public static function onQuiqqerMigrationV2(QUI\System\Console\Tools\MigrationV2 $Console): void
     {
@@ -609,6 +610,8 @@ class EventHandling
             'c_user'
         ]);
 
+        self::migrateBasketUserIds();
+
         // migrate invoice ids
         // @todo kontrollieren
         $result = QUI::getDataBase()->fetch([
@@ -632,5 +635,53 @@ class EventHandling
             } catch (QUI\Exception) {
             }
         }
+    }
+
+    /**
+     * @throws QUI\Database\Exception
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public static function migrateBasketUserIds(): void
+    {
+        $basketTable = Handler::getInstance()->tableBasket();
+        $SchemaManager = QUI::getSchemaManager();
+
+        if (!$SchemaManager->tablesExist([$basketTable])) {
+            return;
+        }
+
+        $Table = $SchemaManager->introspectTable($basketTable);
+        $UidColumn = new \Doctrine\DBAL\Schema\Column(
+            'uid',
+            \Doctrine\DBAL\Types\Type::getType('string'),
+            ['length' => 50, 'notnull' => true]
+        );
+
+        if (!$Table->hasColumn('uid')) {
+            $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+                $Table,
+                addedColumns: [$UidColumn]
+            ));
+        } else {
+            $CurrentUidColumn = $Table->getColumn('uid');
+
+            if (
+                !$CurrentUidColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
+                || $CurrentUidColumn->getLength() !== 50
+                || !$CurrentUidColumn->getNotnull()
+            ) {
+                $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+                    $Table,
+                    changedColumns: [
+                        'uid' => new \Doctrine\DBAL\Schema\ColumnDiff(
+                            $CurrentUidColumn,
+                            $UidColumn
+                        )
+                    ]
+                ));
+            }
+        }
+
+        QUI\Utils\MigrationV1ToV2::migrateUsers($basketTable, ['uid']);
     }
 }
