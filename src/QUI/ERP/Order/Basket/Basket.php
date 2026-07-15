@@ -248,7 +248,9 @@ class Basket
             $fields = $Product->getFields();
 
             foreach ($fields as $Field) {
-                $Field->setChangeableStatus(false);
+                if (method_exists($Field, 'setChangeableStatus')) {
+                    $Field->setChangeableStatus(false);
+                }
             }
 
             $productData = [
@@ -262,7 +264,7 @@ class Basket
             ];
 
             foreach ($fields as $Field) {
-                if ($Field->isCustomField()) {
+                if (method_exists($Field, 'isCustomField') && $Field->isCustomField()) {
                     $productData['fields'][] = $Field->getAttributes();
                 }
             }
@@ -310,7 +312,9 @@ class Basket
             $fields = [];
 
             foreach ($Product->getFields() as $Field) {
-                if (!$Field->isPublic() && !$Field->isCustomField()) {
+                $isCustomField = method_exists($Field, 'isCustomField') && $Field->isCustomField();
+
+                if (!$Field->isPublic() && !$isCustomField) {
                     continue;
                 }
 

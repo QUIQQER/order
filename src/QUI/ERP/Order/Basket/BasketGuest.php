@@ -178,7 +178,7 @@ class BasketGuest
                     continue;
                 }
 
-                if (!$Field->isCustomField()) {
+                if (!method_exists($Field, 'isCustomField') || !$Field->isCustomField()) {
                     continue;
                 }
 
