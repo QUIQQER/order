@@ -3,16 +3,21 @@
 namespace QUITests\ERP\Order;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\StringType;
 use PHPUnit\Framework\TestCase;
 use QUI;
 use QUI\ERP\Areas\Area;
 use QUI\ERP\Areas\Handler as AreasHandler;
 use QUI\ERP\Order\Basket\Basket;
+use QUI\ERP\Order\Cron\CleanupOrderInProcess;
+use QUI\ERP\Order\EventHandling;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Order\PaymentReceiver;
+use QUI\ERP\Order\Search;
+use QUI\System\Console\Tools\MigrationV2;
 use ReflectionProperty;
 use RuntimeException;
 use Throwable;
@@ -245,6 +250,75 @@ class OrderLifecycleDatabaseTest extends TestCase
         self::assertSame($marker, json_decode($persistedOrder['data'], true)['phpunit_flow']);
     }
 
+    public function testOrdersByUserSupportsCountingSortingAndPagination(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $Handler = Handler::getInstance();
+        $countBefore = $Handler->countOrdersByUser($SystemUser);
+        $createdIds = [];
+
+        for ($i = 0; $i < 3; $i++) {
+            $Order = Factory::getInstance()->create($SystemUser, $this->createMarker('user-order'));
+            $this->orderHashes[] = $Order->getUUID();
+            $Order->setCustomer($SystemUser);
+            $Order->update($SystemUser);
+            $createdIds[] = $Order->getId();
+        }
+
+        self::assertSame($countBefore + 3, $Handler->countOrdersByUser($SystemUser));
+
+        $firstPage = $Handler->getOrdersByUser($SystemUser, [
+            'order' => 'id DESC',
+            'limit' => '0,2'
+        ]);
+        $secondPage = $Handler->getOrdersByUser($SystemUser, [
+            'order' => 'id DESC',
+            'limit' => '2,1'
+        ]);
+        rsort($createdIds);
+
+        self::assertSame(
+            array_slice($createdIds, 0, 2),
+            array_map(static fn (Order $Order): int => $Order->getId(), $firstPage)
+        );
+        self::assertSame(
+            [$createdIds[2]],
+            array_map(static fn (Order $Order): int => $Order->getId(), $secondPage)
+        );
+    }
+
+    public function testOrderSearchSupportsTextMatchesSortingPaginationAndCounting(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $searchMarker = $this->createMarker('search');
+        $createdIds = [];
+
+        for ($i = 0; $i < 3; $i++) {
+            $Order = Factory::getInstance()->create($SystemUser, $searchMarker . '-' . $i);
+            $this->orderHashes[] = $Order->getUUID();
+            $createdIds[] = $Order->getId();
+        }
+
+        $Search = Search::getInstance();
+        $Search->clearFilter();
+        $Search->order('id DESC');
+        $Search->limit(0, 2);
+        $Search->setFilter('search', $searchMarker);
+
+        try {
+            $orders = $Search->search();
+            $gridResult = $Search->searchForGrid();
+        } finally {
+            $Search->clearFilter();
+            $Search->limit(0, 20);
+        }
+
+        rsort($createdIds);
+        self::assertSame(array_slice($createdIds, 0, 2), array_column($orders, 'id'));
+        self::assertSame(3, $gridResult['grid']['total']);
+        self::assertCount(2, $gridResult['grid']['data']);
+    }
+
     public function testOrderInProcessCanBeClearedAndReusedWithSameIdentity(): void
     {
         $SystemUser = QUI::getUsers()->getSystemUser();
@@ -269,6 +343,60 @@ class OrderLifecycleDatabaseTest extends TestCase
         self::assertSame([], $ReloadedProcess->getComments()->toArray());
     }
 
+    public function testCleanupRemovesExpiredAndSingleUseOrderProcesses(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $Handler = Handler::getInstance();
+        $Connection = $this->getConnection();
+        $oldProcess = Factory::getInstance()->createOrderInProcess($SystemUser);
+        $singleUseProcess = Factory::getInstance()->createOrderInProcess($SystemUser);
+        $recentProcess = Factory::getInstance()->createOrderInProcess($SystemUser);
+
+        foreach ([$oldProcess, $singleUseProcess, $recentProcess] as $OrderInProcess) {
+            $this->orderProcessHashes[] = $OrderInProcess->getUUID();
+        }
+
+        $Connection->update(
+            $Handler->tableOrderProcess(),
+            ['c_date' => date('Y-m-d H:i:s', strtotime('-15 days'))],
+            ['hash' => $oldProcess->getUUID()]
+        );
+        $Connection->update(
+            $Handler->tableOrderProcess(),
+            [
+                'c_date' => date('Y-m-d H:i:s', strtotime('-2 days')),
+                'data' => json_encode(['basketConditionOrder' => 2], JSON_THROW_ON_ERROR)
+            ],
+            ['hash' => $singleUseProcess->getUUID()]
+        );
+
+        CleanupOrderInProcess::run(['days' => 14]);
+
+        self::assertNull($this->findRow($Handler->tableOrderProcess(), 'hash', $oldProcess->getUUID()));
+        self::assertNull($this->findRow($Handler->tableOrderProcess(), 'hash', $singleUseProcess->getUUID()));
+        self::assertNotNull($this->findRow($Handler->tableOrderProcess(), 'hash', $recentProcess->getUUID()));
+    }
+
+    public function testMigrationV2KeepsOrderIdentifierColumnsPortableAndRepeatable(): void
+    {
+        $Console = new MigrationV2();
+        EventHandling::onQuiqqerMigrationV2($Console);
+        EventHandling::onQuiqqerMigrationV2($Console);
+        $SchemaManager = QUI::getSchemaManager();
+        $Handler = Handler::getInstance();
+
+        foreach ([$Handler->table(), $Handler->tableOrderProcess()] as $table) {
+            $Table = $SchemaManager->introspectTable($table);
+
+            foreach (['invoice_id', 'customerId'] as $columnName) {
+                $Column = $Table->getColumn($columnName);
+                self::assertInstanceOf(StringType::class, $Column->getType());
+                self::assertSame(50, $Column->getLength());
+                self::assertFalse($Column->getNotnull());
+            }
+        }
+    }
+
     public function testPaymentReceiverReadsFinalOrderState(): void
     {
         $SystemUser = QUI::getUsers()->getSystemUser();
@@ -283,9 +411,11 @@ class OrderLifecycleDatabaseTest extends TestCase
         $Order = $OrderInProcess->createOrder($SystemUser);
         $this->orderHashes[] = $Order->getUUID();
         $Receiver = new PaymentReceiver($Order->getUUID());
+        $ReceiverByDocumentNo = new PaymentReceiver($Order->getPrefixedNumber());
 
         self::assertSame('Order', $Receiver::getType());
         self::assertSame($Order->getPrefixedNumber(), $Receiver->getDocumentNo());
+        self::assertSame($Order->getPrefixedNumber(), $ReceiverByDocumentNo->getDocumentNo());
         self::assertSame($Order->getCustomer()->getCustomerNo(), $Receiver->getDebtorNo());
         self::assertSame($Order->getCurrency()->getCode(), $Receiver->getCurrency()->getCode());
         self::assertSame((float)$Order->getAttribute('sum'), $Receiver->getAmountTotal());

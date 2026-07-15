@@ -214,7 +214,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         $this->updateHistory();
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['temporary_invoice_id' => $TemporaryInvoice->getUUID()],
             ['hash' => $this->getUUID()]
@@ -294,7 +294,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
 
         // save payment data
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
                 'shipping_id' => $this->shippingId,
@@ -330,7 +330,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
             $Invoice = $TemporaryInvoice->post($PermissionUser);
 
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
                 ['hash' => $this->getUUID()]
@@ -741,7 +741,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             ]
         );
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             $data,
             ['hash' => $this->getUUID()]
@@ -811,7 +811,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
      */
     public function updateHistory(): void
     {
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['history' => $this->History->toJSON()],
             ['hash' => $this->getUUID()]
@@ -839,7 +839,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             return;
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['paid_status' => $status],
             ['hash' => $this->getUUID()]
@@ -939,7 +939,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $calculation['paidData'] = [];
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             [
                 'paid_data' => json_encode($calculation['paidData']),
@@ -978,7 +978,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         QUI::getEvents()->fireEvent('quiqqerOrderDeleteBegin', [$this]);
 
-        QUI::getDataBase()->delete(
+        QUI::getDataBaseConnection()->delete(
             Handler::getInstance()->table(),
             ['hash' => $this->getUUID()]
         );
@@ -1031,7 +1031,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $data['global_process_id'] = $NewOrder->getUUID();
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             $data,
             ['hash' => $NewOrder->getUUID()]
@@ -1089,7 +1089,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             [
                 'articles' => '[]',
@@ -1121,7 +1121,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     protected function saveFrontendMessages(): void
     {
         try {
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->table(),
                 ['frontendMessages' => $this->FrontendMessage->toJSON()],
                 ['hash' => $this->getUUID()]
@@ -1176,7 +1176,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     {
         $this->customData[$key] = $value;
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['custom_data' => json_encode($this->customData)],
             ['id' => $this->id]

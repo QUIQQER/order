@@ -10,6 +10,7 @@ use QUI\ERP\Accounting\Payments\Types\PaymentInterface;
 use QUI\ERP\Address;
 use QUI\ERP\Currency\Currency;
 use QUI\Locale;
+use QUI\Utils\Doctrine;
 
 use function date_create;
 use function is_string;
@@ -65,16 +66,17 @@ class PaymentReceiver implements PaymentReceiverInterface
     public function __construct($id)
     {
         if (is_string($id)) {
-            $result = QUI::getDataBase()->fetch([
-                'select' => ['id'],
-                'from' => Handler::getInstance()->table(),
-                'where' => [
-                    'id_str' => $id
-                ]
-            ]);
+            $orderId = QUI::getDataBaseConnection()->createQueryBuilder()
+                ->select(Doctrine::quoteIdentifier('id'))
+                ->from(Doctrine::quoteIdentifier(Handler::getInstance()->table()))
+                ->where(Doctrine::quoteIdentifier('id_str') . ' = :id')
+                ->setParameter('id', $id)
+                ->setMaxResults(1)
+                ->executeQuery()
+                ->fetchOne();
 
-            if (!empty($result)) {
-                $id = $result[0]['id'];
+            if ($orderId !== false) {
+                $id = $orderId;
             }
         }
 

@@ -297,7 +297,7 @@ class EventHandling
                 return;
             }
 
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
                 ['hash' => $Order->getUUID()]
@@ -587,22 +587,8 @@ class EventHandling
         $orderTable = Handler::getInstance()->table();
         $orderProcessTable = Handler::getInstance()->tableOrderProcess();
 
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
+        self::migrateOrderIdentifierColumns($orderTable);
+        self::migrateOrderIdentifierColumns($orderProcessTable);
 
         QUI\Utils\MigrationV1ToV2::migrateUsers($orderTable, [
             'customerId',
@@ -613,10 +599,14 @@ class EventHandling
 
         // migrate invoice ids
         // @todo kontrollieren
-        $result = QUI::getDataBase()->fetch([
-            'select' => ['id', 'invoice_id'],
-            'from' => $orderTable
-        ]);
+        $result = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(
+                QUI\Utils\Doctrine::quoteIdentifier('id'),
+                QUI\Utils\Doctrine::quoteIdentifier('invoice_id')
+            )
+            ->from(QUI\Utils\Doctrine::quoteIdentifier($orderTable))
+            ->executeQuery()
+            ->fetchAllAssociative();
 
         foreach ($result as $order) {
             if (!is_numeric($order['invoice_id'])) {
@@ -626,7 +616,7 @@ class EventHandling
             try {
                 $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($order['invoice_id']);
 
-                QUI::getDataBase()->update(
+                QUI::getDataBaseConnection()->update(
                     $orderTable,
                     ['invoice_id' => $Invoice->getUUID()],
                     ['id' => $order['id']]
@@ -634,6 +624,60 @@ class EventHandling
             } catch (QUI\Exception) {
             }
         }
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private static function migrateOrderIdentifierColumns(string $table): void
+    {
+        $SchemaManager = QUI::getSchemaManager();
+
+        if (!$SchemaManager->tablesExist([$table])) {
+            return;
+        }
+
+        $Table = $SchemaManager->introspectTable($table);
+        $changedColumns = [];
+
+        foreach (['invoice_id', 'customerId'] as $columnName) {
+            if (!$Table->hasColumn($columnName)) {
+                continue;
+            }
+
+            $CurrentColumn = $Table->getColumn($columnName);
+
+            if (
+                $CurrentColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
+                && $CurrentColumn->getLength() === 50
+                && !$CurrentColumn->getNotnull()
+            ) {
+                continue;
+            }
+
+            $TargetColumn = new \Doctrine\DBAL\Schema\Column(
+                $columnName,
+                \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Types::STRING),
+                [
+                    'length' => 50,
+                    'notnull' => false,
+                    'default' => null
+                ]
+            );
+            $changedColumns[$columnName] = new \Doctrine\DBAL\Schema\ColumnDiff(
+                $CurrentColumn,
+                $TargetColumn
+            );
+        }
+
+        if (empty($changedColumns)) {
+            return;
+        }
+
+        $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+            $Table,
+            changedColumns: $changedColumns
+        ));
     }
 
     /**

@@ -188,7 +188,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         }
 
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->tableOrderProcess(),
             $data,
             ['hash' => $this->getUUID()]
@@ -322,7 +322,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             $calculations['paidData'] = json_encode($calculations['paidData']);
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->tableOrderProcess(),
             [
                 'paid_data' => $calculations['paidData'],
@@ -359,7 +359,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             );
         }
 
-        QUI::getDataBase()->delete(
+        QUI::getDataBaseConnection()->delete(
             Handler::getInstance()->tableOrderProcess(),
             ['hash' => $this->getUUID()]
         );
@@ -430,7 +430,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $Order = Factory::getInstance()->create($SystemUser, $this->getUUID());
 
         // bind the new order to the order in process
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->tableOrderProcess(),
             ['order_id' => $Order->getUUID()],
             ['hash' => $this->getUUID()]
@@ -458,7 +458,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             $data['paid_data'] = json_encode($data['paid_data']);
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             $data,
             ['hash' => $Order->getUUID()]
@@ -720,7 +720,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         $oldOrderId = $this->id;
         $newOrderId = QUI\ERP\Order\Factory::getInstance()->createOrderInProcessDataBaseEntry();
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->tableOrderProcess(),
             [
                 'hash' => $hash,
@@ -823,7 +823,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             return;
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->tableOrderProcess(),
             ['paid_status' => $status],
             ['hash' => $this->getUUID()]
@@ -857,7 +857,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     protected function saveFrontendMessages(): void
     {
         try {
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->tableOrderProcess(),
                 ['frontendMessages' => $this->FrontendMessage->toJSON()],
                 ['hash' => $this->getUUID()]

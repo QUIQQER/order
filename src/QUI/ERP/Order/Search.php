@@ -6,16 +6,17 @@
 
 namespace QUI\ERP\Order;
 
-use PDO;
+use Doctrine\DBAL\Query\QueryBuilder;
 use QUI;
 use QUI\Exception;
+use QUI\Utils\Doctrine;
 use QUI\Utils\Singleton;
 
 use function array_filter;
 use function array_flip;
 use function array_map;
 use function array_sum;
-use function count;
+use function explode;
 use function implode;
 use function is_array;
 use function is_numeric;
@@ -262,48 +263,38 @@ class Search extends Singleton
 
     /**
      * @param bool $count - Use count select, or not
-     * @return array{query: string, binds: array<string, array{value: mixed, type: int}>}
+     * @return QueryBuilder
      * @throws Exception
      */
-    protected function getQuery(bool $count = false): array
+    protected function getQuery(bool $count = false): QueryBuilder
     {
-        $Order = Handler::getInstance();
-
-        $table = $Order->table();
-        $order = $this->order;
-
-        // limit
-        $limit = '';
-
-        if ($this->limit && isset($this->limit[0]) && isset($this->limit[1])) {
-            $start = $this->limit[0];
-            $end = $this->limit[1];
-            $limit = " LIMIT $start,$end";
-        }
+        $Connection = QUI::getDataBaseConnection();
+        $QueryBuilder = $Connection->createQueryBuilder();
+        $table = Doctrine::quoteIdentifier(Handler::getInstance()->table());
 
         if (empty($this->filter) && empty($this->search)) {
             if ($count) {
-                return [
-                    'query' => " SELECT COUNT(*)  AS count FROM $table",
-                    'binds' => []
-                ];
+                return $QueryBuilder
+                    ->select('COUNT(*) AS count')
+                    ->from($table);
             }
 
-            return [
-                'query' => "
-                    SELECT id
-                    FROM {$table}
-                    ORDER BY {$order}
-                    {$limit}
-                ",
-                'binds' => []
-            ];
+            $QueryBuilder
+                ->select(Doctrine::quoteIdentifier('id'))
+                ->from($table);
+
+            $this->applyOrderAndLimit($QueryBuilder);
+
+            return $QueryBuilder;
         }
 
-        // filter start
-        $where = [];
-        $binds = [];
-        $fc = 0;
+        if ($count) {
+            $QueryBuilder->select('COUNT(*) AS count');
+        } else {
+            $QueryBuilder->select(Doctrine::quoteIdentifier('id'));
+        }
+
+        $QueryBuilder->from($table);
 
         // currency
         $DefaultCurrency = QUI\ERP\Currency\Handler::getDefaultCurrency();
@@ -314,147 +305,126 @@ class Search extends Singleton
 
         // fallback for old orders
         if ($DefaultCurrency->getCode() === $this->currency) {
-            $where[] = "(currency = :currency OR currency = '' OR currency IS NULL)";
+            $QueryBuilder->andWhere($QueryBuilder->expr()->or(
+                Doctrine::quoteIdentifier('currency') . ' = :currency',
+                Doctrine::quoteIdentifier('currency') . ' = :emptyCurrency',
+                Doctrine::quoteIdentifier('currency') . ' IS NULL'
+            ));
+            $QueryBuilder->setParameter('emptyCurrency', '');
         } else {
-            $where[] = 'currency = :currency';
+            $QueryBuilder->andWhere(Doctrine::quoteIdentifier('currency') . ' = :currency');
         }
 
-        $binds[':currency'] = [
-            'value' => $this->currency,
-            'type' => PDO::PARAM_STR
-        ];
+        $QueryBuilder->setParameter('currency', $this->currency);
 
         // filter
-        foreach ($this->filter as $filter) {
-            $bind = ':filter' . $fc;
+        foreach ($this->filter as $index => $filter) {
+            $parameter = 'filter' . $index;
 
             if ($filter['filter'] === 'status') {
-                $where[] = 'status = ' . $bind;
-                $binds[$bind] = [
-                    'value' => (int)$filter['value'],
-                    'type' => PDO::PARAM_INT
-                ];
-
-                $fc++;
+                $QueryBuilder
+                    ->andWhere(Doctrine::quoteIdentifier('status') . ' = :' . $parameter)
+                    ->setParameter($parameter, (int)$filter['value']);
                 continue;
             }
 
             switch ($filter['filter']) {
                 case 'from':
-                    $where[] = 'c_date >= ' . $bind;
+                    $QueryBuilder->andWhere(Doctrine::quoteIdentifier('c_date') . ' >= :' . $parameter);
                     break;
 
                 case 'to':
-                    $where[] = 'c_date <= ' . $bind;
+                    $QueryBuilder->andWhere(Doctrine::quoteIdentifier('c_date') . ' <= :' . $parameter);
                     break;
 
                 default:
                     continue 2;
             }
 
-            $binds[$bind] = [
-                'value' => $filter['value'],
-                'type' => PDO::PARAM_STR
-            ];
-
-            $fc++;
+            $QueryBuilder->setParameter($parameter, $filter['value']);
         }
 
         if (!empty($this->search)) {
-            $where[] = '(
-                id LIKE :search OR
-                id_prefix LIKE :search OR
-                id_str LIKE :search OR
-                order_process_id LIKE :search OR
-                parent_order LIKE :search OR
-                invoice_id LIKE :search OR
-                temporary_invoice_id LIKE :search OR
-                customerId LIKE :search OR
-                customer LIKE :search OR
-                addressInvoice LIKE :search OR
-                addressDelivery LIKE :search OR
-                data LIKE :search OR
-                payment_time LIKE :search OR
-                payment_address LIKE :search OR
-                paid_status LIKE :search OR
-                paid_date LIKE :search OR
-                paid_data LIKE :search OR
-                hash LIKE :search OR
-                c_date LIKE :search OR
-                c_user LIKE :search
-            )';
-
-            $binds['search'] = [
-                'value' => '%' . $this->search . '%',
-                'type' => PDO::PARAM_STR
+            $Platform = $Connection->getDatabasePlatform();
+            $searchExpressions = [];
+            $searchFields = [
+                'id',
+                'id_prefix',
+                'id_str',
+                'order_process_id',
+                'parent_order',
+                'invoice_id',
+                'temporary_invoice_id',
+                'customerId',
+                'customer',
+                'addressInvoice',
+                'addressDelivery',
+                'data',
+                'payment_time',
+                'payment_address',
+                'paid_status',
+                'paid_date',
+                'paid_data',
+                'hash',
+                'c_date',
+                'c_user'
             ];
+
+            foreach ($searchFields as $field) {
+                $searchExpressions[] = $QueryBuilder->expr()->like(
+                    $Platform->getConcatExpression(':emptySearch', Doctrine::quoteIdentifier($field)),
+                    ':search'
+                );
+            }
+
+            $QueryBuilder
+                ->andWhere($QueryBuilder->expr()->or(...$searchExpressions))
+                ->setParameter('emptySearch', '')
+                ->setParameter('search', '%' . $this->search . '%');
         }
 
-        $whereQuery = 'WHERE ' . implode(' AND ', $where);
-
-        if (!count($where)) {
-            $whereQuery = '';
+        if (!$count) {
+            $this->applyOrderAndLimit($QueryBuilder);
         }
 
-
-        if ($count) {
-            return [
-                "query" => "
-                    SELECT COUNT(*) AS count
-                    FROM {$table}
-                    {$whereQuery}
-                ",
-                'binds' => $binds
-            ];
-        }
-
-        return [
-            "query" => "
-                SELECT id
-                FROM {$table}
-                {$whereQuery}
-                ORDER BY {$order}
-                {$limit}
-            ",
-            'binds' => $binds
-        ];
+        return $QueryBuilder;
     }
 
     /**
-     * @return array{query: string, binds: array<string, array{value: mixed, type: int}>}
+     * @return QueryBuilder
      * @throws Exception
      */
-    protected function getQueryCount(): array
+    protected function getQueryCount(): QueryBuilder
     {
         return $this->getQuery(true);
     }
 
     /**
-     * @param array<string, mixed> $queryData
+     * @param QueryBuilder $QueryBuilder
      * @return array<int, array<string, mixed>>
      * @throws QUI\Exception
      */
-    protected function executeQueryParams(array $queryData = []): array
+    protected function executeQueryParams(QueryBuilder $QueryBuilder): array
     {
-        $PDO = QUI::getDataBase()->getPDO();
-        $binds = $queryData['binds'];
-        $query = $queryData['query'];
-
-        $Statement = $PDO->prepare($query);
-
-        foreach ($binds as $var => $bind) {
-            $Statement->bindValue($var, $bind['value'], $bind['type']);
-        }
-
         try {
-            $Statement->execute();
-
-            return $Statement->fetchAll(PDO::FETCH_ASSOC);
+            return $QueryBuilder->executeQuery()->fetchAllAssociative();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
-            QUI\System\Log::writeRecursive($query);
-            QUI\System\Log::writeRecursive($binds);
+            QUI\System\Log::writeRecursive($QueryBuilder->getSQL());
+            QUI\System\Log::writeRecursive($QueryBuilder->getParameters());
             throw new QUI\Exception('Something went wrong');
+        }
+    }
+
+    private function applyOrderAndLimit(QueryBuilder $QueryBuilder): void
+    {
+        [$orderField, $orderDirection] = array_pad(explode(' ', $this->order, 2), 2, 'ASC');
+        $QueryBuilder->orderBy(Doctrine::quoteIdentifier($orderField), $orderDirection);
+
+        if ($this->limit && isset($this->limit[0], $this->limit[1])) {
+            $QueryBuilder
+                ->setFirstResult($this->limit[0])
+                ->setMaxResults($this->limit[1]);
         }
     }
 

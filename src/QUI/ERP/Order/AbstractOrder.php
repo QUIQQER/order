@@ -1591,7 +1591,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             $calculation['paidData'] = [];
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             [
                 'paid_data' => json_encode($calculation['paidData']),

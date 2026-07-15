@@ -113,8 +113,9 @@ class Factory extends QUI\Utils\Singleton
             $orderData['id'] = $id;
         }
 
-        QUI::getDataBase()->insert($table, $orderData);
-        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
+        $Connection = QUI::getDataBaseConnection();
+        $Connection->insert($table, $orderData);
+        $lastId = $Connection->lastInsertId();
         $Order = $Orders->get($lastId);
 
         // set new id index
@@ -219,9 +220,10 @@ class Factory extends QUI\Utils\Singleton
             'successful' => 0
         ];
 
-        QUI::getDataBase()->insert($table, $orderData);
+        $Connection = QUI::getDataBaseConnection();
+        $Connection->insert($table, $orderData);
 
-        return (int)QUI::getDataBase()->getPDO()->lastInsertId();
+        return (int)$Connection->lastInsertId();
     }
 
     /**
