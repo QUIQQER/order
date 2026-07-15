@@ -293,7 +293,7 @@ class Utils
             }
 
             if (!isset($productData['price_currency'])) {
-                $productData['price_currency'] = $List->getCurrency()?->getCode();
+                $productData['price_currency'] = $List->getCurrency()->getCode();
             }
 
             // bridge for text articles

@@ -462,10 +462,6 @@ class Basket
         $products = $Products->getProducts();
         $Currency = $Products->getCurrency();
 
-        if (!$Currency) {
-            $Currency = QUI\ERP\Currency\Handler::getRuntimeCurrency();
-        }
-
         $InvoiceAddress = $Order->getInvoiceAddress();
         $DeliveryAddress = $Order->getDeliveryAddress();
 
