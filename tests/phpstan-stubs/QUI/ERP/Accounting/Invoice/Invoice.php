@@ -3,21 +3,16 @@
 namespace QUI\ERP\Accounting\Invoice;
 
 if (!class_exists(Invoice::class)) {
-    class Invoice
+    class Invoice extends \QUI\QDOM
     {
         public function getUUID(): string
         {
             return '';
         }
 
-        public function getType(): int
+        public function getGlobalProcessId(): string
         {
-            return 0;
-        }
-
-        public function getAttribute(string $name): mixed
-        {
-            return null;
+            return '';
         }
     }
 }
