@@ -10,16 +10,6 @@ parameters:
         - src
         - ajax
         - types
-    scanDirectories:
-        - ../areas/src
-        - ../countries/src
-        - ../currency/src
-        - ../data-layer/src
-        - ../erp/src
-        - ../payments/src
-        - ../payment-transactions/src
-        - ../products/src
-        - ../tax/src
     bootstrapFiles:
         - tests/phpstan-bootstrap.php
     treatPhpDocTypesAsCertain: false
