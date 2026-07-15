@@ -439,7 +439,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
 
             // validate shipping
             try {
-                // @phpstan-ignore-next-line
                 $this->validateShipping($this->getShipping());
             } catch (QUI\Exception) {
                 $this->shippingId = null;

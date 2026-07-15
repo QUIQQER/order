@@ -563,7 +563,6 @@ class EventHandling
 
             // set shipping
             if ($SalesOrder->getShipping()) {
-                // @phpstan-ignore-next-line
                 $Order->setShipping($SalesOrder->getShipping());
             }
 
