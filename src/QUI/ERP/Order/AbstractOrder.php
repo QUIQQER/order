@@ -1885,9 +1885,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         }
 
         if (
-            !method_exists($Shipping, 'setOrder')
+            !method_exists($Shipping, 'setErpEntity')
             || !method_exists($Shipping, 'isValid')
-            || !method_exists($Shipping, 'canUsedInOrder')
+            || !method_exists($Shipping, 'canUsedInErpEntity')
             || !method_exists($Shipping, 'canUsedBy')
         ) {
             return;

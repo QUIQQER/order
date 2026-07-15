@@ -5,6 +5,8 @@ namespace QUI\ERP\Shipping\Types;
 if (!class_exists(ShippingEntry::class)) {
     abstract class ShippingEntry implements \QUI\ERP\Shipping\Api\ShippingInterface
     {
+        abstract public function setErpEntity(\QUI\ERP\ErpEntityInterface $Entity): void;
+
         /**
          * @return array<string, mixed>
          */
