@@ -251,6 +251,69 @@ class OrderLifecycleDatabaseTest extends TestCase
         );
     }
 
+    public function testOrderCanBeCopiedClearedReloadedAndDeleted(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $Order = Factory::getInstance()->create($SystemUser);
+        $this->orderHashes[] = $Order->getUUID();
+        $marker = $this->createMarker('copy-source');
+        $Order->setData('phpunit_flow', $marker);
+        $Order->addComment('PHPUnit source order ' . $marker);
+        $Order->update($SystemUser);
+
+        $Copy = $Order->copy($SystemUser);
+        $copyHash = $Copy->getUUID();
+        $this->orderHashes[] = $copyHash;
+
+        self::assertNotSame($Order->getUUID(), $copyHash);
+        self::assertNull($Copy->getDataEntry('phpunit_flow'));
+        self::assertSame([], $Copy->getComments()->toArray());
+        self::assertSame($copyHash, $Copy->getGlobalProcessId());
+
+        $copyMarker = $this->createMarker('copy');
+        $Copy->setData('phpunit_flow', $copyMarker);
+        $Copy->addComment('PHPUnit copied order ' . $copyMarker);
+        $Copy->update($SystemUser);
+        $Copy->clear($SystemUser);
+
+        $ReloadedCopy = Handler::getInstance()->get($copyHash);
+        self::assertNull($ReloadedCopy->getDataEntry('phpunit_flow'));
+        self::assertSame([], $ReloadedCopy->getArticles()->getArticles());
+        self::assertSame(QUI\ERP\Constants::PAYMENT_STATUS_OPEN, $ReloadedCopy->getAttribute('paid_status'));
+
+        $ReloadedCopy->delete($SystemUser);
+        self::assertNull($this->findRow(Handler::getInstance()->table(), 'hash', $copyHash));
+    }
+
+    public function testBasketCanTransferItsStateToProcessingOrder(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $OrderInProcess = Factory::getInstance()->createOrderInProcess($SystemUser);
+        $processHash = $OrderInProcess->getUUID();
+        $this->orderProcessHashes[] = $processHash;
+        $Basket = Factory::getInstance()->createBasket($SystemUser);
+        $basketId = (int)$Basket->getId();
+        $this->basketIds[] = $basketId;
+
+        $OrderInProcess->setData('phpunit_flow', $this->createMarker('before-transfer'));
+        $OrderInProcess->update($SystemUser);
+        $Basket->toOrder($OrderInProcess);
+
+        $ReloadedProcess = Handler::getInstance()->getOrderInProcessByHash($processHash);
+        self::assertSame($processHash, $ReloadedProcess->getUUID());
+        self::assertNull($ReloadedProcess->getDataEntry('phpunit_flow'));
+        self::assertSame([], $ReloadedProcess->getArticles()->getArticles());
+        self::assertSame(0, $Basket->count());
+
+        $persistedProcess = $this->fetchRow(
+            Handler::getInstance()->tableOrderProcess(),
+            'hash',
+            $processHash
+        );
+        self::assertNull(json_decode($persistedProcess['data'], true));
+        self::assertIsArray(json_decode($persistedProcess['articles'], true));
+    }
+
     /**
      * @return array<string, mixed>
      */
