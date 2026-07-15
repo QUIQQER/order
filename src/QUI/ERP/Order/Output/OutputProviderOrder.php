@@ -2,6 +2,9 @@
 
 namespace QUI\ERP\Order\Output;
 
+use chillerlan\QRCode\Common\EccLevel;
+use chillerlan\QRCode\Common\Version;
+use chillerlan\QRCode\Output\QRGdImagePNG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Exception;
@@ -537,10 +540,10 @@ class OutputProviderOrder implements OutputProviderInterface
         $qrCodeText = implode(PHP_EOL, $qrCodeLines);
 
         $QrOptions = new QROptions([
-            'version' => QRCode::VERSION_AUTO,
-            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel' => QRCode::ECC_M,
-            'pngCompression' => -1
+            'version' => Version::AUTO,
+            'outputInterface' => QRGdImagePNG::class,
+            'eccLevel' => EccLevel::M,
+            'quality' => -1
         ]);
 
         $QrCode = new QRCode($QrOptions);
