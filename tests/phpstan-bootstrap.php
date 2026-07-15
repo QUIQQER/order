@@ -12,10 +12,6 @@ putenv("QUIQQER_OTHER_AUTOLOADERS=KEEP");
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
-if (file_exists(__DIR__ . '/../../../autoload.php')) {
-    require_once __DIR__ . '/../../../autoload.php';
-}
-
 require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Accounting/Invoice/Invoice.php';
 require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Accounting/Invoice/InvoiceTemporary.php';
 require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Accounting/Invoice/Exception.php';
