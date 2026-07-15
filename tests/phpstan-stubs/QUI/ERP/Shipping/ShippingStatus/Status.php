@@ -2,7 +2,7 @@
 
 namespace QUI\ERP\Shipping\ShippingStatus;
 
-if (!class_exists(Status::class)) {
+if (!class_exists(Status::class, false)) {
     class Status
     {
         public function getId(): int

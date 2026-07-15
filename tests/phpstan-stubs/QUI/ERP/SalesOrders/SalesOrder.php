@@ -2,7 +2,7 @@
 
 namespace QUI\ERP\SalesOrders;
 
-if (!class_exists(SalesOrder::class)) {
+if (!class_exists(SalesOrder::class, false)) {
     class SalesOrder
     {
         public function getUUID(): string

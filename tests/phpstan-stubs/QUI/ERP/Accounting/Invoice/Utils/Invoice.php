@@ -2,7 +2,7 @@
 
 namespace QUI\ERP\Accounting\Invoice\Utils;
 
-if (!class_exists(Invoice::class)) {
+if (!class_exists(Invoice::class, false)) {
     class Invoice
     {
         public static function addressRequirement(): bool

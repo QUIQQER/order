@@ -2,7 +2,7 @@
 
 namespace QUI\ERP\Accounting\Invoice;
 
-if (!class_exists(Factory::class)) {
+if (!class_exists(Factory::class, false)) {
     class Factory
     {
         public static function getInstance(): self

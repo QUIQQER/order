@@ -221,8 +221,17 @@ class OrderUnitTest extends TestCase
 
     public function testGetInvoiceTypeReturnsEmptyStringOnException(): void
     {
-        $Order = $this->createOrderWithoutConstructor();
-        $this->setProperty($Order, 'invoiceId', 999999);
+        $Order = new class () extends Order {
+            public function __construct()
+            {
+            }
+
+            public function getInvoice(): \QUI\ERP\Accounting\Invoice\Invoice
+                | \QUI\ERP\Accounting\Invoice\InvoiceTemporary
+            {
+                throw new \QUI\Exception('Invoice is unavailable in this test.');
+            }
+        };
 
         $this->assertSame('', $Order->getInvoiceType());
     }

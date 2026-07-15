@@ -2,7 +2,7 @@
 
 namespace QUI\ERP\Accounting\Invoice;
 
-if (!class_exists(InvoiceTemporary::class)) {
+if (!class_exists(InvoiceTemporary::class, false)) {
     class InvoiceTemporary extends \QUI\QDOM
     {
         public function getUUID(): string

@@ -1956,9 +1956,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Add an article to the order
      *
-     * @param QUI\ERP\Accounting\Article $Article
+     * @param QUI\ERP\Accounting\ArticleInterface $Article
      */
-    public function addArticle(QUI\ERP\Accounting\Article $Article): void
+    public function addArticle(QUI\ERP\Accounting\ArticleInterface $Article): void
     {
         $this->Articles->addArticle($Article);
     }
@@ -1976,10 +1976,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Replace an article at a specific position
      *
-     * @param QUI\ERP\Accounting\Article $Article
+     * @param QUI\ERP\Accounting\ArticleInterface $Article
      * @param integer $index
      */
-    public function replaceArticle(QUI\ERP\Accounting\Article $Article, int $index): void
+    public function replaceArticle(QUI\ERP\Accounting\ArticleInterface $Article, int $index): void
     {
         $this->Articles->replaceArticle($Article, $index);
     }
