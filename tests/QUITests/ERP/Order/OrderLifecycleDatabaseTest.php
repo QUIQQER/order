@@ -5,6 +5,8 @@ namespace QUITests\ERP\Order;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use QUI;
+use QUI\ERP\Areas\Area;
+use QUI\ERP\Areas\Handler as AreasHandler;
 use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
@@ -12,6 +14,8 @@ use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Order\PaymentReceiver;
 use ReflectionProperty;
+use RuntimeException;
+use Throwable;
 
 class OrderLifecycleDatabaseTest extends TestCase
 {
@@ -27,6 +31,9 @@ class OrderLifecycleDatabaseTest extends TestCase
     private mixed $originalOrderIndex;
     private mixed $originalAutoInvoice;
     private mixed $originalSessionUser;
+    private static bool $defaultAreaReady = false;
+    private static ?int $createdAreaId = null;
+    private static mixed $originalDefaultArea = null;
 
     protected function setUp(): void
     {
@@ -40,6 +47,43 @@ class OrderLifecycleDatabaseTest extends TestCase
         $Session = new ReflectionProperty($Users, 'Session');
         $this->originalSessionUser = $Session->getValue($Users);
         $Session->setValue($Users, $Users->getSystemUser());
+        self::ensureDefaultArea();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        if (self::$createdAreaId === null) {
+            parent::tearDownAfterClass();
+
+            return;
+        }
+
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalSessionUser = $Session->getValue($Users);
+        $Session->setValue($Users, $Users->getSystemUser());
+
+        try {
+            $Config = QUI::getPackage('quiqqer/tax')->getConfig();
+
+            if ($Config) {
+                $Config->set('shop', 'area', self::$originalDefaultArea);
+                $Config->save();
+            }
+
+            (new AreasHandler())->getChild(self::$createdAreaId)->delete();
+        } catch (Throwable) {
+            QUI::getDataBaseConnection()->delete(
+                QUI::getDBTableName('areas'),
+                ['id' => self::$createdAreaId]
+            );
+        } finally {
+            $Session->setValue($Users, $originalSessionUser);
+            self::$createdAreaId = null;
+            self::$defaultAreaReady = false;
+        }
+
+        parent::tearDownAfterClass();
     }
 
     protected function tearDown(): void
@@ -364,5 +408,44 @@ class OrderLifecycleDatabaseTest extends TestCase
             ->from($Connection->quoteIdentifier($table))
             ->executeQuery()
             ->fetchOne();
+    }
+
+    private static function ensureDefaultArea(): void
+    {
+        if (self::$defaultAreaReady) {
+            return;
+        }
+
+        try {
+            QUI\ERP\Defaults::getArea();
+            self::$defaultAreaReady = true;
+
+            return;
+        } catch (QUI\Exception) {
+        }
+
+        $Config = QUI::getPackage('quiqqer/tax')->getConfig();
+
+        if (!$Config) {
+            throw new RuntimeException('The tax configuration is not available for the Order tests.');
+        }
+
+        self::$originalDefaultArea = $Config->getValue('shop', 'area');
+        $Country = QUI\ERP\Defaults::getCountry();
+        $Area = (new AreasHandler())->createChild([
+            'countries' => $Country->getCode(),
+            'data' => json_encode([
+                'importLocale' => 'PHPUnit Order default area'
+            ], JSON_THROW_ON_ERROR)
+        ]);
+
+        if (!$Area instanceof Area) {
+            throw new RuntimeException('The PHPUnit Order default area could not be created.');
+        }
+
+        self::$createdAreaId = (int)$Area->getId();
+        $Config->set('shop', 'area', (string)self::$createdAreaId);
+        $Config->save();
+        self::$defaultAreaReady = true;
     }
 }
