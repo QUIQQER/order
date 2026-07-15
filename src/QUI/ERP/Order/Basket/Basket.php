@@ -273,11 +273,12 @@ class Basket
         }
 
         try {
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 QUI\ERP\Order\Handler::getInstance()->tableBasket(),
                 [
                     'products' => json_encode($result),
-                    'hash' => $this->hash
+                    'hash' => $this->hash,
+                    'e_date' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
                 ],
                 [
                     'id' => $this->getId(),

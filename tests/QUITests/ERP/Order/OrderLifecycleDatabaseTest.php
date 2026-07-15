@@ -132,6 +132,13 @@ class OrderLifecycleDatabaseTest extends TestCase
         self::assertSame($basketId, (int)$Handler->getBasketData($basketId, $User)['id']);
         self::assertSame($basketId, $Basket->getId());
         $hash = $this->createMarker('basket');
+        $oldEditDate = '2000-01-01 00:00:00';
+
+        $this->getConnection()->update(
+            $Handler->tableBasket(),
+            ['e_date' => $oldEditDate],
+            ['id' => $basketId]
+        );
 
         $Basket->setHash($hash);
         $Basket->save();
@@ -151,6 +158,7 @@ class OrderLifecycleDatabaseTest extends TestCase
         $persistedBasket = $this->fetchRow($Handler->tableBasket(), 'id', $basketId);
         self::assertSame((string)$User->getUUID(), $persistedBasket['uid']);
         self::assertSame($hash, $persistedBasket['hash']);
+        self::assertNotSame($oldEditDate, $persistedBasket['e_date']);
 
         $Basket->successful();
         $Basket->save();
