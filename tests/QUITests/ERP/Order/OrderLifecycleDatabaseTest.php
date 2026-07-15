@@ -10,6 +10,7 @@ use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
+use QUI\ERP\Order\PaymentReceiver;
 use ReflectionProperty;
 
 class OrderLifecycleDatabaseTest extends TestCase
@@ -24,6 +25,7 @@ class OrderLifecycleDatabaseTest extends TestCase
     private array $basketIds = [];
 
     private mixed $originalOrderIndex;
+    private mixed $originalAutoInvoice;
     private mixed $originalSessionUser;
 
     protected function setUp(): void
@@ -33,6 +35,7 @@ class OrderLifecycleDatabaseTest extends TestCase
         $Config = QUI::getPackage('quiqqer/order')->getConfig();
         self::assertNotNull($Config);
         $this->originalOrderIndex = $Config->getValue('order', 'orderCurrentIdIndex');
+        $this->originalAutoInvoice = $Config->getValue('order', 'autoInvoice');
         $Users = QUI::getUsers();
         $Session = new ReflectionProperty($Users, 'Session');
         $this->originalSessionUser = $Session->getValue($Users);
@@ -60,6 +63,7 @@ class OrderLifecycleDatabaseTest extends TestCase
 
         if ($Config) {
             $Config->set('order', 'orderCurrentIdIndex', $this->originalOrderIndex);
+            $Config->set('order', 'autoInvoice', $this->originalAutoInvoice);
             $Config->save();
         }
 
@@ -187,6 +191,64 @@ class OrderLifecycleDatabaseTest extends TestCase
         $persistedOrder = $this->fetchRow($Handler->table(), 'hash', $Order->getUUID());
         self::assertSame($globalProcessId, $persistedOrder['global_process_id']);
         self::assertSame($marker, json_decode($persistedOrder['data'], true)['phpunit_flow']);
+    }
+
+    public function testOrderInProcessCanBeClearedAndReusedWithSameIdentity(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $OrderInProcess = Factory::getInstance()->createOrderInProcess($SystemUser);
+        $processHash = $OrderInProcess->getUUID();
+        $processId = $OrderInProcess->getId();
+        $this->orderProcessHashes[] = $processHash;
+
+        $OrderInProcess->setData('phpunit_flow', $this->createMarker('clear'));
+        $OrderInProcess->addComment('PHPUnit comment before clear');
+        $OrderInProcess->update($SystemUser);
+        $OrderInProcess->clear($SystemUser);
+
+        self::assertSame($processHash, $OrderInProcess->getUUID());
+        self::assertSame($processId, $OrderInProcess->getId());
+        self::assertNull($OrderInProcess->getDataEntry('phpunit_flow'));
+        self::assertSame([], $OrderInProcess->getComments()->toArray());
+
+        $ReloadedProcess = Handler::getInstance()->getOrderInProcessByHash($processHash);
+        self::assertSame($processId, $ReloadedProcess->getId());
+        self::assertNull($ReloadedProcess->getDataEntry('phpunit_flow'));
+        self::assertSame([], $ReloadedProcess->getComments()->toArray());
+    }
+
+    public function testPaymentReceiverReadsFinalOrderState(): void
+    {
+        $SystemUser = QUI::getUsers()->getSystemUser();
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        self::assertNotNull($Config);
+        $Config->set('order', 'autoInvoice', '');
+        $Config->save();
+        $OrderInProcess = Factory::getInstance()->createOrderInProcess($SystemUser);
+        $processHash = $OrderInProcess->getUUID();
+        $this->orderProcessHashes[] = $processHash;
+        $OrderInProcess->setAttribute('no_invoice_auto_create', true);
+        $Order = $OrderInProcess->createOrder($SystemUser);
+        $this->orderHashes[] = $Order->getUUID();
+        $Receiver = new PaymentReceiver($Order->getUUID());
+
+        self::assertSame('Order', $Receiver::getType());
+        self::assertSame($Order->getPrefixedNumber(), $Receiver->getDocumentNo());
+        self::assertSame($Order->getCustomer()->getCustomerNo(), $Receiver->getDebtorNo());
+        self::assertSame($Order->getCurrency()->getCode(), $Receiver->getCurrency()->getCode());
+        self::assertSame((float)$Order->getAttribute('sum'), $Receiver->getAmountTotal());
+        self::assertSame((float)$Order->getAttribute('toPay'), $Receiver->getAmountOpen());
+        self::assertSame((float)$Order->getAttribute('paid'), $Receiver->getAmountPaid());
+        self::assertSame((int)$Order->getAttribute('paid_status'), $Receiver->getPaymentStatus());
+        self::assertSame(false, $Receiver->getDueDate());
+        self::assertSame(
+            $Order->getCustomer()->getStandardAddress()->getUUID(),
+            $Receiver->getDebtorAddress()->getUUID()
+        );
+        self::assertSame(
+            substr($Order->getCreateDate(), 0, 10),
+            $Receiver->getDate()->format('Y-m-d')
+        );
     }
 
     /**
