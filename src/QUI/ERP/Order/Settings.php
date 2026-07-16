@@ -61,11 +61,11 @@ class Settings extends QUI\Utils\Singleton
      * Return the setting
      *
      * @param string $section
-     * @param string $key
+     * @param int|string $key
      *
      * @return mixed
      */
-    public function get(string $section, string $key): mixed
+    public function get(string $section, int | string $key): mixed
     {
         if (isset($this->settings[$section][$key])) {
             return $this->settings[$section][$key];
@@ -78,10 +78,10 @@ class Settings extends QUI\Utils\Singleton
      * Return the setting
      *
      * @param string $section
-     * @param string $key
+     * @param int|string $key
      * @param string|bool|integer|float $value
      */
-    public function set(string $section, string $key, mixed $value): void
+    public function set(string $section, int | string $key, mixed $value): void
     {
         $this->settings[$section][$key] = $value;
     }

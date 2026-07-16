@@ -236,7 +236,11 @@ class Utils
             return date('Y') . '-';
         }
 
-        if ($setting === false) {
+        if (is_numeric($setting)) {
+            $setting = (string)$setting;
+        }
+
+        if (!is_string($setting)) {
             return date('Y') . '-';
         }
 
