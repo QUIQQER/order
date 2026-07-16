@@ -91,8 +91,11 @@ class BasketOrder
                 $this->Order->getUUID(),
                 $this->User
             );
+            $basketId = $Basket->getId();
 
-            $this->id = $Basket->getId();
+            if (is_int($basketId)) {
+                $this->id = $basketId;
+            }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }

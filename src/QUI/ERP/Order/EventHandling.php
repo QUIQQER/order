@@ -22,6 +22,7 @@ use function class_exists;
 use function count;
 use function defined;
 use function explode;
+use function filter_var;
 use function is_array;
 use function is_numeric;
 use function is_string;
@@ -81,6 +82,11 @@ class EventHandling
 
         try {
             $Project = $Rewrite->getProject();
+
+            if ($Project === null) {
+                return;
+            }
+
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
             $path = trim($CheckoutSite->getUrlRewritten(), '/');
 
@@ -617,12 +623,14 @@ class EventHandling
             ->fetchAllAssociative();
 
         foreach ($result as $order) {
-            if (!is_numeric($order['invoice_id'])) {
+            $invoiceId = filter_var($order['invoice_id'] ?? null, FILTER_VALIDATE_INT);
+
+            if ($invoiceId === false) {
                 continue;
             }
 
             try {
-                $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($order['invoice_id']);
+                $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($invoiceId);
 
                 QUI::getDataBaseConnection()->update(
                     $orderTable,

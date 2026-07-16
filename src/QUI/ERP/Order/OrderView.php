@@ -9,6 +9,8 @@ namespace QUI\ERP\Order;
 use IntlDateFormatter;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Invoice\Invoice;
+use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Payments\Types\Payment;
 use QUI\ERP\Address;
 use QUI\ERP\Comments;
@@ -37,9 +39,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     protected string $prefix;
 
     /**
-     * @var Order
+     * @var AbstractOrder
      */
-    protected Order $Order;
+    protected AbstractOrder $Order;
 
     /**
      * @var ArticleList
@@ -49,9 +51,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * OrderView constructor.
      *
-     * @param Order $Order
+     * @param AbstractOrder $Order
      */
-    public function __construct(Order $Order)
+    public function __construct(AbstractOrder $Order)
     {
         $this->Order = $Order;
         $this->Articles = $this->Order->getArticles();
@@ -107,9 +109,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return ProcessingStatus\Status
+     * @return ProcessingStatus\Status|null
      */
-    public function getProcessingStatus(): ProcessingStatus\Status
+    public function getProcessingStatus(): ?ProcessingStatus\Status
     {
         return $this->Order->getProcessingStatus();
     }
@@ -312,14 +314,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
-     *
-     * @throws QUI\Exception
-     * @throws QUI\ERP\Accounting\Invoice\Exception
+     * @return Invoice|InvoiceTemporary|null
      */
-    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
+    public function getInvoice(): Invoice | InvoiceTemporary | null
     {
-        return $this->Order->getInvoice();
+        try {
+            return $this->Order->getInvoice();
+        } catch (QUI\Exception) {
+            return null;
+        }
     }
 
     /**

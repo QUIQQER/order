@@ -86,14 +86,20 @@ class Search extends Singleton
         }
 
         if ($filter === 'search') {
-            $this->search = $value;
+            if (is_string($value)) {
+                $this->search = $value;
+            }
 
             return;
         }
 
         if ($filter === 'currency') {
+            if (!is_string($value)) {
+                return;
+            }
+
             if (empty($value)) {
-                $this->currency = QUI\ERP\Currency\Handler::getDefaultCurrency()->getCode();
+                $this->currency = QUI\ERP\Defaults::getCurrency()->getCode();
 
                 return;
             }
@@ -297,7 +303,7 @@ class Search extends Singleton
         $QueryBuilder->from($table);
 
         // currency
-        $DefaultCurrency = QUI\ERP\Currency\Handler::getDefaultCurrency();
+        $DefaultCurrency = QUI\ERP\Defaults::getCurrency();
 
         if (empty($this->currency)) {
             $this->currency = $DefaultCurrency->getCode();
@@ -439,6 +445,10 @@ class Search extends Singleton
         $Transactions = QUI\ERP\Accounting\Payments\Transactions\Handler::getInstance();
         $shippingIsInstalled = QUI::getPackageManager()->isInstalled('quiqqer/shipping');
         $defaultTimeFormat = QUI\ERP\Defaults::getTimestampFormat();
+
+        if (!is_string($defaultTimeFormat)) {
+            $defaultTimeFormat = false;
+        }
 
         // helper
         $needleFields = [

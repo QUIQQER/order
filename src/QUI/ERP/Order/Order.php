@@ -195,8 +195,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             QUI::getUserBySession(),
             $this->getGlobalProcessId()
         );
+        $Customer = $this->getCustomer();
 
-        $TemporaryInvoice->setCustomer($this->getCustomer());
+        $TemporaryInvoice->setCustomer($Customer);
 
         $this->History->addComment(
             QUI::getLocale()->get(
@@ -232,7 +233,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         $invoiceAddressId = $this->getInvoiceAddress()->getUUID();
 
         if (empty($invoiceAddressId)) {
-            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getUUID();
+            $invoiceAddressId = $Customer->getStandardAddress()->getUUID();
         }
 
         if ($this->getDeliveryAddress()->getUUID()) {
@@ -246,10 +247,12 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'order_id' => $this->getUUID(),
             'order_date' => $this->getCreateDate(),
             'project_name' => $this->getAttribute('project_name'),
-            'customer_id' => $this->getCustomer()->getUUID(),
-            'customer_data' => $this->getCustomer()->getAttributes(),
+            'customer_id' => $Customer->getUUID(),
+            'customer_data' => $Customer->getAttributes(),
             'payment_method' => $payment,
-            'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
+            'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser(
+                $Customer->getUUID()
+            ),
             'invoice_address_id' => $invoiceAddressId,
             'invoice_address' => $invoiceAddress,
             'delivery_address' => $deliveryAddress,

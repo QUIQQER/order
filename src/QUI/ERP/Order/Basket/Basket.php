@@ -84,7 +84,12 @@ class Basket
                 $Basket = Handler::getInstance()->getBasketFromUser(QUI::getUserBySession());
                 $basketId = $Basket->getId();
             } catch (QUI\Exception) {
+                return;
             }
+        }
+
+        if (!is_int($basketId)) {
+            return;
         }
 
         try {

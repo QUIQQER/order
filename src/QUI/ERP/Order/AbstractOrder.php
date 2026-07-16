@@ -100,9 +100,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * invoice ID
      *
-     * @var int|bool|string
+     * @var int|false|string|null
      */
-    protected string | int | bool | null $invoiceId = false;
+    protected string | int | false | null $invoiceId = false;
 
     /**
      * @var string|int|null
@@ -912,9 +912,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the order create date
      *
-     * @return QUI\Interfaces\Users\User|null
+     * @return QUI\Interfaces\Users\User
      */
-    public function getCreateUser(): ?QUI\Interfaces\Users\User
+    public function getCreateUser(): QUI\Interfaces\Users\User
     {
         try {
             return QUI::getUsers()->get($this->cUser);
@@ -932,7 +932,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      */
     public function getData(): array
     {
-        return $this->data;
+        return $this->data ?? [];
     }
 
     /**
@@ -1007,9 +1007,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             }
         }
 
-        if ($this->customer) {
+        $customerData = $this->customer;
+
+        if ($customerData) {
             try {
-                $this->setCustomer($this->customer);
+                $this->setCustomer($customerData);
                 $Customer = $this->Customer;
 
                 if ($Customer !== null) {
@@ -1024,7 +1026,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                     return $Customer;
                 }
             } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeRecursive($this->customer);
+                QUI\System\Log::writeRecursive($customerData);
                 QUI\System\Log::addWarning($Exception->getMessage());
             }
         }
@@ -1450,7 +1452,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             );
         }
 
-        $this->paymentId = $Payment->getId();
+        $this->paymentId = (int)$Payment->getId();
         $this->paymentMethod = $Payment->getType();
     }
 
@@ -1855,7 +1857,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     public function setShipping(QUI\ERP\Shipping\Api\ShippingInterface $Shipping): void
     {
         $this->validateShipping($Shipping);
-        $this->shippingId = $Shipping->getId();
+        $this->shippingId = (int)$Shipping->getId();
     }
 
     /**

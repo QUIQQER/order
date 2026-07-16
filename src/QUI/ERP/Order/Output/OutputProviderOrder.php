@@ -82,7 +82,7 @@ class OutputProviderOrder implements OutputProviderInterface
         try {
             $Order = QUI\ERP\Order\Handler::getInstance()->get($entityId);
         } catch (QUI\Exception) {
-            $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($entityId);
+            $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash((string)$entityId);
         }
 
         return $Order;

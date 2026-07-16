@@ -60,7 +60,12 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $this->addCSSClass('quiqqer-order-step-basket');
         $this->setAttribute('nodeName', 'section');
 
-        $messages = $this->Basket->getFrontendMessages()->toArray();
+        $messages = [];
+
+        if (!($this->Basket instanceof BasketGuest)) {
+            $messages = $this->Basket->getFrontendMessages()->toArray();
+        }
+
         $Order = $this->getOrder();
 
         if ($Order === null) {

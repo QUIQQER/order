@@ -103,6 +103,14 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     }
 
     /**
+     * Return the view object
+     */
+    public function getView(): OrderView
+    {
+        return new OrderView($this);
+    }
+
+    /**
      * Return the real order id for the customer
      * For the customer this method returns the hash, so he has an association to the real order
      *
@@ -374,7 +382,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     {
         if ($this->orderId) {
             try {
-                $Order = Handler::getInstance()->get($this->getOrderId());
+                $Order = Handler::getInstance()->get($this->orderId);
 
                 return $Order->isPosted();
             } catch (Exception) {
@@ -696,7 +704,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         }
 
         if ($this->orderId) {
-            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order = Handler::getInstance()->get($this->orderId);
             $Order->clear($PermissionUser);
 
             return;
@@ -740,7 +748,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     {
         if ($this->orderId) {
             try {
-                $Order = Handler::getInstance()->get($this->getOrderId());
+                $Order = Handler::getInstance()->get($this->orderId);
 
                 return $Order->hasInvoice();
             } catch (Exception) {
@@ -762,7 +770,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
         if ($this->orderId) {
-            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order = Handler::getInstance()->get($this->orderId);
             return $Order->getInvoice();
         }
 
@@ -783,7 +791,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     public function setSuccessfulStatus(): void
     {
         if ($this->orderId) {
-            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order = Handler::getInstance()->get($this->orderId);
             $Order->setSuccessfulStatus();
 
             return;
@@ -808,7 +816,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
     public function setPaymentStatus(int $status, bool $force = false): void
     {
         if ($this->orderId) {
-            $Order = Handler::getInstance()->get($this->getOrderId());
+            $Order = Handler::getInstance()->get($this->orderId);
             $Order->setPaymentStatus($status);
 
             return;

@@ -154,6 +154,10 @@ class OrderProcess extends QUI\Control
         // basket into the order
         $Basket = $this->getBasket();
 
+        if ($Basket instanceof Basket\BasketGuest) {
+            return;
+        }
+
         if (!$this->getAttribute('orderHash') && $this->getAttribute('basket')) {
             $Basket->toOrder($Order);
         }
@@ -1320,6 +1324,13 @@ class OrderProcess extends QUI\Control
         }
 
         $Project = QUI::getRewrite()->getProject();
+
+        if ($Project === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.process.not.found'
+            ]);
+        }
 
         $sites = $Project->getSitesIds([
             'where' => [

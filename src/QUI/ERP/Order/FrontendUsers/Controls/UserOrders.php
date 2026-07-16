@@ -144,11 +144,14 @@ class UserOrders extends Control implements ControlInterface
 
         if ($Order->hasInvoice()) {
             $Invoice = $Order->getInvoice();
-            $paidStatus = $Invoice->getAttribute('paid_status');
-            $paidDate = $Invoice->getAttribute('paid_date');
 
-            if ((int)$paidStatus === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
-                $showContinuePayment = false;
+            if ($Invoice !== null) {
+                $paidStatus = $Invoice->getAttribute('paid_status');
+                $paidDate = $Invoice->getAttribute('paid_date');
+
+                if ((int)$paidStatus === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
+                    $showContinuePayment = false;
+                }
             }
         }
 
@@ -243,7 +246,7 @@ class UserOrders extends Control implements ControlInterface
 
         try {
             $Product = QUI\ERP\Products\Handler\Products::getProductByProductNo(
-                $Article->getArticleNo()
+                (string)$Article->getArticleNo()
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addDebug($Exception->getMessage());
@@ -274,10 +277,10 @@ class UserOrders extends Control implements ControlInterface
     }
 
     /**
-     * @return QUI\Interfaces\Projects\Site
+     * @return QUI\Interfaces\Projects\Site|null
      * @throws QUI\Exception
      */
-    public function getSite(): QUI\Interfaces\Projects\Site
+    public function getSite(): ?QUI\Interfaces\Projects\Site
     {
         if ($this->getAttribute('Site')) {
             return $this->getAttribute('Site');
