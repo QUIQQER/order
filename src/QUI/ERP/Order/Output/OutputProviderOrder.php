@@ -282,7 +282,7 @@ class OutputProviderOrder implements OutputProviderInterface
     }
 
     /**
-     * @param QUI\ERP\Order\Order $Order
+     * @param QUI\ERP\Order\AbstractOrder $Order
      * @param QUI\ERP\User $Customer
      * @return array<string, mixed>
      */

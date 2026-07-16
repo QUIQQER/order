@@ -962,7 +962,7 @@ class OrderProcess extends QUI\Control
     /**
      * Returns the last step of the order process
      *
-     * @return mixed
+     * @return Controls\AbstractOrderingStep
      *
      * @throws Exception
      * @throws QUI\Exception

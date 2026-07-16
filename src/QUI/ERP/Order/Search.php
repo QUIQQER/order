@@ -401,7 +401,7 @@ class Search extends Singleton
 
     /**
      * @param QueryBuilder $QueryBuilder
-     * @return array<int, array<string, mixed>>
+     * @return list<array<string, mixed>>
      * @throws QUI\Exception
      */
     protected function executeQueryParams(QueryBuilder $QueryBuilder): array

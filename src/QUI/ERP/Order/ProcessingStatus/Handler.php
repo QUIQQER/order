@@ -23,7 +23,7 @@ use function is_array;
 class Handler extends QUI\Utils\Singleton
 {
     /**
-     * @var array<int|string, mixed>|null
+     * @var array<int, string>|null
      */
     protected ?array $list = null;
 
@@ -40,7 +40,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Return all processing status entries from the config
      *
-     * @return array<int|string, mixed>
+     * @return array<int, string>
      */
     public function getList(): array
     {
@@ -64,7 +64,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Refresh the internal list
      *
-     * @return array<int|string, mixed>
+     * @return array<int, string>
      */
     public function refreshList(): array
     {
@@ -76,7 +76,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Return the complete processing status objects
      *
-     * @return Status[]
+     * @return list<Status>
      */
     public function getProcessingStatusList(): array
     {
