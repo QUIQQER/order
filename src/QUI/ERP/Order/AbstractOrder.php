@@ -156,29 +156,29 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     protected int | string $cUser;
 
     /**
-     * @var ArticleList|null
+     * @var ArticleList
      */
-    protected ?ArticleList $Articles = null;
+    protected ArticleList $Articles;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $Comments = null;
+    protected QUI\ERP\Comments $Comments;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $History = null;
+    protected QUI\ERP\Comments $History;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $FrontendMessage = null;
+    protected QUI\ERP\Comments $FrontendMessage;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $StatusMails = null;
+    protected QUI\ERP\Comments $StatusMails;
 
     /**
      * @var null|QUI\ERP\User
@@ -203,9 +203,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     protected bool $statusChanged = false;
 
     /**
-     * @var QUI\ERP\Currency\Currency|null
+     * @var QUI\ERP\Currency\Currency
      */
-    protected ?QUI\ERP\Currency\Currency $Currency = null;
+    protected QUI\ERP\Currency\Currency $Currency;
 
     //shipping
 
@@ -271,6 +271,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      */
     protected function setDataBaseData(array $data): void
     {
+        $this->Articles = new ArticleList();
+        $this->Comments = new QUI\ERP\Comments();
+        $this->History = new QUI\ERP\Comments();
+        $this->FrontendMessage = new QUI\ERP\Comments();
+        $this->StatusMails = new QUI\ERP\Comments();
+        $this->Currency = QUI\ERP\Defaults::getCurrency();
+
         $this->invoiceId = $data['invoice_id'];
         $this->idPrefix = $data['id_prefix'];
 
@@ -336,7 +343,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             }
         }
 
-        // currency
         if (!empty($data['currency_data'])) {
             $currency = json_decode($data['currency_data'], true);
 
@@ -353,13 +359,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             }
         }
 
-        if ($this->Currency === null) {
-            $this->Currency = QUI\ERP\Defaults::getCurrency();
-        }
-
-
         // articles
-        $this->Articles = new ArticleList();
         $this->Articles->setCurrency($this->Currency);
 
         if (isset($data['articles'])) {
@@ -381,29 +381,17 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         $this->Articles->setUser($Customer);
         $this->Articles->calc();
 
-        // comments
-        $this->Comments = new QUI\ERP\Comments();
-
         if (isset($data['comments'])) {
             $this->Comments = QUI\ERP\Comments::unserialize($data['comments']);
         }
-
-        // history
-        $this->History = new QUI\ERP\Comments();
 
         if (isset($data['history'])) {
             $this->History = QUI\ERP\Comments::unserialize($data['history']);
         }
 
-        // frontend messages
-        $this->FrontendMessage = new QUI\ERP\Comments();
-
         if (isset($data['frontendMessages'])) {
             $this->FrontendMessage = QUI\ERP\Comments::unserialize($data['frontendMessages']);
         }
-
-        // status mail
-        $this->StatusMails = new QUI\ERP\Comments();
 
         if (isset($data['status_mails'])) {
             $this->StatusMails = QUI\ERP\Comments::unserialize($data['status_mails']);
@@ -896,10 +884,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      */
     public function getArticles(): ArticleList
     {
-        if (!$this->Articles) {
-            $this->Articles = new ArticleList();
-        }
-
         $this->Articles->setOrder($this);
         $this->Articles->setUser($this->getCustomer());
         $this->Articles->setCurrency($this->getCurrency());
@@ -1047,10 +1031,6 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      */
     public function getCurrency(): QUI\ERP\Currency\Currency
     {
-        if (!$this->Currency) {
-            return QUI\ERP\Defaults::getCurrency();
-        }
-
         return $this->Currency;
     }
 
@@ -1267,7 +1247,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
             }
 
-            $this->Articles?->setUser($this->Customer);
+            $this->Articles->setUser($this->Customer);
+
             return;
         }
 
@@ -1281,7 +1262,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
                 QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
             }
 
-            $this->Articles?->setUser($this->Customer);
+            $this->Articles->setUser($this->Customer);
+
             return;
         }
 
@@ -1298,7 +1280,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             QUI::getEvents()->fireEvent('onQuiqqerOrderCustomerChange', [$this]);
         }
 
-        $this->Articles?->setUser($this->Customer);
+        $this->Articles->setUser($this->Customer);
     }
 
     /**
@@ -2068,9 +2050,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the comments
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getComments(): ?QUI\ERP\Comments
+    public function getComments(): QUI\ERP\Comments
     {
         return $this->Comments;
     }
@@ -2093,9 +2075,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the history object
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getHistory(): ?QUI\ERP\Comments
+    public function getHistory(): QUI\ERP\Comments
     {
         return $this->History;
     }
@@ -2118,9 +2100,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the frontend message object
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getFrontendMessages(): ?QUI\ERP\Comments
+    public function getFrontendMessages(): QUI\ERP\Comments
     {
         return $this->FrontendMessage;
     }
@@ -2161,9 +2143,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the status mails
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getStatusMails(): ?QUI\ERP\Comments
+    public function getStatusMails(): QUI\ERP\Comments
     {
         return $this->StatusMails;
     }

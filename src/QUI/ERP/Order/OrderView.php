@@ -131,17 +131,17 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return null|Comments
+     * @return Comments
      */
-    public function getComments(): ?Comments
+    public function getComments(): Comments
     {
         return $this->Order->getComments();
     }
 
     /**
-     * @return null|Comments
+     * @return Comments
      */
-    public function getHistory(): ?Comments
+    public function getHistory(): Comments
     {
         return $this->Order->getHistory();
     }
@@ -568,9 +568,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return Comments|null
+     * @return Comments
      */
-    public function getFrontendMessages(): ?Comments
+    public function getFrontendMessages(): Comments
     {
         return $this->Order->getFrontendMessages();
     }

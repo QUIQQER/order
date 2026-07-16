@@ -240,9 +240,9 @@ interface OrderInterface
     /**
      * Return the comments
      *
-     * @return null|Comments
+     * @return Comments
      */
-    public function getComments(): ?Comments;
+    public function getComments(): Comments;
 
     //endregion
 
@@ -251,18 +251,18 @@ interface OrderInterface
     /**
      * Return the history object
      *
-     * @return null|Comments
+     * @return Comments
      */
-    public function getHistory(): ?Comments;
+    public function getHistory(): Comments;
 
     //endregion
 
     //region frontend messages
 
     /**
-     * @return null|Comments
+     * @return Comments
      */
-    public function getFrontendMessages(): ?Comments;
+    public function getFrontendMessages(): Comments;
 
     /**
      * @param string $message
