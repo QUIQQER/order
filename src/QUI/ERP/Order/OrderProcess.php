@@ -9,6 +9,7 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\ERP\Order\Controls\AbstractOrderingStep;
 use QUI\ERP\Order\Controls\OrderProcess\Processing;
+use QUI\ERP\Order\OrderProcess\OrderProcessMessage;
 use QUI\ERP\Order\OrderProcess\OrderProcessMessageHandlerInterface;
 use QUI\ERP\Order\Utils\OrderProcessSteps;
 use QUI\ERP\Order\Controls\OrderProcess\Finish as FinishControl;
@@ -18,9 +19,7 @@ use function array_filter;
 use function array_keys;
 use function array_search;
 use function array_values;
-use function call_user_func;
 use function class_exists;
-use function class_implements;
 use function count;
 use function current;
 use function dirname;
@@ -29,6 +28,9 @@ use function floor;
 use function get_class;
 use function in_array;
 use function is_a;
+use function is_array;
+use function is_int;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function key;
@@ -426,11 +428,11 @@ class OrderProcess extends QUI\Control
     /**
      * Execute the payable step
      *
-     * @return bool|string
+     * @return false|string
      *
      * @throws QUI\Exception|\Exception
      */
-    protected function executePayableStatus(): bool | string
+    protected function executePayableStatus(): false | string
     {
         $template = dirname(__FILE__) . '/Controls/OrderProcess.html';
         $Engine = QUI::getTemplateManager()->getEngine();
@@ -481,7 +483,9 @@ class OrderProcess extends QUI\Control
                     'backToShopUrl' => $this->getBackToShopUrl()
                 ]);
 
-                return QUI\Output::getInstance()->parse($Engine->fetch($template));
+                $output = QUI\Output::getInstance()->parse($Engine->fetch($template));
+
+                return is_string($output) ? $output : false;
             }
 
             $Engine->assign([
@@ -500,7 +504,9 @@ class OrderProcess extends QUI\Control
                 'backToShopUrl' => $this->getBackToShopUrl()
             ]);
 
-            return QUI\Output::getInstance()->parse($Engine->fetch($template));
+            $output = QUI\Output::getInstance()->parse($Engine->fetch($template));
+
+            return is_string($output) ? $output : false;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -778,12 +784,12 @@ class OrderProcess extends QUI\Control
      * checks if the order is in the payment process
      *if yes, they try to make the payment step
      *
-     * @return bool|string
+     * @return false|string
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function checkProcessing(): bool | string
+    protected function checkProcessing(): false | string
     {
         $Current = $this->getCurrentStep();
         $Order = $this->getOrder();
@@ -1353,13 +1359,14 @@ class OrderProcess extends QUI\Control
                 $OrderInstance = null;
 
                 foreach ($result as $entry) {
-                    if ($entry && in_array(OrderInterface::class, class_implements($entry))) {
+                    if ($entry instanceof AbstractOrder) {
                         $OrderInstance = $entry;
                     }
                 }
 
-                if ($OrderInstance && in_array(OrderInterface::class, class_implements($OrderInstance))) {
+                if ($OrderInstance !== null) {
                     $this->Order = $OrderInstance;
+
                     return $this->Order;
                 }
             }
@@ -1719,10 +1726,14 @@ class OrderProcess extends QUI\Control
         $Session = QUI::getSession();
         $savedMessages = $Session->get(self::MESSAGES_SESSION_KEY);
 
-        if (empty($savedMessages)) {
+        if (!is_string($savedMessages) || $savedMessages === '') {
             return $messages;
-        } else {
-            $savedMessages = json_decode($savedMessages, true);
+        }
+
+        $savedMessages = json_decode($savedMessages, true);
+
+        if (!is_array($savedMessages)) {
+            return $messages;
         }
 
         if (empty($savedMessages[$orderStep])) {
@@ -1730,9 +1741,26 @@ class OrderProcess extends QUI\Control
         }
 
         foreach ($savedMessages[$orderStep] as $k => $messageData) {
-            $Message = call_user_func([$messageData['messageHandler'], 'getMessage'], $messageData['id']);
+            if (!is_array($messageData)) {
+                unset($savedMessages[$orderStep][$k]);
+                continue;
+            }
 
-            if ($Message) {
+            $messageHandler = $messageData['messageHandler'] ?? null;
+            $messageId = $messageData['id'] ?? null;
+
+            if (
+                !is_string($messageHandler)
+                || !is_int($messageId)
+                || !is_a($messageHandler, OrderProcessMessageHandlerInterface::class, true)
+            ) {
+                unset($savedMessages[$orderStep][$k]);
+                continue;
+            }
+
+            $Message = $messageHandler::getMessage($messageId);
+
+            if ($Message instanceof OrderProcessMessage) {
                 $messages[] = $Message;
                 unset($savedMessages[$orderStep][$k]);
             }
