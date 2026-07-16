@@ -26,9 +26,9 @@ class BasketGuest
     /**
      * List of products
      *
-     * @var ?QUI\ERP\Products\Product\ProductList
+     * @var QUI\ERP\Products\Product\ProductList
      */
-    protected ?ProductList $List = null;
+    protected ProductList $List;
 
     /**
      * Basket constructor.
@@ -61,9 +61,9 @@ class BasketGuest
     /**
      * Return the product list
      *
-     * @return ?ProductList
+     * @return ProductList
      */
-    public function getProducts(): ?ProductList
+    public function getProducts(): ProductList
     {
         return $this->List;
     }

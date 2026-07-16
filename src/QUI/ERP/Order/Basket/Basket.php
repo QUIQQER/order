@@ -36,9 +36,9 @@ class Basket
     /**
      * List of products
      *
-     * @var QUI\ERP\Products\Product\ProductList|null
+     * @var QUI\ERP\Products\Product\ProductList
      */
-    protected ?ProductList $List = null;
+    protected ProductList $List;
 
     /**
      * @var ?QUI\Interfaces\Users\User
@@ -51,9 +51,9 @@ class Basket
     protected ?string $hash = null;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $FrontendMessages = null;
+    protected QUI\ERP\Comments $FrontendMessages;
 
     /**
      * Basket constructor.
@@ -70,6 +70,7 @@ class Basket
 
         $this->List = new ProductList();
         $this->List->duplicate = true;
+        $this->FrontendMessages = new QUI\ERP\Comments();
 
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
             return;
@@ -77,7 +78,6 @@ class Basket
 
         $this->List->setUser($User);
         $this->List->setCurrency(QUI\ERP\Currency\Handler::getRuntimeCurrency());
-        $this->FrontendMessages = new QUI\ERP\Comments();
 
         if (is_bool($basketId)) {
             try {
@@ -223,10 +223,6 @@ class Basket
      */
     public function save(): void
     {
-        if (!$this->List) {
-            return;
-        }
-
         if (!$this->User) {
             return;
         }
@@ -548,9 +544,9 @@ class Basket
     /**
      * Return the frontend message object
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getFrontendMessages(): ?QUI\ERP\Comments
+    public function getFrontendMessages(): QUI\ERP\Comments
     {
         return $this->FrontendMessages;
     }

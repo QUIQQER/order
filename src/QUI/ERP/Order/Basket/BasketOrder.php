@@ -27,24 +27,24 @@ class BasketOrder
     /**
      * List of products
      *
-     * @var ?QUI\ERP\Products\Product\ProductList
+     * @var QUI\ERP\Products\Product\ProductList
      */
-    protected ?ProductList $List = null;
+    protected ProductList $List;
 
     /**
-     * @var ?QUI\Interfaces\Users\User
+     * @var QUI\Interfaces\Users\User
      */
-    protected ?QUI\Interfaces\Users\User $User = null;
+    protected QUI\Interfaces\Users\User $User;
 
     /**
-     * @var ?QUI\ERP\Order\AbstractOrder
+     * @var QUI\ERP\Order\AbstractOrder
      */
-    protected ?QUI\ERP\Order\AbstractOrder $Order = null;
+    protected QUI\ERP\Order\AbstractOrder $Order;
 
     /**
-     * @var ?string
+     * @var string
      */
-    protected ?string $hash = null;
+    protected string $hash;
 
     /**
      * @var int|null
@@ -52,9 +52,9 @@ class BasketOrder
     protected int | null $id = null;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $FrontendMessages = null;
+    protected QUI\ERP\Comments $FrontendMessages;
 
     /**
      * Basket constructor.
@@ -177,9 +177,9 @@ class BasketOrder
     /**
      * Return the product list
      *
-     * @return ?ProductList
+     * @return ProductList
      */
-    public function getProducts(): ?ProductList
+    public function getProducts(): ProductList
     {
         return $this->List;
     }
@@ -420,9 +420,9 @@ class BasketOrder
     /**
      * Return the process number
      *
-     * @return string|null
+     * @return string
      */
-    public function getHash(): ?string
+    public function getHash(): string
     {
         return $this->hash;
     }
@@ -440,9 +440,9 @@ class BasketOrder
     /**
      * Return the assigned order from the basket
      *
-     * @return ?QUI\ERP\Order\AbstractOrder
+     * @return QUI\ERP\Order\AbstractOrder
      */
-    public function getOrder(): ?QUI\ERP\Order\AbstractOrder
+    public function getOrder(): QUI\ERP\Order\AbstractOrder
     {
         return $this->Order;
     }
@@ -506,9 +506,9 @@ class BasketOrder
     /**
      * Return the frontend message object
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getFrontendMessages(): ?QUI\ERP\Comments
+    public function getFrontendMessages(): QUI\ERP\Comments
     {
         return $this->FrontendMessages;
     }
