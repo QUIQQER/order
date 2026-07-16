@@ -139,6 +139,10 @@ class OrderProcess extends QUI\Control
             $this->setAttribute('orderHash', $Order->getUUID());
             $LastStep = end($steps);
 
+            if ($LastStep === false) {
+                return;
+            }
+
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getUUID());
             return;
@@ -166,6 +170,10 @@ class OrderProcess extends QUI\Control
         // order is successful, so no other step must be shown
         if ($Order->isSuccessful()) {
             $LastStep = end($steps);
+
+            if ($LastStep === false) {
+                return;
+            }
 
             $this->setAttribute('step', $LastStep->getName());
             $this->setAttribute('orderHash', $Order->getUUID());
@@ -594,6 +602,10 @@ class OrderProcess extends QUI\Control
         $steps = $this->getSteps();
         $LastStep = end($steps);
 
+        if ($LastStep === false) {
+            return '';
+        }
+
         $this->checkSubmission();
         $this->checkSuccessfulStatus();
 
@@ -662,7 +674,10 @@ class OrderProcess extends QUI\Control
             $previous = false;
         }
 
-        if ($Current->getName() === $Checkout->getName()) {
+        if (
+            $Checkout !== false
+            && $Current->getName() === $Checkout->getName()
+        ) {
             $next = false;
             $payableToOrder = true;
         }
@@ -809,6 +824,9 @@ class OrderProcess extends QUI\Control
             })
         );
 
+        if ($Finish === false) {
+            return false;
+        }
 
         $render = function () use ($Order, $Finish, &$Current) {
             // show processing step
@@ -1022,13 +1040,13 @@ class OrderProcess extends QUI\Control
      * Return the next step
      *
      * @param AbstractOrderingStep|null $StartStep
-     * @return FinishControl|bool|AbstractOrderingStep
+     * @return FinishControl|false|AbstractOrderingStep
      *
      * @throws Exception
      */
     public function getNextStep(
         null | AbstractOrderingStep $StartStep = null
-    ): FinishControl | bool | AbstractOrderingStep {
+    ): FinishControl | false | AbstractOrderingStep {
         if ($StartStep === null) {
             $step = $this->getCurrentStepName();
         } else {
@@ -1154,12 +1172,12 @@ class OrderProcess extends QUI\Control
      * Return the step via its name
      *
      * @param string $name - Name of the step
-     * @return bool|AbstractOrderingStep
+     * @return false|AbstractOrderingStep
      *
      * @throws Exception
      * @throws QUI\Exception
      */
-    protected function getStepByName(string $name): bool | AbstractOrderingStep
+    protected function getStepByName(string $name): false | AbstractOrderingStep
     {
         $steps = $this->getSteps();
 
