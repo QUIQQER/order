@@ -549,13 +549,13 @@ class Mail
         $user = trim($user);
 
         if (empty($user)) {
-            $user = $Address->getName();
+            $user = $Address?->getName() ?: '';
         }
 
         // email
         $email = $Customer->getAttribute('email');
 
-        if (empty($email)) {
+        if (empty($email) && $Address !== null) {
             $mailList = $Address->getMailList();
 
             if (isset($mailList[0])) {
@@ -572,13 +572,13 @@ class Mail
             'systemCompany' => self::getCompanyName(),
             'user' => $user,
             'name' => $user,
-            'company' => $Customer->getStandardAddress()->getAttribute('company'),
+            'company' => $Address?->getAttribute('company') ?: '',
             'companyOrName' => self::getCompanyOrName($Customer),
-            'address' => $Address->render(),
+            'address' => $Address?->render() ?: '',
             'email' => $email,
-            'salutation' => $Address->getAttribute('salutation'),
-            'firstname' => $Address->getAttribute('firstname'),
-            'lastname' => $Address->getAttribute('lastname')
+            'salutation' => $Address?->getAttribute('salutation') ?: '',
+            'firstname' => $Address?->getAttribute('firstname') ?: '',
+            'lastname' => $Address?->getAttribute('lastname') ?: ''
         ];
     }
 
@@ -619,9 +619,10 @@ class Mail
     protected static function getCompanyOrName(QUI\Interfaces\Users\User $Customer): string
     {
         $Address = $Customer->getStandardAddress();
+        $company = $Address?->getAttribute('company');
 
-        if (!empty($Address->getAttribute('company'))) {
-            return $Address->getAttribute('company');
+        if (!empty($company)) {
+            return $company;
         }
 
         return $Customer->getName();
