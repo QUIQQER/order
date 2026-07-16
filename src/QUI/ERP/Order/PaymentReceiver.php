@@ -23,9 +23,9 @@ use function is_string;
 class PaymentReceiver implements PaymentReceiverInterface
 {
     /**
-     * @var ?AbstractOrder
+     * @var AbstractOrder
      */
-    protected AbstractOrder | null $Order = null;
+    protected AbstractOrder $Order;
 
     /**
      * Get entity type descriptor
