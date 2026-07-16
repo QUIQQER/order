@@ -129,11 +129,11 @@ class Search extends Singleton
             }
 
             if ($filter === 'from' && is_numeric($val)) {
-                $val = date('Y-m-d 00:00:00', $val);
+                $val = date('Y-m-d 00:00:00', (int)$val);
             }
 
             if ($filter === 'to' && is_numeric($val)) {
-                $val = date('Y-m-d 23:59:59', $val);
+                $val = date('Y-m-d 23:59:59', (int)$val);
             }
 
             $this->filter[] = [
@@ -551,7 +551,7 @@ class Search extends Singleton
 
             if (empty($orderData['c_date'])) {
                 $orderData['c_date'] = $Locale->formatDate(
-                    strtotime($Order->getCreateDate()),
+                    $Order->getCreateDate(),
                     $defaultTimeFormat
                 );
             }

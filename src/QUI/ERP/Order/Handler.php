@@ -573,7 +573,7 @@ class Handler extends Singleton
         return [
             'orderId' => $Order->getPrefixedNumber(),
             'hash' => $Order->getUUID(),
-            'date' => $CustomerLocale->formatDate(strtotime($Order->getCreateDate())),
+            'date' => $CustomerLocale->formatDate($Order->getCreateDate()),
             'systemCompany' => $company,
 
             'contactPerson' => $contactPerson,

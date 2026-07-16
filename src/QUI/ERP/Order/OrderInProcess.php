@@ -517,14 +517,16 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
         if (QUI\ERP\Currency\Conf::accountingCurrencyEnabled()) {
             $AccountingCurrency = QUI\ERP\Currency\Conf::getAccountingCurrency();
 
-            $acData = [
-                'accountingCurrency' => $AccountingCurrency->toArray(),
-                'currency' => $this->Currency->toArray(),
-                'rate' => $this->Currency->getExchangeRate($AccountingCurrency)
-            ];
+            if ($AccountingCurrency !== null) {
+                $acData = [
+                    'accountingCurrency' => $AccountingCurrency->toArray(),
+                    'currency' => $this->Currency->toArray(),
+                    'rate' => $this->Currency->getExchangeRate($AccountingCurrency)
+                ];
 
-            $Order->setData('accountingCurrencyData', $acData);
-            $Order->save();
+                $Order->setData('accountingCurrencyData', $acData);
+                $Order->save();
+            }
         }
 
         $this->delete();
@@ -545,9 +547,11 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             return $Order;
         }
 
+        $Payment = $Order->getPayment();
+
         if (
             Settings::getInstance()->createInvoiceByPayment()
-            && $Order->getPayment()->isSuccessful($Order->getUUID())
+            && $Payment?->isSuccessful($Order->getUUID()) === true
         ) {
             $Order->createInvoice(QUI::getUsers()->getSystemUser());
 
@@ -556,7 +560,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         if (
             Settings::getInstance()->createInvoiceByPayment()
-            && $Order->getPayment()->isSuccessful($Order->getUUID())
+            && $Payment?->isSuccessful($Order->getUUID()) === true
         ) {
             $Order->createInvoice(QUI::getUsers()->getSystemUser());
         }

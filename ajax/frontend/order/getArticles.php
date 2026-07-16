@@ -19,6 +19,10 @@ QUI::getAjax()->registerFunction(
 
         $Order = $OrderProcess->getOrder();
 
+        if ($Order === null) {
+            return [];
+        }
+
         return $Order->getArticles()->toArray();
     },
     ['orderHash']

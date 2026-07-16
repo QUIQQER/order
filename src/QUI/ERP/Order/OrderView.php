@@ -169,9 +169,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     {
         $createDate = $this->Order->getCreateDate();
         $createDate = strtotime($createDate);
-        $DateFormatter = QUI::getLocale()->getDateFormatter();
 
-        return $DateFormatter->format($createDate);
+        if ($createDate === false) {
+            return '';
+        }
+
+        $DateFormatter = QUI::getLocale()->getDateFormatter();
+        $formattedDate = $DateFormatter->format($createDate);
+
+        return is_string($formattedDate) ? $formattedDate : '';
     }
 
     /**
@@ -218,8 +224,13 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         $date = $this->Order->getCreateDate();
         $Formatter = $Locale->getDateFormatter();
+        $timestamp = strtotime($date);
 
-        return $Formatter->format(strtotime($date));
+        if ($timestamp === false) {
+            return false;
+        }
+
+        return $Formatter->format($timestamp);
     }
 
     /**
@@ -489,17 +500,24 @@ class OrderView extends QUI\QDOM implements OrderInterface
         /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
         $Transaction = array_pop($transactions);
         $Payment = $Transaction->getPayment(); // payment method
-        $PaymentType = $this->getPayment()->getPaymentType(); // payment method
+        $OrderPayment = $this->getPayment();
+        $PaymentType = $OrderPayment?->getPaymentType(); // payment method
 
-        $payment = $Payment->getTitle();
+        $payment = $Payment?->getTitle() ?? $PaymentType?->getTitle() ?? '';
         $Formatter = $Locale->getDateFormatter();
 
-        if (get_class($PaymentType) === $Payment->getClass()) {
+        if (
+            $Payment !== null
+            && $PaymentType !== null
+            && get_class($PaymentType) === $Payment->getClass()
+        ) {
             $payment = $PaymentType->getTitle();
         }
 
+        $transactionDate = strtotime($Transaction->getDate());
+
         return $Locale->get('quiqqer/order', 'order.view.payment.transaction.text', [
-            'date' => $Formatter->format(strtotime($Transaction->getDate())),
+            'date' => $transactionDate === false ? '' : $Formatter->format($transactionDate),
             'payment' => $payment
         ]);
     }

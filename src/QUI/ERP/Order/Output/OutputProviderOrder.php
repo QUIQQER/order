@@ -436,8 +436,12 @@ class OutputProviderOrder implements OutputProviderInterface
 
         if (!$date) {
             $date = time();
-        } else {
+        } elseif (is_string($date)) {
             $date = strtotime($date);
+        }
+
+        if ($date === false) {
+            return false;
         }
 
         return $Formatter->format($date);
@@ -458,7 +462,13 @@ class OutputProviderOrder implements OutputProviderInterface
             }
 
             // Check payment type (must be "order" or "pay in advance")
-            $paymentTypeClassName = $Order->getPayment()->getPaymentType();
+            $Payment = $Order->getPayment();
+
+            if ($Payment === null) {
+                return false;
+            }
+
+            $paymentTypeClassName = $Payment->getPaymentType();
 
             $allowedPaymentTypeClasses = [
                 AdvancePayment::class,

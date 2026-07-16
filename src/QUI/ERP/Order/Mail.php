@@ -604,8 +604,12 @@ class Mail
 
         if (!$date) {
             $date = time();
-        } else {
+        } elseif (is_string($date)) {
             $date = strtotime($date);
+        }
+
+        if ($date === false) {
+            return false;
         }
 
         return $Formatter->format($date);

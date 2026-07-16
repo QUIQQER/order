@@ -39,6 +39,11 @@ class CleanupOrderInProcess
 
         $days   = $days * -1;
         $c_date = strtotime($days . ' day');
+
+        if ($c_date === false) {
+            return;
+        }
+
         $c_date = date('Y-m-d H:i:s', $c_date);
 
         $Handler = QUI\ERP\Order\Handler::getInstance();

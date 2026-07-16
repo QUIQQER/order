@@ -18,6 +18,11 @@ QUI::getAjax()->registerFunction(
         ]);
 
         $Order = $OrderProcess->getOrder();
+
+        if ($Order === null) {
+            return;
+        }
+
         $Order->clear();
     },
     ['orderHash']

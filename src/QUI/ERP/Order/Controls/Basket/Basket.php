@@ -156,7 +156,7 @@ class Basket extends QUI\Control
     protected function getProject(): QUI\Projects\Project
     {
         if ($this->Project === null) {
-            $this->Project = QUI::getProjectManager()->get();
+            $this->Project = parent::getProject();
         }
 
         return $this->Project;

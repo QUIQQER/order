@@ -23,6 +23,14 @@ QUI::getAjax()->registerFunction(
         ]);
 
         $Order = $OrderProcess->getOrder();
+
+        if ($Order === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.not.found'
+            ]);
+        }
+
         $Current = $OrderProcess->getCurrentStep();
 
         $OrderProcess->setAttribute('step', $Current->getName());

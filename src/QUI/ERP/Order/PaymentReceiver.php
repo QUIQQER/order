@@ -136,7 +136,7 @@ class PaymentReceiver implements PaymentReceiverInterface
             }
         }
 
-        return date_create();
+        return new DateTime();
     }
 
     /**

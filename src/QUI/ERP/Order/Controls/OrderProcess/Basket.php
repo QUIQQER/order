@@ -61,9 +61,14 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $this->setAttribute('nodeName', 'section');
 
         $messages = $this->Basket->getFrontendMessages()->toArray();
+        $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return;
+        }
 
         foreach ($messages as $message) {
-            $this->getOrder()->addFrontendMessage($message['message']);
+            $Order->addFrontendMessage($message['message']);
         }
     }
 

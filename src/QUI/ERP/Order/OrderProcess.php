@@ -126,6 +126,10 @@ class OrderProcess extends QUI\Control
         $step = $this->getAttribute('step');
         $Order = $this->getOrder();
 
+        if ($Order === null) {
+            return;
+        }
+
         $customerUUID = $Order->getCustomer()->getUUID();
         $userUUID = $User->getUUID();
 
@@ -259,10 +263,16 @@ class OrderProcess extends QUI\Control
         }
 
         try {
-            $Payment = $this->getOrder()->getPayment();
+            $Order = $this->getOrder();
 
-            if ($Payment && $Payment->isSuccessful($this->getOrder()->getUUID())) {
-                $this->getOrder()->setSuccessfulStatus();
+            if ($Order === null) {
+                return;
+            }
+
+            $Payment = $Order->getPayment();
+
+            if ($Payment && $Payment->isSuccessful($Order->getUUID())) {
+                $Order->setSuccessfulStatus();
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -310,6 +320,14 @@ class OrderProcess extends QUI\Control
 
         // Gehe die verschiedenen Processing Provider durch
         $OrderInProcess = $this->getOrder();
+
+        if ($OrderInProcess === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.not.found'
+            ]);
+        }
+
         $success = [];
 
         $failedPaymentProcedure = Settings::getInstance()->get('order', 'failedPaymentProcedure');
@@ -340,13 +358,13 @@ class OrderProcess extends QUI\Control
         if ($OrderInProcess instanceof OrderInProcess) {
             $Order = $OrderInProcess->createOrder();
             $OrderInProcess->delete();
-
-            $this->Order = $Order;
         } else {
-            $this->Order = $OrderInProcess;
+            $Order = $OrderInProcess;
         }
 
-        $this->setAttribute('orderHash', $this->Order->getUUID());
+        $this->Order = $Order;
+
+        $this->setAttribute('orderHash', $Order->getUUID());
         $this->setAttribute('current', 'Finish');
         $this->setAttribute('step', 'Finish');
 
@@ -362,26 +380,33 @@ class OrderProcess extends QUI\Control
      */
     protected function cleanup(): void
     {
+        $Order = $this->Order;
+
+        if ($Order === null) {
+            return;
+        }
+
         // set all to successful
-        if (!$this->Order->isSuccessful()) {
+        if (!$Order->isSuccessful()) {
             return;
         }
 
         // if temp order exist, and a normal order kill it
         try {
             $ProcessOrder = Handler::getInstance()->getOrderInProcessByHash(
-                $this->Order->getUUID()
+                $Order->getUUID()
             );
 
-            $Order = Handler::getInstance()->getOrderByHash(
+            $ResolvedOrder = Handler::getInstance()->getOrderByHash(
                 $ProcessOrder->getUUID()
             );
 
-            if ($Order instanceof Order) {
+            if ($ResolvedOrder instanceof Order) {
                 $ProcessOrder->delete();
             }
 
-            $this->Order = $Order;
+            $this->Order = $ResolvedOrder;
+            $Order = $ResolvedOrder;
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -391,7 +416,7 @@ class OrderProcess extends QUI\Control
             $this->Basket->save();
         } else {
             try {
-                $Basket = Handler::getInstance()->getBasketByHash($this->Order->getUUID());
+                $Basket = Handler::getInstance()->getBasketByHash($Order->getUUID());
                 $Basket->successful();
                 $Basket->save();
             } catch (QUI\Exception $Exception) {
@@ -415,20 +440,29 @@ class OrderProcess extends QUI\Control
         try {
             $this->send();
 
+            $Order = $this->getOrder();
+
+            if ($Order === null) {
+                return false;
+            }
+
             // processing step
             // eq: payment gateway
             if ($this->ProcessingProvider !== null) {
                 $ProcessingStep = $this->getProcessingStep();
                 $ProcessingStep->setProcessingProvider($this->ProcessingProvider);
-                $ProcessingStep->setAttribute('Order', $this->getOrder());
+                $ProcessingStep->setAttribute('Order', $Order);
 
                 $this->setAttribute('step', $ProcessingStep->getName());
 
                 // shows payment changing, if allowed
                 $changePayment = false;
-                $Payment = $this->getOrder()->getPayment();
+                $Payment = $Order->getPayment();
 
-                if (Settings::getInstance()->get('paymentChangeable', $Payment->getId())) {
+                if (
+                    $Payment !== null
+                    && Settings::getInstance()->get('paymentChangeable', $Payment->getId())
+                ) {
                     $changePayment = true;
                 }
 
@@ -576,10 +610,18 @@ class OrderProcess extends QUI\Control
         // check if order is finished
         $Order = $this->getOrder();
 
-        if ($Order && $Order->isSuccessful()) {
+        if ($Order === null) {
+            return '';
+        }
+
+        if ($Order->isSuccessful()) {
             if ($Order instanceof OrderInProcess && !$Order->getOrderId()) {
                 $this->send();
                 $Order = $this->Order;
+
+                if ($Order === null) {
+                    return '';
+                }
             }
 
             $this->setAttribute('step', $LastStep->getName());
@@ -644,18 +686,26 @@ class OrderProcess extends QUI\Control
             $error = $Exception->getMessage();
 
             if (get_class($Current) === FinishControl::class) {
-                $Current = $this->getPreviousStep();
+                $Previous = $this->getPreviousStep();
 
-                if (method_exists($Current, 'forceSave')) {
-                    $Current->forceSave();
-                }
+                if ($Previous !== null) {
+                    $Current = $Previous;
 
-                try {
-                    $Current->validate();
-                    $error = false;
-                } catch (\Exception $Exception) {
-                    $error = $Exception->getMessage();
-                    $Current = $this->getPreviousStep();
+                    if (method_exists($Current, 'forceSave')) {
+                        $Current->forceSave();
+                    }
+
+                    try {
+                        $Current->validate();
+                        $error = false;
+                    } catch (\Exception $Exception) {
+                        $error = $Exception->getMessage();
+                        $Previous = $this->getPreviousStep();
+
+                        if ($Previous !== null) {
+                            $Current = $Previous;
+                        }
+                    }
                 }
             }
 
@@ -666,7 +716,11 @@ class OrderProcess extends QUI\Control
             }
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
-            $Current = $this->getPreviousStep();
+            $Previous = $this->getPreviousStep();
+
+            if ($Previous !== null) {
+                $Current = $Previous;
+            }
         }
 
         $Project = $this->getSite()->getProject();
@@ -703,7 +757,7 @@ class OrderProcess extends QUI\Control
             'CurrentStep' => $Current,
             'currentStepContent' => QUI\ControlUtils::parse($Current),
             'Site' => $this->getSite(),
-            'Order' => $this->getOrder(),
+            'Order' => $Order,
             'hash' => $this->getStepHash(),
             'messages' => $this->getStepMessages(get_class($Current)),
             'frontendMessages' => $frontendMessages,
@@ -850,7 +904,7 @@ class OrderProcess extends QUI\Control
         if (
             $Finish
             && $Finish->getName() === $Current->getName()
-            && $this->getOrder()->getDataEntry('orderedWithCosts')
+            && $Order->getDataEntry('orderedWithCosts')
         ) {
             return $render();
         }
@@ -859,7 +913,7 @@ class OrderProcess extends QUI\Control
             return false;
         }
 
-        if ($this->getOrder()->getDataEntry('orderedWithCosts')) {
+        if ($Order->getDataEntry('orderedWithCosts')) {
             return $render();
         }
 
@@ -1059,9 +1113,15 @@ class OrderProcess extends QUI\Control
         $steps = $this->getSteps();
 
         if ($step === $Processing->getName()) {
+            $Order = $this->getOrder();
+
+            if ($Order === null) {
+                return null;
+            }
+
             // return checkout step
             QUI::getSession()->set(
-                'termsAndConditions-' . $this->getOrder()->getUUID(),
+                'termsAndConditions-' . $Order->getUUID(),
                 0
             );
 

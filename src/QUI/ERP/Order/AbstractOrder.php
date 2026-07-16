@@ -810,11 +810,13 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     public function isApproved(): bool
     {
         try {
-            if (!$this->getPayment()) {
+            $Payment = $this->getPayment();
+
+            if ($Payment === null) {
                 return false;
             }
 
-            $isApproved = $this->getPayment()->getPaymentType()->isApproved($this->getUUID());
+            $isApproved = $Payment->getPaymentType()->isApproved($this->getUUID());
             $isSuccessful = $this->isSuccessful();
 
             return $isApproved && $isSuccessful;
@@ -831,7 +833,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     public function getInvoiceType(): string
     {
         try {
-            return $this->getInvoice()->getType();
+            $Invoice = $this->getInvoice();
+
+            return $Invoice?->getType() ?? '';
         } catch (QUI\Exception) {
             return '';
         }
@@ -1305,6 +1309,11 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     public function setCreationDate($date): void
     {
         $date = strtotime($date);
+
+        if ($date === false) {
+            return;
+        }
+
         $date = date('Y-m-d H:i:s', $date);
 
         $this->setAttribute('c_date', $date);
@@ -1684,10 +1693,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             && class_exists('QUI\ERP\Accounting\Invoice\Invoice')
             && class_exists('QUI\ERP\Accounting\Invoice\InvoiceTemporary')
         ) {
-            $invoice = $this->getInvoice();
+            $Invoice = $this->getInvoice();
 
-            if (method_exists($invoice, 'linkTransaction')) {
-                $invoice->linkTransaction($Transaction);
+            if ($Invoice !== null && method_exists($Invoice, 'linkTransaction')) {
+                $Invoice->linkTransaction($Transaction);
             }
         }
 
@@ -2134,7 +2143,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      */
     public function addStatusMail(string $message): void
     {
-        $message = preg_replace('#<br\s*/?>#i', "\n", $message);
+        $message = preg_replace('#<br\s*/?>#i', "\n", $message) ?? $message;
         $message = strip_tags($message);
 
         $this->StatusMails->addComment($message);
@@ -2218,7 +2227,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
 
         $OldStatus = $this->getProcessingStatus();
 
-        if ($OldStatus->getId() !== $Status->getId()) {
+        if ($OldStatus === null || $OldStatus->getId() !== $Status->getId()) {
             $this->status = $Status->getId();
             $this->Status = $Status;
 

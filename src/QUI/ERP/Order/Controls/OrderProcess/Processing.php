@@ -65,9 +65,14 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $Engine = QUI::getTemplateManager()->getEngine();
+        $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return '';
+        }
 
         try {
-            $display = $this->ProcessingProvider->getDisplay($this->getOrder(), $this);
+            $display = $this->ProcessingProvider->getDisplay($Order, $this);
             $hasErrors = $this->ProcessingProvider->hasErrors();
         } catch (Exception $Exception) {
             QUI\System\Log::write($Exception->getMessage());
@@ -101,6 +106,11 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         // check if payment can be changed
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return '';
+        }
+
         $Payment = $Order->getPayment();
 
         if ($Payment && QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
@@ -111,7 +121,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Engine = QUI::getTemplateManager()->getEngine();
 
             $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
-                'Order' => $this->getOrder()
+                'Order' => $Order
             ]);
 
             $Engine->assign([
@@ -184,6 +194,11 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         // check if payment can be changed
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return;
+        }
+
         $Payment = $Order->getPayment();
 
         if (QUI\ERP\Order\Utils\Utils::isPaymentChangeable($Payment) === false) {
@@ -191,7 +206,7 @@ class Processing extends QUI\ERP\Order\Controls\AbstractOrderingStep
         }
 
         $PaymentStep = new QUI\ERP\Accounting\Payments\Order\Payment([
-            'Order' => $this->getOrder(),
+            'Order' => $Order,
             'payment' => $payment
         ]);
 
