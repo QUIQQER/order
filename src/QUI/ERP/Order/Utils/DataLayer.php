@@ -36,6 +36,10 @@ use QUI\ERP\Products\Product\Types\VariantChild;
  */
 class DataLayer
 {
+    /**
+     * @param QUI\Locale|null $Locale
+     * @return array<string, mixed>
+     */
     public static function parseProduct(Product $Product, $Locale = null): array
     {
         $manufacturer = '';
@@ -57,7 +61,7 @@ class DataLayer
         $product = [
             'item_id' => $Product->getField(Fields::FIELD_PRODUCT_NO)->getValue(),
             'item_name' => $Product->getTitle(),
-            'category' => $Product->getCategory()->getTitle(),
+            'category' => $Product->getCategory()?->getTitle() ?? '',
             'price' => $Product->getPrice()->getPrice(),
             'currency' => $Product->getPrice()->getCurrency()->getCode(),
             'manufacturer' => $manufacturer,
@@ -77,8 +81,13 @@ class DataLayer
         return $product;
     }
 
-    public static function parseArticle(QUI\ERP\Accounting\Article $Article, null | QUI\Locale $Locale = null): array
-    {
+    /**
+     * @return array<string, mixed>
+     */
+    public static function parseArticle(
+        QUI\ERP\Accounting\ArticleInterface $Article,
+        null | QUI\Locale $Locale = null
+    ): array {
         try {
             $Product = Products::getProduct($Article->getId());
             $item = self::parseProduct($Product);
@@ -104,6 +113,9 @@ class DataLayer
         return $item;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function parseOrder(QUI\ERP\Order\OrderInterface $Order, null | QUI\Locale $Locale = null): array
     {
         $calculations = $Order->getArticles()->getCalculations();

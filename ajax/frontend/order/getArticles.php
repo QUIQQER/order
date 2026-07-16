@@ -10,7 +10,7 @@
  * @param integer $orderHash
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getArticles',
     function ($orderHash) {
         $OrderProcess = new QUI\ERP\Order\OrderProcess([
@@ -18,6 +18,10 @@ QUI::$Ajax->registerFunction(
         ]);
 
         $Order = $OrderProcess->getOrder();
+
+        if ($Order === null) {
+            return [];
+        }
 
         return $Order->getArticles()->toArray();
     },

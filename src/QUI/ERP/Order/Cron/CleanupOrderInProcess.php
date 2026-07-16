@@ -6,9 +6,8 @@
 
 namespace QUI\ERP\Order\Cron;
 
-use Exception;
-use PDO;
 use QUI;
+use QUI\Utils\Doctrine;
 
 use function date;
 use function strtotime;
@@ -27,7 +26,7 @@ class CleanupOrderInProcess
     /**
      * Execute the cron
      *
-     * @param array $params - cron parameter
+     * @param array<string, mixed> $params - cron parameter
      * @throws QUI\Exception
      */
     public static function run(array $params = []): void
@@ -40,51 +39,50 @@ class CleanupOrderInProcess
 
         $days   = $days * -1;
         $c_date = strtotime($days . ' day');
+
+        if ($c_date === false) {
+            return;
+        }
+
         $c_date = date('Y-m-d H:i:s', $c_date);
 
         $Handler = QUI\ERP\Order\Handler::getInstance();
         $table   = $Handler->tableOrderProcess();
 
-        $orders = QUI::getDataBase()->fetch([
-            'from'  => $table,
-            'where' => [
-                'c_date' => [
-                    'value' => $c_date,
-                    'type'  => '<='
-                ]
-            ]
-        ]);
+        $Connection = QUI::getDataBaseConnection();
+        $orderIds = $Connection->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($table))
+            ->where(Doctrine::quoteIdentifier('c_date') . ' <= :date')
+            ->setParameter('date', $c_date)
+            ->executeQuery()
+            ->fetchFirstColumn();
 
-        foreach ($orders as $order) {
-            QUI::getDataBase()->delete($table, [
-                'id' => $order['id']
-            ]);
+        foreach ($orderIds as $orderId) {
+            $Connection->delete($table, ['id' => $orderId]);
         }
 
         // unique orders deletion
         // BasketConditions::TYPE_2 orders
-        $PDO    = QUI::getDataBase()->getPDO();
         $c_date = strtotime('-1 day');
         $c_date = date('Y-m-d H:i:s', $c_date);
 
-        $query     = "SELECT * FROM $table where data LIKE :search AND c_date <= :date";
-        $Statement = $PDO->prepare($query);
-
-        $Statement->bindValue('search', '%"basketConditionOrder":2%');
-        $Statement->bindValue('date', $c_date);
-        $Statement->execute();
-
         try {
-            $result = $Statement->fetchAll(PDO::FETCH_ASSOC);
+            $orderIds = $Connection->createQueryBuilder()
+                ->select(Doctrine::quoteIdentifier('id'))
+                ->from(Doctrine::quoteIdentifier($table))
+                ->where(Doctrine::quoteIdentifier('data') . ' LIKE :search')
+                ->andWhere(Doctrine::quoteIdentifier('c_date') . ' <= :date')
+                ->setParameter('search', '%"basketConditionOrder":2%')
+                ->setParameter('date', $c_date)
+                ->executeQuery()
+                ->fetchFirstColumn();
 
-            foreach ($result as $orderData) {
-                QUI::getDataBase()->delete($table, [
-                    'id' => $orderData['id']
-                ]);
+            foreach ($orderIds as $orderId) {
+                $Connection->delete($table, ['id' => $orderId]);
             }
-        } catch (Exception $Exception) {
+        } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
-            QUI\System\Log::writeRecursive($query);
         }
     }
 }

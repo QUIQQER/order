@@ -13,7 +13,7 @@ use QUI\ERP\Order\Search;
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_search',
     function ($params, $filter) {
         $Search = Search::getInstance();

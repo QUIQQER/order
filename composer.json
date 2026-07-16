@@ -3,36 +3,41 @@
   "type": "quiqqer-module",
   "description": "QUIQQER ERP Order",
   "license": [
-    "GPL-3.0+",
+    "GPL-3.0-or-later",
     "PCSG QEL-1.0"
   ],
   "authors": [],
   "support": {
     "email": "support@pcsg.de",
-    "url": "httpa://www.pcsg.de"
+    "url": "https://www.pcsg.de"
   },
   "require": {
-    "php": "^8",
+    "php": "^8.2",
     "php81_bc/strftime": "^0.7",
     "ramsey/uuid": "^3|^4",
-    "quiqqer/core": "^2.9",
-    "quiqqer/currency": "^2.2",
-    "quiqqer/qui": "^1.6.7",
-    "quiqqer/erp": "^3.7.1",
-    "quiqqer/countries": "^2",
-    "quiqqer/areas": "^2",
-    "quiqqer/products": "^2",
-    "quiqqer/payments": "^3",
-    "quiqqer/tax": "^2",
-    "quiqqer/payment-transactions": "^2",
-    "quiqqer/fontawesome": "^4|^5|^6",
-    "quiqqer/data-layer": "^2",
+    "chillerlan/php-qrcode": "^6",
+    "quiqqer/core": "^2.25",
+    "quiqqer/currency": "^2.3.2",
+    "quiqqer/qui": "^1.12.3",
+    "quiqqer/erp": "^4.0.3",
+    "quiqqer/countries": "^2.0.6",
+    "quiqqer/areas": "^2.2",
+    "quiqqer/products": "^2.8.2",
+    "quiqqer/payments": "^4",
+    "quiqqer/tax": "^2.0.6",
+    "quiqqer/payment-transactions": "^2.1.1",
+    "quiqqer/fontawesome": "^6.2",
+    "quiqqer/data-layer": "^2.0.1",
     "quiqqer-asset/navigo": "^5",
     "quiqqer-asset/history-events": "^1"
   },
   "autoload": {
     "psr-4": {
-      "QUI\\ERP\\Order\\": "src/QUI/ERP/Order",
+      "QUI\\ERP\\Order\\": "src/QUI/ERP/Order"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "QUITests\\ERP\\Order\\": "tests/QUITests/ERP/Order"
     }
   },

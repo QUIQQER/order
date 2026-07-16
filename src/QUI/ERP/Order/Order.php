@@ -48,7 +48,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * variable data for developers
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected mixed $customData = [];
 
@@ -195,10 +195,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             QUI::getUserBySession(),
             $this->getGlobalProcessId()
         );
+        $Customer = $this->getCustomer();
 
-        if ($this->getCustomer()) {
-            $TemporaryInvoice->setCustomer($this->getCustomer());
-        }
+        $TemporaryInvoice->setCustomer($Customer);
 
         $this->History->addComment(
             QUI::getLocale()->get(
@@ -214,7 +213,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         $this->updateHistory();
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['temporary_invoice_id' => $TemporaryInvoice->getUUID()],
             ['hash' => $this->getUUID()]
@@ -234,7 +233,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         $invoiceAddressId = $this->getInvoiceAddress()->getUUID();
 
         if (empty($invoiceAddressId)) {
-            $invoiceAddressId = $this->getCustomer()->getStandardAddress()->getUUID();
+            $invoiceAddressId = $Customer->getStandardAddress()->getUUID();
         }
 
         if ($this->getDeliveryAddress()->getUUID()) {
@@ -248,10 +247,12 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'order_id' => $this->getUUID(),
             'order_date' => $this->getCreateDate(),
             'project_name' => $this->getAttribute('project_name'),
-            'customer_id' => $this->getCustomer()?->getUUID(),
-            'customer_data' => $this->getCustomer()?->getAttributes(),
+            'customer_id' => $Customer->getUUID(),
+            'customer_data' => $Customer->getAttributes(),
             'payment_method' => $payment,
-            'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser($this->customerId),
+            'time_for_payment' => QUI\ERP\Customer\Utils::getInstance()->getPaymentTimeForUser(
+                $Customer->getUUID()
+            ),
             'invoice_address_id' => $invoiceAddressId,
             'invoice_address' => $invoiceAddress,
             'delivery_address' => $deliveryAddress,
@@ -294,16 +295,18 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
 
         // save payment data
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             InvoiceHandler::getInstance()->temporaryInvoiceTable(),
             [
                 'shipping_id' => $this->shippingId,
                 'paid_status' => $this->getAttribute('paid_status'),
-                'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData)),
+                'payment_data' => QUI\Security\Encryption::encrypt(
+                    json_encode($this->paymentData, JSON_THROW_ON_ERROR)
+                ),
                 'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency' => $this->getCurrency()->getCode(),
-                'customer_id' => $this->getCustomer()?->getUUID(),
-                'customer_data' => json_encode($this->getCustomer()?->getAttributes()),
+                'customer_id' => $this->getCustomer()->getUUID(),
+                'customer_data' => json_encode($this->getCustomer()->getAttributes()),
             ],
             ['hash' => $TemporaryInvoice->getUUID()]
         );
@@ -330,7 +333,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         if (Settings::getInstance()->get('order', 'autoInvoicePost')) {
             $Invoice = $TemporaryInvoice->post($PermissionUser);
 
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
                 ['hash' => $this->getUUID()]
@@ -522,7 +525,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Return the order data for saving
      *
-     * @return array
+     * @return array<string, mixed>
      * @throws QUI\Exception
      */
     protected function getDataForSaving(): array
@@ -638,7 +641,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'payment_method' => $paymentMethod,
             'payment_time' => null,
             'payment_data' => QUI\Security\Encryption::encrypt(
-                json_encode($this->paymentData)
+                json_encode($this->paymentData, JSON_THROW_ON_ERROR)
             ),
             'payment_address' => '',
             // verschlüsselt
@@ -741,7 +744,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             ]
         );
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             $data,
             ['hash' => $this->getUUID()]
@@ -811,7 +814,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
      */
     public function updateHistory(): void
     {
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['history' => $this->History->toJSON()],
             ['hash' => $this->getUUID()]
@@ -839,7 +842,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             return;
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['paid_status' => $status],
             ['hash' => $this->getUUID()]
@@ -939,7 +942,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $calculation['paidData'] = [];
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             [
                 'paid_data' => json_encode($calculation['paidData']),
@@ -978,7 +981,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         QUI::getEvents()->fireEvent('quiqqerOrderDeleteBegin', [$this]);
 
-        QUI::getDataBase()->delete(
+        QUI::getDataBaseConnection()->delete(
             Handler::getInstance()->table(),
             ['hash' => $this->getUUID()]
         );
@@ -1031,7 +1034,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $data['global_process_id'] = $NewOrder->getUUID();
         }
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             $data,
             ['hash' => $NewOrder->getUUID()]
@@ -1089,7 +1092,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         QUI::getEvents()->fireEvent('quiqqerOrderClearBegin', [$this]);
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             [
                 'articles' => '[]',
@@ -1121,7 +1124,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     protected function saveFrontendMessages(): void
     {
         try {
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->table(),
                 ['frontendMessages' => $this->FrontendMessage->toJSON()],
                 ['hash' => $this->getUUID()]
@@ -1176,7 +1179,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     {
         $this->customData[$key] = $value;
 
-        QUI::getDataBase()->update(
+        QUI::getDataBaseConnection()->update(
             Handler::getInstance()->table(),
             ['custom_data' => json_encode($this->customData)],
             ['id' => $this->id]
@@ -1191,7 +1194,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Return a wanted custom data entry
      *
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
     public function getCustomDataEntry($key): mixed
@@ -1206,7 +1209,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Return all custom data
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getCustomData(): array
     {

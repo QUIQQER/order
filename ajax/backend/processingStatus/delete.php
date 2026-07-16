@@ -11,7 +11,7 @@ use QUI\ERP\Order\ProcessingStatus\Handler;
  *
  * @param int $id
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_processingStatus_delete',
     function ($id) {
         Handler::getInstance()->deleteProcessingStatus($id);

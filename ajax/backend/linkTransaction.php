@@ -11,7 +11,7 @@ use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\Utils\Security\Orthos;
 use QUI\Exception;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_linkTransaction',
     function ($orderHash, $txId) {
         $Orders = QUI\ERP\Order\Handler::getInstance();

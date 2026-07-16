@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Utils;
 
 use QUI;
+use QUI\ERP\Order\Settings;
 use QUI\Database\Exception;
 use QUI\ERP\Accounting\Payments\Types\PaymentInterface;
 use QUI\ERP\Products\Field\Types\BasketConditions;
@@ -124,7 +125,7 @@ class Utils
 
     /**
      * @param QUI\Projects\Project $Project
-     * @param $hash
+     * @param string $hash
      * @return string
      *
      * @throws QUI\ERP\Order\Exception
@@ -225,9 +226,9 @@ class Utils
      */
     public static function getOrderPrefix(): string
     {
+        $Config = Settings::getConfig();
+
         try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
             $setting = $Config->getValue('order', 'prefix');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -235,7 +236,11 @@ class Utils
             return date('Y') . '-';
         }
 
-        if ($setting === false) {
+        if (is_numeric($setting)) {
+            $setting = (string)$setting;
+        }
+
+        if (!is_string($setting)) {
             return date('Y') . '-';
         }
 
@@ -268,7 +273,7 @@ class Utils
 
     /**
      * @param QUI\ERP\Products\Product\ProductList $List
-     * @param array $products
+     * @param array<int, array<string, mixed>> $products
      * @param null|QUI\ERP\Order\AbstractOrder|QUI\ERP\Order\Basket\Basket $Order - optional, to add messages to the order if needed
      *
      * @return QUI\ERP\Products\Product\ProductList
@@ -293,7 +298,7 @@ class Utils
             }
 
             if (!isset($productData['price_currency'])) {
-                $productData['price_currency'] = $List->getCurrency()?->getCode();
+                $productData['price_currency'] = $List->getCurrency()->getCode();
             }
 
             // bridge for text articles
@@ -388,8 +393,8 @@ class Utils
     /**
      * Return a product array with all important fields, to compare a product with another
      *
-     * @param $product
-     * @return array
+     * @param array<string, mixed> $product
+     * @return array<string, mixed>
      */
     public static function getCompareProductArray($product): array
     {
@@ -419,8 +424,8 @@ class Utils
     /**
      * Takes a product array and brings together all products that can be brought together
      *
-     * @param $products
-     * @return array
+     * @param array<int, array<string, mixed>> $products
+     * @return array<int, array<string, mixed>>
      */
     public static function getMergedProductList($products): array
     {
@@ -454,7 +459,7 @@ class Utils
     }
 
     /**
-     * @param $product
+     * @param array<string, mixed> $product
      * @return bool
      */
     public static function isBasketProductEditable($product): bool

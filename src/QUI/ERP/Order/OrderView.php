@@ -9,6 +9,8 @@ namespace QUI\ERP\Order;
 use IntlDateFormatter;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Invoice\Invoice;
+use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Payments\Types\Payment;
 use QUI\ERP\Address;
 use QUI\ERP\Comments;
@@ -37,9 +39,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     protected string $prefix;
 
     /**
-     * @var Order
+     * @var AbstractOrder
      */
-    protected Order $Order;
+    protected AbstractOrder $Order;
 
     /**
      * @var ArticleList
@@ -49,9 +51,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     /**
      * OrderView constructor.
      *
-     * @param Order $Order
+     * @param AbstractOrder $Order
      */
-    public function __construct(Order $Order)
+    public function __construct(AbstractOrder $Order)
     {
         $this->Order = $Order;
         $this->Articles = $this->Order->getArticles();
@@ -61,7 +63,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -107,9 +109,9 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return ProcessingStatus\Status
+     * @return ProcessingStatus\Status|null
      */
-    public function getProcessingStatus(): ProcessingStatus\Status
+    public function getProcessingStatus(): ?ProcessingStatus\Status
     {
         return $this->Order->getProcessingStatus();
     }
@@ -131,17 +133,17 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return null|Comments
+     * @return Comments
      */
-    public function getComments(): ?Comments
+    public function getComments(): Comments
     {
         return $this->Order->getComments();
     }
 
     /**
-     * @return null|Comments
+     * @return Comments
      */
-    public function getHistory(): ?Comments
+    public function getHistory(): Comments
     {
         return $this->Order->getHistory();
     }
@@ -155,7 +157,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<\QUI\ERP\Accounting\Payments\Transactions\Transaction>
      */
     public function getTransactions(): array
     {
@@ -169,9 +171,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     {
         $createDate = $this->Order->getCreateDate();
         $createDate = strtotime($createDate);
-        $DateFormatter = QUI::getLocale()->getDateFormatter();
 
-        return $DateFormatter->format($createDate);
+        if ($createDate === false) {
+            return '';
+        }
+
+        $DateFormatter = QUI::getLocale()->getDateFormatter();
+        $formattedDate = $DateFormatter->format($createDate);
+
+        return is_string($formattedDate) ? $formattedDate : '';
     }
 
     /**
@@ -199,7 +207,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getData(): array
     {
@@ -218,8 +226,13 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
         $date = $this->Order->getCreateDate();
         $Formatter = $Locale->getDateFormatter();
+        $timestamp = strtotime($date);
 
-        return $Formatter->format(strtotime($date));
+        if ($timestamp === false) {
+            return false;
+        }
+
+        return $Formatter->format($timestamp);
     }
 
     /**
@@ -272,7 +285,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      * @throws \QUI\ERP\Exception|QUI\Exception
      */
     public function getPaidStatusInformation(): array
@@ -301,14 +314,15 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return QUI\ERP\Accounting\Invoice\Invoice|QUI\ERP\Accounting\Invoice\InvoiceTemporary
-     *
-     * @throws QUI\Exception
-     * @throws QUI\ERP\Accounting\Invoice\Exception
+     * @return Invoice|InvoiceTemporary|null
      */
-    public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
+    public function getInvoice(): Invoice | InvoiceTemporary | null
     {
-        return $this->Order->getInvoice();
+        try {
+            return $this->Order->getInvoice();
+        } catch (QUI\Exception) {
+            return null;
+        }
     }
 
     /**
@@ -448,11 +462,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
         }
 
         try {
-            $Locale = QUI::getLocale();
-
-            if ($this->Order->getCustomer()) {
-                $Locale = $this->Order->getCustomer()->getLocale();
-            }
+            $Locale = $this->Order->getCustomer()->getLocale();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
@@ -489,17 +499,24 @@ class OrderView extends QUI\QDOM implements OrderInterface
         /* @var $Transaction QUI\ERP\Accounting\Payments\Transactions\Transaction */
         $Transaction = array_pop($transactions);
         $Payment = $Transaction->getPayment(); // payment method
-        $PaymentType = $this->getPayment()->getPaymentType(); // payment method
+        $OrderPayment = $this->getPayment();
+        $PaymentType = $OrderPayment?->getPaymentType(); // payment method
 
-        $payment = $Payment->getTitle();
+        $payment = $Payment?->getTitle() ?? $PaymentType?->getTitle() ?? '';
         $Formatter = $Locale->getDateFormatter();
 
-        if (get_class($PaymentType) === $Payment->getClass()) {
+        if (
+            $Payment !== null
+            && $PaymentType !== null
+            && get_class($PaymentType) === $Payment->getClass()
+        ) {
             $payment = $PaymentType->getTitle();
         }
 
+        $transactionDate = strtotime($Transaction->getDate());
+
         return $Locale->get('quiqqer/order', 'order.view.payment.transaction.text', [
-            'date' => $Formatter->format(strtotime($Transaction->getDate())),
+            'date' => $transactionDate === false ? '' : $Formatter->format($transactionDate),
             'payment' => $payment
         ]);
     }
@@ -525,6 +542,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     public function setShipping(ShippingInterface $Shipping)
     {
@@ -540,6 +559,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     public function removeShipping()
     {
@@ -549,6 +570,8 @@ class OrderView extends QUI\QDOM implements OrderInterface
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     protected function saveFrontendMessages()
     {
@@ -562,15 +585,17 @@ class OrderView extends QUI\QDOM implements OrderInterface
     }
 
     /**
-     * @return Comments|null
+     * @return Comments
      */
-    public function getFrontendMessages(): ?Comments
+    public function getFrontendMessages(): Comments
     {
         return $this->Order->getFrontendMessages();
     }
 
     /**
      * do nothing, it's a view
+     *
+     * @return void
      */
     public function clearFrontendMessages()
     {

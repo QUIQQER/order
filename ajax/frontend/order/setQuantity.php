@@ -14,7 +14,7 @@
 
 use QUI\ERP\Order\Basket\BasketOrder;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_setQuantity',
     function ($orderHash, $pos, $quantity) {
         try {

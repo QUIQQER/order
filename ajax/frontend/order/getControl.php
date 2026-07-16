@@ -10,7 +10,7 @@
  * @param integer $orderId
  * @return string
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_getControl',
     function ($orderHash, $basket, $basketEditable) {
         if (!isset($basket)) {

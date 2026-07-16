@@ -13,10 +13,13 @@ use QUI\ERP\Order\Basket\Exception;
 use QUI\ERP\Order\Basket\ExceptionBasketNotFound;
 use QUI\ExceptionStack;
 use QUI\Interfaces\Users\User;
+use QUI\Utils\Doctrine;
 use QUI\Utils\Singleton;
 
 use function array_merge;
+use function array_pad;
 use function class_exists;
+use function explode;
 use function is_numeric;
 use function strtotime;
 use function trim;
@@ -39,14 +42,14 @@ class Handler extends Singleton
     const EMPTY_VALUE = '---';
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $cache = [];
 
     /**
      * Return all order process Provider
      *
-     * @return array
+     * @return list<AbstractOrderProcessProvider>
      */
     public function getOrderProcessProvider(): array
     {
@@ -138,36 +141,37 @@ class Handler extends Singleton
      */
     public function getOrderByHash(string $hash): OrderInProcess | Order
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->table(),
-            'where' => [
-                'hash' => $hash
-            ],
-            'limit' => 1
-        ]);
+        $Connection = QUI::getDataBaseConnection();
+        $orderId = $Connection->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where(Doctrine::quoteIdentifier('hash') . ' = :hash')
+            ->setParameter('hash', $hash)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        if (isset($result[0])) {
-            return $this->get($result[0]['id']);
+        if ($orderId !== false) {
+            return $this->get($orderId);
         }
 
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->tableOrderProcess(),
-            'where' => [
-                'hash' => $hash
-            ],
-            'limit' => 1
-        ]);
+        $orderId = $Connection->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where(Doctrine::quoteIdentifier('hash') . ' = :hash')
+            ->setParameter('hash', $hash)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        if (!isset($result[0])) {
+        if ($orderId === false) {
             throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
         }
 
-        return $this->getOrderInProcess($result[0]['id']);
+        return $this->getOrderInProcess($orderId);
     }
 
     /**
@@ -185,24 +189,27 @@ class Handler extends Singleton
      */
     public function getOrderByGlobalProcessId(int | string $id): Order
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->table(),
-            'where_or' => [
-                'hash' => $id,
-                'global_process_id' => $id
-            ],
-            'limit' => 1
-        ]);
+        $QueryBuilder = QUI::getDataBaseConnection()->createQueryBuilder();
+        $orderId = $QueryBuilder
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where($QueryBuilder->expr()->or(
+                Doctrine::quoteIdentifier('hash') . ' = :id',
+                Doctrine::quoteIdentifier('global_process_id') . ' = :id'
+            ))
+            ->setParameter('id', $id)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        if (!isset($result[0])) {
+        if ($orderId === false) {
             throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
         }
 
-        return $this->get($result[0]['id']);
+        return $this->get($orderId);
     }
 
     /**
@@ -215,24 +222,27 @@ class Handler extends Singleton
      */
     public function getOrdersByGlobalProcessId(string $id): array
     {
-        $dbData = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->table(),
-            'where_or' => [
-                'hash' => $id,
-                'global_process_id' => $id
-            ]
-        ]);
+        $QueryBuilder = QUI::getDataBaseConnection()->createQueryBuilder();
+        $orderIds = $QueryBuilder
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where($QueryBuilder->expr()->or(
+                Doctrine::quoteIdentifier('hash') . ' = :id',
+                Doctrine::quoteIdentifier('global_process_id') . ' = :id'
+            ))
+            ->setParameter('id', $id)
+            ->executeQuery()
+            ->fetchFirstColumn();
 
-        if (!count($dbData)) {
+        if (empty($orderIds)) {
             return [];
         }
 
         $result = [];
 
-        foreach ($dbData as $entry) {
+        foreach ($orderIds as $orderId) {
             try {
-                $result[] = $this->get($entry['id']);
+                $result[] = $this->get($orderId);
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
@@ -254,106 +264,110 @@ class Handler extends Singleton
      */
     public function getOrderById(int | string $id): OrderInProcess | Order
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->table(),
-            'where' => [
-                'hash' => $id
-            ],
-            'limit' => 1
-        ]);
+        $Connection = QUI::getDataBaseConnection();
+        $orderId = $Connection->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where(Doctrine::quoteIdentifier('hash') . ' = :id')
+            ->setParameter('id', $id)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        if (isset($result[0])) {
-            return $this->get($result[0]['id']);
+        if ($orderId !== false) {
+            return $this->get($orderId);
         }
 
+        $orderId = $Connection->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where(Doctrine::quoteIdentifier('id') . ' = :id')
+            ->setParameter('id', $id)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->table(),
-            'where' => [
-                'id' => $id
-            ],
-            'limit' => 1
-        ]);
-
-        if (isset($result[0])) {
-            return $this->get($result[0]['id']);
+        if ($orderId !== false) {
+            return $this->get($orderId);
         }
 
+        $orderId = $Connection->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where(Doctrine::quoteIdentifier('id') . ' = :id')
+            ->setParameter('id', $id)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->tableOrderProcess(),
-            'where' => [
-                'id' => $id
-            ],
-            'limit' => 1
-        ]);
-
-        if (!isset($result[0])) {
+        if ($orderId === false) {
             throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
         }
 
-        return $this->getOrderInProcess($result[0]['id']);
+        return $this->getOrderInProcess($orderId);
     }
 
     /**
      * Return the data of a wanted order
      *
      * @param integer|string $orderId
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws QUI\Database\Exception|QUI\ERP\Order\Exception
      */
     public function getOrderData(int | string $orderId): array
     {
-        $result = QUI::getDataBase()->fetch([
-            'from' => $this->table(),
-            'where' => [
-                'hash' => $orderId
-            ],
-            'limit' => 1
-        ]);
+        $Connection = QUI::getDataBaseConnection();
+        $result = $Connection->createQueryBuilder()
+            ->select('*')
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where(Doctrine::quoteIdentifier('hash') . ' = :orderId')
+            ->setParameter('orderId', $orderId)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
 
-        if (empty($result)) {
-            $result = QUI::getDataBase()->fetch([
-                'from' => $this->table(),
-                'where' => [
-                    'id' => $orderId
-                ],
-                'limit' => 1
-            ]);
+        if ($result === false) {
+            $result = $Connection->createQueryBuilder()
+                ->select('*')
+                ->from(Doctrine::quoteIdentifier($this->table()))
+                ->where(Doctrine::quoteIdentifier('id') . ' = :orderId')
+                ->setParameter('orderId', $orderId)
+                ->setMaxResults(1)
+                ->executeQuery()
+                ->fetchAssociative();
         }
 
-        if (!isset($result[0])) {
+        if ($result === false) {
             throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
         }
 
-        return $result[0];
+        return $result;
     }
 
     /**
      * @param QUI\Interfaces\Users\User $User
-     * @param array $params
+     * @param array<string, mixed> $params
      *
      * @return Order[]
      */
     public function getOrdersByUser(QUI\Interfaces\Users\User $User, array $params = []): array
     {
-        $query = [
-            'select' => ['id', 'customerId', 'hash'],
-            'from' => $this->table(),
-            'where' => [
-                'customerId' => $User->getUUID()
-            ]
-        ];
+        $QueryBuilder = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(
+                Doctrine::quoteIdentifier('id'),
+                Doctrine::quoteIdentifier('customerId'),
+                Doctrine::quoteIdentifier('hash')
+            )
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where(Doctrine::quoteIdentifier('customerId') . ' = :customerId')
+            ->setParameter('customerId', $User->getUUID());
 
         if (isset($params['order'])) {
             switch ($params['order']) {
@@ -369,17 +383,29 @@ class Handler extends Singleton
                 case 'paid_date':
                 case 'paid_date ASC':
                 case 'paid_date DESC':
-                    $query['order'] = $params['order'];
+                    [$orderField, $orderDirection] = array_pad(
+                        explode(' ', $params['order'], 2),
+                        2,
+                        'ASC'
+                    );
+                    $QueryBuilder->orderBy(Doctrine::quoteIdentifier($orderField), $orderDirection);
             }
         }
 
         if (isset($params['limit'])) {
-            $query['limit'] = $params['limit'];
+            $limit = explode(',', (string)$params['limit'], 2);
+
+            if (isset($limit[1])) {
+                $QueryBuilder->setFirstResult((int)$limit[0]);
+                $QueryBuilder->setMaxResults((int)$limit[1]);
+            } else {
+                $QueryBuilder->setMaxResults((int)$limit[0]);
+            }
         }
 
         try {
-            $data = QUI::getDataBase()->fetch($query);
-        } catch (QUI\Exception) {
+            $data = $QueryBuilder->executeQuery()->fetchAllAssociative();
+        } catch (\Exception) {
             return [];
         }
 
@@ -406,20 +432,13 @@ class Handler extends Singleton
      */
     public function countOrdersByUser(QUI\Interfaces\Users\User $User): int
     {
-        $data = QUI::getDataBase()->fetch([
-            'count' => 'id',
-            'select' => 'id',
-            'from' => $this->table(),
-            'where' => [
-                'customerId' => $User->getUUID()
-            ]
-        ]);
-
-        if (isset($data[0]['id'])) {
-            return (int)$data[0]['id'];
-        }
-
-        return 0;
+        return (int)QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select('COUNT(' . Doctrine::quoteIdentifier('id') . ')')
+            ->from(Doctrine::quoteIdentifier($this->table()))
+            ->where(Doctrine::quoteIdentifier('customerId') . ' = :customerId')
+            ->setParameter('customerId', $User->getUUID())
+            ->executeQuery()
+            ->fetchOne();
     }
 
     /**
@@ -457,7 +476,58 @@ class Handler extends Singleton
         $Mailer->setSubject($subject);
         $Mailer->setBody($body);
 
-        $Mailer->addRecipient(CustomerUtils::getInstance()->getEmailByCustomer($Customer));
+        $email = CustomerUtils::getInstance()->getEmailByCustomer($Customer);
+
+        if ($email === false) {
+            $localeData = [
+                'orderId' => $Order->getUUID(),
+                'customerId' => $Customer->getUUID()
+            ];
+
+            QUI\System\Log::writeRecursive(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'message.order.payment_success.missing.customer.mail',
+                    $localeData
+                )
+            );
+
+            $Config = Settings::getConfig();
+            $adminEmail = $Config->getValue('order', 'orderAdminMails');
+
+            if (!is_string($adminEmail) || trim($adminEmail) === '') {
+                $adminEmail = QUI::conf('mail', 'admin_mail');
+            }
+
+            if (is_string($adminEmail) && trim($adminEmail) !== '') {
+                $AdminMailer = QUI::getMailManager()->getMailer($mailerAttributes);
+                $AdminMailer->setSubject(
+                    QUI::getLocale()->get(
+                        'quiqqer/order',
+                        'mail.payment_success.missing_customer_email.admin.subject',
+                        $localeData
+                    )
+                );
+                $AdminMailer->setBody(
+                    QUI::getLocale()->get(
+                        'quiqqer/order',
+                        'mail.payment_success.missing_customer_email.admin.body',
+                        $localeData
+                    )
+                );
+                $AdminMailer->addRecipient($adminEmail);
+
+                try {
+                    $AdminMailer->send();
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::writeException($Exception);
+                }
+            }
+
+            return;
+        }
+
+        $Mailer->addRecipient($email);
 
         try {
             $Mailer->send();
@@ -470,7 +540,7 @@ class Handler extends Singleton
      * Get all placeholder variables for order mails.
      *
      * @param AbstractOrder $Order
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getLocaleVarsForOrderMail(AbstractOrder $Order): array
     {
@@ -543,9 +613,13 @@ class Handler extends Singleton
 
         // Shop company
         $company = '';
+        $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
 
         try {
-            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -554,7 +628,7 @@ class Handler extends Singleton
         return [
             'orderId' => $Order->getPrefixedNumber(),
             'hash' => $Order->getUUID(),
-            'date' => $CustomerLocale->formatDate(strtotime($Order->getCreateDate())),
+            'date' => $CustomerLocale->formatDate($Order->getCreateDate()),
             'systemCompany' => $company,
 
             'contactPerson' => $contactPerson,
@@ -623,7 +697,7 @@ class Handler extends Singleton
     /**
      * Return an Order which is in processing
      *
-     * @param $orderId
+     * @param int|string $orderId
      * @return OrderInProcess
      *
      * @throws QUI\ERP\Order\Exception
@@ -647,30 +721,30 @@ class Handler extends Singleton
      */
     public function getOrderInProcessByHash(string $hash): OrderInProcess
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => $this->tableOrderProcess(),
-            'where' => [
-                'hash' => $hash
-            ],
-            'limit' => 1
-        ]);
+        $orderId = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where(Doctrine::quoteIdentifier('hash') . ' = :hash')
+            ->setParameter('hash', $hash)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        if (!isset($result[0])) {
+        if ($orderId === false) {
             throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
         }
 
-        return $this->getOrderInProcess($result[0]['id']);
+        return $this->getOrderInProcess($orderId);
     }
 
     /**
      * Return all orders in process from a user
      *
      * @param QUI\Interfaces\Users\User $User
-     * @return array
+     * @return list<OrderInProcess>
      *
      * @throws QUI\Database\Exception
      */
@@ -678,17 +752,17 @@ class Handler extends Singleton
     {
         $result = [];
 
-        $list = QUI::getDataBase()->fetch([
-            'select' => 'hash',
-            'from' => $this->tableOrderProcess(),
-            'where' => [
-                'customerId' => $User->getUUID()
-            ]
-        ]);
+        $hashes = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('hash'))
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where(Doctrine::quoteIdentifier('customerId') . ' = :customerId')
+            ->setParameter('customerId', $User->getUUID())
+            ->executeQuery()
+            ->fetchFirstColumn();
 
-        foreach ($list as $entry) {
+        foreach ($hashes as $hash) {
             try {
-                $result[] = $this->getOrderInProcess($entry['hash']);
+                $result[] = $this->getOrderInProcess($hash);
             } catch (\Exception) {
             }
         }
@@ -706,20 +780,13 @@ class Handler extends Singleton
      */
     public function countOrdersInProcessFromUser(QUI\Interfaces\Users\User $User): int
     {
-        $data = QUI::getDataBase()->fetch([
-            'count' => 'id',
-            'select' => 'id',
-            'from' => $this->tableOrderProcess(),
-            'where' => [
-                'customerId' => $User->getUUID()
-            ]
-        ]);
-
-        if (isset($data[0]['id'])) {
-            return (int)$data[0]['id'];
-        }
-
-        return 0;
+        return (int)QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select('COUNT(' . Doctrine::quoteIdentifier('id') . ')')
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where(Doctrine::quoteIdentifier('customerId') . ' = :customerId')
+            ->setParameter('customerId', $User->getUUID())
+            ->executeQuery()
+            ->fetchOne();
     }
 
     /**
@@ -734,18 +801,19 @@ class Handler extends Singleton
      */
     public function getLastOrderInProcessFromUser(QUI\Interfaces\Users\User $User): OrderInProcess
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => 'hash',
-            'from' => $this->tableOrderProcess(),
-            'where' => [
-                'customerId' => $User->getUUID(),
-                'successful' => 0
-            ],
-            'limit' => 1,
-            'order' => 'c_date DESC'
-        ]);
+        $hash = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('hash'))
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where(Doctrine::quoteIdentifier('customerId') . ' = :customerId')
+            ->andWhere(Doctrine::quoteIdentifier('successful') . ' = :successful')
+            ->setParameter('customerId', $User->getUUID())
+            ->setParameter('successful', 0)
+            ->orderBy(Doctrine::quoteIdentifier('c_date'), 'DESC')
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-        if (!isset($result[0])) {
+        if ($hash === false) {
             try {
                 $result = QUI::getEvents()->fireEvent('orderProcessGetOrder');
 
@@ -763,37 +831,41 @@ class Handler extends Singleton
             );
         }
 
-        return $this->getOrderInProcess($result[0]['hash']);
+        return $this->getOrderInProcess($hash);
     }
 
     /**
      * Return the data of a wanted order
      *
      * @param integer|string $orderId
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws QUI\ERP\Order\Exception
      * @throws QUI\Database\Exception
      */
     public function getOrderProcessData(int | string $orderId): array
     {
-        $result = QUI::getDataBase()->fetch([
-            'from' => $this->tableOrderProcess(),
-            'where_or' => [
-                'id' => $orderId,
-                'hash' => $orderId
-            ],
-            'limit' => 1
-        ]);
+        $QueryBuilder = QUI::getDataBaseConnection()->createQueryBuilder();
+        $result = $QueryBuilder
+            ->select('*')
+            ->from(Doctrine::quoteIdentifier($this->tableOrderProcess()))
+            ->where($QueryBuilder->expr()->or(
+                Doctrine::quoteIdentifier('id') . ' = :orderId',
+                Doctrine::quoteIdentifier('hash') . ' = :orderId'
+            ))
+            ->setParameter('orderId', $orderId)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
 
-        if (!isset($result[0])) {
+        if ($result === false) {
             throw new QUI\ERP\Order\Exception(
                 QUI::getLocale()->get('quiqqer/order', 'exception.order.not.found'),
                 self::ERROR_ORDER_NOT_FOUND
             );
         }
 
-        return $result[0];
+        return $result;
     }
 
     //endregion
@@ -846,16 +918,19 @@ class Handler extends Singleton
      */
     public function getBasketById(int | string $basketId, null | QUI\Interfaces\Users\User $User = null): Basket
     {
-        $data = QUI::getDataBase()->fetch([
-            'select' => ['id', 'uid'],
-            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => [
-                'id' => $basketId
-            ],
-            'limit' => 1
-        ]);
+        $data = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(
+                Doctrine::quoteIdentifier('id'),
+                Doctrine::quoteIdentifier('uid')
+            )
+            ->from(Doctrine::quoteIdentifier($this->tableBasket()))
+            ->where(Doctrine::quoteIdentifier('id') . ' = :basketId')
+            ->setParameter('basketId', $basketId)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
 
-        if (!isset($data[0])) {
+        if ($data === false) {
             throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
@@ -865,13 +940,12 @@ class Handler extends Singleton
         if ($User === null) {
             $User = QUI::getUserBySession();
         } else {
-            $basketData = $data[0];
-            $User = QUI::getUsers()->get($basketData['uid']);
+            $User = QUI::getUsers()->get($data['uid']);
         }
 
         $this->checkBasketPermissions($User);
 
-        return new Basket($data[0]['id'], $User);
+        return new Basket($data['id'], $User);
     }
 
     /**
@@ -887,16 +961,19 @@ class Handler extends Singleton
      */
     public function getBasketByHash(string $hash, null | QUI\Interfaces\Users\User $User = null): Basket
     {
-        $data = QUI::getDataBase()->fetch([
-            'select' => ['id', 'uid'],
-            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => [
-                'hash' => $hash
-            ],
-            'limit' => 1
-        ]);
+        $data = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(
+                Doctrine::quoteIdentifier('id'),
+                Doctrine::quoteIdentifier('uid')
+            )
+            ->from(Doctrine::quoteIdentifier($this->tableBasket()))
+            ->where(Doctrine::quoteIdentifier('hash') . ' = :hash')
+            ->setParameter('hash', $hash)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
 
-        if (!isset($data[0])) {
+        if ($data === false) {
             throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
@@ -907,13 +984,12 @@ class Handler extends Singleton
         if ($User === null) {
             $User = QUI::getUserBySession();
         } else {
-            $basketData = $data[0];
-            $User = QUI::getUsers()->get($basketData['uid']);
+            $User = QUI::getUsers()->get($data['uid']);
         }
 
         $this->checkBasketPermissions($User);
 
-        return new Basket($data[0]['id'], $User);
+        return new Basket($data['id'], $User);
     }
 
     /**
@@ -929,24 +1005,23 @@ class Handler extends Singleton
     {
         $this->checkBasketPermissions($User);
 
-        $data = QUI::getDataBase()->fetch([
-            'select' => 'id',
-            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => [
-                'uid' => $User->getUUID()
-            ],
-            'limit' => 1
-        ]);
+        $basketId = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(Doctrine::quoteIdentifier('id'))
+            ->from(Doctrine::quoteIdentifier($this->tableBasket()))
+            ->where(Doctrine::quoteIdentifier('uid') . ' = :uid')
+            ->setParameter('uid', $User->getUUID())
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
 
-
-        if (!isset($data[0])) {
+        if ($basketId === false) {
             throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
         }
 
-        return new Basket($data[0]['id'], $User);
+        return new Basket($basketId, $User);
     }
 
     /**
@@ -954,7 +1029,7 @@ class Handler extends Singleton
      *
      * @param integer|string $basketId
      * @param null|QUI\Interfaces\Users\User $User
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws Exception
      * @throws ExceptionBasketNotFound
@@ -969,23 +1044,25 @@ class Handler extends Singleton
 
         $this->checkBasketPermissions($User);
 
-        $data = QUI::getDataBase()->fetch([
-            'from' => QUI\ERP\Order\Handler::getInstance()->tableBasket(),
-            'where' => [
-                'id' => (int)$basketId,
-                'uid' => $User->getUUID()
-            ],
-            'limit' => 1
-        ]);
+        $data = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select('*')
+            ->from(Doctrine::quoteIdentifier($this->tableBasket()))
+            ->where(Doctrine::quoteIdentifier('id') . ' = :basketId')
+            ->andWhere(Doctrine::quoteIdentifier('uid') . ' = :uid')
+            ->setParameter('basketId', (int)$basketId)
+            ->setParameter('uid', $User->getUUID())
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
 
-        if (!isset($data[0])) {
+        if ($data === false) {
             throw new ExceptionBasketNotFound([
                 'quiqqer/order',
                 'exception.basket.not.found'
             ]);
         }
 
-        return $data[0];
+        return $data;
     }
 
     /**

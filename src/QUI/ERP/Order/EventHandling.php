@@ -22,6 +22,7 @@ use function class_exists;
 use function count;
 use function defined;
 use function explode;
+use function filter_var;
 use function is_array;
 use function is_numeric;
 use function is_string;
@@ -44,7 +45,7 @@ class EventHandling
      *
      * @param QUI\ERP\Products\Interfaces\ProductInterface $Product
      * @param Collection $Collection
-     * @param $ProductControl
+     * @param QUI\Control|null $ProductControl
      */
     public static function onQuiqqerProductsProductViewButtons(
         QUI\ERP\Products\Interfaces\ProductInterface $Product,
@@ -81,12 +82,26 @@ class EventHandling
 
         try {
             $Project = $Rewrite->getProject();
+
+            if ($Project === null) {
+                return;
+            }
+
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
             $path = trim($CheckoutSite->getUrlRewritten(), '/');
 
             if (mb_strpos($path, 'http') === 0) {
-                $path = parse_url($path);
-                $path = ltrim($path['path'], '/');
+                $parsedPath = parse_url($path, PHP_URL_PATH);
+
+                if (!is_string($parsedPath)) {
+                    return;
+                }
+
+                $path = ltrim($parsedPath, '/');
+
+                if ($path === '') {
+                    return;
+                }
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
@@ -297,7 +312,7 @@ class EventHandling
                 return;
             }
 
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 Handler::getInstance()->table(),
                 ['invoice_id' => $Invoice->getUUID()],
                 ['hash' => $Order->getUUID()]
@@ -429,10 +444,9 @@ class EventHandling
     public static function onTemplateGetHeader(QUI\Template $Template): void
     {
         $merge = 0;
+        $Config = Settings::getConfig();
 
         try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
             $merge = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
         } catch (QUI\Exception) {
         }
@@ -563,7 +577,6 @@ class EventHandling
 
             // set shipping
             if ($SalesOrder->getShipping()) {
-                // @phpstan-ignore-next-line
                 $Order->setShipping($SalesOrder->getShipping());
             }
 
@@ -578,6 +591,7 @@ class EventHandling
 
     /**
      * @throws QUI\Database\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     public static function onQuiqqerMigrationV2(QUI\System\Console\Tools\MigrationV2 $Console): void
     {
@@ -587,44 +601,38 @@ class EventHandling
         $orderTable = Handler::getInstance()->table();
         $orderProcessTable = Handler::getInstance()->tableOrderProcess();
 
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `invoice_id` `invoice_id` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
-        QUI::getDatabase()->execSQL(
-            'ALTER TABLE `' . $orderProcessTable . '` CHANGE `customerId` `customerId` VARCHAR(50) NULL DEFAULT NULL;'
-        );
-
+        self::migrateOrderIdentifierColumns($orderTable);
+        self::migrateOrderIdentifierColumns($orderProcessTable);
 
         QUI\Utils\MigrationV1ToV2::migrateUsers($orderTable, [
             'customerId',
             'c_user'
         ]);
 
+        self::migrateBasketUserIds();
+
         // migrate invoice ids
         // @todo kontrollieren
-        $result = QUI::getDataBase()->fetch([
-            'select' => ['id', 'invoice_id'],
-            'from' => $orderTable
-        ]);
+        $result = QUI::getDataBaseConnection()->createQueryBuilder()
+            ->select(
+                QUI\Utils\Doctrine::quoteIdentifier('id'),
+                QUI\Utils\Doctrine::quoteIdentifier('invoice_id')
+            )
+            ->from(QUI\Utils\Doctrine::quoteIdentifier($orderTable))
+            ->executeQuery()
+            ->fetchAllAssociative();
 
         foreach ($result as $order) {
-            if (!is_numeric($order['invoice_id'])) {
+            $invoiceId = filter_var($order['invoice_id'] ?? null, FILTER_VALIDATE_INT);
+
+            if ($invoiceId === false) {
                 continue;
             }
 
             try {
-                $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($order['invoice_id']);
+                $Invoice = QUI\ERP\Accounting\Invoice\Handler::getInstance()->getInvoice($invoiceId);
 
-                QUI::getDataBase()->update(
+                QUI::getDataBaseConnection()->update(
                     $orderTable,
                     ['invoice_id' => $Invoice->getUUID()],
                     ['id' => $order['id']]
@@ -632,5 +640,107 @@ class EventHandling
             } catch (QUI\Exception) {
             }
         }
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private static function migrateOrderIdentifierColumns(string $table): void
+    {
+        $SchemaManager = QUI::getSchemaManager();
+
+        if (!$SchemaManager->tablesExist([$table])) {
+            return;
+        }
+
+        $Table = $SchemaManager->introspectTable($table);
+        $changedColumns = [];
+
+        foreach (['invoice_id', 'customerId'] as $columnName) {
+            if (!$Table->hasColumn($columnName)) {
+                continue;
+            }
+
+            $CurrentColumn = $Table->getColumn($columnName);
+
+            if (
+                $CurrentColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
+                && $CurrentColumn->getLength() === 50
+                && !$CurrentColumn->getNotnull()
+            ) {
+                continue;
+            }
+
+            $TargetColumn = new \Doctrine\DBAL\Schema\Column(
+                $columnName,
+                \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Types::STRING),
+                [
+                    'length' => 50,
+                    'notnull' => false,
+                    'default' => null
+                ]
+            );
+            $changedColumns[$columnName] = new \Doctrine\DBAL\Schema\ColumnDiff(
+                $CurrentColumn,
+                $TargetColumn
+            );
+        }
+
+        if (empty($changedColumns)) {
+            return;
+        }
+
+        $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+            $Table,
+            changedColumns: $changedColumns
+        ));
+    }
+
+    /**
+     * @throws QUI\Database\Exception
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public static function migrateBasketUserIds(): void
+    {
+        $basketTable = Handler::getInstance()->tableBasket();
+        $SchemaManager = QUI::getSchemaManager();
+
+        if (!$SchemaManager->tablesExist([$basketTable])) {
+            return;
+        }
+
+        $Table = $SchemaManager->introspectTable($basketTable);
+        $UidColumn = new \Doctrine\DBAL\Schema\Column(
+            'uid',
+            \Doctrine\DBAL\Types\Type::getType('string'),
+            ['length' => 50, 'notnull' => true]
+        );
+
+        if (!$Table->hasColumn('uid')) {
+            $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+                $Table,
+                addedColumns: [$UidColumn]
+            ));
+        } else {
+            $CurrentUidColumn = $Table->getColumn('uid');
+
+            if (
+                !$CurrentUidColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
+                || $CurrentUidColumn->getLength() !== 50
+                || !$CurrentUidColumn->getNotnull()
+            ) {
+                $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+                    $Table,
+                    changedColumns: [
+                        'uid' => new \Doctrine\DBAL\Schema\ColumnDiff(
+                            $CurrentUidColumn,
+                            $UidColumn
+                        )
+                    ]
+                ));
+            }
+        }
+
+        QUI\Utils\MigrationV1ToV2::migrateUsers($basketTable, ['uid']);
     }
 }

@@ -28,7 +28,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -50,13 +50,19 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getBody(): string
     {
+        $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return '';
+        }
+
         $Engine = QUI::getTemplateManager()->getEngine();
         $Address = $this->getInvoiceAddress();
         $User = $Address?->getUser();
 
         if (!$User) {
             try {
-                $Customer = $this->getOrder()->getCustomer();
+                $Customer = $Order->getCustomer();
                 $User = QUI::getUsers()->get($Customer->getUUID());
             } catch (QUI\Exception) {
                 $User = QUI::getUserBySession();
@@ -67,9 +73,16 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Address = $User->getStandardAddress();
         }
 
+        if ($Address === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.missing.address.for.invoice'
+            ]);
+        }
+
         try {
-            $this->getOrder()->setInvoiceAddress($Address);
-            $this->getOrder()->update();
+            $Order->setInvoiceAddress($Address);
+            $Order->update();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
@@ -117,19 +130,24 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $this->setAttribute('data-validate', 0);
         }
 
+        $Conf = QUI::getPackage('quiqqer/frontend-users')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/frontend-users package configuration is not available.');
+        }
+
         // frontend users address profile settings
         try {
-            $Conf = QUI::getPackage('quiqqer/frontend-users')->getConfig();
             $settings = $Conf->getValue('profile', 'addressFields');
 
-            if (!empty($settings)) {
+            if (is_string($settings) && $settings !== '') {
                 $settings = json_decode($settings, true);
             }
         } catch (QUI\Exception) {
             $settings = [];
         }
 
-        if (empty($settings) || is_string($settings)) {
+        if (!is_array($settings)) {
             $settings = [];
         }
 
@@ -152,7 +170,7 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $Engine->assign([
             'User' => $User,
             'Address' => $Address,
-            'Order' => $this->getOrder(),
+            'Order' => $Order,
             'b2bSelected' => $isUserB2B(),
             'commentMessage' => $commentMessage,
             'commentCustomer' => $commentCustomer,
@@ -190,22 +208,31 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function validate(): void
     {
+        $Order = $this->getOrder();
+
+        if ($Order === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.not.found'
+            ]);
+        }
+
         $Address = $this->getInvoiceAddress();
 
         try {
             if (
                 $Address &&
-                $Address->getUUID() !== $this->getOrder()->getInvoiceAddress()->getUUID()
+                $Address->getUUID() !== $Order->getInvoiceAddress()->getUUID()
             ) {
-                $this->getOrder()->setInvoiceAddress($Address);
-                $this->getOrder()->update();
+                $Order->setInvoiceAddress($Address);
+                $Order->update();
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
 
         $this->validateAddress(
-            $this->getOrder()->getInvoiceAddress()
+            $Order->getInvoiceAddress()
         );
     }
 
@@ -334,6 +361,12 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             return;
         }
 
+        $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return;
+        }
+
         QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSave', [$this]);
 
         $Address = $this->getAddressById($_REQUEST['addressId']);
@@ -433,16 +466,16 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $User->refresh();
 
-        $this->getOrder()->setInvoiceAddress($Address);
+        $Order->setInvoiceAddress($Address);
 
         if (isset($_REQUEST['shipping-address']) && $_REQUEST['shipping-address'] == -1) {
-            $this->getOrder()->setDeliveryAddress([
+            $Order->setDeliveryAddress([
                 'id' => -1
             ]);
         }
 
-        $this->getOrder()->setCustomer($User);
-        $this->getOrder()->update();
+        $Order->setCustomer($User);
+        $Order->update();
 
         QUI::getEvents()->fireEvent('quiqqerOrderCustomerDataSaveEnd', [$this]);
     }
@@ -451,11 +484,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * Return the address by its id
      *
      * @param int|string $addressId
-     * @return false|null|Address
+     * @return null|Address
      * @throws Exception
      * @throws QUI\Permissions\Exception
      */
-    protected function getAddressById(int | string $addressId): bool | QUI\Users\Address | null
+    protected function getAddressById(int | string $addressId): QUI\Users\Address | null
     {
         $User = QUI::getUserBySession();
         $Address = null;
@@ -491,6 +524,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
     protected function getInvoiceAddress(): Address | null
     {
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return null;
+        }
+
         $Customer = $Order->getCustomer();
         $User = QUI::getUserBySession();
 

@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
+use QUI\ERP\Order\Settings;
 
 use function in_array;
 use function is_array;
@@ -23,7 +24,7 @@ use function is_array;
 class Handler extends QUI\Utils\Singleton
 {
     /**
-     * @var ?array
+     * @var array<int, string>|null
      */
     protected ?array $list = null;
 
@@ -34,13 +35,13 @@ class Handler extends QUI\Utils\Singleton
      */
     public function __construct()
     {
-        $this->OrderConfig = QUI::getPackage('quiqqer/order')->getConfig();
+        $this->OrderConfig = Settings::getConfig();
     }
 
     /**
      * Return all processing status entries from the config
      *
-     * @return array
+     * @return array<int, string>
      */
     public function getList(): array
     {
@@ -64,7 +65,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Refresh the internal list
      *
-     * @return array
+     * @return array<int, string>
      */
     public function refreshList(): array
     {
@@ -76,7 +77,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Return the complete processing status objects
      *
-     * @return Status[]
+     * @return list<Status>
      */
     public function getProcessingStatusList(): array
     {
@@ -96,7 +97,7 @@ class Handler extends QUI\Utils\Singleton
     /**
      * Return a processing status
      *
-     * @param $id
+     * @param int|string $id
      * @return Status|StatusUnknown
      *
      * @throws Exception
@@ -178,7 +179,7 @@ class Handler extends QUI\Utils\Singleton
      *
      * @param int|string $id
      * @param int|string $color
-     * @param array $title
+     * @param array<string, string> $title
      *
      * @throws QUI\Exception
      *

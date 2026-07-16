@@ -9,7 +9,7 @@
  *
  * @return integer
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_createInvoice',
     function ($orderId) {
         // check if invoice is installed

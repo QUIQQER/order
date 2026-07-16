@@ -12,7 +12,7 @@ use QUI\ERP\Products\Handler\Products;
  * @param integer $productId
  * @return bool
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_existsProduct',
     function ($productId) {
         try {

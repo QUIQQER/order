@@ -3,9 +3,11 @@
 namespace QUITests\ERP\Order;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\StringType;
 use PHPUnit\Framework\TestCase;
 use QUI;
 use QUI\ERP\Order\Basket\Basket;
+use QUI\ERP\Order\EventHandling;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
 use Throwable;
@@ -84,6 +86,47 @@ class HandlerBasketIntegrationTest extends TestCase
         $this->assertSame($this->basketId, (int)$databaseBasket['id']);
         $this->assertSame((string)$User->getUUID(), (string)$databaseBasket['uid']);
         $this->assertSame($hash, $databaseBasket['hash']);
+    }
+
+    public function testLegacyBasketUserIdIsMigratedToUuid(): void
+    {
+        $LegacyUser = null;
+
+        foreach (QUI::getUsers()->getUserIds() as $userData) {
+            $userId = $userData['id'] ?? null;
+            $userUuid = $userData['uuid'] ?? null;
+
+            if (!is_numeric($userId) || !is_string($userUuid) || $userUuid === '' || is_numeric($userUuid)) {
+                continue;
+            }
+
+            $LegacyUser = QUI::getUsers()->get((string)$userId);
+            break;
+        }
+
+        if ($LegacyUser === null || $LegacyUser->getId() === false) {
+            $this->markTestSkipped('No user with a legacy ID and UUID is available.');
+        }
+
+        $Connection = $this->getConnection();
+        $Connection->insert(
+            Handler::getInstance()->tableBasket(),
+            ['uid' => (string)$LegacyUser->getId()]
+        );
+        $this->basketId = (int)$Connection->lastInsertId();
+
+        EventHandling::migrateBasketUserIds();
+
+        $basket = $this->fetchBasketFromDatabase($this->basketId);
+        $this->assertSame($LegacyUser->getUUID(), $basket['uid']);
+
+        $UidColumn = QUI::getSchemaManager()
+            ->introspectTable(Handler::getInstance()->tableBasket())
+            ->getColumn('uid');
+
+        $this->assertInstanceOf(StringType::class, $UidColumn->getType());
+        $this->assertSame(50, $UidColumn->getLength());
+        $this->assertTrue($UidColumn->getNotnull());
     }
 
     private function fetchLatestBasketFromDatabase(string $userId): array

@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
+use QUI\ERP\Order\Settings;
 
 use function array_keys;
 use function count;
@@ -25,7 +26,7 @@ class Factory extends QUI\Utils\Singleton
      *
      * @param integer|string $id - processing ID
      * @param string $color - color of the status
-     * @param array $title - title
+     * @param array<string, array<mixed>|string> $title - multilingual title
      *
      * @throws Exception
      * @throws QUI\Exception
@@ -45,8 +46,7 @@ class Factory extends QUI\Utils\Singleton
         }
 
         // config
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
 
         $Config->setValue('processing_status', (string)$id, $color);
         $Config->save();

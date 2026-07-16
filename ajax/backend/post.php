@@ -12,7 +12,7 @@
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_post',
     function ($orderId) {
         QUI\ERP\Order\Settings::getInstance()->forceCreateInvoiceOn();

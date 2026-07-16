@@ -54,7 +54,7 @@ interface OrderInterface
     /**
      * Return the order as an array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array;
 
@@ -113,7 +113,7 @@ interface OrderInterface
     /**
      * Return extra data array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getData(): array;
 
@@ -135,9 +135,9 @@ interface OrderInterface
     /**
      * Return the customer of the order
      *
-     * @return null|User
+     * @return User
      */
-    public function getCustomer(): ?User;
+    public function getCustomer(): User;
 
     /**
      * Return the currency of the order
@@ -187,7 +187,7 @@ interface OrderInterface
      * - How many has already been paid
      * - How many must be paid
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * @throws \QUI\ERP\Exception
      */
@@ -203,7 +203,7 @@ interface OrderInterface
     /**
      * Return all transactions related to the order
      *
-     * @return array
+     * @return array<\QUI\ERP\Accounting\Payments\Transactions\Transaction>
      */
     public function getTransactions(): array;
 
@@ -222,11 +222,14 @@ interface OrderInterface
      * Set a shipping to the order
      *
      * @param ShippingInterface $Shipping
+     * @return void
      */
     public function setShipping(ShippingInterface $Shipping);
 
     /**
      * Remove the shipping from the order
+     *
+     * @return void
      */
     public function removeShipping();
 
@@ -237,9 +240,9 @@ interface OrderInterface
     /**
      * Return the comments
      *
-     * @return null|Comments
+     * @return Comments
      */
-    public function getComments(): ?Comments;
+    public function getComments(): Comments;
 
     //endregion
 
@@ -248,18 +251,18 @@ interface OrderInterface
     /**
      * Return the history object
      *
-     * @return null|Comments
+     * @return Comments
      */
-    public function getHistory(): ?Comments;
+    public function getHistory(): Comments;
 
     //endregion
 
     //region frontend messages
 
     /**
-     * @return null|Comments
+     * @return Comments
      */
-    public function getFrontendMessages(): ?Comments;
+    public function getFrontendMessages(): Comments;
 
     /**
      * @param string $message

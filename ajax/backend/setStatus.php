@@ -18,7 +18,7 @@ use QUI\ERP\Shipping\Shipping;
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_setStatus',
     function ($orderId, $status) {
         $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);

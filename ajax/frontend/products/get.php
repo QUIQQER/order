@@ -10,7 +10,7 @@
  * @param integer $productIds - JSON Array
  * @return string
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_products_get',
     function ($productIds) {
         $Control = new QUI\ERP\Order\Controls\Products\ProductList([

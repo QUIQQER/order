@@ -11,7 +11,7 @@
  * @param string $articles
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_calc',
     function ($products) {
         $Basket = new QUI\ERP\Order\Basket\BasketGuest();

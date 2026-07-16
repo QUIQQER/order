@@ -80,7 +80,7 @@ class Factory extends QUI\Utils\Singleton
         $table = $Orders->table();
         $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
-        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $Config = Settings::getConfig();
         $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
 
         if (!is_numeric($orderId)) {
@@ -113,8 +113,9 @@ class Factory extends QUI\Utils\Singleton
             $orderData['id'] = $id;
         }
 
-        QUI::getDataBase()->insert($table, $orderData);
-        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
+        $Connection = QUI::getDataBaseConnection();
+        $Connection->insert($table, $orderData);
+        $lastId = $Connection->lastInsertId();
         $Order = $Orders->get($lastId);
 
         // set new id index
@@ -219,9 +220,10 @@ class Factory extends QUI\Utils\Singleton
             'successful' => 0
         ];
 
-        QUI::getDataBase()->insert($table, $orderData);
+        $Connection = QUI::getDataBaseConnection();
+        $Connection->insert($table, $orderData);
 
-        return (int)QUI::getDataBase()->getPDO()->lastInsertId();
+        return (int)$Connection->lastInsertId();
     }
 
     /**
@@ -239,20 +241,19 @@ class Factory extends QUI\Utils\Singleton
             $User = QUI::getUserBySession();
         }
 
-        QUI::getDataBase()->insert(
+        $Connection = QUI::getDataBaseConnection();
+        $Connection->insert(
             Handler::getInstance()->tableBasket(),
             ['uid' => $User->getUUID()]
         );
 
-        $lastId = QUI::getDataBase()->getPDO()->lastInsertId();
-
-        return new Basket($lastId, $User);
+        return new Basket((int)$Connection->lastInsertId(), $User);
     }
 
     /**
      * Return the needles for an order construct
      *
-     * @return array
+     * @return list<string>
      */
     public function getOrderConstructNeedles(): array
     {

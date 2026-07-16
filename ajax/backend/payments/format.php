@@ -9,7 +9,7 @@
  *
  * @param string|integer $payments - List of payments
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_payments_format',
     function ($payments) {
         $payments = json_decode($payments, true);

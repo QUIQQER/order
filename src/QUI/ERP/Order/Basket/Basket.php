@@ -36,9 +36,9 @@ class Basket
     /**
      * List of products
      *
-     * @var QUI\ERP\Products\Product\ProductList|null
+     * @var QUI\ERP\Products\Product\ProductList
      */
-    protected ?ProductList $List = null;
+    protected ProductList $List;
 
     /**
      * @var ?QUI\Interfaces\Users\User
@@ -51,9 +51,9 @@ class Basket
     protected ?string $hash = null;
 
     /**
-     * @var QUI\ERP\Comments|null
+     * @var QUI\ERP\Comments
      */
-    protected ?QUI\ERP\Comments $FrontendMessages = null;
+    protected QUI\ERP\Comments $FrontendMessages;
 
     /**
      * Basket constructor.
@@ -70,6 +70,7 @@ class Basket
 
         $this->List = new ProductList();
         $this->List->duplicate = true;
+        $this->FrontendMessages = new QUI\ERP\Comments();
 
         if (!QUI::getUsers()->isUser($User) || $User->getType() == QUI\Users\Nobody::class) {
             return;
@@ -77,14 +78,18 @@ class Basket
 
         $this->List->setUser($User);
         $this->List->setCurrency(QUI\ERP\Currency\Handler::getRuntimeCurrency());
-        $this->FrontendMessages = new QUI\ERP\Comments();
 
         if (is_bool($basketId)) {
             try {
                 $Basket = Handler::getInstance()->getBasketFromUser(QUI::getUserBySession());
                 $basketId = $Basket->getId();
             } catch (QUI\Exception) {
+                return;
             }
+        }
+
+        if (!is_int($basketId)) {
+            return;
         }
 
         try {
@@ -176,7 +181,7 @@ class Basket
     /**
      * Import the products to the basket
      *
-     * @param array|null $products
+     * @param array<int, array<string, mixed>>|null $products
      * @throws ExceptionStack
      */
     public function import(array | null $products = []): void
@@ -223,10 +228,6 @@ class Basket
      */
     public function save(): void
     {
-        if (!$this->List) {
-            return;
-        }
-
         if (!$this->User) {
             return;
         }
@@ -248,7 +249,9 @@ class Basket
             $fields = $Product->getFields();
 
             foreach ($fields as $Field) {
-                $Field->setChangeableStatus(false);
+                if (method_exists($Field, 'setChangeableStatus')) {
+                    $Field->setChangeableStatus(false);
+                }
             }
 
             $productData = [
@@ -262,7 +265,7 @@ class Basket
             ];
 
             foreach ($fields as $Field) {
-                if ($Field->isCustomField()) {
+                if (method_exists($Field, 'isCustomField') && $Field->isCustomField()) {
                     $productData['fields'][] = $Field->getAttributes();
                 }
             }
@@ -271,11 +274,12 @@ class Basket
         }
 
         try {
-            QUI::getDataBase()->update(
+            QUI::getDataBaseConnection()->update(
                 QUI\ERP\Order\Handler::getInstance()->tableBasket(),
                 [
                     'products' => json_encode($result),
-                    'hash' => $this->hash
+                    'hash' => $this->hash,
+                    'e_date' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
                 ],
                 [
                     'id' => $this->getId(),
@@ -290,7 +294,7 @@ class Basket
     /**
      * Return the basket as array
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -310,7 +314,9 @@ class Basket
             $fields = [];
 
             foreach ($Product->getFields() as $Field) {
-                if (!$Field->isPublic() && !$Field->isCustomField()) {
+                $isCustomField = method_exists($Field, 'isCustomField') && $Field->isCustomField();
+
+                if (!$Field->isPublic() && !$isCustomField) {
                     continue;
                 }
 
@@ -357,7 +363,7 @@ class Basket
      * Set the process number
      * - Vorgangsnummer
      *
-     * @param $hash
+     * @param string $hash
      */
     public function setHash($hash): void
     {
@@ -462,10 +468,6 @@ class Basket
         $products = $Products->getProducts();
         $Currency = $Products->getCurrency();
 
-        if (!$Currency) {
-            $Currency = QUI\ERP\Currency\Handler::getRuntimeCurrency();
-        }
-
         $InvoiceAddress = $Order->getInvoiceAddress();
         $DeliveryAddress = $Order->getDeliveryAddress();
 
@@ -547,9 +549,9 @@ class Basket
     /**
      * Return the frontend message object
      *
-     * @return null|QUI\ERP\Comments
+     * @return QUI\ERP\Comments
      */
-    public function getFrontendMessages(): ?QUI\ERP\Comments
+    public function getFrontendMessages(): QUI\ERP\Comments
     {
         return $this->FrontendMessages;
     }

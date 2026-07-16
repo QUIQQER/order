@@ -13,7 +13,7 @@ use QUI\ERP\Order\ProcessingStatus\Factory;
 use QUI\ERP\Order\ProcessingStatus\Handler;
 use QUI\Utils\Security\Orthos;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_processingStatus_create',
     function ($id, $color, $title, $notification) {
         $id = (int)$id;

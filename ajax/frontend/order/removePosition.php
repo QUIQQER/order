@@ -7,7 +7,7 @@
 /**
  * Return the wanted step
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_removePosition',
     function ($orderHash, $pos) {
         $OrderBasket = new QUI\ERP\Order\Basket\BasketOrder($orderHash);

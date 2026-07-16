@@ -11,7 +11,7 @@ use QUI\ERP\Order\Handler;
  *
  * @param string|integer $orderId - ID of the order
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_delete',
     function ($orderId) {
         $Order = Handler::getInstance()->get($orderId);
