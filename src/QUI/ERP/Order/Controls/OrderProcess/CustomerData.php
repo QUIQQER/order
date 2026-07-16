@@ -73,6 +73,13 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $Address = $User->getStandardAddress();
         }
 
+        if ($Address === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.missing.address.for.invoice'
+            ]);
+        }
+
         try {
             $Order->setInvoiceAddress($Address);
             $Order->update();
@@ -477,11 +484,11 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
      * Return the address by its id
      *
      * @param int|string $addressId
-     * @return false|null|Address
+     * @return null|Address
      * @throws Exception
      * @throws QUI\Permissions\Exception
      */
-    protected function getAddressById(int | string $addressId): bool | QUI\Users\Address | null
+    protected function getAddressById(int | string $addressId): QUI\Users\Address | null
     {
         $User = QUI::getUserBySession();
         $Address = null;

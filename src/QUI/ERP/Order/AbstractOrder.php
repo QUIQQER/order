@@ -323,23 +323,26 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
 
             try {
                 $this->setCustomer($customerData);
+                $Customer = $this->Customer;
+
+                if ($Customer !== null) {
+                    if (isset($this->addressInvoice['id']) && $this->addressInvoice['id'] >= 0) {
+                        $Customer->setAddress($this->getInvoiceAddress());
+                    } elseif (isset($customerData['address']['id']) && $customerData['address']['id']) {
+                        $Customer->setAddress($this->getInvoiceAddress());
+                    } elseif (isset($customerData['quiqqer.erp.address'])) {
+                        try {
+                            $User = QUI::getUsers()->get($Customer->getUUID());
+                            $Address = $User->getAddress($customerData['quiqqer.erp.address']);
+                            $Customer->setAddress($Address);
+                        } catch (QUI\Exception $Exception) {
+                            QUI\System\Log::writeDebugException($Exception);
+                        }
+                    }
+                }
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeRecursive($this->customer);
                 QUI\System\Log::addWarning($Exception->getMessage());
-            }
-
-            if (isset($this->addressInvoice['id']) && $this->addressInvoice['id'] >= 0) {
-                $this->Customer->setAddress($this->getInvoiceAddress());
-            } elseif (isset($customerData['address']['id']) && $customerData['address']['id']) {
-                $this->Customer->setAddress($this->getInvoiceAddress());
-            } elseif (isset($customerData['quiqqer.erp.address'])) {
-                try {
-                    $User = QUI::getUsers()->get($this->Customer->getUUID());
-                    $Address = $User->getAddress($customerData['quiqqer.erp.address']);
-                    $this->Customer->setAddress($Address);
-                } catch (QUI\Exception $Exception) {
-                    QUI\System\Log::writeDebugException($Exception);
-                }
             }
         }
 
@@ -1007,16 +1010,19 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         if ($this->customer) {
             try {
                 $this->setCustomer($this->customer);
+                $Customer = $this->Customer;
 
-                $Address = $this->Customer->getStandardAddress();
+                if ($Customer !== null) {
+                    $Address = $Customer->getStandardAddress();
 
-                if (!$Address->getUUID()) {
-                    $this->Customer->setAddress(
-                        new QUI\ERP\Address($this->addressInvoice, $this->Customer)
-                    );
+                    if (!$Address->getUUID()) {
+                        $Customer->setAddress(
+                            new QUI\ERP\Address($this->addressInvoice, $Customer)
+                        );
+                    }
+
+                    return $Customer;
                 }
-
-                return $this->Customer;
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeRecursive($this->customer);
                 QUI\System\Log::addWarning($Exception->getMessage());
