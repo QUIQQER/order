@@ -558,13 +558,6 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             return $Order;
         }
 
-        if (
-            Settings::getInstance()->createInvoiceByPayment()
-            && $Payment?->isSuccessful($Order->getUUID()) === true
-        ) {
-            $Order->createInvoice(QUI::getUsers()->getSystemUser());
-        }
-
         return $Order;
     }
 

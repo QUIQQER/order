@@ -59,11 +59,6 @@ class OrderProcess extends QUI\Control
     protected ?AbstractOrder $Order = null;
 
     /**
-     * @var Basket\Basket|null
-     */
-    protected ?Basket\Basket $Basket = null;
-
-    /**
      * @var null|AbstractOrderProcessProvider
      */
     protected ?AbstractOrderProcessProvider $ProcessingProvider = null;
@@ -411,17 +406,12 @@ class OrderProcess extends QUI\Control
             QUI\System\Log::writeDebugException($Exception);
         }
 
-        if ($this->Basket) {
-            $this->Basket->successful();
-            $this->Basket->save();
-        } else {
-            try {
-                $Basket = Handler::getInstance()->getBasketByHash($Order->getUUID());
-                $Basket->successful();
-                $Basket->save();
-            } catch (QUI\Exception $Exception) {
-                QUI\System\Log::writeDebugException($Exception);
-            }
+        try {
+            $Basket = Handler::getInstance()->getBasketByHash($Order->getUUID());
+            $Basket->successful();
+            $Basket->save();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeDebugException($Exception);
         }
     }
 
@@ -1512,7 +1502,6 @@ class OrderProcess extends QUI\Control
         $providers = QUI\ERP\Order\Handler::getInstance()->getOrderProcessProvider();
 
         $Order = $this->getOrder();
-        $Basket = $this->Basket;
 
         QUI::getEvents()->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
         $this->Events->fireEvent('onQuiqqerOrderProcessStepsBegin', [$this, $Order, $Steps]);
@@ -1520,7 +1509,6 @@ class OrderProcess extends QUI\Control
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {
             $Steps->append(
                 new Controls\OrderProcess\Registration([
-                    'Basket' => $Basket,
                     'Order' => $Order,
                     'priority' => 1
                 ])
@@ -1532,9 +1520,7 @@ class OrderProcess extends QUI\Control
             return $Steps;
         }
 
-        if ($Order instanceof OrderInProcess) {
-            $Basket = $this->getBasket();
-        }
+        $Basket = $Order instanceof OrderInProcess ? $this->getBasket() : null;
 
         if ($Order && $Order->isSuccessful()) {
             $Finish = new Controls\OrderProcess\Finish([
