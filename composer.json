@@ -22,7 +22,7 @@
     "quiqqer/erp": "^4.0.1",
     "quiqqer/countries": "^2.0.6",
     "quiqqer/areas": "^2.2",
-    "quiqqer/products": "^2.8",
+    "quiqqer/products": "^2.8.2",
     "quiqqer/payments": "^4",
     "quiqqer/tax": "^2.0.6",
     "quiqqer/payment-transactions": "^2.1.1",
