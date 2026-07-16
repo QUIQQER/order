@@ -1,6 +1,6 @@
 <?php
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_dataLayer_getCategoryData',
     function ($project, $siteId) {
         try {

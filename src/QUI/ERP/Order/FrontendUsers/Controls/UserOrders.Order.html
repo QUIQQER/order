@@ -39,7 +39,9 @@
                 </a>
             </div>
         </div>
-        {else if !$Order->isSuccessful()}
+        {/if}
+
+        {if $showContinuePayment}
         <div class="quiqqer-order-profile-orders-order__group quiqqer-order-profile-orders-order-continuePayment">
             <span class="quiqqer-order-profile-orders-order__label">
                 {locale group="quiqqer/order" var="control.profile.orders.order.continuePayment.label"}

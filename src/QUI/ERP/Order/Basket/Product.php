@@ -12,6 +12,7 @@ use QUI\ERP\Products\Handler\Fields;
 use QUI\ERP\Products\Product\UniqueProduct;
 
 use function array_values;
+use function filter_var;
 use function is_array;
 
 /**
@@ -25,7 +26,7 @@ class Product extends UniqueProduct
      * Product constructor.
      *
      * @param int $pid - Product ID
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @throws QUI\Exception
      * @throws QUI\ERP\Products\Product\Exception
@@ -103,19 +104,27 @@ class Product extends UniqueProduct
     }
 
     /**
-     * @param $fieldId
-     * @param $fieldValue
+     * @param mixed $fieldId
+     * @param mixed $fieldValue
      * @return null|QUI\ERP\Products\Field\Field|UniqueField
      */
-    protected function importFieldData($fieldId, $fieldValue): QUI\ERP\Products\Field\Field | UniqueField | null
-    {
+    protected function importFieldData(
+        mixed $fieldId,
+        mixed $fieldValue
+    ): QUI\ERP\Products\Field\Field | UniqueField | null {
         try {
             if (is_array($fieldValue) && isset($fieldValue['identifier'])) {
                 return new UniqueField($fieldValue['identifier'], $fieldValue);
             }
 
             if (is_array($fieldValue) && isset($fieldValue['value'])) {
-                $Field = Fields::getField($fieldValue['id']);
+                $fieldId = filter_var($fieldValue['id'] ?? null, FILTER_VALIDATE_INT);
+
+                if ($fieldId === false) {
+                    return null;
+                }
+
+                $Field = Fields::getField($fieldId);
                 $Field->setValue($fieldValue['value']);
 
                 if (!empty($fieldValue['userinput'])) {
@@ -129,6 +138,12 @@ class Product extends UniqueProduct
                 $Field = Fields::getField($fieldValue->getId());
                 $Field->setValue($fieldValue->getValue());
             } else {
+                $fieldId = filter_var($fieldId, FILTER_VALIDATE_INT);
+
+                if ($fieldId === false) {
+                    return null;
+                }
+
                 $Field = Fields::getField($fieldId);
                 $Field->setValue($fieldValue);
             }
@@ -145,7 +160,7 @@ class Product extends UniqueProduct
     }
 
     /**
-     * @return array
+     * @return array<QUI\ERP\Products\Interfaces\CategoryInterface>
      */
     public function getCategories(): array
     {

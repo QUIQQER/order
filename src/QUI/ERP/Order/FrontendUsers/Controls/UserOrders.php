@@ -24,7 +24,7 @@ class UserOrders extends Control implements ControlInterface
     /**
      * UserOrders constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -138,13 +138,21 @@ class UserOrders extends Control implements ControlInterface
 
         $paidStatus = $Order->getAttribute('paid_status');
         $paidDate = $Order->getAttribute('paid_date');
+        $showContinuePayment = (int)$paidStatus !== QUI\ERP\Constants::PAYMENT_STATUS_PAID;
 
         $Articles->calc();
 
         if ($Order->hasInvoice()) {
             $Invoice = $Order->getInvoice();
-            $paidStatus = $Invoice->getAttribute('paid_status');
-            $paidDate = $Invoice->getAttribute('paid_date');
+
+            if ($Invoice !== null) {
+                $paidStatus = $Invoice->getAttribute('paid_status');
+                $paidDate = $Invoice->getAttribute('paid_date');
+
+                if ((int)$paidStatus === QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
+                    $showContinuePayment = false;
+                }
+            }
         }
 
         switch ((int)$paidStatus) {
@@ -207,6 +215,7 @@ class UserOrders extends Control implements ControlInterface
             'articles' => $Articles->getArticles(),
             'order' => $Articles->toArray(),
             'paymentStatus' => $paymentStatus,
+            'showContinuePayment' => $showContinuePayment,
             'orderStatusId' => $orderStatusId,
             'orderStatus' => $orderStatus,
             'shippingStatus' => $shippingStatus,
@@ -237,7 +246,7 @@ class UserOrders extends Control implements ControlInterface
 
         try {
             $Product = QUI\ERP\Products\Handler\Products::getProductByProductNo(
-                $Article->getArticleNo()
+                (string)$Article->getArticleNo()
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addDebug($Exception->getMessage());
@@ -268,10 +277,10 @@ class UserOrders extends Control implements ControlInterface
     }
 
     /**
-     * @return QUI\Interfaces\Projects\Site
+     * @return QUI\Interfaces\Projects\Site|null
      * @throws QUI\Exception
      */
-    public function getSite(): QUI\Interfaces\Projects\Site
+    public function getSite(): ?QUI\Interfaces\Projects\Site
     {
         if ($this->getAttribute('Site')) {
             return $this->getAttribute('Site');

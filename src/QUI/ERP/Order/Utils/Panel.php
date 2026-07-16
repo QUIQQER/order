@@ -17,7 +17,7 @@ class Panel
     /**
      * Return all packages which have an order.xml
      *
-     * @return array
+     * @return list<QUI\Package\Package>
      */
     public static function getOrderPackages(): array
     {
@@ -47,7 +47,7 @@ class Panel
     }
 
     /**
-     * @return array|bool|object|string
+     * @return array<array-key, mixed>|bool|object|string
      */
     public static function getPanelCategories(): object|bool|array|string
     {
@@ -94,7 +94,7 @@ class Panel
     }
 
     /**
-     * @param $category
+     * @param string $category
      * @return string
      */
     public static function getPanelCategory($category): string

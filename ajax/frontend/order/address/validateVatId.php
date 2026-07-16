@@ -11,7 +11,7 @@
  * @return bool
  * @throws
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_address_validateVatId',
     function ($vatId) {
         QUI\ERP\Tax\Utils::validateVatId($vatId);

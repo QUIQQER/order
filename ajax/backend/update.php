@@ -17,7 +17,7 @@ use QUI\ERP\Order\ProcessingStatus\Handler;
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_update',
     function ($orderId, $data) {
         $Order = QUI\ERP\Order\Handler::getInstance()->get($orderId);

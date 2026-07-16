@@ -12,7 +12,7 @@ use QUI\ERP\Order\Handler as OrderHandler;
  *
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_getBasket',
     function () {
         if (QUI::getUsers()->isNobodyUser(QUI::getUserBySession())) {

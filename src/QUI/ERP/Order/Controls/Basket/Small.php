@@ -52,10 +52,6 @@ class Small extends QUI\Control
 
         $Products = $this->Basket->getProducts();
 
-        if (!$Products) {
-            return '';
-        }
-
         $Products->setCurrency(QUI\ERP\Defaults::getUserCurrency());
 
         $ProductView = $Products->getView();

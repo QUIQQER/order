@@ -3,7 +3,7 @@
 use QUI\ERP\Order\Utils\DataLayer;
 use QUI\ERP\Products\Handler\Products;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_dataLayer_getProductData',
     function ($productId) {
         try {

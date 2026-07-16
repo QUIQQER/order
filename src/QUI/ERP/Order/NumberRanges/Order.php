@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\NumberRanges;
 
 use QUI;
 use QUI\ERP\Api\NumberRangeInterface;
+use QUI\ERP\Order\Settings;
 
 /**
  * Class Order
@@ -38,7 +39,7 @@ class Order implements NumberRangeInterface
      */
     public function getRange(): int
     {
-        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $Config = Settings::getConfig();
         $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
 
         if (empty($orderId)) {
@@ -53,7 +54,7 @@ class Order implements NumberRangeInterface
      */
     public function setRange(int $range): void
     {
-        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $Config = Settings::getConfig();
         $Config->set('order', 'orderCurrentIdIndex', $range);
         $Config->save();
     }

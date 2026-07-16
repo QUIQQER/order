@@ -13,7 +13,7 @@ use QUI\ERP\Order\Factory;
  * @param string $orderHash
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_basket_toOrderInProcess',
     function ($basketId, $orderHash) {
         $User = QUI::getUserBySession();

@@ -2,6 +2,9 @@
 
 namespace QUI\ERP\Order\Output;
 
+use chillerlan\QRCode\Common\EccLevel;
+use chillerlan\QRCode\Common\Version;
+use chillerlan\QRCode\Output\QRGdImagePNG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Exception;
@@ -79,7 +82,7 @@ class OutputProviderOrder implements OutputProviderInterface
         try {
             $Order = QUI\ERP\Order\Handler::getInstance()->get($entityId);
         } catch (QUI\Exception) {
-            $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash($entityId);
+            $Order = QUI\ERP\Order\Handler::getInstance()->getOrderByHash((string)$entityId);
         }
 
         return $Order;
@@ -118,7 +121,7 @@ class OutputProviderOrder implements OutputProviderInterface
      * Fill the OutputTemplate with appropriate entity data
      *
      * @param int|string $entityId
-     * @return array
+     * @return array<string, mixed>
      * @throws QUI\Exception
      */
     public static function getTemplateData(int | string $entityId): array
@@ -279,9 +282,9 @@ class OutputProviderOrder implements OutputProviderInterface
     }
 
     /**
-     * @param $Order
+     * @param QUI\ERP\Order\AbstractOrder $Order
      * @param QUI\ERP\User $Customer
-     * @return array
+     * @return array<string, mixed>
      */
     protected static function getOrderLocaleVar($Order, QUI\ERP\User $Customer): array
     {
@@ -338,8 +341,13 @@ class OutputProviderOrder implements OutputProviderInterface
      */
     protected static function getCompanyName(): string
     {
+        $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
+
         try {
-            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -371,7 +379,7 @@ class OutputProviderOrder implements OutputProviderInterface
 
     /**
      * @param QUI\ERP\User $Customer
-     * @return array
+     * @return array<string, mixed>
      */
     public static function getCustomerVariables(QUI\ERP\User $Customer): array
     {
@@ -415,7 +423,7 @@ class OutputProviderOrder implements OutputProviderInterface
     }
 
     /**
-     * @param $date
+     * @param int|string|null $date
      * @return false|string
      */
     public static function dateFormat($date): bool | string
@@ -433,8 +441,12 @@ class OutputProviderOrder implements OutputProviderInterface
 
         if (!$date) {
             $date = time();
-        } else {
+        } elseif (is_string($date)) {
             $date = strtotime($date);
+        }
+
+        if ($date === false) {
+            return false;
         }
 
         return $Formatter->format($date);
@@ -455,7 +467,13 @@ class OutputProviderOrder implements OutputProviderInterface
             }
 
             // Check payment type (must be "order" or "pay in advance")
-            $paymentTypeClassName = $Order->getPayment()->getPaymentType();
+            $Payment = $Order->getPayment();
+
+            if ($Payment === null) {
+                return false;
+            }
+
+            $paymentTypeClassName = $Payment->getPaymentType();
 
             $allowedPaymentTypeClasses = [
                 AdvancePayment::class,
@@ -537,10 +555,10 @@ class OutputProviderOrder implements OutputProviderInterface
         $qrCodeText = implode(PHP_EOL, $qrCodeLines);
 
         $QrOptions = new QROptions([
-            'version' => QRCode::VERSION_AUTO,
-            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel' => QRCode::ECC_M,
-            'pngCompression' => -1
+            'version' => Version::AUTO,
+            'outputInterface' => QRGdImagePNG::class,
+            'eccLevel' => EccLevel::M,
+            'quality' => -1
         ]);
 
         $QrCode = new QRCode($QrOptions);

@@ -20,7 +20,7 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Finish constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -39,6 +39,11 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
     {
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return '';
+        }
+
         $Handler = QUI\ERP\Order\Handler::getInstance();
 
         try {
@@ -91,6 +96,13 @@ class Finish extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function validate(): void
     {
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.not.found'
+            ]);
+        }
 
         if ($Order->isSuccessful()) {
             return;

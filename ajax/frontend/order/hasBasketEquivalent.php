@@ -16,7 +16,7 @@ use QUI\ERP\Order\Handler as OrderHandler;
 use QUI\ERP\Products\Field\Types\BasketConditions;
 use QUI\ERP\Products\Utils\Products as ProductUtils;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_hasBasketEquivalent',
     function ($orderHash) {
         try {

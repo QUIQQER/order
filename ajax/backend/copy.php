@@ -11,7 +11,7 @@ use QUI\ERP\Order\Handler;
  *
  * @return integer
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_copy',
     function ($orderId) {
         $Order = Handler::getInstance()->get($orderId);

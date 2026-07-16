@@ -67,7 +67,7 @@ class ErpProvider extends AbstractErpProvider
     }
 
     /**
-     * @return array
+     * @return list<NumberRanges\Order>
      */
     public static function getNumberRanges(): array
     {
@@ -77,7 +77,7 @@ class ErpProvider extends AbstractErpProvider
     }
 
     /**
-     * @return array[]
+     * @return list<array<string, string|array{string, string}>>
      */
     public static function getMailLocale(): array
     {

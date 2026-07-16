@@ -11,6 +11,7 @@ use QUI;
 use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Basket\BasketOrder;
 use QUI\ERP\Order\Basket\BasketGuest;
+use QUI\ERP\Order\Settings;
 
 use function dirname;
 use function json_decode;
@@ -32,7 +33,7 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -62,13 +63,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
                     return;
                 }
 
-                if (!$this->getOrder()) {
+                $Order = $this->getOrder();
+
+                if ($Order === null) {
                     return;
                 }
 
                 try {
-                    $Order = $this->getOrder();
-
                     QUI::getSession()->set(
                         'termsAndConditions-' . $Order->getUUID(),
                         0
@@ -96,6 +97,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
 
         $Engine = QUI::getTemplateManager()->getEngine();
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return '';
+        }
 
         $Order->recalculate();
 
@@ -170,6 +175,14 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function validate(): void
     {
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.not.found'
+            ]);
+        }
+
         $Payment = $Order->getPayment();
 
         if ($Order->isSuccessful()) {
@@ -208,6 +221,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
         if (!empty($_REQUEST['termsAndConditions'])) {
             $Order = $this->getOrder();
 
+            if ($Order === null) {
+                return;
+            }
+
             QUI::getSession()->set(
                 'termsAndConditions-' . $Order->getUUID(),
                 (int)$_REQUEST['termsAndConditions']
@@ -234,6 +251,11 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
     public function forceSave(): void
     {
         $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return;
+        }
+
         $Payment = $Order->getPayment();
 
         if (!$Payment) {
@@ -256,8 +278,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getLinkOf(string $config): string
     {
+        $Config = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Config === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
+
         try {
-            $Config = QUI::getPackage('quiqqer/erp')->getConfig();
             $values = $Config->get('sites', $config);
             $Project = $this->getProject();
         } catch (QUI\Exception) {
@@ -296,6 +323,9 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             data-id="' . $id . '">' . $title . '</a>';
     }
 
+    /**
+     * @param QUI\Interfaces\Template\EngineInterface $Engine
+     */
     public function generateCheckboxLinks($Engine): void
     {
         $termsAndConditionsLink = $this->getLinkOf('terms_and_conditions');
@@ -398,9 +428,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
+        $mandatoryLinksDisplay = 'single_checkbox';
+        $Config = Settings::getConfig();
+
         try {
-            $mandatoryLinksDisplay = 'single_checkbox';
-            $Config = QUI::getPackage('quiqqer/order')->getConfig();
             $mandatoryLinksDisplay = $Config->get('orderProcess', 'mandatoryLinksDisplay');
         } catch (Exception) {
         }

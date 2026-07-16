@@ -9,7 +9,7 @@
  *
  * @param string|integer $orderId - ID of the order
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_sendShippingConfirmation',
     function ($orderId) {
         $Orders = QUI\ERP\Order\Handler::getInstance();

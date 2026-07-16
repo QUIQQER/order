@@ -11,7 +11,7 @@
  * @param string $current
  * @return array
  */
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_order_reload',
     function ($orderId, $step, $orderHash, $basketEditable) {
         $_REQUEST['current'] = $step;
@@ -23,6 +23,14 @@ QUI::$Ajax->registerFunction(
         ]);
 
         $Order = $OrderProcess->getOrder();
+
+        if ($Order === null) {
+            throw new QUI\ERP\Order\Exception([
+                'quiqqer/order',
+                'exception.order.not.found'
+            ]);
+        }
+
         $Current = $OrderProcess->getCurrentStep();
 
         $OrderProcess->setAttribute('step', $Current->getName());

@@ -2,7 +2,7 @@
 
 use QUI\ERP\Order\Utils\DataLayer;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_frontend_dataLayer_getTrackDataForOrderProcess',
     function ($orderHash) {
         try {

@@ -18,6 +18,9 @@ class SettingsUnitTest extends TestCase
 
         $Settings->set('order', 'autoInvoice', 'onPaid');
         $this->assertSame('onPaid', $Settings->get('order', 'autoInvoice'));
+
+        $Settings->set('paymentChangeable', 17, true);
+        $this->assertTrue($Settings->get('paymentChangeable', 17));
     }
 
     public function testInvoiceFlagsAndForceToggleWhenInvoiceNotInstalled(): void

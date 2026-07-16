@@ -32,7 +32,7 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
     /**
      * Basket constructor.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @throws QUI\Exception
      */
@@ -60,10 +60,20 @@ class Basket extends QUI\ERP\Order\Controls\AbstractOrderingStep
         $this->addCSSClass('quiqqer-order-step-basket');
         $this->setAttribute('nodeName', 'section');
 
-        $messages = $this->Basket->getFrontendMessages()->toArray();
+        $messages = [];
+
+        if (!($this->Basket instanceof BasketGuest)) {
+            $messages = $this->Basket->getFrontendMessages()->toArray();
+        }
+
+        $Order = $this->getOrder();
+
+        if ($Order === null) {
+            return;
+        }
 
         foreach ($messages as $message) {
-            $this->getOrder()->addFrontendMessage($message['message']);
+            $Order->addFrontendMessage($message['message']);
         }
     }
 

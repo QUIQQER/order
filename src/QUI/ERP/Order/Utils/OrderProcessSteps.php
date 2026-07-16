@@ -17,7 +17,7 @@ class OrderProcessSteps extends QUI\Collection
 {
     /**
      * OrderProcessSteps constructor.
-     * @param array $children
+     * @param list<QUI\ERP\Order\Controls\AbstractOrderingStep> $children
      */
     public function __construct(array $children = array())
     {

@@ -15,7 +15,7 @@
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Order\Order;
 
-QUI::$Ajax->registerFunction(
+QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_getHistory',
     function ($orderId) {
         $Orders = QUI\ERP\Order\Handler::getInstance();

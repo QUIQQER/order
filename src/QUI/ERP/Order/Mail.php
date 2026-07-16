@@ -155,8 +155,7 @@ class Mail
      */
     public static function sendAdminOrderConfirmationMail(Order $Order): void
     {
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
         $email = $Config->getValue('order', 'orderAdminMails');
 
         if (empty($email)) {
@@ -421,8 +420,7 @@ class Mail
             return;
         }
 
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
 
         $privacyPolicy = (int)$Config->getValue('mails', 'privacyPolicy');
         $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
@@ -466,17 +464,24 @@ class Mail
             }
         }
 
-        if (!empty($attachments)) {
-            $attachments = explode(',', $attachments);
-            $Media = QUI::getProjectManager()->getStandard()->getMedia();
+        if (!is_string($attachments) || trim($attachments) === '') {
+            return;
+        }
 
-            foreach ($attachments as $attachment) {
-                try {
-                    $Item = $Media->get((int)$attachment);
-                    $Mail->addAttachment($Item->getFullPath());
-                } catch (\Exception $Exception) {
-                    QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
-                }
+        $Project = QUI::getProjectManager()->getStandard();
+
+        if ($Project === null) {
+            return;
+        }
+
+        $Media = $Project->getMedia();
+
+        foreach (explode(',', $attachments) as $attachment) {
+            try {
+                $Item = $Media->get((int)$attachment);
+                $Mail->addAttachment($Item->getFullPath());
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
             }
         }
     }
@@ -501,8 +506,13 @@ class Mail
         // rename for attachment
         $title = $Site->getAttribute('title');
 
-        ['dirname' => $dirname, 'extension' => $extension] = pathinfo($file);
-        $newFile = $dirname . '/' . $title . '.' . $extension;
+        $dirname = dirname($file);
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $newFile = $dirname . '/' . $title;
+
+        if ($extension !== '') {
+            $newFile .= '.' . $extension;
+        }
 
         rename($file, $newFile);
 
@@ -517,8 +527,7 @@ class Mail
      */
     protected static function addBCCMailAddress(QUI\Mail\Mailer $Mailer): void
     {
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
         $orderMails = $Config->getValue('order', 'orderAdminMails');
 
         if (empty($orderMails)) {
@@ -535,7 +544,7 @@ class Mail
     /**
      * @param QUI\ERP\ErpEntityInterface $Order
      * @param QUI\Interfaces\Users\User $Customer
-     * @return array
+     * @return array<string, mixed>
      */
     protected static function getOrderLocaleVar(
         QUI\ERP\ErpEntityInterface $Order,
@@ -552,13 +561,13 @@ class Mail
         $user = trim($user);
 
         if (empty($user)) {
-            $user = $Address->getName();
+            $user = $Address?->getName() ?: '';
         }
 
         // email
         $email = $Customer->getAttribute('email');
 
-        if (empty($email)) {
+        if (empty($email) && $Address !== null) {
             $mailList = $Address->getMailList();
 
             if (isset($mailList[0])) {
@@ -575,18 +584,20 @@ class Mail
             'systemCompany' => self::getCompanyName(),
             'user' => $user,
             'name' => $user,
-            'company' => $Customer->getStandardAddress()->getAttribute('company'),
+            'company' => $Address?->getAttribute('company') ?: '',
             'companyOrName' => self::getCompanyOrName($Customer),
-            'address' => $Address->render(),
+            'address' => $Address?->render() ?: '',
             'email' => $email,
-            'salutation' => $Address->getAttribute('salutation'),
-            'firstname' => $Address->getAttribute('firstname'),
-            'lastname' => $Address->getAttribute('lastname')
+            'salutation' => $Address?->getAttribute('salutation') ?: '',
+            'firstname' => $Address?->getAttribute('firstname') ?: '',
+            'lastname' => $Address?->getAttribute('lastname') ?: ''
         ];
     }
 
     /**
      * Format dates for order mails using the target locale with SHORT date and no time.
+     *
+     * @param int|string|null $date
      */
     public static function dateFormat($date, QUI\Locale $Locale): bool | string
     {
@@ -602,8 +613,12 @@ class Mail
 
         if (!$date) {
             $date = time();
-        } else {
+        } elseif (is_string($date)) {
             $date = strtotime($date);
+        }
+
+        if ($date === false) {
+            return false;
         }
 
         return $Formatter->format($date);
@@ -616,9 +631,10 @@ class Mail
     protected static function getCompanyOrName(QUI\Interfaces\Users\User $Customer): string
     {
         $Address = $Customer->getStandardAddress();
+        $company = $Address?->getAttribute('company');
 
-        if (!empty($Address->getAttribute('company'))) {
-            return $Address->getAttribute('company');
+        if (!empty($company)) {
+            return $company;
         }
 
         return $Customer->getName();
@@ -682,8 +698,13 @@ class Mail
      */
     protected static function getCompanyName(): string
     {
+        $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
+
         try {
-            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);

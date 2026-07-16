@@ -1,59 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-
     <global>
         <table name="orders">
-            <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="VARCHAR(100) DEFAULT NULL">id_prefix</field>
-            <field type="VARCHAR(110) DEFAULT NULL">id_str</field>
-            <field type="VARCHAR(50) NULL DEFAULT NULL">order_process_id</field>
-            <field type="VARCHAR(50) NULL DEFAULT NULL">global_process_id</field>
+            <field type="bigint" autoincrement="true" primary="true">id</field>
+            <field type="string" length="100" nullable="true" default="NULL">id_prefix</field>
+            <field type="string" length="110" nullable="true" default="NULL">id_str</field>
+            <field type="string" length="50" nullable="true" default="NULL">order_process_id</field>
+            <field type="string" length="50" nullable="true" default="NULL">global_process_id</field>
 
             <!-- Für aufgesplittete Bestellungen -->
-            <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field>
+            <field type="bigint" nullable="true" default="NULL">parent_order</field>
 
             <!-- nur setzen wenn invoice gebucht ist -->
-            <field type="VARCHAR(50) NULL DEFAULT NULL">invoice_id</field>
-            <field type="VARCHAR(50) NULL DEFAULT NULL">temporary_invoice_id</field>
-            <field type="INT NOT NULL">status</field>
+            <field type="string" length="50" nullable="true" default="NULL">invoice_id</field>
+            <field type="string" length="50" nullable="true" default="NULL">temporary_invoice_id</field>
+            <field type="integer">status</field>
 
-            <field type="VARCHAR(50) NULL DEFAULT NULL">customerId</field>
-            <field type="TEXT NULL">customer</field>
-            <field type="TEXT NULL">addressInvoice</field>
-            <field type="TEXT NULL">addressDelivery</field>
+            <field type="string" length="50" nullable="true" default="NULL">customerId</field>
+            <field type="text" nullable="true">customer</field>
+            <field type="text" nullable="true">addressInvoice</field>
+            <field type="text" nullable="true">addressDelivery</field>
 
-            <field type="TEXT NULL">articles</field>
-            <field type="TEXT NULL">data</field>
-            <field type="VARCHAR(250) NULL">project_name</field>
+            <field type="text" nullable="true">articles</field>
+            <field type="text" nullable="true">data</field>
+            <field type="string" length="250" nullable="true">project_name</field>
 
-            <field type="INT(11) NULL DEFAULT NULL">payment_id</field>
-            <field type="VARCHAR(255) NULL DEFAULT NULL">payment_method</field>
-            <field type="TEXT NULL">payment_data</field> <!-- muss verschlüsselt sein -->
-            <field type="DATETIME NULL DEFAULT NULL">payment_time</field>
-            <field type="TEXT NULL">payment_address</field>
-            <field type="INT(2) NOT NULL">paid_status</field>
-            <field type="INT(11) NULL">paid_date</field>
-            <field type="TEXT NULL">paid_data</field>
-            <field type="INT(2) NOT NULL">successful</field>
+            <field type="integer" nullable="true" default="NULL">payment_id</field>
+            <field type="string" length="255" nullable="true" default="NULL">payment_method</field>
+            <field type="text" nullable="true">payment_data</field> <!-- muss verschlüsselt sein -->
+            <field type="datetime" nullable="true" default="NULL">payment_time</field>
+            <field type="text" nullable="true">payment_address</field>
+            <field type="integer">paid_status</field>
+            <field type="integer" nullable="true">paid_date</field>
+            <field type="text" nullable="true">paid_data</field>
+            <field type="integer">successful</field>
 
-            <field type="INT(11) NULL DEFAULT NULL">shipping_id</field>
-            <field type="TEXT NULL">shipping_data</field>
-            <field type="INT NULL DEFAULT NULL">shipping_status</field>
+            <field type="integer" nullable="true" default="NULL">shipping_id</field>
+            <field type="text" nullable="true">shipping_data</field>
+            <field type="integer" nullable="true" default="NULL">shipping_status</field>
 
-            <field type="TEXT NULL">history</field>
-            <field type="TEXT NULL">comments</field>
-            <field type="TEXT NULL">custom_data</field>
-            <field type="TEXT NULL DEFAULT NULL">frontendMessages</field>
-            <field type="TEXT NULL">status_mails</field>
-            <field type="TEXT NULL">currency_data</field>
-            <field type="VARCHAR(10) NULL">currency</field>
+            <field type="text" nullable="true">history</field>
+            <field type="text" nullable="true">comments</field>
+            <field type="text" nullable="true">custom_data</field>
+            <field type="text" nullable="true" default="NULL">frontendMessages</field>
+            <field type="text" nullable="true">status_mails</field>
+            <field type="text" nullable="true">currency_data</field>
+            <field type="string" length="10" nullable="true">currency</field>
 
-            <field type="VARCHAR(50) NOT NULL">hash</field>
-            <field type="timestamp NULL default NULL">c_date</field>
-            <field type="VARCHAR(50) NOT NULL">c_user</field>
+            <field type="string" length="50">hash</field>
+            <field type="timestamp" nullable="true" default="NULL">c_date</field>
+            <field type="string" length="50">c_user</field>
 
-            <primary>id</primary>
-            <auto_increment>id</auto_increment>
             <index>invoice_id</index>
             <index>customerId</index>
             <index>customerId,c_date</index>
@@ -62,51 +59,50 @@
         </table>
 
         <table name="orders_process">
-            <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="VARCHAR(100) DEFAULT NULL">id_prefix</field>
-            <field type="VARCHAR(110) DEFAULT NULL">id_str</field>
-            <field type="VARCHAR(50) NULL DEFAULT NULL">order_id</field> <!-- Für aufgesplittete Bestellungen -->
+            <field type="bigint" autoincrement="true" primary="true">id</field>
+            <field type="string" length="100" nullable="true" default="NULL">id_prefix</field>
+            <field type="string" length="110" nullable="true" default="NULL">id_str</field>
+            <field type="string" length="50" nullable="true" default="NULL">order_id</field>
 
-            <field type="BIGINT(10) NULL DEFAULT NULL">parent_order</field> <!-- Für aufgesplittete Bestellungen -->
-            <field type="VARCHAR(50) NULL DEFAULT NULL">invoice_id</field>
-            <field type="VARCHAR(50) NULL DEFAULT NULL">temporary_invoice_id</field>
-            <field type="INT NOT NULL">status</field>
+            <!-- Für aufgesplittete Bestellungen -->
+            <field type="bigint" nullable="true" default="NULL">parent_order</field>
+            <field type="string" length="50" nullable="true" default="NULL">invoice_id</field>
+            <field type="string" length="50" nullable="true" default="NULL">temporary_invoice_id</field>
+            <field type="integer">status</field>
 
-            <field type="VARCHAR(50) NULL DEFAULT NULL">customerId</field>
-            <field type="TEXT NULL">customer</field>
-            <field type="TEXT NULL">addressInvoice</field>
-            <field type="TEXT NULL">addressDelivery</field>
+            <field type="string" length="50" nullable="true" default="NULL">customerId</field>
+            <field type="text" nullable="true">customer</field>
+            <field type="text" nullable="true">addressInvoice</field>
+            <field type="text" nullable="true">addressDelivery</field>
 
-            <field type="TEXT NULL">articles</field>
-            <field type="TEXT NULL">data</field>
+            <field type="text" nullable="true">articles</field>
+            <field type="text" nullable="true">data</field>
 
-            <field type="TEXT NULL">history</field>
-            <field type="TEXT NULL">comments</field>
-            <field type="TEXT NULL DEFAULT NULL">frontendMessages</field>
-            <field type="TEXT NULL">status_mails</field>
-            <field type="TEXT NULL">currency_data</field>
-            <field type="VARCHAR(10) NULL">currency</field>
+            <field type="text" nullable="true">history</field>
+            <field type="text" nullable="true">comments</field>
+            <field type="text" nullable="true" default="NULL">frontendMessages</field>
+            <field type="text" nullable="true">status_mails</field>
+            <field type="text" nullable="true">currency_data</field>
+            <field type="string" length="10" nullable="true">currency</field>
 
-            <field type="INT(11) NULL DEFAULT NULL">payment_id</field>
-            <field type="VARCHAR(255) NULL DEFAULT NULL">payment_method</field>
-            <field type="TEXT NULL">payment_data</field> <!-- muss verschlüsselt sein -->
-            <field type="DATETIME NULL DEFAULT NULL">payment_time</field>
-            <field type="TEXT NULL">payment_address</field>
-            <field type="INT(2) NOT NULL">paid_status</field>
-            <field type="INT(11) NULL">paid_date</field>
-            <field type="TEXT NULL">paid_data</field>
-            <field type="INT(2) NOT NULL">successful</field>
+            <field type="integer" nullable="true" default="NULL">payment_id</field>
+            <field type="string" length="255" nullable="true" default="NULL">payment_method</field>
+            <field type="text" nullable="true">payment_data</field> <!-- muss verschlüsselt sein -->
+            <field type="datetime" nullable="true" default="NULL">payment_time</field>
+            <field type="text" nullable="true">payment_address</field>
+            <field type="integer">paid_status</field>
+            <field type="integer" nullable="true">paid_date</field>
+            <field type="text" nullable="true">paid_data</field>
+            <field type="integer">successful</field>
 
-            <field type="INT(11) NULL DEFAULT NULL">shipping_id</field>
-            <field type="TEXT NULL">shipping_data</field>
-            <field type="INT NULL">shipping_status</field>
+            <field type="integer" nullable="true" default="NULL">shipping_id</field>
+            <field type="text" nullable="true">shipping_data</field>
+            <field type="integer" nullable="true">shipping_status</field>
 
-            <field type="VARCHAR(50) NOT NULL">hash</field>
-            <field type="timestamp NULL default NULL">c_date</field>
-            <field type="VARCHAR(50) NOT NULL">c_user</field>
+            <field type="string" length="50">hash</field>
+            <field type="timestamp" nullable="true" default="NULL">c_date</field>
+            <field type="string" length="50">c_user</field>
 
-            <primary>id</primary>
-            <auto_increment>id</auto_increment>
             <index>invoice_id</index>
             <index>customerId</index>
             <index>customerId,successful,c_date</index>
@@ -115,18 +111,15 @@
         </table>
 
         <table name="baskets">
-            <field type="BIGINT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="VARCHAR(50) NOT NULL">uid</field>
-            <field type="BIGINT(20) NULL">name</field>
-            <field type="TEXT NULL">products</field>
-            <field type="VARCHAR(50) NULL">hash</field>
-            <field type="timestamp DEFAULT NOW() ON UPDATE NOW()">e_date</field>
+            <field type="bigint" autoincrement="true" primary="true">id</field>
+            <field type="string" length="50">uid</field>
+            <field type="bigint" nullable="true">name</field>
+            <field type="text" nullable="true">products</field>
+            <field type="string" length="50" nullable="true">hash</field>
+            <field type="datetime" default="CURRENT_TIMESTAMP">e_date</field>
 
-            <primary>id</primary>
-            <auto_increment>id</auto_increment>
             <index>uid</index>
             <index>hash</index>
         </table>
     </global>
-
 </database>
