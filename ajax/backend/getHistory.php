@@ -34,14 +34,14 @@ QUI::getAjax()->registerFunction(
             $history['type'] = 'history';
 
             return $history;
-        }, $History->toArray());
+        }, $History?->toArray() ?? []);
 
         $Comments = $Order->getComments();
         $comments = array_map(function ($comment) {
             $comment['type'] = 'comment';
 
             return $comment;
-        }, $Comments->toArray());
+        }, $Comments?->toArray() ?? []);
 
         $history = array_merge($history, $comments);
 

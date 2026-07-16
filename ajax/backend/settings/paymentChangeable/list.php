@@ -17,7 +17,7 @@ QUI::getAjax()->registerFunction(
     function () {
         $Config = QUI::getPackage('quiqqer/order')->getConfig();
         $payments = Payments::getInstance()->getPayments();
-        $section = $Config->getSection('paymentChangeable');
+        $section = $Config?->getSection('paymentChangeable') ?? [];
 
         $result = [];
 

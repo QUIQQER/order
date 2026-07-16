@@ -61,7 +61,7 @@ class DataLayer
         $product = [
             'item_id' => $Product->getField(Fields::FIELD_PRODUCT_NO)->getValue(),
             'item_name' => $Product->getTitle(),
-            'category' => $Product->getCategory()->getTitle(),
+            'category' => $Product->getCategory()?->getTitle() ?? '',
             'price' => $Product->getPrice()->getPrice(),
             'currency' => $Product->getPrice()->getCurrency()->getCode(),
             'manufacturer' => $manufacturer,
