@@ -459,11 +459,7 @@ class OrderView extends QUI\QDOM implements OrderInterface
         }
 
         try {
-            $Locale = QUI::getLocale();
-
-            if ($this->Order->getCustomer()) {
-                $Locale = $this->Order->getCustomer()->getLocale();
-            }
+            $Locale = $this->Order->getCustomer()->getLocale();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 

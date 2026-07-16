@@ -969,9 +969,9 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     /**
      * Return the customer of the order
      *
-     * @return null|QUI\ERP\User
+     * @return QUI\ERP\User
      */
-    public function getCustomer(): ?QUI\ERP\User
+    public function getCustomer(): QUI\ERP\User
     {
         $Nobody = QUI\ERP\User::convertUserToErpUser(QUI::getUsers()->getNobody());
 

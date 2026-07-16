@@ -135,9 +135,9 @@ interface OrderInterface
     /**
      * Return the customer of the order
      *
-     * @return null|User
+     * @return User
      */
-    public function getCustomer(): ?User;
+    public function getCustomer(): User;
 
     /**
      * Return the currency of the order
