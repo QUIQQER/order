@@ -476,7 +476,58 @@ class Handler extends Singleton
         $Mailer->setSubject($subject);
         $Mailer->setBody($body);
 
-        $Mailer->addRecipient(CustomerUtils::getInstance()->getEmailByCustomer($Customer));
+        $email = CustomerUtils::getInstance()->getEmailByCustomer($Customer);
+
+        if ($email === false) {
+            $localeData = [
+                'orderId' => $Order->getUUID(),
+                'customerId' => $Customer->getUUID()
+            ];
+
+            QUI\System\Log::writeRecursive(
+                QUI::getLocale()->get(
+                    'quiqqer/order',
+                    'message.order.payment_success.missing.customer.mail',
+                    $localeData
+                )
+            );
+
+            $Config = Settings::getConfig();
+            $adminEmail = $Config->getValue('order', 'orderAdminMails');
+
+            if (!is_string($adminEmail) || trim($adminEmail) === '') {
+                $adminEmail = QUI::conf('mail', 'admin_mail');
+            }
+
+            if (is_string($adminEmail) && trim($adminEmail) !== '') {
+                $AdminMailer = QUI::getMailManager()->getMailer($mailerAttributes);
+                $AdminMailer->setSubject(
+                    QUI::getLocale()->get(
+                        'quiqqer/order',
+                        'mail.payment_success.missing_customer_email.admin.subject',
+                        $localeData
+                    )
+                );
+                $AdminMailer->setBody(
+                    QUI::getLocale()->get(
+                        'quiqqer/order',
+                        'mail.payment_success.missing_customer_email.admin.body',
+                        $localeData
+                    )
+                );
+                $AdminMailer->addRecipient($adminEmail);
+
+                try {
+                    $AdminMailer->send();
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::writeException($Exception);
+                }
+            }
+
+            return;
+        }
+
+        $Mailer->addRecipient($email);
 
         try {
             $Mailer->send();

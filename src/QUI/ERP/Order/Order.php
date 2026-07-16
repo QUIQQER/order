@@ -297,7 +297,9 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             [
                 'shipping_id' => $this->shippingId,
                 'paid_status' => $this->getAttribute('paid_status'),
-                'payment_data' => QUI\Security\Encryption::encrypt(json_encode($this->paymentData)),
+                'payment_data' => QUI\Security\Encryption::encrypt(
+                    json_encode($this->paymentData, JSON_THROW_ON_ERROR)
+                ),
                 'currency_data' => json_encode($this->getCurrency()->toArray()),
                 'currency' => $this->getCurrency()->getCode(),
                 'customer_id' => $this->getCustomer()->getUUID(),
@@ -636,7 +638,7 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             'payment_method' => $paymentMethod,
             'payment_time' => null,
             'payment_data' => QUI\Security\Encryption::encrypt(
-                json_encode($this->paymentData)
+                json_encode($this->paymentData, JSON_THROW_ON_ERROR)
             ),
             'payment_address' => '',
             // verschlüsselt

@@ -672,7 +672,7 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             'payment_method' => $paymentMethod,
             'payment_time' => null,
             'payment_data' => QUI\Security\Encryption::encrypt(
-                json_encode($this->paymentData)
+                json_encode($this->paymentData, JSON_THROW_ON_ERROR)
             ), // encrypted
             'payment_address' => '',  // encrypted
 

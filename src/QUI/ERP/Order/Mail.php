@@ -464,17 +464,24 @@ class Mail
             }
         }
 
-        if (!empty($attachments)) {
-            $attachments = explode(',', $attachments);
-            $Media = QUI::getProjectManager()->getStandard()->getMedia();
+        if (!is_string($attachments) || trim($attachments) === '') {
+            return;
+        }
 
-            foreach ($attachments as $attachment) {
-                try {
-                    $Item = $Media->get((int)$attachment);
-                    $Mail->addAttachment($Item->getFullPath());
-                } catch (\Exception $Exception) {
-                    QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
-                }
+        $Project = QUI::getProjectManager()->getStandard();
+
+        if ($Project === null) {
+            return;
+        }
+
+        $Media = $Project->getMedia();
+
+        foreach (explode(',', $attachments) as $attachment) {
+            try {
+                $Item = $Media->get((int)$attachment);
+                $Mail->addAttachment($Item->getFullPath());
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addAlert('Order mail attachment file error :: ' . $Exception->getMessage());
             }
         }
     }
@@ -499,8 +506,13 @@ class Mail
         // rename for attachment
         $title = $Site->getAttribute('title');
 
-        ['dirname' => $dirname, 'extension' => $extension] = pathinfo($file);
-        $newFile = $dirname . '/' . $title . '.' . $extension;
+        $dirname = dirname($file);
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $newFile = $dirname . '/' . $title;
+
+        if ($extension !== '') {
+            $newFile .= '.' . $extension;
+        }
 
         rename($file, $newFile);
 

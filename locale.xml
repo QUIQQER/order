@@ -1425,6 +1425,32 @@
                 No order confirmation could be sent for [orderId].
             ]]></en>
         </locale>
+        <locale name="message.order.payment_success.missing.customer.mail">
+            <de><![CDATA[
+                Der Kunde [customerId] hat keine E-Mail-Adresse hinterlegt.
+                Die Zahlungsbestätigung für die Bestellung [orderId] konnte nicht versendet werden.
+            ]]></de>
+            <en><![CDATA[
+                The customer [customerId] has no e-mail address.
+                The payment confirmation for order [orderId] could not be sent.
+            ]]></en>
+        </locale>
+        <locale name="mail.payment_success.missing_customer_email.admin.subject">
+            <de><![CDATA[Zahlungsbestätigung für Bestellung [orderId] nicht versendet]]></de>
+            <en><![CDATA[Payment confirmation for order [orderId] was not sent]]></en>
+        </locale>
+        <locale name="mail.payment_success.missing_customer_email.admin.body">
+            <de><![CDATA[
+                Die Bestellung [orderId] wurde als bezahlt gemeldet.
+                Für den Kunden [customerId] ist jedoch keine E-Mail-Adresse hinterlegt.
+                Die Zahlungsbestätigung konnte deshalb nicht an den Kunden versendet werden.
+            ]]></de>
+            <en><![CDATA[
+                Order [orderId] was reported as paid.
+                However, customer [customerId] has no e-mail address.
+                The payment confirmation could therefore not be sent to the customer.
+            ]]></en>
+        </locale>
         <locale name="message.order.missing.admin.mail">
             <de><![CDATA[
             Es wurde keine Administrator E-Mail Adresse hinterlegt.

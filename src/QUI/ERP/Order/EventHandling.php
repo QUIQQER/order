@@ -85,8 +85,17 @@ class EventHandling
             $path = trim($CheckoutSite->getUrlRewritten(), '/');
 
             if (mb_strpos($path, 'http') === 0) {
-                $path = parse_url($path);
-                $path = ltrim($path['path'], '/');
+                $parsedPath = parse_url($path, PHP_URL_PATH);
+
+                if (!is_string($parsedPath)) {
+                    return;
+                }
+
+                $path = ltrim($parsedPath, '/');
+
+                if ($path === '') {
+                    return;
+                }
             }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);

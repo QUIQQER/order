@@ -157,11 +157,15 @@ class OrderUnitTest extends TestCase
 
         $Order->setPaymentData('token', 'abc');
         $Order->setPaymentData('tries', 2);
+        $Order->setPaymentData('confirmed', false);
+        $Order->setPaymentData('metadata', null);
 
         $this->assertSame(
             [
                 'token' => 'abc',
-                'tries' => 2
+                'tries' => 2,
+                'confirmed' => false,
+                'metadata' => null
             ],
             $Order->getPaymentData()
         );
@@ -174,6 +178,34 @@ class OrderUnitTest extends TestCase
 
         $this->assertNull($this->getProperty($Order, 'paymentId'));
         $this->assertNull($this->getProperty($Order, 'paymentMethod'));
+    }
+
+    public function testInvalidPaymentDataDoesNotChangeExistingData(): void
+    {
+        $Order = $this->createOrderWithoutConstructor();
+        $Order->setPaymentData('token', 'abc');
+        $paymentData = $Order->getPaymentData();
+        $resource = fopen('php://memory', 'r');
+
+        self::assertIsResource($resource);
+
+        try {
+            $Order->setPaymentData('invalid', ['resource' => $resource]);
+            self::fail('An array containing a resource must not be accepted as payment data.');
+        } catch (\JsonException) {
+        } finally {
+            fclose($resource);
+        }
+
+        self::assertSame($paymentData, $Order->getPaymentData());
+
+        try {
+            $Order->setPaymentData('amount', INF);
+            self::fail('An infinite number must not be accepted as payment data.');
+        } catch (\JsonException) {
+        }
+
+        self::assertSame($paymentData, $Order->getPaymentData());
     }
 
     public function testIsPaidUsesPaidStatusAttribute(): void

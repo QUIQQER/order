@@ -1468,11 +1468,19 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
      * This data is stored encrypted in the database
      *
      * @param string $key
-     * @param string|integer|mixed $value
+     * @param array<mixed>|bool|float|int|string|null $value
+     * @throws \JsonException
      */
-    public function setPaymentData(string $key, mixed $value): void
-    {
-        $this->paymentData[$key] = $value;
+    public function setPaymentData(
+        string $key,
+        array | bool | float | int | string | null $value
+    ): void {
+        $paymentData = $this->paymentData;
+        $paymentData[$key] = $value;
+
+        json_encode($paymentData, JSON_THROW_ON_ERROR);
+
+        $this->paymentData = $paymentData;
     }
 
     /**
