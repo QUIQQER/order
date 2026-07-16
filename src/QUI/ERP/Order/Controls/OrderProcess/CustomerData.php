@@ -123,9 +123,14 @@ class CustomerData extends QUI\ERP\Order\Controls\AbstractOrderingStep
             $this->setAttribute('data-validate', 0);
         }
 
+        $Conf = QUI::getPackage('quiqqer/frontend-users')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/frontend-users package configuration is not available.');
+        }
+
         // frontend users address profile settings
         try {
-            $Conf = QUI::getPackage('quiqqer/frontend-users')->getConfig();
             $settings = $Conf->getValue('profile', 'addressFields');
 
             if (is_string($settings) && $settings !== '') {

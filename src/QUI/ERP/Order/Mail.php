@@ -155,8 +155,7 @@ class Mail
      */
     public static function sendAdminOrderConfirmationMail(Order $Order): void
     {
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
         $email = $Config->getValue('order', 'orderAdminMails');
 
         if (empty($email)) {
@@ -421,8 +420,7 @@ class Mail
             return;
         }
 
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
 
         $privacyPolicy = (int)$Config->getValue('mails', 'privacyPolicy');
         $termsAndConditions = (int)$Config->getValue('mails', 'termsAndConditions');
@@ -517,8 +515,7 @@ class Mail
      */
     protected static function addBCCMailAddress(QUI\Mail\Mailer $Mailer): void
     {
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
         $orderMails = $Config->getValue('order', 'orderAdminMails');
 
         if (empty($orderMails)) {
@@ -688,8 +685,13 @@ class Mail
      */
     protected static function getCompanyName(): string
     {
+        $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
+
         try {
-            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);

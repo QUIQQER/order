@@ -80,7 +80,7 @@ class Factory extends QUI\Utils\Singleton
         $table = $Orders->table();
         $status = QUI\ERP\Constants::ORDER_STATUS_CREATED;
 
-        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $Config = Settings::getConfig();
         $orderId = $Config->getValue('order', 'orderCurrentIdIndex');
 
         if (!is_numeric($orderId)) {

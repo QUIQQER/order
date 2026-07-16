@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
+use QUI\ERP\Order\Settings;
 
 use function array_keys;
 use function count;
@@ -45,8 +46,7 @@ class Factory extends QUI\Utils\Singleton
         }
 
         // config
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
 
         $Config->setValue('processing_status', (string)$id, $color);
         $Config->save();

@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
+use QUI\ERP\Order\Settings;
 
 use function boolval;
 
@@ -54,9 +55,9 @@ class Status
         $this->color = $list[$id];
 
         // notification
+        $Config = Settings::getConfig();
+
         try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
             $result = $Config->getSection('processing_status_notification');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);

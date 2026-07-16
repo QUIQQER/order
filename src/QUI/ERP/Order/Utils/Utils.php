@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Utils;
 
 use QUI;
+use QUI\ERP\Order\Settings;
 use QUI\Database\Exception;
 use QUI\ERP\Accounting\Payments\Types\PaymentInterface;
 use QUI\ERP\Products\Field\Types\BasketConditions;
@@ -225,9 +226,9 @@ class Utils
      */
     public static function getOrderPrefix(): string
     {
+        $Config = Settings::getConfig();
+
         try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
             $setting = $Config->getValue('order', 'prefix');
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);

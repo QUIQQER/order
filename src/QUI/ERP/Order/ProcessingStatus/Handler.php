@@ -8,6 +8,7 @@ namespace QUI\ERP\Order\ProcessingStatus;
 
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
+use QUI\ERP\Order\Settings;
 
 use function in_array;
 use function is_array;
@@ -34,7 +35,7 @@ class Handler extends QUI\Utils\Singleton
      */
     public function __construct()
     {
-        $this->OrderConfig = QUI::getPackage('quiqqer/order')->getConfig();
+        $this->OrderConfig = Settings::getConfig();
     }
 
     /**

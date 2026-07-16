@@ -32,19 +32,29 @@ class Settings extends QUI\Utils\Singleton
     protected array $settings = [];
 
     /**
+     * Return the required order package configuration.
+     *
+     * @throws QUI\Exception
+     */
+    public static function getConfig(): QUI\Config
+    {
+        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+
+        if ($Config === null) {
+            throw new QUI\Exception('Order configuration is not available.');
+        }
+
+        return $Config;
+    }
+
+    /**
      * Settings constructor.
+     *
+     * @throws QUI\Exception
      */
     public function __construct()
     {
-        try {
-            $Config = QUI::getPackage('quiqqer/order')->getConfig();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return;
-        }
-
-        $this->settings = $Config->toArray();
+        $this->settings = self::getConfig()->toArray();
     }
 
     /**
@@ -102,6 +112,7 @@ class Settings extends QUI\Utils\Singleton
      * Create invoice directly on order creation
      *
      * @return bool
+     * @throws QUI\Exception
      */
     public function createInvoiceOnOrder(): bool
     {
@@ -109,14 +120,7 @@ class Settings extends QUI\Utils\Singleton
             return false;
         }
 
-        try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return false;
-        }
+        $Config = self::getConfig();
 
         return $Config->get('order', 'autoInvoice') === 'onOrder';
     }
@@ -125,6 +129,7 @@ class Settings extends QUI\Utils\Singleton
      * Create invoice if the order is paid
      *
      * @return bool
+     * @throws QUI\Exception
      */
     public function createInvoiceOnPaid(): bool
     {
@@ -133,14 +138,7 @@ class Settings extends QUI\Utils\Singleton
         }
 
 
-        try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return false;
-        }
+        $Config = self::getConfig();
 
         if (
             $Config->get('order', 'autoInvoice') === 'onPaid'
@@ -156,6 +154,7 @@ class Settings extends QUI\Utils\Singleton
      * Create invoice if the payment said it
      *
      * @return bool
+     * @throws QUI\Exception
      */
     public function createInvoiceByPayment(): bool
     {
@@ -164,14 +163,7 @@ class Settings extends QUI\Utils\Singleton
         }
 
 
-        try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
-        } catch (QUI\Exception $Exception) {
-            QUI\System\Log::writeDebugException($Exception);
-
-            return false;
-        }
+        $Config = self::getConfig();
 
         return $Config->get('order', 'autoInvoice') === 'byPayment';
     }

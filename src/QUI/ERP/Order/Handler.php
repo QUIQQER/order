@@ -562,9 +562,13 @@ class Handler extends Singleton
 
         // Shop company
         $company = '';
+        $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Conf === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
 
         try {
-            $Conf = QUI::getPackage('quiqqer/erp')->getConfig();
             $company = $Conf->get('company', 'name');
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);

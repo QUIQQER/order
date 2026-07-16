@@ -15,9 +15,9 @@ use QUI\ERP\Accounting\Payments\Types\Payment;
 QUI::getAjax()->registerFunction(
     'package_quiqqer_order_ajax_backend_settings_paymentChangeable_list',
     function () {
-        $Config = QUI::getPackage('quiqqer/order')->getConfig();
+        $Config = QUI\ERP\Order\Settings::getConfig();
         $payments = Payments::getInstance()->getPayments();
-        $section = $Config?->getSection('paymentChangeable') ?? [];
+        $section = $Config->getSection('paymentChangeable');
 
         $result = [];
 

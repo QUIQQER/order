@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
+use QUI\ERP\Order\Settings;
 use QUI\ERP\Order\Utils\Utils as OrderProductUtils;
 use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
@@ -192,8 +193,7 @@ class BasketOrder
      */
     public function addProduct(Product $Product): void
     {
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
         $merge = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if (!$merge) {
@@ -276,8 +276,7 @@ class BasketOrder
     {
         $this->clear();
 
-        $Package = QUI::getPackage('quiqqer/order');
-        $Config = $Package->getConfig();
+        $Config = Settings::getConfig();
         $merge = boolval($Config->getValue('orderProcess', 'mergeSameProducts'));
 
         if ($merge) {

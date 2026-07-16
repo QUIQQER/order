@@ -429,10 +429,9 @@ class EventHandling
     public static function onTemplateGetHeader(QUI\Template $Template): void
     {
         $merge = 0;
+        $Config = Settings::getConfig();
 
         try {
-            $Package = QUI::getPackage('quiqqer/order');
-            $Config = $Package->getConfig();
             $merge = $Config->getValue('orderProcess', 'mergeSameProducts') ? 1 : 0;
         } catch (QUI\Exception) {
         }

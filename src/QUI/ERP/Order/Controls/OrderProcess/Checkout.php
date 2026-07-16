@@ -11,6 +11,7 @@ use QUI;
 use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Basket\BasketOrder;
 use QUI\ERP\Order\Basket\BasketGuest;
+use QUI\ERP\Order\Settings;
 
 use function dirname;
 use function json_decode;
@@ -277,8 +278,13 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
      */
     public function getLinkOf(string $config): string
     {
+        $Config = QUI::getPackage('quiqqer/erp')->getConfig();
+
+        if ($Config === null) {
+            throw new QUI\Exception('The quiqqer/erp package configuration is not available.');
+        }
+
         try {
-            $Config = QUI::getPackage('quiqqer/erp')->getConfig();
             $values = $Config->get('sites', $config);
             $Project = $this->getProject();
         } catch (QUI\Exception) {
@@ -422,9 +428,10 @@ class Checkout extends QUI\ERP\Order\Controls\AbstractOrderingStep
             );
         }
 
+        $mandatoryLinksDisplay = 'single_checkbox';
+        $Config = Settings::getConfig();
+
         try {
-            $mandatoryLinksDisplay = 'single_checkbox';
-            $Config = QUI::getPackage('quiqqer/order')->getConfig();
             $mandatoryLinksDisplay = $Config->get('orderProcess', 'mandatoryLinksDisplay');
         } catch (Exception) {
         }
