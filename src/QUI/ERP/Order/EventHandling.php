@@ -351,12 +351,15 @@ class EventHandling
     /**
      * @param QUI\Package\Package $Package
      * @throws QUI\Exception
+     * @throws QUI\Database\Exception
      */
     public static function onPackageSetup(QUI\Package\Package $Package): void
     {
         if ($Package->getName() !== 'quiqqer/order') {
             return;
         }
+
+        self::migrateBasketUserIds();
 
         // create order status
         $Handler = ProcessingStatus\Handler::getInstance();
@@ -698,49 +701,55 @@ class EventHandling
 
     /**
      * @throws QUI\Database\Exception
-     * @throws \Doctrine\DBAL\Exception
      */
     public static function migrateBasketUserIds(): void
     {
-        $basketTable = Handler::getInstance()->tableBasket();
-        $SchemaManager = QUI::getSchemaManager();
+        try {
+            $basketTable = Handler::getInstance()->tableBasket();
+            $SchemaManager = QUI::getSchemaManager();
 
-        if (!$SchemaManager->tablesExist([$basketTable])) {
-            return;
-        }
+            if (!$SchemaManager->tablesExist([$basketTable])) {
+                return;
+            }
 
-        $Table = $SchemaManager->introspectTable($basketTable);
-        $UidColumn = new \Doctrine\DBAL\Schema\Column(
-            'uid',
-            \Doctrine\DBAL\Types\Type::getType('string'),
-            ['length' => 50, 'notnull' => true]
-        );
+            $Table = $SchemaManager->introspectTable($basketTable);
+            $UidColumn = new \Doctrine\DBAL\Schema\Column(
+                'uid',
+                \Doctrine\DBAL\Types\Type::getType('string'),
+                ['length' => 50, 'notnull' => true]
+            );
 
-        if (!$Table->hasColumn('uid')) {
-            $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
-                $Table,
-                addedColumns: [$UidColumn]
-            ));
-        } else {
-            $CurrentUidColumn = $Table->getColumn('uid');
-
-            if (
-                !$CurrentUidColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
-                || $CurrentUidColumn->getLength() !== 50
-                || !$CurrentUidColumn->getNotnull()
-            ) {
+            if (!$Table->hasColumn('uid')) {
                 $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
                     $Table,
-                    changedColumns: [
-                        'uid' => new \Doctrine\DBAL\Schema\ColumnDiff(
-                            $CurrentUidColumn,
-                            $UidColumn
-                        )
-                    ]
+                    addedColumns: [$UidColumn]
                 ));
-            }
-        }
+            } else {
+                $CurrentUidColumn = $Table->getColumn('uid');
 
-        QUI\Utils\MigrationV1ToV2::migrateUsers($basketTable, ['uid']);
+                if (
+                    !$CurrentUidColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
+                    || $CurrentUidColumn->getLength() !== 50
+                    || !$CurrentUidColumn->getNotnull()
+                ) {
+                    $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+                        $Table,
+                        changedColumns: [
+                            'uid' => new \Doctrine\DBAL\Schema\ColumnDiff(
+                                $CurrentUidColumn,
+                                $UidColumn
+                            )
+                        ]
+                    ));
+                }
+            }
+
+            QUI\Utils\MigrationV1ToV2::migrateUsers($basketTable, ['uid']);
+        } catch (\Doctrine\DBAL\Exception $Exception) {
+            throw new QUI\Database\Exception(
+                $Exception->getMessage(),
+                (int)$Exception->getCode()
+            );
+        }
     }
 }

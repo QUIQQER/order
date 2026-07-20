@@ -88,7 +88,7 @@ class HandlerBasketIntegrationTest extends TestCase
         $this->assertSame($hash, $databaseBasket['hash']);
     }
 
-    public function testLegacyBasketUserIdIsMigratedToUuid(): void
+    public function testPackageSetupMigratesLegacyBasketUserIdToUuid(): void
     {
         $LegacyUser = null;
 
@@ -115,7 +115,7 @@ class HandlerBasketIntegrationTest extends TestCase
         );
         $this->basketId = (int)$Connection->lastInsertId();
 
-        EventHandling::migrateBasketUserIds();
+        EventHandling::onPackageSetup(QUI::getPackage('quiqqer/order'));
 
         $basket = $this->fetchBasketFromDatabase($this->basketId);
         $this->assertSame($LegacyUser->getUUID(), $basket['uid']);
