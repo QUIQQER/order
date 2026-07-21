@@ -359,6 +359,9 @@ class EventHandling
             return;
         }
 
+        $OrderHandler = Handler::getInstance();
+        self::migrateOrderCreatorColumn($OrderHandler->table());
+        self::migrateOrderCreatorColumn($OrderHandler->tableOrderProcess());
         self::migrateBasketUserIds();
 
         // create order status
@@ -696,6 +699,53 @@ class EventHandling
         $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
             $Table,
             changedColumns: $changedColumns
+        ));
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private static function migrateOrderCreatorColumn(string $table): void
+    {
+        $SchemaManager = QUI::getSchemaManager();
+
+        if (!$SchemaManager->tablesExist([$table])) {
+            return;
+        }
+
+        $Table = $SchemaManager->introspectTable($table);
+
+        if (!$Table->hasColumn('c_user')) {
+            return;
+        }
+
+        $CurrentColumn = $Table->getColumn('c_user');
+
+        if (
+            $CurrentColumn->getType() instanceof \Doctrine\DBAL\Types\StringType
+            && $CurrentColumn->getLength() === 50
+            && $CurrentColumn->getNotnull()
+        ) {
+            return;
+        }
+
+        $TargetColumn = new \Doctrine\DBAL\Schema\Column(
+            'c_user',
+            \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Types::STRING),
+            [
+                'length' => 50,
+                'notnull' => true
+            ]
+        );
+
+        $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+            $Table,
+            changedColumns: [
+                'c_user' => new \Doctrine\DBAL\Schema\ColumnDiff(
+                    $CurrentColumn,
+                    $TargetColumn
+                )
+            ]
         ));
     }
 
