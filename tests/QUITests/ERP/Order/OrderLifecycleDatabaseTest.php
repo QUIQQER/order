@@ -3,7 +3,12 @@
 namespace QUITests\ERP\Order;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\ColumnDiff;
+use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use PHPUnit\Framework\TestCase;
 use QUI;
 use QUI\ERP\Areas\Area;
@@ -397,6 +402,36 @@ class OrderLifecycleDatabaseTest extends TestCase
         }
     }
 
+    public function testPackageSetupRepairsOrderCreatorColumns(): void
+    {
+        $Handler = Handler::getInstance();
+        $tables = [$Handler->table(), $Handler->tableOrderProcess()];
+
+        try {
+            foreach ($tables as $table) {
+                $this->changeOrderCreatorColumn($table, 40, false);
+            }
+
+            $Package = QUI::getPackage('quiqqer/order');
+            EventHandling::onPackageSetup($Package);
+            EventHandling::onPackageSetup($Package);
+
+            foreach ($tables as $table) {
+                $Column = QUI::getSchemaManager()
+                    ->introspectTable($table)
+                    ->getColumn('c_user');
+
+                self::assertInstanceOf(StringType::class, $Column->getType());
+                self::assertSame(50, $Column->getLength());
+                self::assertTrue($Column->getNotnull());
+            }
+        } finally {
+            foreach ($tables as $table) {
+                $this->changeOrderCreatorColumn($table, 50, true);
+            }
+        }
+    }
+
     public function testPaymentReceiverReadsFinalOrderState(): void
     {
         $SystemUser = QUI::getUsers()->getSystemUser();
@@ -585,5 +620,27 @@ class OrderLifecycleDatabaseTest extends TestCase
         $Config->set('shop', 'area', (string)self::$createdAreaId);
         $Config->save();
         self::$defaultAreaReady = true;
+    }
+
+    private function changeOrderCreatorColumn(string $table, int $length, bool $notnull): void
+    {
+        $SchemaManager = QUI::getSchemaManager();
+        $Table = $SchemaManager->introspectTable($table);
+        $CurrentColumn = $Table->getColumn('c_user');
+        $TargetColumn = new Column(
+            'c_user',
+            Type::getType(Types::STRING),
+            [
+                'length' => $length,
+                'notnull' => $notnull
+            ]
+        );
+
+        $SchemaManager->alterTable(new TableDiff(
+            $Table,
+            changedColumns: [
+                'c_user' => new ColumnDiff($CurrentColumn, $TargetColumn)
+            ]
+        ));
     }
 }
