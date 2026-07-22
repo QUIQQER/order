@@ -402,15 +402,18 @@ class OrderLifecycleDatabaseTest extends TestCase
         }
     }
 
-    public function testPackageSetupRepairsOrderCreatorColumns(): void
+    public function testPackageSetupRepairsLegacyOrderColumns(): void
     {
         $Handler = Handler::getInstance();
         $tables = [$Handler->table(), $Handler->tableOrderProcess()];
+        $orderProcessTable = $Handler->tableOrderProcess();
 
         try {
             foreach ($tables as $table) {
                 $this->changeOrderCreatorColumn($table, 40, false);
             }
+
+            $this->changeOrderIdentifierColumn($orderProcessTable, 'order_id', 40, false);
 
             $Package = QUI::getPackage('quiqqer/order');
             EventHandling::onPackageSetup($Package);
@@ -425,10 +428,20 @@ class OrderLifecycleDatabaseTest extends TestCase
                 self::assertSame(50, $Column->getLength());
                 self::assertTrue($Column->getNotnull());
             }
+
+            $OrderIdColumn = QUI::getSchemaManager()
+                ->introspectTable($orderProcessTable)
+                ->getColumn('order_id');
+
+            self::assertInstanceOf(StringType::class, $OrderIdColumn->getType());
+            self::assertSame(50, $OrderIdColumn->getLength());
+            self::assertFalse($OrderIdColumn->getNotnull());
         } finally {
             foreach ($tables as $table) {
                 $this->changeOrderCreatorColumn($table, 50, true);
             }
+
+            $this->changeOrderIdentifierColumn($orderProcessTable, 'order_id', 50, false);
         }
     }
 
@@ -624,11 +637,20 @@ class OrderLifecycleDatabaseTest extends TestCase
 
     private function changeOrderCreatorColumn(string $table, int $length, bool $notnull): void
     {
+        $this->changeOrderIdentifierColumn($table, 'c_user', $length, $notnull);
+    }
+
+    private function changeOrderIdentifierColumn(
+        string $table,
+        string $column,
+        int $length,
+        bool $notnull
+    ): void {
         $SchemaManager = QUI::getSchemaManager();
         $Table = $SchemaManager->introspectTable($table);
-        $CurrentColumn = $Table->getColumn('c_user');
+        $CurrentColumn = $Table->getColumn($column);
         $TargetColumn = new Column(
-            'c_user',
+            $column,
             Type::getType(Types::STRING),
             [
                 'length' => $length,
@@ -639,7 +661,7 @@ class OrderLifecycleDatabaseTest extends TestCase
         $SchemaManager->alterTable(new TableDiff(
             $Table,
             changedColumns: [
-                'c_user' => new ColumnDiff($CurrentColumn, $TargetColumn)
+                $column => new ColumnDiff($CurrentColumn, $TargetColumn)
             ]
         ));
     }
