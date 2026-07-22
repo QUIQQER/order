@@ -664,7 +664,15 @@ class EventHandling
         $Table = $SchemaManager->introspectTable($table);
         $changedColumns = [];
 
-        foreach (['invoice_id', 'customerId', 'order_id'] as $columnName) {
+        foreach (
+            [
+                'invoice_id',
+                'temporary_invoice_id',
+                'customerId',
+                'order_id',
+                'order_process_id'
+            ] as $columnName
+        ) {
             if (!$Table->hasColumn($columnName)) {
                 continue;
             }

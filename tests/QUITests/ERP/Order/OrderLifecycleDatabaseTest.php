@@ -406,14 +406,23 @@ class OrderLifecycleDatabaseTest extends TestCase
     {
         $Handler = Handler::getInstance();
         $tables = [$Handler->table(), $Handler->tableOrderProcess()];
+        $orderTable = $Handler->table();
         $orderProcessTable = $Handler->tableOrderProcess();
+        $legacyIdentifierColumns = [
+            $orderTable => ['order_process_id', 'temporary_invoice_id'],
+            $orderProcessTable => ['order_id', 'temporary_invoice_id']
+        ];
 
         try {
             foreach ($tables as $table) {
                 $this->changeOrderCreatorColumn($table, 40, false);
             }
 
-            $this->changeOrderIdentifierColumn($orderProcessTable, 'order_id', 40, false);
+            foreach ($legacyIdentifierColumns as $table => $columnNames) {
+                foreach ($columnNames as $columnName) {
+                    $this->changeOrderIdentifierColumn($table, $columnName, 40, false);
+                }
+            }
 
             $Package = QUI::getPackage('quiqqer/order');
             EventHandling::onPackageSetup($Package);
@@ -429,19 +438,26 @@ class OrderLifecycleDatabaseTest extends TestCase
                 self::assertTrue($Column->getNotnull());
             }
 
-            $OrderIdColumn = QUI::getSchemaManager()
-                ->introspectTable($orderProcessTable)
-                ->getColumn('order_id');
+            foreach ($legacyIdentifierColumns as $table => $columnNames) {
+                $Table = QUI::getSchemaManager()->introspectTable($table);
 
-            self::assertInstanceOf(StringType::class, $OrderIdColumn->getType());
-            self::assertSame(50, $OrderIdColumn->getLength());
-            self::assertFalse($OrderIdColumn->getNotnull());
+                foreach ($columnNames as $columnName) {
+                    $Column = $Table->getColumn($columnName);
+                    self::assertInstanceOf(StringType::class, $Column->getType());
+                    self::assertSame(50, $Column->getLength());
+                    self::assertFalse($Column->getNotnull());
+                }
+            }
         } finally {
             foreach ($tables as $table) {
                 $this->changeOrderCreatorColumn($table, 50, true);
             }
 
-            $this->changeOrderIdentifierColumn($orderProcessTable, 'order_id', 50, false);
+            foreach ($legacyIdentifierColumns as $table => $columnNames) {
+                foreach ($columnNames as $columnName) {
+                    $this->changeOrderIdentifierColumn($table, $columnName, 50, false);
+                }
+            }
         }
     }
 
