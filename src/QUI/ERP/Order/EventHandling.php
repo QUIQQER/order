@@ -360,6 +360,8 @@ class EventHandling
         }
 
         $OrderHandler = Handler::getInstance();
+        self::migrateOrderIdentifierColumns($OrderHandler->table());
+        self::migrateOrderIdentifierColumns($OrderHandler->tableOrderProcess());
         self::migrateOrderCreatorColumn($OrderHandler->table());
         self::migrateOrderCreatorColumn($OrderHandler->tableOrderProcess());
         self::migrateBasketUserIds();
@@ -662,7 +664,7 @@ class EventHandling
         $Table = $SchemaManager->introspectTable($table);
         $changedColumns = [];
 
-        foreach (['invoice_id', 'customerId'] as $columnName) {
+        foreach (['invoice_id', 'customerId', 'order_id'] as $columnName) {
             if (!$Table->hasColumn($columnName)) {
                 continue;
             }
