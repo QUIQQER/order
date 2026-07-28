@@ -49,6 +49,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             '$clickCopyOrder',
             '$clickDeleteOrder',
             '$clickOpenOrder',
+            '$onGridSelectionChange',
             '$refreshButtonStatus',
             '$onOrderChange',
             '$onClickOrderDetails',
@@ -75,6 +76,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$Actions = null;
             this.$Status = null;
             this.$installed = {};  // list of installed packages related to orders
+            this.$multipleSelectionDisabledActions = [];
 
             this.$currentSearch = '';
             this.$searchDelay = null;
@@ -200,6 +202,15 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         },
 
         /**
+         * Update selection-dependent buttons after the Grid has completed its
+         * click handling.
+         */
+        $onGridSelectionChange: function() {
+            this.$refreshButtonStatus();
+            window.setTimeout(this.$refreshButtonStatus, 0);
+        },
+
+        /**
          * refresh the button status
          * disabled or enabled
          */
@@ -208,21 +219,43 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            const selected = this.$Grid.getSelectedData();
+            const selectedCount = this.$Grid.getSelectedIndices().length;
             const Pdf = this.$Grid.getButton('printPdf');
+            const actionButtons = this.$Actions.getChildren();
 
-            if (selected.length) {
-                if (selected[0].paid_status === 1 ||
-                    selected[0].paid_status === 5) {
+            if (selectedCount === 1) {
+                Pdf.enable();
+            } else {
+                Pdf.disable();
+            }
+
+            if (selectedCount <= 1) {
+                for (const Button of this.$multipleSelectionDisabledActions) {
+                    Button.enable();
                 }
 
-                this.$Actions.enable();
-                Pdf.enable();
+                this.$multipleSelectionDisabledActions = [];
+            }
+
+            if (!selectedCount) {
+                this.$Actions.disable();
                 return;
             }
 
-            Pdf.disable();
-            this.$Actions.disable();
+            const multipleOrdersSelected = selectedCount > 1;
+
+            for (const Button of actionButtons) {
+                if (!multipleOrdersSelected ||
+                    Button.getAttribute('name') === 'cancel' ||
+                    (typeof Button.isDisabled === 'function' && Button.isDisabled())) {
+                    continue;
+                }
+
+                Button.disable();
+                this.$multipleSelectionDisabledActions.push(Button);
+            }
+
+            this.$Actions.enable();
         },
 
         /**
@@ -596,7 +629,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $clickCopyOrder: function() {
             const selected = this.$Grid.getSelectedData();
 
-            if (!selected.length) {
+            if (selected.length !== 1) {
                 return;
             }
 
@@ -622,18 +655,61 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 return;
             }
 
-            const self = this,
-                orderId = selected[0].hash;
+            const multipleOrdersSelected = selected.length > 1;
+            const orderIds = selected.map(function(Order) {
+                return Order.hash;
+            });
+
+            let title = QUILocale.get(lg, 'dialog.order.delete.title');
+            let text = QUILocale.get(lg, 'dialog.order.delete.text');
+            let information = QUILocale.get(lg, 'dialog.order.delete.information', {
+                id: selected[0]['prefixed-id']
+            });
+
+            if (multipleOrdersSelected) {
+                title = QUILocale.get(lg, 'dialog.orders.delete.title');
+                text = QUILocale.get(lg, 'dialog.orders.delete.text');
+                information = QUILocale.get(lg, 'dialog.orders.delete.information', {
+                    count: selected.length
+                });
+
+                const OrdersList = document.createElement('ul');
+
+                for (const Order of selected) {
+                    const ListItem = document.createElement('li');
+                    const OrderNumber = document.createElement('strong');
+                    const details = [];
+
+                    OrderNumber.textContent = String(Order['prefixed-id'] || Order.hash);
+                    ListItem.appendChild(OrderNumber);
+
+                    if (Order.customer_name && Order.customer_name !== '---') {
+                        details.push(String(Order.customer_name));
+                    }
+
+                    if (Order.c_date && Order.c_date !== '---') {
+                        details.push(String(Order.c_date));
+                    }
+
+                    if (details.length) {
+                        ListItem.appendChild(
+                            document.createTextNode(' – ' + details.join(' – '))
+                        );
+                    }
+
+                    OrdersList.appendChild(ListItem);
+                }
+
+                information += OrdersList.outerHTML;
+            }
 
             new QUIConfirm({
-                title: QUILocale.get(lg, 'dialog.order.delete.title'),
-                text: QUILocale.get(lg, 'dialog.order.delete.text'),
-                information: QUILocale.get(lg, 'dialog.order.delete.information', {
-                    id: selected[0]['prefixed-id']
-                }),
+                title: title,
+                text: text,
+                information: information,
                 icon: 'fa fa-trash',
                 texticon: 'fa fa-trash',
-                maxHeight: 400,
+                maxHeight: multipleOrdersSelected ? 600 : 400,
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
@@ -644,8 +720,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     onSubmit: function(Win) {
                         Win.Loader.show();
 
-                        Orders.deleteOrder(orderId).then(function() {
-                            self.refresh();
+                        const deletions = orderIds.map(function(orderId) {
+                            return Orders.deleteOrder(orderId);
+                        });
+
+                        Promise.all(deletions).then(function() {
                             Win.close();
                         }).catch(function(err) {
                             Win.Loader.hide();
@@ -673,11 +752,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $clickOpenOrder: function() {
             const selected = this.$Grid.getSelectedData();
 
-            if (!selected.length) {
+            if (selected.length !== 1) {
                 return;
             }
 
-            this.openOrder(this.$Grid.getSelectedData()[0].hash);
+            this.openOrder(selected[0].hash);
         },
 
         /**
@@ -686,7 +765,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $clickCreateInvoice: function() {
             const selected = this.$Grid.getSelectedData();
 
-            if (!selected.length) {
+            if (selected.length !== 1) {
                 return;
             }
 
@@ -750,7 +829,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $clickCreateSalesOrder: function() {
             const selected = this.$Grid.getSelectedData();
 
-            if (!selected.length) {
+            if (selected.length !== 1) {
                 return;
             }
 
@@ -952,7 +1031,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         $onAddPaymentButtonClick: function(Button) {
             const selectedData = this.$Grid.getSelectedData();
 
-            if (!selectedData.length) {
+            if (selectedData.length !== 1) {
                 return;
             }
 
@@ -1225,6 +1304,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             this.$Grid = new Grid(Container, {
                 accordion: true,
                 serverSort: true,
+                multipleSelection: true,
                 autoSectionToggle: false,
                 openAccordionOnClick: false,
                 toggleiconTitle: '',
@@ -1274,7 +1354,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.$Grid.addEvents({
                 onRefresh: this.refresh,
-                onClick: this.$refreshButtonStatus,
+                onClick: this.$onGridSelectionChange,
                 onDblClick: function(data) {
                     const Cell = data.cell,
                         position = Cell.getPosition(),
@@ -1417,9 +1497,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
         },
 
         $onPDFExportButtonClick: function() {
-            var selected = this.$Grid.getSelectedData();
+            const selected = this.$Grid.getSelectedData();
+            const selectedCount = this.$Grid.getSelectedIndices().length;
 
-            if (!selected.length) {
+            if (selectedCount !== 1 || selected.length !== 1) {
                 return;
             }
 
