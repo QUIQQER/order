@@ -1987,6 +1987,18 @@
             <de><![CDATA[Die Bestellung <b>[id]</b> wird unwiderruflich gelöscht.]]></de>
             <en><![CDATA[The Order <b>[id]</b> will be irrevocably deleted.]]></en>
         </locale>
+        <locale name="dialog.orders.delete.title">
+            <de><![CDATA[Bestellungen löschen]]></de>
+            <en><![CDATA[Delete orders]]></en>
+        </locale>
+        <locale name="dialog.orders.delete.text">
+            <de><![CDATA[Möchten Sie die ausgewählten Bestellungen wirklich löschen?]]></de>
+            <en><![CDATA[Are you sure you want to delete the selected orders?]]></en>
+        </locale>
+        <locale name="dialog.orders.delete.information">
+            <de><![CDATA[Die ausgewählten [count] Bestellungen werden unwiderruflich gelöscht.]]></de>
+            <en><![CDATA[The selected [count] orders will be irrevocably deleted.]]></en>
+        </locale>
 
         <locale name="dialog.order.post.title">
             <de><![CDATA[Rechnung erstellen]]></de>

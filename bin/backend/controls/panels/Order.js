@@ -622,9 +622,9 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     self.$getLockGroups()
                 );
             }).then(function () {
-                return Packages.isInstalled('quiqqer/shipping');
-            }).then(function (isInstalled) {
-                shippingInstalled = isInstalled;
+                return Orders.isShippingAvailable();
+            }).then(function (isAvailable) {
+                shippingInstalled = isAvailable;
                 return Packages.isInstalled('quiqqer/salesorders');
             }).then(function (isInstalled) {
                 if (isInstalled) {
