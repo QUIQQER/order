@@ -520,7 +520,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             Promise.all([
-                QUIPackages.isInstalled('quiqqer/shipping'),
+                Orders.isShippingAvailable(),
                 QUIPackages.isInstalled('quiqqer/salesorders')
             ]).then((result) => {
                 shippingInstalled = result[0];
