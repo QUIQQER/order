@@ -42,6 +42,26 @@ define('package/quiqqer/order/bin/backend/classes/Orders', [
         },
 
         /**
+         * Check if the Shipping integration required by the Order
+         * administration is available at runtime.
+         *
+         * @returns {Promise<Boolean>}
+         */
+        isShippingAvailable: function() {
+            return new Promise(function(resolve, reject) {
+                QUIAjax.get(
+                    'package_quiqqer_order_ajax_backend_isShippingAvailable',
+                    resolve,
+                    {
+                        'package': 'quiqqer/order',
+                        onError: reject,
+                        showError: false
+                    }
+                );
+            });
+        },
+
+        /**
          * Return orders for a grid
          *
          * @param {Object} params - Grid params
