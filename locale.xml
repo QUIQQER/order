@@ -9,6 +9,10 @@
             <de><![CDATA[ ]]></de>
             <en><![CDATA[ ]]></en>
         </locale>
+        <locale name="demo_data.provider.title">
+            <de><![CDATA[Bestellungen]]></de>
+            <en><![CDATA[Orders]]></en>
+        </locale>
 
         <locale name="OutputProvider.entity.title.Order">
             <de><![CDATA[Bestellungen]]></de>

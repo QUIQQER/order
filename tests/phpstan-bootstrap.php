@@ -45,3 +45,5 @@ foreach ($optionalClassStubs as $className => $stubFile) {
         require_once __DIR__ . '/phpstan-stubs/' . $stubFile;
     }
 }
+
+require_once __DIR__ . '/stubs/QUI/ERP/DemoData/DemoDataStubs.php';
