@@ -10,6 +10,7 @@
 
         <provider>
             <erp src="\QUI\ERP\Order\ErpProvider"/>
+            <erpDemoDataProvider src="\QUI\ERP\Order\DemoData\OrderDemoDataProvider"/>
             <paymentReceiver src="\QUI\ERP\Order\PaymentReceiver"/>
             <erpOutput src="\QUI\ERP\Order\Output\OutputProviderOrder"/>
         </provider>
