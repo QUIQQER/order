@@ -5,11 +5,10 @@
 define('package/quiqqer/order/bin/frontend/Basket', [
 
     'qui/QUI',
-    'qui/controls/buttons/Button',
     'package/quiqqer/order/bin/frontend/classes/Basket',
     'Locale'
 
-], function (QUI, QUIButton, Basket, QUILocale) {
+], function (QUI, Basket, QUILocale) {
     "use strict";
 
     // storage test
@@ -36,8 +35,9 @@ define('package/quiqqer/order/bin/frontend/Basket', [
         return new Promise(function (resolve) {
             require([
                 'qui/controls/windows/Confirm',
+                'qui/controls/buttons/Button',
                 'css!package/quiqqer/order/bin/frontend/Basket.css'
-            ], function (QUIConfirm) {
+            ], function (QUIConfirm, QUIButton) {
                 let height = 400,
                     width  = 800;
 
