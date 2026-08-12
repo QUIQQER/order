@@ -37,11 +37,11 @@ class Utils
      * Return the url to the checkout / order process
      *
      * @param QUI\Projects\Project $Project
-     * @return QUI\Projects\Site
+     * @return QUI\Interfaces\Projects\Site
      *
      * @throws QUI\ERP\Order\Exception|QUI\Database\Exception
      */
-    public static function getOrderProcess(QUI\Projects\Project $Project): QUI\Projects\Site
+    public static function getOrderProcess(QUI\Projects\Project $Project): QUI\Interfaces\Projects\Site
     {
         $sites = $Project->getSites([
             'where' => [
@@ -64,11 +64,11 @@ class Utils
      * Return the shopping cart site object
      *
      * @param QUI\Projects\Project $Project
-     * @return QUI\Projects\Site
+     * @return QUI\Interfaces\Projects\Site
      *
      * @throws QUI\ERP\Order\Exception|QUI\Database\Exception
      */
-    public static function getShoppingCart(QUI\Projects\Project $Project): QUI\Projects\Site
+    public static function getShoppingCart(QUI\Projects\Project $Project): QUI\Interfaces\Projects\Site
     {
         $sites = $Project->getSites([
             'where' => [
@@ -89,11 +89,11 @@ class Utils
 
     /**
      * @param QUI\Projects\Project $Project
-     * @return QUI\Projects\Site
+     * @return QUI\Interfaces\Projects\Site
      *
      * @throws QUI\ERP\Order\Exception|QUI\Database\Exception
      */
-    public static function getCheckout(QUI\Projects\Project $Project): QUI\Projects\Site
+    public static function getCheckout(QUI\Projects\Project $Project): QUI\Interfaces\Projects\Site
     {
         return self::getOrderProcess($Project);
     }

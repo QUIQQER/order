@@ -59,14 +59,20 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Basket', [
          * event: on inject
          */
         $onInject: function () {
-            this.refresh();
-            this.$isLoaded = true;
+            return Basket.ready().then(function() {
+                this.refresh();
+                this.$isLoaded = true;
+            }.bind(this));
         },
 
         /**
          * event: on import
          */
         $onImport: function () {
+            if (!Basket.isLoaded()) {
+                return Basket.ready().then(this.$onImport);
+            }
+
             // user need no import
             if (!this.isGuest()) {
                 this.getElm().style.outline = 0;

@@ -14,9 +14,10 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
 
     'qui/QUI',
     'qui/classes/DOM',
-    'Ajax'
+    'Ajax',
+    'package/quiqqer/order/bin/frontend/OrderProcessUrl'
 
-], function(QUI, QUIDOM, QUIAjax) {
+], function(QUI, QUIDOM, QUIAjax, getOrderProcessUrl) {
     'use strict';
 
     return new Class({
@@ -82,13 +83,7 @@ define('package/quiqqer/order/bin/frontend/classes/Orders', [
          * @returns {Promise}
          */
         getOrderProcessUrl: function() {
-            return new Promise(function(resolve, reject) {
-                QUIAjax.get('package_quiqqer_order_ajax_frontend_basket_getOrderProcessUrl', resolve, {
-                    'package': 'quiqqer/order',
-                    onError: reject,
-                    showError: false
-                });
-            });
+            return getOrderProcessUrl();
         },
 
         /**
