@@ -18,11 +18,11 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
     'qui/QUI',
     'qui/classes/DOM',
-    'package/quiqqer/order/bin/frontend/Orders',
+    'package/quiqqer/order/bin/frontend/OrderProcessUrl',
     'Ajax',
     'Locale'
 
-], function(QUI, QUIDOM, Orders, QUIAjax, QUILocale) {
+], function(QUI, QUIDOM, getOrderProcessUrl, QUIAjax, QUILocale) {
     'use strict';
 
     const lg = 'quiqqer/order';
@@ -257,7 +257,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         product.quantity
                     ).then(function(orderHash) {
                         newHash = orderHash;
-                        return Orders.getOrderProcessUrl();
+                        return getOrderProcessUrl();
                     }).then(function(processUrl) {
                         window.location = processUrl + '/' + newHash;
 
@@ -461,7 +461,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                         quantity: quantity
                                     }));
 
-                                    return Orders.getOrderProcessUrl().then(function(processUrl) {
+                                    return getOrderProcessUrl().then(function(processUrl) {
                                         window.location = processUrl;
 
                                         // workaround, to halt promises
@@ -476,7 +476,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                     quantity
                                 ).then(function(orderHash) {
                                     newHash = orderHash;
-                                    return Orders.getOrderProcessUrl();
+                                    return getOrderProcessUrl();
                                 }).then(function(processUrl) {
                                     window.location = processUrl + '/' + newHash;
 

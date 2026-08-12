@@ -18,12 +18,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'Locale',
     'package/quiqqer/currency/bin/Currency',
     'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
-    'package/quiqqer/order/bin/frontend/Orders',
+    'package/quiqqer/order/bin/frontend/OrderProcessUrl',
     'package/quiqqer/order/bin/frontend/Basket',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
-], function(QUI, QUIControl, QUILocale, Currency, BasketWindow, Orders, Basket) {
+], function(QUI, QUIControl, QUILocale, Currency, BasketWindow, getOrderProcessUrl, Basket) {
     'use strict';
 
     var lg = 'quiqqer/order';
@@ -134,7 +134,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             Elm.addEvent('click', function() {
                 // on mobile always go to order process page
                 if (QUI.getWindowSize().x <= 768) {
-                    Orders.getOrderProcessUrl().then(function(url) {
+                    getOrderProcessUrl().then(function(url) {
                         window.location = url;
                     });
 
@@ -148,7 +148,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 }
 
                 if (self.getAttribute('action') === 'openOrderProcessUrl') {
-                    Orders.getOrderProcessUrl().then(function(url) {
+                    getOrderProcessUrl().then(function(url) {
                         window.location = url;
                     });
 
