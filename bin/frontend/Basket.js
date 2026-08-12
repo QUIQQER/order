@@ -29,6 +29,7 @@ define('package/quiqqer/order/bin/frontend/Basket', [
 
     const lg = 'quiqqer/order';
     const GlobalBasket = new Basket();
+    let readyPromise = null;
 
     // ask user to merge
     GlobalBasket.showMergeWindow = function () {
@@ -117,19 +118,25 @@ define('package/quiqqer/order/bin/frontend/Basket', [
         });
     };
 
-    if (QUIQQER_USER && QUIQQER_USER.id && storageProducts.length) {
-        GlobalBasket.getBasket().then(function (basket) {
+    const initializeBasket = function () {
+        if (!(QUIQQER_USER && QUIQQER_USER.id && storageProducts.length)) {
+            return GlobalBasket.load();
+        }
+
+        return GlobalBasket.getBasket().then(function (basket) {
             const products = basket.products;
 
             // if there are no products yet, merge without query
             if (typeof products === 'undefined' || !products.length) {
                 GlobalBasket.setAttribute('mergeLocalStorage', 1);
-                GlobalBasket.load().then(function () {
+                return GlobalBasket.load().then(function () {
                     if (QUIQQER_SITE.type !== 'quiqqer/order:types/orderingProcess') {
                         return;
                     }
 
-                    const orderProcessNode = document.getElement('[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]');
+                    const orderProcessNode = document.querySelector(
+                        '[data-qui="package/quiqqer/order/bin/frontend/controls/OrderProcess"]'
+                    );
 
                     if (!orderProcessNode) {
                         return;
@@ -152,7 +159,6 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                         Instance.reload();
                     });
                 });
-                return;
             }
 
             if (QUI.getAttribute('QUIQQER_ORDER_BASKET_MERGE')) {
@@ -161,14 +167,56 @@ define('package/quiqqer/order/bin/frontend/Basket', [
                     QUI.getAttribute('QUIQQER_ORDER_BASKET_MERGE')
                 );
 
-                GlobalBasket.load();
-                return;
+                return GlobalBasket.load();
             }
 
-            GlobalBasket.showMergeWindow();
+            return GlobalBasket.showMergeWindow();
+        });
+    };
+
+    /**
+     * Initialize the global basket once and return its shared ready promise.
+     * Calling this method starts initialization immediately, even if an idle
+     * initialization has already been scheduled.
+     *
+     * @return {Promise}
+     */
+    GlobalBasket.ready = function () {
+        if (readyPromise) {
+            return readyPromise;
+        }
+
+        readyPromise = Promise.resolve().then(initializeBasket).catch(function (error) {
+            readyPromise = null;
+            throw error;
+        });
+
+        return readyPromise;
+    };
+
+    const startBasketWhenIdle = function () {
+        const start = function () {
+            GlobalBasket.ready().catch(function (error) {
+                console.error(error);
+            });
+        };
+
+        if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(start, {
+                timeout: 1500
+            });
+            return;
+        }
+
+        window.setTimeout(start, 1200);
+    };
+
+    if (typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(startBasketWhenIdle);
         });
     } else {
-        GlobalBasket.load();
+        window.setTimeout(startBasketWhenIdle, 0);
     }
 
     return GlobalBasket;

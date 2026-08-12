@@ -111,7 +111,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             for (let i = 0, len = products.length; i < len; i++) {
                 proms.push(
-                    this.addProduct(
+                    this.$addProduct(
                         products[i].id,
                         products[i].quantity,
                         products[i].fields
@@ -131,7 +131,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 }
 
                 self.$isLoaded = true;
-                self.save().then(function() {
+                return self.save().then(function() {
                     self.fireEvent('refresh', [self]);
                     self.fireEvent('load', [self]);
                 });
@@ -306,7 +306,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                     for (let i = 0, len = storageProducts.length; i < len; i++) {
                         proms.push(
-                            self.addProduct(
+                            self.$addProduct(
                                 storageProducts[i].id,
                                 storageProducts[i].quantity,
                                 storageProducts[i].fields
@@ -388,6 +388,25 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @param {Object} [fields]
          */
         addProduct: function(product, quantity, fields) {
+            if (!this.isLoaded() && typeof this.ready === 'function') {
+                return this.ready().then(function() {
+                    return this.$addProduct(product, quantity, fields);
+                }.bind(this));
+            }
+
+            return this.$addProduct(product, quantity, fields);
+        },
+
+        /**
+         * Add a product without waiting for the global basket initialization.
+         * Used internally while loading persisted basket products.
+         *
+         * @param {Number|Object} product
+         * @param {Number} [quantity]
+         * @param {Object} [fields]
+         * @return {Promise}
+         */
+        $addProduct: function(product, quantity, fields) {
             const self = this;
             let productId = product;
 
@@ -849,6 +868,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         toOrder: function(orderHash) {
+            if (!this.isLoaded() && typeof this.ready === 'function') {
+                return this.ready().then(function() {
+                    return this.toOrder(orderHash);
+                }.bind(this));
+            }
+
             const self = this;
 
             if (typeof orderHash === 'undefined') {

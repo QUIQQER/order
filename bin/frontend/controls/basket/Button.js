@@ -16,17 +16,111 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
-    'package/quiqqer/currency/bin/Currency',
-    'package/quiqqer/order/bin/frontend/controls/orderProcess/Window',
-    'package/quiqqer/order/bin/frontend/OrderProcessUrl',
-    'package/quiqqer/order/bin/frontend/Basket',
 
     'css!package/quiqqer/order/bin/frontend/controls/basket/Button.css'
 
-], function(QUI, QUIControl, QUILocale, Currency, BasketWindow, getOrderProcessUrl, Basket) {
+], function(QUI, QUIControl, QUILocale) {
     'use strict';
 
     var lg = 'quiqqer/order';
+    let basketPromise = null;
+    let currencyPromise = null;
+    let orderProcessUrlPromise = null;
+    let basketWindowPromise = null;
+
+    const loadBasket = function() {
+        if (basketPromise) {
+            return basketPromise;
+        }
+
+        basketPromise = new Promise(function(resolve, reject) {
+            require(['package/quiqqer/order/bin/frontend/Basket'], function(Basket) {
+                Basket.ready().then(function() {
+                    resolve(Basket);
+                }, reject);
+            }, reject);
+        }).catch(function(error) {
+            basketPromise = null;
+            throw error;
+        });
+
+        return basketPromise;
+    };
+
+    const loadCurrency = function() {
+        if (currencyPromise) {
+            return currencyPromise;
+        }
+
+        currencyPromise = new Promise(function(resolve, reject) {
+            require(['package/quiqqer/currency/bin/Currency'], resolve, reject);
+        }).catch(function(error) {
+            currencyPromise = null;
+            throw error;
+        });
+
+        return currencyPromise;
+    };
+
+    const loadOrderProcessUrl = function() {
+        if (orderProcessUrlPromise) {
+            return orderProcessUrlPromise;
+        }
+
+        orderProcessUrlPromise = new Promise(function(resolve, reject) {
+            require(['package/quiqqer/order/bin/frontend/OrderProcessUrl'], resolve, reject);
+        }).catch(function(error) {
+            orderProcessUrlPromise = null;
+            throw error;
+        });
+
+        return orderProcessUrlPromise;
+    };
+
+    const loadBasketWindow = function() {
+        if (basketWindowPromise) {
+            return basketWindowPromise;
+        }
+
+        basketWindowPromise = new Promise(function(resolve, reject) {
+            require([
+                'package/quiqqer/order/bin/frontend/controls/orderProcess/Window'
+            ], resolve, reject);
+        }).catch(function(error) {
+            basketWindowPromise = null;
+            throw error;
+        });
+
+        return basketWindowPromise;
+    };
+
+    const scheduleBasketLoad = function(onLoad) {
+        const load = function() {
+            loadBasket().then(onLoad).catch(function(error) {
+                console.error(error);
+            });
+        };
+
+        const scheduleIdle = function() {
+            if (typeof window.requestIdleCallback === 'function') {
+                window.requestIdleCallback(load, {
+                    timeout: 1500
+                });
+                return;
+            }
+
+            window.setTimeout(load, 1200);
+        };
+
+        if (typeof window.requestAnimationFrame === 'function') {
+            window.requestAnimationFrame(function() {
+                window.requestAnimationFrame(scheduleIdle);
+            });
+            return;
+        }
+
+        window.setTimeout(scheduleIdle, 0);
+    };
 
     return new Class({
 
@@ -60,15 +154,18 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$BasketSmall = null;
             this.$BasketContainer = null;
             this.$isLoaded = false;
+            this.$isImported = false;
+            this.$basketConnected = false;
 
             this.addEvents({
                 onImport: this.$onImport,
-                onInject: this.$onInject
+                onInject: this.$onInject,
+                onDestroy: function() {
+                    QUI.removeEvent('onQuiqqerOrderBasketAdd', this.$showAddInformation);
+                }.bind(this)
             });
 
-            Basket.addEvents({
-                onAdd: this.$showAddInformation
-            });
+            QUI.addEvent('onQuiqqerOrderBasketAdd', this.$showAddInformation);
         },
 
         /**
@@ -124,6 +221,12 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 return;
             }
 
+            if (this.$isImported) {
+                return;
+            }
+
+            this.$isImported = true;
+
             var self = this,
                 Elm = this.getElm();
 
@@ -131,72 +234,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             this.$Text = Elm.getElement('.quiqqer-order-basketButton-text');
             this.$Batch = Elm.getElement('.quiqqer-order-basketButton-batch');
 
-            Elm.addEvent('click', function() {
-                // on mobile always go to order process page
-                if (QUI.getWindowSize().x <= 768) {
-                    getOrderProcessUrl().then(function(url) {
-                        window.location = url;
-                    });
-
+            const connectBasket = function(Basket) {
+                if (self.$basketConnected) {
                     return;
                 }
 
-                if (self.getAttribute('action') === 'openSmallBasket') {
-                    self.showSmallBasket();
+                self.$basketConnected = true;
 
-                    return;
-                }
-
-                if (self.getAttribute('action') === 'openOrderProcessUrl') {
-                    getOrderProcessUrl().then(function(url) {
-                        window.location = url;
-                    });
-
-                    return;
-                }
-
-                new BasketWindow().open();
-            });
-
-            var delay = null;
-
-            if (this.getAttribute('showMiniBasketOnMouseOver')) {
-                Elm.addEvents({
-                    mouseenter: function() {
-                        delay = setTimeout(function() {
-                            if (QUI.getWindowSize().x <= 768) {
-                                return;
-                            }
-
-                            self.showSmallBasket();
-                        }, 250);
-                    },
-                    mouseleave: function() {
-                        clearTimeout(delay);
-                    }
-                });
-            }
-
-            if (this.$Batch) {
-                this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
-            }
-
-            var isLoaded = function() {
-                if (this.$isLoaded) {
-                    return;
-                }
-
-                if (this.$Icon) {
-                    this.$Icon.removeClass('fa-spinner');
-                    this.$Icon.removeClass('fa-spin');
-                    this.$Icon.addClass(' fa-file-text-o');
-                }
-
-                this.$isLoaded = true;
-                this.getElm().set('disabled', false);
-            }.bind(this);
-
-            require(['package/quiqqer/order/bin/frontend/Basket'], function(Basket) {
                 Basket.addEvents({
                     onRefresh: function() {
                         if (!Basket.isLoaded()) {
@@ -223,12 +267,102 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                     Basket.refresh();
                 });
 
-                if (Basket.isLoaded()) {
-                    isLoaded();
+                isLoaded();
+                self.updateDisplay(Basket);
+            };
 
-                    self.updateDisplay(Basket);
-                }
+            const loadAndConnectBasket = function() {
+                loadBasket().then(connectBasket).catch(function(error) {
+                    console.error(error);
+                });
+            };
+
+            Elm.addEventListener('pointerenter', loadAndConnectBasket, {
+                once: true
             });
+            Elm.addEventListener('focus', loadAndConnectBasket, {
+                once: true
+            });
+            Elm.addEventListener('click', function() {
+                loadAndConnectBasket();
+
+                // on mobile always go to order process page
+                if (QUI.getWindowSize().x <= 768) {
+                    loadOrderProcessUrl().then(function(getOrderProcessUrl) {
+                        return getOrderProcessUrl();
+                    }).then(function(url) {
+                        window.location = url;
+                    }).catch(function(error) {
+                        console.error(error);
+                    });
+
+                    return;
+                }
+
+                if (self.getAttribute('action') === 'openSmallBasket') {
+                    self.showSmallBasket();
+
+                    return;
+                }
+
+                if (self.getAttribute('action') === 'openOrderProcessUrl') {
+                    loadOrderProcessUrl().then(function(getOrderProcessUrl) {
+                        return getOrderProcessUrl();
+                    }).then(function(url) {
+                        window.location = url;
+                    }).catch(function(error) {
+                        console.error(error);
+                    });
+
+                    return;
+                }
+
+                loadBasketWindow().then(function(BasketWindow) {
+                    new BasketWindow().open();
+                }).catch(function(error) {
+                    console.error(error);
+                });
+            });
+
+            var delay = null;
+
+            if (this.getAttribute('showMiniBasketOnMouseOver')) {
+                Elm.addEventListener('pointerenter', function() {
+                    delay = setTimeout(function() {
+                        if (QUI.getWindowSize().x <= 768) {
+                            return;
+                        }
+
+                        self.showSmallBasket();
+                    }, 250);
+                });
+                Elm.addEventListener('pointerleave', function() {
+                    clearTimeout(delay);
+                });
+            }
+
+            Elm.disabled = false;
+            scheduleBasketLoad(connectBasket);
+
+            if (this.$Batch) {
+                this.$Batch.set('html', '<span class="fa fa-spinner fa-spin"></span>');
+            }
+
+            var isLoaded = function() {
+                if (this.$isLoaded) {
+                    return;
+                }
+
+                if (this.$Icon) {
+                    this.$Icon.removeClass('fa-spinner');
+                    this.$Icon.removeClass('fa-spin');
+                    this.$Icon.addClass(' fa-file-text-o');
+                }
+
+                this.$isLoaded = true;
+                this.getElm().set('disabled', false);
+            }.bind(this);
+
         },
 
         /**
@@ -271,18 +405,24 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 return;
             }
 
-            require([
-                'package/quiqqer/order/bin/frontend/Basket',
-                'package/quiqqer/order/bin/frontend/controls/basket/Small'
-            ], function(Basket, Small) {
-                self.$BasketContainer.set('html', '');
-                self.$BasketContainer.focus();
+            return loadBasket().then(function(Basket) {
+                return new Promise(function(resolve, reject) {
+                    require([
+                        'package/quiqqer/order/bin/frontend/controls/basket/Small'
+                    ], function(Small) {
+                        self.$BasketContainer.set('html', '');
+                        self.$BasketContainer.focus();
 
-                self.$BasketSmall = new Small({
-                    basketId: Basket.getId()
-                }).inject(self.$BasketContainer);
+                        self.$BasketSmall = new Small({
+                            basketId: Basket.getId()
+                        }).inject(self.$BasketContainer);
 
-                self.fireEvent('showBasketEnd', [this]);
+                        self.fireEvent('showBasketEnd', [self]);
+                        resolve();
+                    }, reject);
+                });
+            }).catch(function(error) {
+                console.error(error);
             });
         },
 
@@ -315,12 +455,16 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
 
             if (SumElm) {
                 if (!Basket.getCalculations().sum || Basket.getCalculations().sum === '') {
-                    Currency.convertWithSign(Basket.getCalculations().sum).then((result) => {
+                    loadCurrency().then(function(Currency) {
+                        return Currency.convertWithSign(Basket.getCalculations().sum);
+                    }).then((result) => {
                         if (typeOf(result) === 'object') {
                             SumElm.set('text', result.convertedRound);
                         } else {
                             SumElm.set('text', result);
                         }
+                    }).catch(function(error) {
+                        console.error(error);
                     });
                 } else {
                     SumElm.set('text', Basket.getCalculations().sum);

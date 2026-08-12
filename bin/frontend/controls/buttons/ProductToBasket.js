@@ -21,10 +21,12 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 'package/quiqqer/order/bin/frontend/Basket',
                 'package/quiqqer/order/bin/frontend/classes/Product'
             ], function (Basket, BasketProduct) {
-                resolve({
-                    Basket: Basket,
-                    BasketProduct: BasketProduct
-                });
+                Basket.ready().then(function() {
+                    resolve({
+                        Basket: Basket,
+                        BasketProduct: BasketProduct
+                    });
+                }, reject);
             }, reject);
         }).catch(function (error) {
             basketModulesPromise = null;
