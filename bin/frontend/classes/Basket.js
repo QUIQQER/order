@@ -13,6 +13,10 @@
  *
  * @event onRefreshBegin [self]
  * @event onRefresh [self]f
+ *
+ * @event QUI quiqqerOrderBasketAdd [self, Product]
+ * @event QUI quiqqerOrderBasketRemove [self]
+ * @event QUI quiqqerOrderBasketClear [self]
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -550,6 +554,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                 self,
                                 Product
                             ]);
+                            QUI.fireEvent('quiqqerOrderBasketAdd', [
+                                self,
+                                Product
+                            ]);
                         }).catch(function(err) {
                             /*
                             if (typeof err.message !== 'undefined' &&
@@ -586,6 +594,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 return this.save().then(() => {
                     this.fireEvent('remove', [self]);
+                    QUI.fireEvent('quiqqerOrderBasketRemove', [self]);
                     this.fireEvent('refresh', [self]);
                 });
             }
@@ -608,6 +617,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 });
             }).then(function() {
                 self.fireEvent('remove', [self]);
+                QUI.fireEvent('quiqqerOrderBasketRemove', [self]);
                 self.fireEvent('refresh', [self]);
             });
         },
@@ -625,6 +635,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             if (!QUIQQER_USER.id) {
                 this.$products = [];
                 self.fireEvent('clear', [self]);
+                QUI.fireEvent('quiqqerOrderBasketClear', [self]);
 
                 return this.save();
             }
@@ -633,6 +644,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_clear', function(result) {
                     self.refresh().then(function() {
                         self.fireEvent('clear', [self]);
+                        QUI.fireEvent('quiqqerOrderBasketClear', [self]);
                         resolve(result);
                     });
                 }, {

@@ -165,25 +165,23 @@ window.whenQuiLoaded().then(function() {
 
         // basket tracking only if order is installed
         if (typeof window.QUIQQER_ORDER_ORDER_PROCESS_MERGE !== 'undefined') {
-            require(['package/quiqqer/order/bin/frontend/Basket'], function(Basket) {
-                Basket.addEvent('onAdd', function() {
-                    getBasketData(Basket).then(function(data) {
-                        if (Basket.isLoaded()) {
-                            window.qTrack('event', 'add_to_cart', data);
-                        }
-                    });
+            QUI.addEvent('onQuiqqerOrderBasketAdd', function(Basket) {
+                getBasketData(Basket).then(function(data) {
+                    if (Basket.isLoaded()) {
+                        window.qTrack('event', 'add_to_cart', data);
+                    }
                 });
+            });
 
-                Basket.addEvent('onRemove', function() {
-                    getBasketData(Basket).then(function(data) {
-                        window.qTrack('event', 'view_cart', data);
-                    });
+            QUI.addEvent('onQuiqqerOrderBasketRemove', function(Basket) {
+                getBasketData(Basket).then(function(data) {
+                    window.qTrack('event', 'view_cart', data);
                 });
+            });
 
-                Basket.addEvent('onClear', function(Basket) {
-                    getBasketData(Basket).then(function(data) {
-                        window.qTrack('event', 'view_cart', data);
-                    });
+            QUI.addEvent('onQuiqqerOrderBasketClear', function(Basket) {
+                getBasketData(Basket).then(function(data) {
+                    window.qTrack('event', 'view_cart', data);
                 });
             });
         }
