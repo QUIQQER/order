@@ -4,12 +4,43 @@
 define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
 
     'qui/QUI',
-    'qui/controls/Control',
-    'package/quiqqer/order/bin/frontend/Basket',
-    'package/quiqqer/order/bin/frontend/classes/Product'
+    'qui/controls/Control'
 
-], function (QUI, QUIControl, Basket, BasketProduct) {
+], function (QUI, QUIControl) {
     "use strict";
+
+    let basketModulesPromise = null;
+
+    const loadBasketModules = function () {
+        if (basketModulesPromise) {
+            return basketModulesPromise;
+        }
+
+        basketModulesPromise = new Promise(function (resolve, reject) {
+            require([
+                'package/quiqqer/order/bin/frontend/Basket',
+                'package/quiqqer/order/bin/frontend/classes/Product'
+            ], function (Basket, BasketProduct) {
+                Basket.ready().then(function() {
+                    resolve({
+                        Basket: Basket,
+                        BasketProduct: BasketProduct
+                    });
+                }, reject);
+            }, reject);
+        }).catch(function (error) {
+            basketModulesPromise = null;
+            throw error;
+        });
+
+        return basketModulesPromise;
+    };
+
+    const preloadBasketModules = function () {
+        loadBasketModules().catch(function (error) {
+            console.error(error);
+        });
+    };
 
     return new Class({
 
@@ -70,6 +101,13 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
             this.$Quantity = Elm.getElement('.quiqqer-order-button-add-quantity');
             this.$Button   = Elm.getElement('.add-to-basket');
             this.$Label    = Elm.getElement('.add-to-basket-text');
+
+            this.$Button.addEventListener('pointerenter', preloadBasketModules, {
+                once: true
+            });
+            this.$Button.addEventListener('focus', preloadBasketModules, {
+                once: true
+            });
 
             this.changeButtons = Elm.getElements(
                 '.quiqqer-order-button-add-quantity-decrease, .quiqqer-order-button-add-quantity-increase'
@@ -230,10 +268,6 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 }
             }).inject(this.$Button);
 
-            var Product = new BasketProduct({
-                id: this.getAttribute('productId')
-            });
-
             // is the button in a product?
 
             if (ProductElm) {
@@ -246,10 +280,16 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                 }
             }
 
-            Product.setFieldValues(fields).then(function () {
-                return Product.setQuantity(count);
-            }).then(function () {
-                return Basket.addProduct(Product);
+            loadBasketModules().then(function (modules) {
+                const Product = new modules.BasketProduct({
+                    id: self.getAttribute('productId')
+                });
+
+                return Product.setFieldValues(fields).then(function () {
+                    return Product.setQuantity(count);
+                }).then(function () {
+                    return modules.Basket.addProduct(Product);
+                });
             }).then(function () {
                 var Span = Loader.getElement('span');
 
@@ -306,7 +346,7 @@ define('package/quiqqer/order/bin/frontend/controls/buttons/ProductToBasket', [
                     self.getElm().removeClass('disabled');
                 }).delay(1000);
 
-                console.error(err.getMessage());
+                console.error(err?.getMessage?.() ?? err);
             }.bind(this));
         },
 

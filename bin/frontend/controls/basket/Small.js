@@ -57,7 +57,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Small', [
          */
         $onInject: function () {
             this.Loader.inject(this.getElm());
-            this.refresh();
+            return Basket.ready().then(function() {
+                return this.refresh();
+            }.bind(this));
         },
 
         /**

@@ -13,16 +13,20 @@
  *
  * @event onRefreshBegin [self]
  * @event onRefresh [self]f
+ *
+ * @event QUI quiqqerOrderBasketAdd [self, Product]
+ * @event QUI quiqqerOrderBasketRemove [self]
+ * @event QUI quiqqerOrderBasketClear [self]
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
     'qui/QUI',
     'qui/classes/DOM',
-    'package/quiqqer/order/bin/frontend/Orders',
+    'package/quiqqer/order/bin/frontend/OrderProcessUrl',
     'Ajax',
     'Locale'
 
-], function(QUI, QUIDOM, Orders, QUIAjax, QUILocale) {
+], function(QUI, QUIDOM, getOrderProcessUrl, QUIAjax, QUILocale) {
     'use strict';
 
     const lg = 'quiqqer/order';
@@ -107,7 +111,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             for (let i = 0, len = products.length; i < len; i++) {
                 proms.push(
-                    this.addProduct(
+                    this.$addProduct(
                         products[i].id,
                         products[i].quantity,
                         products[i].fields
@@ -127,7 +131,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 }
 
                 self.$isLoaded = true;
-                self.save().then(function() {
+                return self.save().then(function() {
                     self.fireEvent('refresh', [self]);
                     self.fireEvent('load', [self]);
                 });
@@ -257,7 +261,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         product.quantity
                     ).then(function(orderHash) {
                         newHash = orderHash;
-                        return Orders.getOrderProcessUrl();
+                        return getOrderProcessUrl();
                     }).then(function(processUrl) {
                         window.location = processUrl + '/' + newHash;
 
@@ -302,7 +306,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                     for (let i = 0, len = storageProducts.length; i < len; i++) {
                         proms.push(
-                            self.addProduct(
+                            self.$addProduct(
                                 storageProducts[i].id,
                                 storageProducts[i].quantity,
                                 storageProducts[i].fields
@@ -384,6 +388,25 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @param {Object} [fields]
          */
         addProduct: function(product, quantity, fields) {
+            if (!this.isLoaded() && typeof this.ready === 'function') {
+                return this.ready().then(function() {
+                    return this.$addProduct(product, quantity, fields);
+                }.bind(this));
+            }
+
+            return this.$addProduct(product, quantity, fields);
+        },
+
+        /**
+         * Add a product without waiting for the global basket initialization.
+         * Used internally while loading persisted basket products.
+         *
+         * @param {Number|Object} product
+         * @param {Number} [quantity]
+         * @param {Object} [fields]
+         * @return {Promise}
+         */
+        $addProduct: function(product, quantity, fields) {
             const self = this;
             let productId = product;
 
@@ -461,7 +484,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                         quantity: quantity
                                     }));
 
-                                    return Orders.getOrderProcessUrl().then(function(processUrl) {
+                                    return getOrderProcessUrl().then(function(processUrl) {
                                         window.location = processUrl;
 
                                         // workaround, to halt promises
@@ -476,7 +499,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                     quantity
                                 ).then(function(orderHash) {
                                     newHash = orderHash;
-                                    return Orders.getOrderProcessUrl();
+                                    return getOrderProcessUrl();
                                 }).then(function(processUrl) {
                                     window.location = processUrl + '/' + newHash;
 
@@ -550,6 +573,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                 self,
                                 Product
                             ]);
+                            QUI.fireEvent('quiqqerOrderBasketAdd', [
+                                self,
+                                Product
+                            ]);
                         }).catch(function(err) {
                             /*
                             if (typeof err.message !== 'undefined' &&
@@ -586,6 +613,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 return this.save().then(() => {
                     this.fireEvent('remove', [self]);
+                    QUI.fireEvent('quiqqerOrderBasketRemove', [self]);
                     this.fireEvent('refresh', [self]);
                 });
             }
@@ -608,6 +636,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 });
             }).then(function() {
                 self.fireEvent('remove', [self]);
+                QUI.fireEvent('quiqqerOrderBasketRemove', [self]);
                 self.fireEvent('refresh', [self]);
             });
         },
@@ -625,6 +654,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
             if (!QUIQQER_USER.id) {
                 this.$products = [];
                 self.fireEvent('clear', [self]);
+                QUI.fireEvent('quiqqerOrderBasketClear', [self]);
 
                 return this.save();
             }
@@ -633,6 +663,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_clear', function(result) {
                     self.refresh().then(function() {
                         self.fireEvent('clear', [self]);
+                        QUI.fireEvent('quiqqerOrderBasketClear', [self]);
                         resolve(result);
                     });
                 }, {
@@ -837,6 +868,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         toOrder: function(orderHash) {
+            if (!this.isLoaded() && typeof this.ready === 'function') {
+                return this.ready().then(function() {
+                    return this.toOrder(orderHash);
+                }.bind(this));
+            }
+
             const self = this;
 
             if (typeof orderHash === 'undefined') {

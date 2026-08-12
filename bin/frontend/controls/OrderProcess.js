@@ -145,6 +145,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         $onImport: function() {
             this.$startLoginCheck();
 
+            Basket.ready().catch(function(error) {
+                console.error(error);
+            });
+
 
             const self = this;
 
