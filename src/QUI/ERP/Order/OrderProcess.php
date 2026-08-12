@@ -487,9 +487,7 @@ class OrderProcess extends QUI\Control
                     'backToShopUrl' => $this->getBackToShopUrl()
                 ]);
 
-                $output = QUI\Output::getInstance()->parse($Engine->fetch($template));
-
-                return is_string($output) ? $output : false;
+                return QUI\Output::getInstance()->parse($Engine->fetch($template));
             }
 
             $Engine->assign([
@@ -508,9 +506,7 @@ class OrderProcess extends QUI\Control
                 'backToShopUrl' => $this->getBackToShopUrl()
             ]);
 
-            $output = QUI\Output::getInstance()->parse($Engine->fetch($template));
-
-            return is_string($output) ? $output : false;
+            return QUI\Output::getInstance()->parse($Engine->fetch($template));
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeDebugException($Exception);
         }
