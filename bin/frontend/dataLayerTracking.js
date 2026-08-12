@@ -1,6 +1,10 @@
 window.whenQuiLoaded().then(function() {
     'use strict';
 
+    if (typeof window.qTrack !== 'function') {
+        return;
+    }
+
     require([
         'qui/QUI',
         'Ajax'

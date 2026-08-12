@@ -463,27 +463,17 @@ class EventHandling
         $header .= 'window.QUIQQER_ORDER_ORDER_PROCESS_MERGE = ' . $merge . ';';
         $header .= '</script>';
         $Template->extendHeader($header);
-
-
-        $Template->extendFooter(
-            '<script>
-                (function() {
-                    if (window.location.hash === "#checkout") { 
-                        require(["package/quiqqer/order/bin/frontend/controls/orderProcess/Window"], function(Window) { 
-                            new Window().open();
-                        });
-                    }
-                })();
-            </script>'
-        );
     }
 
     public static function onTemplateEnd(
         Collector $Collection,
         QUI\Template $Template
     ): void {
-        $Collection->append(
-            '<script src="' . URL_OPT_DIR . 'quiqqer/order/bin/frontend/dataLayerTracking.js"></script>'
+        $assetUrl = URL_OPT_DIR . 'quiqqer/order/bin/frontend/';
+
+        $Template->extendFooter(
+            '<script src="' . $assetUrl . 'checkoutBootstrap.js" defer></script>'
+            . '<script src="' . $assetUrl . 'dataLayerTracking.js" defer></script>'
         );
     }
 
