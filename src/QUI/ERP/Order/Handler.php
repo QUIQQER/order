@@ -19,6 +19,7 @@ use QUI\Utils\Singleton;
 use function array_merge;
 use function array_pad;
 use function class_exists;
+use function ctype_digit;
 use function explode;
 use function is_numeric;
 use function strtotime;
@@ -1038,6 +1039,13 @@ class Handler extends Singleton
      */
     public function getBasketData(int | string $basketId, null | QUI\Interfaces\Users\User $User = null): array
     {
+        if (is_string($basketId) && ($basketId === '' || !ctype_digit($basketId))) {
+            throw new ExceptionBasketNotFound([
+                'quiqqer/order',
+                'exception.basket.not.found'
+            ]);
+        }
+
         if ($User === null) {
             $User = QUI::getUserBySession();
         }

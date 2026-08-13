@@ -3,10 +3,193 @@
 namespace QUITests\ERP\Order\Utils;
 
 use PHPUnit\Framework\TestCase;
+use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Currency\Currency;
+use QUI\ERP\Order\AbstractOrder;
+use QUI\ERP\Order\Controls\AbstractOrderingStep;
+use QUI\ERP\Order\OrderInterface;
+use QUI\ERP\Order\OrderView;
 use QUI\ERP\Order\Utils\Utils;
+use QUI\ERP\Products\Field\Types\BasketConditions;
+use QUI\ERP\Products\Handler\Products;
+use QUI\ERP\Products\Product\ProductList;
+use QUI\ERP\Products\Product\TextProduct;
+use QUI\ERP\Products\Product\Types\Product as ProductType;
+use QUI\Interfaces\Projects\Site;
+use QUI\Projects\Project;
+use ReflectionClass;
 
 class UtilsUnitTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        self::setCachedOrderProcessUrl(null);
+        self::setProductCache([]);
+    }
+
+    protected function tearDown(): void
+    {
+        self::setCachedOrderProcessUrl(null);
+        self::setProductCache([]);
+    }
+
+    public function testOrderProcessCheckoutAndShoppingCartResolveConfiguredSites(): void
+    {
+        $OrderProcess = $this->createMock(Site::class);
+        $ShoppingCart = $this->createMock(Site::class);
+        $Project = $this->createMock(Project::class);
+        $Project->method('getSites')->willReturnCallback(
+            static function (array $query) use ($OrderProcess, $ShoppingCart): array {
+                return match ($query['where']['type']) {
+                    'quiqqer/order:types/orderingProcess' => [$OrderProcess],
+                    'quiqqer/order:types/shoppingCart' => [$ShoppingCart],
+                    default => []
+                };
+            }
+        );
+
+        self::assertSame($OrderProcess, Utils::getOrderProcess($Project));
+        self::assertSame($OrderProcess, Utils::getCheckout($Project));
+        self::assertSame($ShoppingCart, Utils::getShoppingCart($Project));
+    }
+
+    public function testMissingOrderAndShoppingCartSitesThrowOrderException(): void
+    {
+        $Project = $this->createMock(Project::class);
+        $Project->method('getSites')->willReturn([]);
+
+        try {
+            Utils::getOrderProcess($Project);
+            self::fail('Missing order process must throw an exception.');
+        } catch (\QUI\ERP\Order\Exception) {
+            self::assertTrue(true);
+        }
+
+        $this->expectException(\QUI\ERP\Order\Exception::class);
+        Utils::getShoppingCart($Project);
+    }
+
+    public function testOrderProcessUrlsUseCacheStepAndHash(): void
+    {
+        $Site = $this->createMock(Site::class);
+        $Site->expects(self::once())->method('getUrlRewritten')->willReturn('/checkout');
+
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::once())->method('getSites')->willReturn([$Site]);
+
+        $Step = $this->createMock(AbstractOrderingStep::class);
+        $Step->method('getName')->willReturn('CustomerData');
+
+        self::assertSame('/checkout', Utils::getOrderProcessUrl($Project));
+        self::assertSame('/checkout/CustomerData', Utils::getOrderProcessUrl($Project, $Step));
+        self::assertSame('/checkout/Order/hash-123', Utils::getOrderProcessUrlForHash($Project, 'hash-123'));
+    }
+
+    public function testOrderUrlRejectsUnsupportedOrderAndBuildsViewUrl(): void
+    {
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::once())->method('getSites')->willReturn([$this->createUrlSite('/checkout')]);
+
+        self::assertSame('', Utils::getOrderUrl($Project, $this->createMock(OrderInterface::class)));
+        self::assertSame('/checkout/Order/order-uuid', Utils::getOrderUrl($Project, $this->createOrderView()));
+    }
+
+    public function testOrderProfileUrlPreservesHtmlEnding(): void
+    {
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::once())->method('getSites')->with([
+            'where' => ['type' => 'quiqqer/frontend-users:types/profile'],
+            'limit' => 1
+        ])->willReturn([$this->createUrlSite('/profile.html')]);
+
+        self::assertSame(
+            '/profile/erp/erp-order#order-uuid.html',
+            Utils::getOrderProfileUrl($Project, $this->createOrderView())
+        );
+    }
+
+    public function testOrderProfileUrlReturnsEmptyWithoutProfileSite(): void
+    {
+        $Project = $this->createMock(Project::class);
+        $Project->method('getSites')->willReturn([]);
+
+        self::assertSame('', Utils::getOrderProfileUrl($Project, $this->createOrderView()));
+    }
+
+    public function testOrderProfileUrlRejectsUnsupportedOrderType(): void
+    {
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::never())->method('getSites');
+
+        self::assertSame(
+            '',
+            Utils::getOrderProfileUrl($Project, $this->createMock(OrderInterface::class))
+        );
+    }
+
+    public function testOrderProfileUrlReturnsEmptyWhenSiteUrlFails(): void
+    {
+        $Site = $this->createMock(Site::class);
+        $Site->method('getUrlRewritten')->willThrowException(new \QUI\Exception('URL unavailable'));
+        $Project = $this->createMock(Project::class);
+        $Project->method('getSites')->willReturn([$Site]);
+
+        self::assertSame('', Utils::getOrderProfileUrl($Project, $this->createOrderView()));
+    }
+
+    public function testMissingPaymentIsAlwaysChangeable(): void
+    {
+        self::assertTrue(Utils::isPaymentChangeable(null));
+    }
+
+    public function testBasketProductEditabilityUsesBasketCondition(): void
+    {
+        $Editable = $this->createMock(ProductType::class);
+        $Editable->method('getFieldsByType')->with('BasketConditions')->willReturn([]);
+
+        $RestrictedCondition = $this->createMock(BasketConditions::class);
+        $RestrictedCondition->method('getValue')->willReturn(BasketConditions::TYPE_3);
+        $Restricted = $this->createMock(ProductType::class);
+        $Restricted->method('getFieldsByType')
+            ->with('BasketConditions')
+            ->willReturn([$RestrictedCondition]);
+
+        $Broken = $this->createMock(ProductType::class);
+        $Broken->method('getFieldsByType')->willThrowException(new \QUI\Exception('Broken product'));
+
+        self::setProductCache([
+            900001 => $Editable,
+            900002 => $Restricted,
+            900003 => $Broken
+        ]);
+
+        self::assertTrue(Utils::isBasketProductEditable(['id' => 900001]));
+        self::assertFalse(Utils::isBasketProductEditable(['id' => 900002]));
+        self::assertFalse(Utils::isBasketProductEditable(['id' => 900003]));
+    }
+
+    public function testTextArticlesAreImportedAndEntriesWithoutIdAreIgnored(): void
+    {
+        $List = $this->createMock(ProductList::class);
+        $List->expects(self::once())
+            ->method('addProduct')
+            ->with(self::callback(
+                static fn(object $Product): bool => $Product instanceof TextProduct
+                    && $Product->getTitle() === 'Manual item'
+            ));
+
+        $result = Utils::importProductsToBasketList($List, [
+            ['title' => 'Entry without ID'],
+            [
+                'id' => -1,
+                'title' => 'Manual item',
+                'price_currency' => 'EUR'
+            ]
+        ]);
+
+        self::assertSame($List, $result);
+    }
+
     public function testGetCompareProductArrayFiltersAndOrdersKnownFields(): void
     {
         $product = [
@@ -160,5 +343,41 @@ class UtilsUnitTest extends TestCase
     public function testGetMergedProductListReturnsEmptyArrayForEmptyInput(): void
     {
         $this->assertSame([], Utils::getMergedProductList([]));
+    }
+
+    private function createUrlSite(string $url): Site
+    {
+        $Site = $this->createMock(Site::class);
+        $Site->method('getUrlRewritten')->willReturn($url);
+
+        return $Site;
+    }
+
+    private function createOrderView(): OrderView
+    {
+        $Articles = $this->createMock(ArticleList::class);
+        $Currency = $this->createMock(Currency::class);
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getArticles')->willReturn($Articles);
+        $Order->method('getCurrency')->willReturn($Currency);
+        $Order->method('getAttributes')->willReturn([]);
+        $Order->method('getUUID')->willReturn('order-uuid');
+
+        return new OrderView($Order);
+    }
+
+    private static function setCachedOrderProcessUrl(?string $url): void
+    {
+        $Reflection = new ReflectionClass(Utils::class);
+        $Reflection->getProperty('url')->setValue(null, $url);
+    }
+
+    /**
+     * @param array<int, ProductType> $products
+     */
+    private static function setProductCache(array $products): void
+    {
+        $Reflection = new ReflectionClass(Products::class);
+        $Reflection->getProperty('list')->setValue(null, $products);
     }
 }

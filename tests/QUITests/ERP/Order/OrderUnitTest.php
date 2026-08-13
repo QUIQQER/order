@@ -3,14 +3,37 @@
 namespace QUITests\ERP\Order;
 
 use PHPUnit\Framework\TestCase;
+use QUI\ERP\Accounting\ArticleInterface;
+use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Comments;
+use QUI\ERP\Currency\Currency;
+use QUI\ERP\Address;
 use QUI\ERP\Order\Order;
+use QUI\ERP\Order\ProcessingStatus\Status;
 use QUI\ERP\Order\ProcessingStatus\StatusUnknown;
+use QUI\ERP\Products\Handler\Products;
+use QUI\ERP\Products\Product\Types\DigitalProduct;
+use QUI\ERP\Products\Product\Types\Product as ProductType;
+use QUI\ERP\User;
+use QUI\Interfaces\Users\User as UserInterface;
+use QUI\Users\Address as UserAddress;
+use QUITests\ERP\Order\Fixtures\FrontendMessageTestOrder;
+use QUITests\ERP\Order\Fixtures\InvoiceExceptionOrder;
 use ReflectionClass;
 use ReflectionProperty;
 
 class OrderUnitTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        self::setProductCache([]);
+    }
+
+    protected function tearDown(): void
+    {
+        self::setProductCache([]);
+    }
+
     public function testSimpleAccessorsFromAbstractOrder(): void
     {
         $Order = $this->createOrderWithoutConstructor();
@@ -253,19 +276,119 @@ class OrderUnitTest extends TestCase
 
     public function testGetInvoiceTypeReturnsEmptyStringOnException(): void
     {
-        $Order = new class () extends Order {
-            public function __construct()
-            {
-            }
+        $this->assertSame('', (new InvoiceExceptionOrder())->getInvoiceType());
+    }
 
-            public function getInvoice(): \QUI\ERP\Accounting\Invoice\Invoice
-                | \QUI\ERP\Accounting\Invoice\InvoiceTemporary
-            {
-                throw new \QUI\Exception('Invoice is unavailable in this test.');
-            }
-        };
+    public function testCurrencyAddressObjectsAndArticleOperationsAreDelegated(): void
+    {
+        $Order = $this->createOrderWithoutConstructor();
+        $Articles = $this->createMock(ArticleList::class);
+        $Currency = $this->createMock(Currency::class);
+        $Article = $this->createMock(ArticleInterface::class);
+        $DeliveryAddress = $this->createMock(Address::class);
+        $DeliveryAddress->method('getAttributes')->willReturn(['id' => 5, 'city' => 'Berlin']);
+        $InvoiceAddress = $this->createMock(UserAddress::class);
+        $InvoiceAddress->method('getAttributes')->willReturn(['city' => 'London']);
+        $InvoiceAddress->method('getUUID')->willReturn('invoice-address');
 
-        $this->assertSame('', $Order->getInvoiceType());
+        $this->setProperty($Order, 'Articles', $Articles);
+        $Articles->expects(self::once())->method('setCurrency')->with($Currency);
+        $Articles->expects(self::once())->method('addArticle')->with($Article);
+        $Articles->expects(self::once())->method('removeArticle')->with(2);
+        $Articles->expects(self::once())->method('replaceArticle')->with($Article, 3);
+        $Articles->expects(self::once())->method('clear');
+        $Articles->method('count')->willReturn(4);
+
+        $Order->setCurrency($Currency);
+        $Order->setDeliveryAddress($DeliveryAddress);
+        $Order->setInvoiceAddress($InvoiceAddress);
+        $Order->addArticle($Article);
+        $Order->removeArticle(2);
+        $Order->replaceArticle($Article, 3);
+        $Order->clearArticles();
+
+        self::assertSame($Currency, $Order->getCurrency());
+        self::assertSame(['id' => 5, 'city' => 'Berlin'], $this->getProperty($Order, 'addressDelivery'));
+        self::assertSame(
+            ['city' => 'London', 'id' => 'invoice-address'],
+            $this->getProperty($Order, 'addressInvoice')
+        );
+        self::assertSame(4, $Order->count());
+    }
+
+    public function testFrontendMessagesUsePersistenceHook(): void
+    {
+        $Order = new FrontendMessageTestOrder();
+        $this->setProperty($Order, 'FrontendMessage', new Comments());
+
+        $Order->addFrontendMessage('Visible message');
+
+        self::assertSame('Visible message', $Order->getFrontendMessages()->toArray()[0]['message']);
+        self::assertSame(1, $Order->frontendMessageSaveCalls);
+
+        $Order->clearFrontendMessages();
+
+        self::assertTrue($Order->getFrontendMessages()->isEmpty());
+        self::assertSame(2, $Order->frontendMessageSaveCalls);
+    }
+
+    public function testArticleTypeDetectsPhysicalDigitalAndMixedOrders(): void
+    {
+        $Physical = $this->createMock(ProductType::class);
+        $Digital = $this->createMock(DigitalProduct::class);
+        self::setProductCache([700001 => $Physical, 700002 => $Digital]);
+
+        $TextArticle = $this->createMock(ArticleInterface::class);
+        $TextArticle->method('getId')->willReturn(0);
+        $PhysicalArticle = $this->createMock(ArticleInterface::class);
+        $PhysicalArticle->method('getId')->willReturn(700001);
+        $DigitalArticle = $this->createMock(ArticleInterface::class);
+        $DigitalArticle->method('getId')->willReturn(700002);
+
+        $Order = $this->createOrderWithoutConstructor();
+        $Articles = $this->createMock(ArticleList::class);
+        $this->setProperty($Order, 'Articles', $Articles);
+        $Articles->method('getArticles')->willReturnOnConsecutiveCalls(
+            [$TextArticle, $PhysicalArticle],
+            [$DigitalArticle],
+            [$PhysicalArticle, $DigitalArticle]
+        );
+
+        self::assertSame(Order::ARTICLE_TYPE_PHYSICAL, $Order->getArticleType());
+        self::assertSame(Order::ARTICLE_TYPE_DIGITAL, $Order->getArticleType());
+        self::assertSame(Order::ARTICLE_TYPE_MIXED, $Order->getArticleType());
+    }
+
+    public function testProcessingStatusTracksRealChangesOnly(): void
+    {
+        $Order = $this->createOrderWithoutConstructor();
+        $OldStatus = $this->createMock(Status::class);
+        $OldStatus->method('getId')->willReturn(1);
+        $NewStatus = $this->createMock(Status::class);
+        $NewStatus->method('getId')->willReturn(2);
+        $this->setProperty($Order, 'Status', $OldStatus);
+        $this->setProperty($Order, 'status', 1);
+
+        $Order->setProcessingStatus($OldStatus);
+        self::assertFalse($this->getProperty($Order, 'statusChanged'));
+
+        $Order->setProcessingStatus($NewStatus);
+        self::assertTrue($this->getProperty($Order, 'statusChanged'));
+        self::assertSame(2, $this->getProperty($Order, 'status'));
+        self::assertSame($NewStatus, $Order->getProcessingStatus());
+    }
+
+    public function testCreationDateIgnoresInvalidInputAndNormalizesValidInput(): void
+    {
+        $Order = $this->createOrderWithoutConstructor();
+        $this->setProperty($Order, 'cDate', '2020-01-01 00:00:00');
+
+        $Order->setCreationDate('invalid-date');
+        self::assertSame('2020-01-01 00:00:00', $Order->getCreateDate());
+
+        $Order->setCreationDate('2024-03-04 05:06:07');
+        self::assertSame('2024-03-04 05:06:07', $Order->getCreateDate());
+        self::assertSame('2024-03-04 05:06:07', $Order->getAttribute('c_date'));
     }
 
     private function createOrderWithoutConstructor(): Order
@@ -301,5 +424,14 @@ class OrderUnitTest extends TestCase
         }
 
         $this->fail('Property not found: ' . $propertyName);
+    }
+
+    /**
+     * @param array<int, ProductType> $products
+     */
+    private static function setProductCache(array $products): void
+    {
+        $Reflection = new ReflectionClass(Products::class);
+        $Reflection->getProperty('list')->setValue(null, $products);
     }
 }
