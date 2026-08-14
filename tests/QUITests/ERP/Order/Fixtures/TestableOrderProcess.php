@@ -163,4 +163,34 @@ class TestableOrderProcess extends OrderProcess
     {
         return $this->getStepMessages($orderStep);
     }
+
+    public function invokeBaseGetBasket(): BasketGuest | Basket | BasketOrder
+    {
+        return parent::getBasket();
+    }
+
+    public function invokeBaseGetOrder(): ?AbstractOrder
+    {
+        return parent::getOrder();
+    }
+
+    public function invokeBaseGetProcessingStep(): AbstractOrderingStep
+    {
+        return parent::getProcessingStep();
+    }
+
+    public function invokeParseSteps(): OrderProcessSteps
+    {
+        return parent::parseSteps();
+    }
+
+    public function invokeBaseGetUrl(): string
+    {
+        return parent::getUrl();
+    }
+
+    public function invokeExecutePayableStatus(): false | string
+    {
+        return $this->executePayableStatus();
+    }
 }

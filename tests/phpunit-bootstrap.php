@@ -41,6 +41,10 @@ if (!class_exists(QUI\ERP\SalesOrders\SalesOrder::class, false)) {
     require_once __DIR__ . '/phpstan-stubs/QUI/ERP/SalesOrders/SalesOrder.php';
 }
 
+if (!class_exists(QUI\ERP\SalesOrders\Handler::class)) {
+    require_once __DIR__ . '/phpstan-stubs/QUI/ERP/SalesOrders/Handler.php';
+}
+
 $PackageLoader = new Composer\Autoload\ClassLoader();
 $PackageLoader->addPsr4('QUI\\ERP\\Order\\', dirname(__DIR__) . '/src/QUI/ERP/Order');
 $PackageLoader->addPsr4('QUITests\\ERP\\Order\\', __DIR__ . '/QUITests/ERP/Order');

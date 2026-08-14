@@ -193,6 +193,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
                     ]
                 )
             );
+
+            $data['history'] = $this->History->toJSON();
         }
 
 

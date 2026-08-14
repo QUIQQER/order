@@ -5,9 +5,12 @@ namespace QUITests\ERP\Order;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Calculations;
+use QUI\ERP\Accounting\CalculationValue;
 use QUI\ERP\Accounting\Invoice\Exception as InvoiceException;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\Accounting\Invoice\Invoice;
+use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Payments\Api\AbstractPayment;
 use QUI\ERP\Accounting\Payments\Types\Payment;
 use QUI\ERP\Order\AbstractOrderProcessProvider;
@@ -145,6 +148,48 @@ class OrderFlowUnitTest extends TestCase
         self::assertSame($FinalOrder, $OrderInProcess->createOrder($PermissionUser));
     }
 
+    public function testOrderProcessResolvesConfiguredOrderHashThroughBaseFlow(): void
+    {
+        $Users = \QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $OrderInProcess = $this->createMock(OrderInProcess::class);
+        $Handler = new TestableHandler();
+        $Handler->setResolvedOrderInProcess($OrderInProcess);
+        $this->setHandler($Handler);
+        $Process = new TestableOrderProcess();
+        $Process->setAttribute('orderHash', 'configured-process-uuid');
+
+        try {
+            $Session->setValue($Users, $Users->getSystemUser());
+
+            self::assertSame($OrderInProcess, $Process->invokeBaseGetOrder());
+            self::assertSame($OrderInProcess, $Process->invokeBaseGetOrder());
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
+    public function testOrderInProcessRejectsLifecycleChangesFromUnauthorizedUser(): void
+    {
+        $PermissionUser = $this->createMock(User::class);
+        $PermissionUser->method('getUUID')->willReturn('intruder-uuid');
+        $PermissionUser->method('isSU')->willReturn(false);
+        $OrderInProcess = (new ReflectionClass(OrderInProcess::class))->newInstanceWithoutConstructor();
+        $this->setProperty($OrderInProcess, 'orderId', null);
+        $this->setProperty($OrderInProcess, 'hash', 'protected-process-uuid');
+        $this->setProperty($OrderInProcess, 'cUser', 'owner-uuid');
+
+        foreach (['update', 'delete', 'createOrder', 'clear'] as $method) {
+            try {
+                $OrderInProcess->{$method}($PermissionUser);
+                self::fail($method . ' must reject an unauthorized user.');
+            } catch (\QUI\Permissions\Exception $Exception) {
+                self::assertSame(403, $Exception->getCode());
+            }
+        }
+    }
+
     public function testOrderInProcessDelegatesInvoiceAccessToFinalOrder(): void
     {
         $Invoice = $this->createMock(Invoice::class);
@@ -221,6 +266,47 @@ class OrderFlowUnitTest extends TestCase
         self::assertTrue($Order->hasInvoice());
     }
 
+    public function testFinalOrderResolvesTemporaryInvoiceAndReportsPostedStatus(): void
+    {
+        $TemporaryInvoice = $this->createMock(InvoiceTemporary::class);
+        $InvoiceHandler = $this->getMockBuilder(InvoiceHandler::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getTemporaryInvoice'])
+            ->getMock();
+        $InvoiceHandler->expects(self::exactly(3))
+            ->method('getTemporaryInvoice')
+            ->with('temporary-invoice-uuid')
+            ->willReturn($TemporaryInvoice);
+        $this->setSingleton(InvoiceHandler::class, $InvoiceHandler);
+        $this->setInvoiceInstalled(true);
+        $Order = (new ReflectionClass(Order::class))->newInstanceWithoutConstructor();
+        $this->setProperty($Order, 'invoiceId', null);
+        $Order->setAttribute('temporary_invoice_id', 'temporary-invoice-uuid');
+
+        self::assertSame($TemporaryInvoice, $Order->getInvoice());
+        self::assertTrue($Order->isPosted());
+        self::assertTrue($Order->hasInvoice());
+    }
+
+    public function testFinalOrderReportsMissingTemporaryInvoiceAsNotPosted(): void
+    {
+        $InvoiceHandler = $this->getMockBuilder(InvoiceHandler::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getTemporaryInvoice'])
+            ->getMock();
+        $InvoiceHandler->expects(self::exactly(2))
+            ->method('getTemporaryInvoice')
+            ->with('missing-temporary-invoice')
+            ->willThrowException(new \QUI\Exception('Missing temporary invoice'));
+        $this->setSingleton(InvoiceHandler::class, $InvoiceHandler);
+        $this->setInvoiceInstalled(true);
+        $Order = (new ReflectionClass(Order::class))->newInstanceWithoutConstructor();
+        $this->setProperty($Order, 'invoiceId', null);
+        $Order->setAttribute('temporary_invoice_id', 'missing-temporary-invoice');
+
+        self::assertFalse($Order->isPosted());
+    }
+
     public function testFinalOrderPostDelegatesInvoiceCreationToSystemUser(): void
     {
         $Invoice = $this->createMock(Invoice::class);
@@ -234,6 +320,128 @@ class OrderFlowUnitTest extends TestCase
             ->willReturn($Invoice);
 
         self::assertSame($Invoice, $Order->post());
+    }
+
+    public function testFinalOrderCreateInvoiceReturnsAlreadyLinkedInvoice(): void
+    {
+        $Invoice = $this->createMock(Invoice::class);
+        $Settings = $this->getMockBuilder(Settings::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['forceCreateInvoice'])
+            ->getMock();
+        $Settings->method('forceCreateInvoice')->willReturn(false);
+        $this->setSingleton(Settings::class, $Settings);
+        $Order = $this->getMockBuilder(Order::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isPosted', 'getInvoice', 'refresh'])
+            ->getMock();
+        $Order->method('isPosted')->willReturn(true);
+        $Order->method('getInvoice')->willReturn($Invoice);
+        $Order->expects(self::never())->method('refresh');
+
+        self::assertSame($Invoice, $Order->createInvoice());
+    }
+
+    public function testFinalOrderCreateInvoiceReturnsInvoiceFoundAfterRefresh(): void
+    {
+        $Invoice = $this->createMock(Invoice::class);
+        $Settings = $this->getMockBuilder(Settings::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['forceCreateInvoice'])
+            ->getMock();
+        $Settings->method('forceCreateInvoice')->willReturn(false);
+        $this->setSingleton(Settings::class, $Settings);
+        $Order = $this->getMockBuilder(Order::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isPosted', 'getInvoice', 'refresh'])
+            ->getMock();
+        $Order->method('isPosted')->willReturnOnConsecutiveCalls(false, true);
+        $Order->method('getInvoice')->willReturn($Invoice);
+        $Order->expects(self::once())->method('refresh');
+
+        self::assertSame($Invoice, $Order->createInvoice());
+    }
+
+    public function testFinalOrderCreateInvoiceRejectsUnavailableModule(): void
+    {
+        $Settings = $this->getMockBuilder(Settings::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['forceCreateInvoice', 'isInvoiceInstalled'])
+            ->getMock();
+        $Settings->method('forceCreateInvoice')->willReturn(false);
+        $Settings->method('isInvoiceInstalled')->willReturn(false);
+        $this->setSingleton(Settings::class, $Settings);
+        $Order = $this->getMockBuilder(Order::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isPosted', 'refresh'])
+            ->getMock();
+        $Order->method('isPosted')->willReturn(false);
+
+        $this->expectException(\QUI\Exception::class);
+
+        $Order->createInvoice();
+    }
+
+    public function testFinalOrderCreateInvoiceRequiresCompleteAddressAndPayment(): void
+    {
+        $Settings = $this->getMockBuilder(Settings::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['forceCreateInvoice', 'isInvoiceInstalled'])
+            ->getMock();
+        $Settings->method('forceCreateInvoice')->willReturn(false);
+        $Settings->method('isInvoiceInstalled')->willReturn(true);
+        $this->setSingleton(Settings::class, $Settings);
+        $Sum = $this->createMock(CalculationValue::class);
+        $Sum->method('value')->willReturn(1000000);
+        $Calculation = $this->createMock(Calculations::class);
+        $Calculation->method('getSum')->willReturn($Sum);
+        $MissingAddress = $this->createMock(\QUI\ERP\Address::class);
+        $MissingAddress->method('getName')->willReturn('');
+        $Order = $this->getMockBuilder(Order::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([
+                'isPosted',
+                'refresh',
+                'getInvoiceAddress',
+                'getPriceCalculation',
+                'getPayment'
+            ])
+            ->getMock();
+        $Order->method('isPosted')->willReturn(false);
+        $Order->method('getInvoiceAddress')->willReturn($MissingAddress);
+        $Order->method('getPriceCalculation')->willReturn($Calculation);
+        $Order->method('getPayment')->willReturn(null);
+
+        try {
+            $Order->createInvoice();
+            self::fail('Invoice creation must reject an incomplete required address.');
+        } catch (\QUI\Exception) {
+            self::assertTrue(true);
+        }
+
+        $CompleteAddress = $this->createMock(\QUI\ERP\Address::class);
+        $CompleteAddress->method('getName')->willReturn('Invoice Recipient');
+        $CompleteAddress->method('getAttribute')->willReturn('value');
+        $Order->method('getInvoiceAddress')->willReturn($CompleteAddress);
+
+        $this->expectException(\QUI\Exception::class);
+        $Order->createInvoice();
+    }
+
+    public function testFinalOrderCreateSalesOrderRejectsUnavailableOptionalModule(): void
+    {
+        $originalPackageManager = \QUI::$PackageManager;
+        $PackageManager = $this->createMock(\QUI\Package\Manager::class);
+        $PackageManager->method('isInstalled')->with('quiqqer/salesorders')->willReturn(false);
+        \QUI::$PackageManager = $PackageManager;
+        $Order = (new ReflectionClass(Order::class))->newInstanceWithoutConstructor();
+
+        try {
+            $this->expectException(\QUI\Exception::class);
+            $Order->createSalesOrder();
+        } finally {
+            \QUI::$PackageManager = $originalPackageManager;
+        }
     }
 
     public function testProcessingProviderPausesOrderCreation(): void
@@ -270,6 +478,52 @@ class OrderFlowUnitTest extends TestCase
 
         self::assertSame($OrderInProcess, $Process->getOrder());
         self::assertSame(0, $Process->getCleanupCalls());
+    }
+
+    public function testPayableExecutionRendersFinalOrderWithoutGatewayProvider(): void
+    {
+        $FinalOrder = $this->createMock(Order::class);
+        $FinalOrder->method('getUUID')->willReturn('payable-final-order');
+        $Handler = new TestableHandler();
+        $Handler->setOrderProcessProviders([]);
+        $this->setHandler($Handler);
+        $Settings = $this->getMockBuilder(Settings::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get'])
+            ->getMock();
+        $Settings->method('get')->willReturn(false);
+        $this->setSingleton(Settings::class, $Settings);
+        $Site = $this->createMock(\QUI\Interfaces\Projects\Site::class);
+        $Project = $this->createMock(\QUI\Projects\Project::class);
+        $Site->method('getProject')->willReturn($Project);
+        $Checkout = new RenderableOrderStep(
+            'Checkout',
+            \QUI\ERP\Order\Controls\OrderProcess\Checkout::class
+        );
+        $Finish = new RenderableOrderStep(
+            'Finish',
+            \QUI\ERP\Order\Controls\OrderProcess\Finish::class
+        );
+        $Process = new TestableOrderProcess();
+        $Process->setTestOrder($FinalOrder);
+        $Process->setTestSteps([
+            'Checkout' => $Checkout,
+            'Finish' => $Finish
+        ]);
+        $Process->setTestProcessingStep(
+            new RenderableOrderStep('Processing', Processing::class)
+        );
+        $Process->setAttribute('Site', $Site);
+        $Process->setAttribute('step', 'Checkout');
+        $Process->setAttribute('backToShopUrl', '/shop');
+
+        $result = $Process->invokeExecutePayableStatus();
+
+        self::assertIsString($result);
+        self::assertStringContainsString('renderable-order-step', $result);
+        self::assertSame('Finish', $Process->getAttribute('step'));
+        self::assertSame('payable-final-order', $Process->getAttribute('orderHash'));
+        self::assertSame(1, $Process->getCleanupCalls());
     }
 
     public function testCleanupRemovesResolvedProcessOrderAndCompletesBasket(): void

@@ -15,6 +15,7 @@ use QUI\ERP\Order\Controls\OrderProcess\Finish;
 use QUI\ERP\Order\Controls\OrderProcess\Processing;
 use QUI\ERP\Order\OrderProcess;
 use QUI\ERP\Order\Utils\OrderProcessSteps;
+use QUITests\ERP\Order\Fixtures\ConstructableOrderProcess;
 use QUITests\ERP\Order\Fixtures\TestableOrderProcess;
 use QUITests\ERP\Order\Fixtures\TestOrderProcessMessageHandler;
 use QUITests\ERP\Order\Fixtures\RenderableOrderStep;
@@ -23,6 +24,106 @@ use ReflectionProperty;
 
 class OrderProcessUnitTest extends TestCase
 {
+    public function testLoggedInConstructorImportsBasketAndSelectsRequestedStep(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $request = $_REQUEST;
+        $SystemUser = $Users->getSystemUser();
+        $Customer = $this->createMock(QUI\ERP\User::class);
+        $Customer->method('getUUID')->willReturn((string)$SystemUser->getUUID());
+        $Order = $this->createMock(QUI\ERP\Order\OrderInProcess::class);
+        $Order->method('getCustomer')->willReturn($Customer);
+        $Order->method('getUUID')->willReturn('constructor-order-uuid');
+        $Order->method('isSuccessful')->willReturn(0);
+        $Order->method('getCurrency')->willReturn(QUI\ERP\Currency\Handler::getRuntimeCurrency());
+        $Basket = $this->createMock(QUI\ERP\Order\Basket\Basket::class);
+        $Basket->expects(self::exactly(3))->method('toOrder')->with($Order);
+        $Basket->method('getId')->willReturn(77);
+        $CustomerData = new RenderableOrderStep('CustomerData', CustomerData::class);
+        $Finish = new RenderableOrderStep('Finish', Finish::class);
+        $Processing = new RenderableOrderStep('Processing', Processing::class);
+
+        try {
+            $Session->setValue($Users, $SystemUser);
+            $_REQUEST['step'] = 'CustomerData';
+            $Process = new ConstructableOrderProcess(
+                $Order,
+                $Basket,
+                [
+                    'CustomerData' => $CustomerData,
+                    'Finish' => $Finish
+                ],
+                $Processing
+            );
+
+            self::assertSame(77, $Process->getAttribute('basketId'));
+            self::assertSame('constructor-order-uuid', $Process->getAttribute('orderHash'));
+            self::assertSame('CustomerData', $Process->getAttribute('step'));
+            self::assertSame($Order, $Process->getOrder());
+
+            $_REQUEST['step'] = 'Processing';
+            $ProcessingProcess = new ConstructableOrderProcess(
+                $Order,
+                $Basket,
+                [
+                    'CustomerData' => $CustomerData,
+                    'Finish' => $Finish
+                ],
+                $Processing
+            );
+            self::assertSame('Processing', $ProcessingProcess->getAttribute('step'));
+
+            $_REQUEST['step'] = 'missing-step';
+            $FallbackProcess = new ConstructableOrderProcess(
+                $Order,
+                $Basket,
+                [
+                    'CustomerData' => $CustomerData,
+                    'Finish' => $Finish
+                ],
+                $Processing
+            );
+            self::assertSame('CustomerData', $FallbackProcess->getAttribute('step'));
+        } finally {
+            $Session->setValue($Users, $originalUser);
+            $_REQUEST = $request;
+        }
+    }
+
+    public function testLoggedInConstructorMovesSuccessfulOrderToFinish(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $SystemUser = $Users->getSystemUser();
+        $Customer = $this->createMock(QUI\ERP\User::class);
+        $Customer->method('getUUID')->willReturn((string)$SystemUser->getUUID());
+        $Order = $this->createMock(QUI\ERP\Order\Order::class);
+        $Order->method('getCustomer')->willReturn($Customer);
+        $Order->method('getUUID')->willReturn('successful-constructor-order');
+        $Order->method('isSuccessful')->willReturn(1);
+        $Basket = $this->createMock(QUI\ERP\Order\Basket\Basket::class);
+        $Finish = new RenderableOrderStep('Finish', Finish::class);
+        $Processing = new RenderableOrderStep('Processing', Processing::class);
+
+        try {
+            $Session->setValue($Users, $SystemUser);
+            $Process = new ConstructableOrderProcess(
+                $Order,
+                $Basket,
+                ['Finish' => $Finish],
+                $Processing
+            );
+
+            self::assertSame('Finish', $Process->getAttribute('step'));
+            self::assertSame('successful-constructor-order', $Process->getAttribute('orderHash'));
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
     public function testGuestProcessConstructorAndBodyRenderLoginSelection(): void
     {
         $Users = QUI::getUsers();
@@ -41,6 +142,111 @@ class OrderProcessUnitTest extends TestCase
             self::assertStringContainsString('quiqqer-order', $Process->getBody());
         } finally {
             $Session->setValue($Users, $originalUser);
+        }
+    }
+
+    public function testGuestAndSuccessfulOrdersBuildMinimalStepFlows(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+
+        try {
+            $Session->setValue($Users, $Users->getNobody());
+            $GuestProcess = new TestableOrderProcess();
+            $guestSteps = iterator_to_array($GuestProcess->invokeParseSteps());
+
+            self::assertCount(1, $guestSteps);
+            self::assertInstanceOf(
+                QUI\ERP\Order\Controls\OrderProcess\Registration::class,
+                $guestSteps[0]
+            );
+
+            $Session->setValue($Users, $Users->getSystemUser());
+            $FinalOrder = $this->createMock(QUI\ERP\Order\Order::class);
+            $FinalOrder->method('isSuccessful')->willReturn(1);
+            $SuccessfulProcess = new TestableOrderProcess();
+            $SuccessfulProcess->setTestOrder($FinalOrder);
+            $successfulSteps = iterator_to_array($SuccessfulProcess->invokeParseSteps());
+
+            self::assertCount(1, $successfulSteps);
+            self::assertInstanceOf(Finish::class, $successfulSteps[0]);
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
+    public function testBaseProcessingStepResolutionUsesConfiguredStepOrCreatesFallback(): void
+    {
+        $ConfiguredProcessing = new RenderableOrderStep('Processing', Processing::class);
+        $Process = new TestableOrderProcess();
+        $Process->setTestSteps(['Processing' => $ConfiguredProcessing]);
+
+        self::assertSame($ConfiguredProcessing, $Process->invokeBaseGetProcessingStep());
+
+        $Order = $this->createMock(AbstractOrder::class);
+        $Process->setTestOrder($Order);
+        $Process->setTestSteps([
+            'Finish' => new RenderableOrderStep('Finish', Finish::class)
+        ]);
+
+        self::assertInstanceOf(Processing::class, $Process->invokeBaseGetProcessingStep());
+    }
+
+    public function testBaseGuestBasketOrderAndUrlFallbacks(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $Process = new TestableOrderProcess();
+
+        try {
+            $Session->setValue($Users, $Users->getNobody());
+
+            self::assertInstanceOf(
+                QUI\ERP\Order\Basket\BasketGuest::class,
+                $Process->invokeBaseGetBasket()
+            );
+            self::assertNull($Process->invokeBaseGetOrder());
+            self::assertNotSame('', $Process->invokeBaseGetUrl());
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
+    public function testSiteResolutionHandlesMissingConfiguredAndFallbackSites(): void
+    {
+        $originalRewrite = QUI::$Rewrite;
+        $ConfiguredSite = $this->createMock(QUI\Projects\Site::class);
+        $FallbackSite = $this->createMock(QUI\Projects\Site::class);
+        $ConfiguredProject = $this->createMock(QUI\Projects\Project::class);
+        $ConfiguredProject->method('getSitesIds')->willReturn([['id' => 42]]);
+        $ConfiguredProject->method('get')->with(42)->willReturn($ConfiguredSite);
+        $FallbackProject = $this->createMock(QUI\Projects\Project::class);
+        $FallbackProject->method('getSitesIds')->willReturn([]);
+        $FallbackProject->method('firstChild')->willReturn($FallbackSite);
+        $Rewrite = $this->createMock(QUI\Rewrite::class);
+        $Rewrite->method('getProject')->willReturnOnConsecutiveCalls(
+            null,
+            $ConfiguredProject,
+            $FallbackProject
+        );
+        QUI::$Rewrite = $Rewrite;
+
+        try {
+            try {
+                (new TestableOrderProcess())->getSite();
+                self::fail('A missing rewrite project must reject site resolution.');
+            } catch (QUI\ERP\Order\Exception) {
+                self::assertTrue(true);
+            }
+
+            $ConfiguredProcess = new TestableOrderProcess();
+            self::assertSame($ConfiguredSite, $ConfiguredProcess->getSite());
+            self::assertSame($ConfiguredSite, $ConfiguredProcess->getSite());
+            self::assertSame($FallbackSite, (new TestableOrderProcess())->getSite());
+        } finally {
+            QUI::$Rewrite = $originalRewrite;
         }
     }
 
@@ -273,6 +479,14 @@ class OrderProcessUnitTest extends TestCase
 
             $_REQUEST['current'] = 'CustomerData';
             $Process->invokeCheckSubmission();
+
+            $Failing = $this->createStep('Failing', CustomerData::class);
+            $Failing->method('save')->willThrowException(new QUI\Exception('Expected test failure'));
+            $FailingProcess = $this->createProcess($Order, [$Failing], $Processing);
+            $_REQUEST['current'] = 'Failing';
+            $FailingProcess->invokeCheckSubmission();
+
+            self::assertTrue(true);
         } finally {
             $_REQUEST = $request;
         }
