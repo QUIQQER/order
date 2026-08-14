@@ -81,6 +81,21 @@ class StatusUnitTest extends TestCase
         $this->assertSame([], $asArray['statusChangeText']);
     }
 
+    public function testToArrayWithoutLocaleContainsEveryAvailableLanguage(): void
+    {
+        $Status = (new ReflectionClass(Status::class))->newInstanceWithoutConstructor();
+        $this->setProperty($Status, 'id', 11);
+        $this->setProperty($Status, 'color', '#abcdef');
+        $this->setProperty($Status, 'notification', false);
+
+        $data = $Status->toArray();
+
+        self::assertSame(11, $data['id']);
+        self::assertSame('#abcdef', $data['color']);
+        self::assertSame(array_keys($data['title']), array_keys($data['statusChangeText']));
+        self::assertNotEmpty($data['title']);
+    }
+
     private function setProperty(object $object, string $propertyName, mixed $value): void
     {
         $property = $this->findProperty($object, $propertyName);

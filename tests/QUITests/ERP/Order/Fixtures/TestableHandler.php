@@ -22,6 +22,9 @@ class TestableHandler extends Handler
     private ?OrderInProcess $resolvedOrderInProcess = null;
     private ?Basket $resolvedBasket = null;
 
+    /** @var list<Order> */
+    private ?array $resolvedUserOrders = null;
+
     /** @var list<AbstractOrderProcessProvider> */
     private array $orderProcessProviders = [];
 
@@ -47,6 +50,24 @@ class TestableHandler extends Handler
         }
 
         return parent::getOrderByHash($hash);
+    }
+
+    public function getOrderByGlobalProcessId(int | string $id): Order
+    {
+        if ($this->resolvedOrder !== null) {
+            return $this->resolvedOrder;
+        }
+
+        return parent::getOrderByGlobalProcessId($id);
+    }
+
+    public function getOrdersByUser(User $User, array $params = []): array
+    {
+        if ($this->resolvedUserOrders !== null) {
+            return $this->resolvedUserOrders;
+        }
+
+        return parent::getOrdersByUser($User, $params);
     }
 
     public function getOrderInProcess($orderId): OrderInProcess
@@ -109,6 +130,14 @@ class TestableHandler extends Handler
     public function setResolvedBasket(?Basket $Basket): void
     {
         $this->resolvedBasket = $Basket;
+    }
+
+    /**
+     * @param list<Order> $orders
+     */
+    public function setResolvedUserOrders(array $orders): void
+    {
+        $this->resolvedUserOrders = $orders;
     }
 
     /**

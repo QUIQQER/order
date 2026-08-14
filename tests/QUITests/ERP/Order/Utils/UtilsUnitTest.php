@@ -11,6 +11,7 @@ use QUI\ERP\Order\OrderInterface;
 use QUI\ERP\Order\OrderView;
 use QUI\ERP\Order\Utils\Utils;
 use QUI\ERP\Products\Field\Types\BasketConditions;
+use QUI\ERP\Products\Field\Field;
 use QUI\ERP\Products\Handler\Products;
 use QUI\ERP\Products\Product\ProductList;
 use QUI\ERP\Products\Product\TextProduct;
@@ -186,6 +187,76 @@ class UtilsUnitTest extends TestCase
                 'price_currency' => 'EUR'
             ]
         ]);
+
+        self::assertSame($List, $result);
+    }
+
+    public function testUnavailableAndUnknownProductImportsAreSkippedWithFrontendMessage(): void
+    {
+        $ProductNumber = $this->createMock(Field::class);
+        $ProductNumber->method('getValue')->willReturn('SKU-404');
+        $Unavailable = $this->createMock(ProductType::class);
+        $Unavailable->method('isActive')->willReturn(false);
+        $Unavailable->method('getTitle')->willReturn('Unavailable product');
+        $Unavailable->method('getField')->willReturn($ProductNumber);
+        self::setProductCache([900004 => $Unavailable]);
+        $List = $this->createMock(ProductList::class);
+        $List->expects(self::never())->method('addProduct');
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->expects(self::once())
+            ->method('addFrontendMessage')
+            ->with(self::isType('string'));
+
+        self::assertSame($List, Utils::importProductsToBasketList($List, [
+            [
+                'id' => 900004,
+                'price_currency' => 'EUR'
+            ],
+            [
+                'id' => 900005,
+                'class' => \stdClass::class,
+                'price_currency' => 'EUR'
+            ]
+        ], $Order));
+    }
+
+    public function testActiveCatalogProductIsRebuiltAndAddedToBasketList(): void
+    {
+        $Catalog = $this->createMock(ProductType::class);
+        $Catalog->method('isActive')->willReturn(true);
+        $Catalog->method('getMaximumQuantity')->willReturn(9.0);
+        $Catalog->method('getFields')->willReturn([]);
+        self::setProductCache([900006 => $Catalog]);
+        $List = $this->createMock(ProductList::class);
+        $List->expects(self::once())
+            ->method('addProduct')
+            ->with(self::callback(
+                static fn(object $Product): bool => $Product instanceof \QUI\ERP\Order\Basket\Product
+                    && $Product->getId() === 900006
+                    && $Product->getQuantity() === 2.0
+            ));
+
+        $result = Utils::importProductsToBasketList($List, [[
+            'id' => 900006,
+            'quantity' => 2,
+            'price_currency' => 'EUR',
+            'fields' => [
+                1 => [
+                    'id' => 1,
+                    'identifier' => 1,
+                    'type' => 'Price',
+                    'value' => 10.0,
+                    '__class__' => \QUI\ERP\Products\Field\Types\Price::class
+                ],
+                2 => [
+                    'id' => 2,
+                    'identifier' => 2,
+                    'type' => 'Vat',
+                    'value' => 19,
+                    '__class__' => \QUI\ERP\Products\Field\Types\Vat::class
+                ]
+            ]
+        ]]);
 
         self::assertSame($List, $result);
     }

@@ -12,6 +12,7 @@ use QUI\ERP\Order\Basket\BasketOrder;
 use QUI\ERP\Products\Product\ProductList;
 use QUI\ERP\Products\Product\ProductListFrontendView;
 use QUI\ERP\Products\Utils\PriceFactors;
+use QUI\ERP\Order\Basket\Product as BasketProduct;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -134,6 +135,58 @@ class BasketOrderUnitTest extends TestCase
             $data['priceFactors']
         );
         self::assertSame(['sum' => '25.00'], $data['calculations']);
+    }
+
+    public function testProductSerializationIncludesQuantityAndOrderIdentity(): void
+    {
+        $Product = $this->createMock(BasketProduct::class);
+        $Product->method('getId')->willReturn(91);
+        $Product->method('getQuantity')->willReturn(4.0);
+        $Product->method('getFields')->willReturn([]);
+        $FrontendView = $this->createMock(ProductListFrontendView::class);
+        $FrontendView->method('toArray')->willReturn([
+            'attributes' => [],
+            'products' => [],
+            'sum' => '40.00'
+        ]);
+        $PriceFactors = $this->createMock(PriceFactors::class);
+        $PriceFactors->method('toArray')->willReturn([]);
+        $List = $this->createMock(ProductList::class);
+        $List->method('getProducts')->willReturn([$Product]);
+        $List->method('getFrontendView')->willReturn($FrontendView);
+        $List->method('getPriceFactors')->willReturn($PriceFactors);
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getUUID')->willReturn('serialized-order');
+        $Basket = $this->createBasketOrder($List, $Order);
+
+        $data = $Basket->toArray();
+
+        self::assertSame('serialized-order', $data['orderHash']);
+        self::assertSame(91, $data['products'][0]['id']);
+        self::assertSame(4.0, $data['products'][0]['quantity']);
+    }
+
+    public function testAddProductAndRemovePositionSynchronizeOrder(): void
+    {
+        $Product = $this->createMock(BasketProduct::class);
+        $List = $this->createMock(ProductList::class);
+        $List->method('getProducts')->willReturn([]);
+        $List->expects(self::once())->method('addProduct')->with($Product);
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->expects(self::once())->method('removeArticle')->with(2);
+        $Order->expects(self::once())->method('update');
+        $Basket = $this->getMockBuilder(BasketOrder::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['updateOrder', 'readOrder'])
+            ->getMock();
+        $this->setProperty($Basket, 'List', $List);
+        $this->setProperty($Basket, 'Order', $Order);
+        $this->setProperty($Basket, 'hash', 'order-hash');
+        $Basket->expects(self::once())->method('updateOrder');
+        $Basket->expects(self::once())->method('readOrder');
+
+        $Basket->addProduct($Product);
+        $Basket->removePosition(2);
     }
 
     private function createBasketOrder(ProductList $List, AbstractOrder $Order): BasketOrder

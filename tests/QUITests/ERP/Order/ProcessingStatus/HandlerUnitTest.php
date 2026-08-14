@@ -7,6 +7,9 @@ use QUI\Config;
 use QUI\ERP\Order\AbstractOrder;
 use QUI\ERP\Order\ProcessingStatus\Handler;
 use QUI\ERP\Order\ProcessingStatus\StatusUnknown;
+use QUI\ERP\Order\ProcessingStatus\Status;
+use QUI\ERP\Order\ProcessingStatus\Factory;
+use QUI\Utils\Singleton;
 use QUI\ERP\User;
 use ReflectionClass;
 use ReflectionProperty;
@@ -85,6 +88,53 @@ class HandlerUnitTest extends TestCase
         self::assertTrue(true);
     }
 
+    public function testConfiguredStatusesAndCancelledStatusAreCreated(): void
+    {
+        $Config = $this->createMock(Config::class);
+        $Config->method('getSection')->with('processing_status')->willReturn([
+            3 => '#333333',
+            5 => '#555555'
+        ]);
+        $Config->method('get')->with('orderStatus', 'cancelled')->willReturn(5);
+        $Handler = $this->createHandler($Config);
+
+        $this->withSingletonHandler($Handler, static function () use ($Handler): void {
+            self::assertInstanceOf(Status::class, $Handler->getProcessingStatus(3));
+            self::assertSame(5, $Handler->getCancelledStatus()->getId());
+            self::assertCount(2, $Handler->getProcessingStatusList());
+        });
+    }
+
+    public function testProcessingStatusFactoryCalculatesNextIds(): void
+    {
+        $EmptyHandler = $this->createHandler($this->createMock(Config::class));
+        $this->setProperty($EmptyHandler, 'list', []);
+        $this->withSingletonHandler($EmptyHandler, static function (): void {
+            self::assertSame(1, Factory::getInstance()->getNextId());
+        });
+
+        $ConfiguredHandler = $this->createHandler($this->createMock(Config::class));
+        $this->setProperty($ConfiguredHandler, 'list', [2 => '#2', 9 => '#9']);
+        $this->withSingletonHandler($ConfiguredHandler, static function (): void {
+            self::assertSame(10, Factory::getInstance()->getNextId());
+        });
+    }
+
+    public function testProcessingStatusFactoryRejectsDuplicateIdBeforeWritingConfiguration(): void
+    {
+        $Handler = $this->createHandler($this->createMock(Config::class));
+        $this->setProperty($Handler, 'list', [7 => '#777777']);
+
+        $this->withSingletonHandler($Handler, static function (): void {
+            try {
+                Factory::getInstance()->createProcessingStatus(7, '#000000', []);
+                self::fail('A duplicate processing status ID must be rejected.');
+            } catch (\QUI\ERP\Order\ProcessingStatus\Exception) {
+                self::assertTrue(true);
+            }
+        });
+    }
+
     private function createHandler(Config $Config): Handler
     {
         $Handler = (new ReflectionClass(Handler::class))->newInstanceWithoutConstructor();
@@ -98,5 +148,21 @@ class HandlerUnitTest extends TestCase
     {
         $Property = new ReflectionProperty($object, $name);
         $Property->setValue($object, $value);
+    }
+
+    private function withSingletonHandler(Handler $Handler, callable $callback): void
+    {
+        $Instances = new ReflectionProperty(Singleton::class, 'instances');
+        $original = $Instances->getValue();
+        $instances = $original;
+        $instances[Handler::class] = $Handler;
+        unset($instances[Factory::class]);
+        $Instances->setValue(null, $instances);
+
+        try {
+            $callback();
+        } finally {
+            $Instances->setValue(null, $original);
+        }
     }
 }

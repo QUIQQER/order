@@ -12,6 +12,8 @@ use QUI\ERP\Order\Exception;
 use QUI\Users\Address;
 use QUI\Users\User;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 class CustomerDataUnitTest extends TestCase
 {
@@ -269,6 +271,124 @@ class CustomerDataUnitTest extends TestCase
             $_REQUEST = $originalRequest;
             $Session->set('comment-customer', $originalCustomerComment);
             $Session->set('comment-message', $originalMessageComment);
+        }
+    }
+
+    public function testBodyRendersCompleteCustomerAddressAndSanitizesComments(): void
+    {
+        $Session = QUI::getSession();
+        $originalCustomerComment = $Session->get('comment-customer');
+        $originalMessageComment = $Session->get('comment-message');
+        $attributes = [
+            'firstname' => 'Ada',
+            'lastname' => 'Lovelace',
+            'street_no' => 'Example Street 1',
+            'zip' => '12345',
+            'city' => 'London',
+            'country' => 'GB'
+        ];
+        $User = $this->createMock(User::class);
+        $User->method('getAttribute')->willReturnCallback(
+            static fn(string $name): mixed => $name === 'quiqqer.erp.isNettoUser'
+                ? QUI\ERP\Utils\User::IS_NETTO_USER
+                : null
+        );
+        $Address = $this->createMock(Address::class);
+        $Address->method('getUUID')->willReturn('body-address');
+        $Address->method('getUser')->willReturn($User);
+        $Address->method('getAttribute')->willReturnCallback(
+            static fn(string $name): mixed => $attributes[$name] ?? null
+        );
+        $OrderAddress = $this->createMock(ERPAddress::class);
+        $OrderAddress->method('getUUID')->willReturn('body-address');
+        $OrderAddress->method('getAttribute')->willReturnCallback(
+            static fn(string $name): mixed => $attributes[$name] ?? null
+        );
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getInvoiceAddress')->willReturn($OrderAddress);
+        $Order->expects(self::once())->method('setInvoiceAddress')->with($Address);
+        $Order->expects(self::once())->method('update');
+        $Step = $this->getMockBuilder(CustomerData::class)
+            ->onlyMethods(['getInvoiceAddress'])
+            ->getMock();
+        $Step->method('getInvoiceAddress')->willReturn($Address);
+        $Step->setAttribute('Order', $Order);
+        $Step->setAttribute('businessTypeIsChangeable', false);
+
+        try {
+            $Session->set('comment-customer', '<script>bad</script> Customer note');
+            $Session->set('comment-message', '<b>Message</b>');
+            self::assertIsString($Step->getBody());
+            self::assertSame(1, $Step->getAttribute('data-validate'));
+        } finally {
+            $Session->set('comment-customer', $originalCustomerComment);
+            $Session->set('comment-message', $originalMessageComment);
+        }
+    }
+
+    public function testAddressResolutionUsesRequestedAndConfiguredSessionAddresses(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $RequestedAddress = $this->createMock(Address::class);
+        $ConfiguredAddress = $this->createMock(Address::class);
+        $User = $this->createMock(User::class);
+        $User->method('getAttribute')
+            ->with('quiqqer.erp.address')
+            ->willReturn(18);
+        $User->method('getAddress')->willReturnCallback(
+            static function (int | string $id) use ($RequestedAddress, $ConfiguredAddress): Address {
+                if ((int)$id === 17) {
+                    return $RequestedAddress;
+                }
+
+                if ((int)$id === 18) {
+                    return $ConfiguredAddress;
+                }
+
+                throw new QUI\Exception('Address not found');
+            }
+        );
+        $Step = new CustomerData();
+        $Method = new ReflectionMethod(CustomerData::class, 'getAddressById');
+
+        try {
+            $Session->setValue($Users, $User);
+            self::assertSame($RequestedAddress, $Method->invoke($Step, 17));
+            self::assertSame($ConfiguredAddress, $Method->invoke($Step, 0));
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
+    public function testInvoiceAddressResolutionFallsBackToCustomerStandardAddress(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $ResolvedAddress = $this->createMock(Address::class);
+        $ResolvedAddress->method('getAttribute')->willReturn('value');
+        $SessionUser = $this->createMock(User::class);
+        $SessionUser->method('getAddress')->with('customer-address')->willReturn($ResolvedAddress);
+        $OrderAddress = $this->createMock(ERPAddress::class);
+        $OrderAddress->method('getUUID')->willReturn('');
+        $CustomerAddress = $this->createMock(ERPAddress::class);
+        $CustomerAddress->method('getUUID')->willReturn('customer-address');
+        $CustomerAddress->method('getAttribute')->willReturn('value');
+        $Customer = $this->createMock(QUI\ERP\User::class);
+        $Customer->method('getStandardAddress')->willReturn($CustomerAddress);
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getCustomer')->willReturn($Customer);
+        $Order->method('getInvoiceAddress')->willReturn($OrderAddress);
+        $Step = new CustomerData(['Order' => $Order]);
+        $Method = new ReflectionMethod(CustomerData::class, 'getInvoiceAddress');
+
+        try {
+            $Session->setValue($Users, $SessionUser);
+            self::assertSame($ResolvedAddress, $Method->invoke($Step));
+        } finally {
+            $Session->setValue($Users, $originalUser);
         }
     }
 

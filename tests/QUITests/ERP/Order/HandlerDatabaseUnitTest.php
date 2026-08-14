@@ -14,6 +14,7 @@ use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Payments\Types\Payment;
+use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\Customer\Utils as CustomerUtils;
 use QUI\ERP\Order\Basket\ExceptionBasketNotFound;
 use QUI\ERP\Order\Exception;
@@ -21,6 +22,7 @@ use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Order\OrderView;
+use QUI\ERP\Order\Output\OutputProviderOrder;
 use QUI\ERP\Order\Settings;
 use QUI\Interfaces\Users\User;
 use QUI\Permissions\Manager as PermissionManager;
@@ -169,6 +171,13 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertSame(['1', '2'], $this->normalizeIds($this->Handler->getLoadedOrderIds()));
         self::assertSame([], $this->Handler->getOrdersByGlobalProcessId('missing'));
 
+        try {
+            $this->Handler->getOrderByGlobalProcessId('missing');
+            self::fail('A missing global process ID must throw an exception.');
+        } catch (Exception $Exception) {
+            self::assertSame(Handler::ERROR_ORDER_NOT_FOUND, $Exception->getCode());
+        }
+
         $this->Handler->clearLoadedIds();
         self::assertInstanceOf(Order::class, $this->Handler->getOrderById('order-a'));
         self::assertInstanceOf(Order::class, $this->Handler->getOrderById(2));
@@ -208,6 +217,44 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertInstanceOf(OrderView::class, $View);
         self::assertSame(1, $View->getId());
         self::assertSame('order-a', $View->getUUID());
+    }
+
+    public function testOutputProviderResolvesSqliteOrderMetadata(): void
+    {
+        $Order = OutputProviderOrder::getEntity('order-a');
+
+        self::assertInstanceOf(Order::class, $Order);
+        self::assertSame($Order->getPrefixedNumber(), OutputProviderOrder::getDownloadFileName('order-a'));
+        self::assertSame(
+            $Order->getCustomer()->getLocale()->getCurrent(),
+            OutputProviderOrder::getLocale('order-a')->getCurrent()
+        );
+        self::assertContains(
+            OutputProviderOrder::getEmailAddress('order-a'),
+            [false, '', null],
+            true
+        );
+        self::assertIsString(OutputProviderOrder::getMailSubject('order-a'));
+        self::assertIsString(OutputProviderOrder::getMailBody('order-a'));
+        $templateData = OutputProviderOrder::getTemplateData('order-a');
+        self::assertArrayHasKey('ArticleList', $templateData);
+        self::assertArrayHasKey('Address', $templateData);
+        self::assertArrayHasKey('DeliveryAddress', $templateData);
+        self::assertArrayHasKey('transaction', $templateData);
+    }
+
+    public function testAbstractOrderSerializesCompleteSqliteState(): void
+    {
+        $Order = new Order('order-a');
+        $data = $Order->toArray();
+
+        self::assertSame('order-a', $data['uuid']);
+        self::assertSame($Order->getPrefixedNumber(), $data['prefixedNumber']);
+        self::assertArrayHasKey('articles', $data);
+        self::assertArrayHasKey('paidStatus', $data);
+        self::assertArrayHasKey('addressInvoice', $data);
+        self::assertSame($Order->getCreateUser(), $Order->getCreateUser());
+        self::assertInstanceOf(\QUI\ERP\Accounting\Calculations::class, $Order->getPriceCalculation());
     }
 
     public function testFinalOrderPersistsPaymentStatusAndFrontendMessages(): void
@@ -263,6 +310,58 @@ class HandlerDatabaseUnitTest extends TestCase
             json_decode($storedOrder['custom_data'], true)['sqlite-test']
         );
         self::assertSame(['persisted' => true], $Order->getCustomDataEntry('sqlite-test'));
+    }
+
+    public function testFinalOrderSuccessfulLifecyclePersistsOnceAndKeepsOptionalFileApiStable(): void
+    {
+        $Order = new Order('order-c');
+
+        $Order->setSuccessfulStatus();
+        $historyAfterFirstUpdate = (string)$this->connection->fetchOne(
+            'SELECT history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+            ['order-c']
+        );
+        $Order->setSuccessfulStatus();
+
+        self::assertSame(1, $Order->isSuccessful());
+        self::assertSame(
+            1,
+            (int)$this->connection->fetchOne(
+                'SELECT successful FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                ['order-c']
+            )
+        );
+        self::assertSame(
+            $historyAfterFirstUpdate,
+            $this->connection->fetchOne(
+                'SELECT history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                ['order-c']
+            )
+        );
+
+        (new ReflectionProperty($Order, 'idPrefix'))->setValue($Order, null);
+        self::assertNotEmpty($Order->getIdPrefix());
+    }
+
+    public function testFinalOrderLinksExternalTransactionAndPersistsCalculatedPaymentData(): void
+    {
+        $Order = new Order('order-b');
+        $Transaction = $this->createMock(Transaction::class);
+        $Transaction->method('getTxId')->willReturn('external-transaction-1');
+        $Transaction->method('isHashLinked')->with('order-b')->willReturn(false);
+        $Transaction->expects(self::once())->method('addLinkedHash')->with('order-b');
+        $Transaction->method('getAmountFormatted')->willReturn('10.00 EUR');
+
+        $Order->linkTransaction($Transaction);
+
+        $stored = $this->connection->fetchAssociative(
+            'SELECT paid_data, paid_date, history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+            ['order-b']
+        );
+        self::assertIsArray($stored);
+        self::assertJson((string)$stored['paid_data']);
+        self::assertNotNull($stored['paid_date']);
+        self::assertNotEmpty($stored['history']);
     }
 
     public function testFinalOrderCreatesAndPostsInvoiceWhenOptionalModuleIsAvailable(): void
@@ -564,6 +663,13 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertSame('process-old', $this->Handler->getOrderProcessData('process-old')['hash']);
 
         try {
+            $this->Handler->getOrderInProcessByHash('missing');
+            self::fail('A missing order process hash must throw an exception.');
+        } catch (Exception $Exception) {
+            self::assertSame(Handler::ERROR_ORDER_NOT_FOUND, $Exception->getCode());
+        }
+
+        try {
             $this->Handler->getOrderProcessData('missing');
             self::fail('Missing order process data must throw an exception.');
         } catch (Exception $Exception) {
@@ -833,6 +939,103 @@ class HandlerDatabaseUnitTest extends TestCase
         } catch (ExceptionBasketNotFound) {
             self::assertTrue(true);
         }
+    }
+
+    public function testOrdersByUserApplySupportedOrderingAndPagination(): void
+    {
+        $User = $this->createUser('user-a');
+
+        $orders = $this->Handler->getOrdersByUser($User, [
+            'order' => 'c_date DESC',
+            'limit' => '0,1'
+        ]);
+
+        self::assertCount(1, $orders);
+        self::assertSame('order-b', $orders[0]->getUUID());
+
+        $orders = $this->Handler->getOrdersByUser($User, [
+            'order' => 'id',
+            'limit' => 1
+        ]);
+
+        self::assertCount(1, $orders);
+        self::assertSame('order-a', $orders[0]->getUUID());
+
+        self::assertCount(2, $this->Handler->getOrdersByUser($User, [
+            'order' => 'unsupported SQL fragment'
+        ]));
+    }
+
+    public function testBasketLookupVariantsHydrateTheSqliteFixture(): void
+    {
+        $SessionUser = QUI::getUserBySession();
+
+        self::assertSame(30, $this->Handler->getBasket(30, $SessionUser)->getId());
+        self::assertSame(30, $this->Handler->getBasket('30')->getId());
+        self::assertSame(30, $this->Handler->getBasket('process-price')->getId());
+        self::assertSame(30, $this->Handler->getBasketById(30)->getId());
+        self::assertSame(30, $this->Handler->getBasketByHash('process-price')->getId());
+        self::assertSame(30, $this->Handler->getBasketFromUser($SessionUser)->getId());
+        self::assertSame('process-price', $this->Handler->getBasketData('30')['hash']);
+    }
+
+    public function testMissingBasketLookupVariantsUseTheBasketException(): void
+    {
+        $SessionUser = QUI::getUserBySession();
+
+        foreach (
+            [
+                fn() => $this->Handler->getBasketById(999, $SessionUser),
+                fn() => $this->Handler->getBasketByHash('missing', $SessionUser),
+                fn() => $this->Handler->getBasketFromUser($this->createUser('missing-user')),
+                fn() => $this->Handler->getBasketData(999, $SessionUser),
+                fn() => $this->Handler->getBasketData('', $SessionUser)
+            ] as $lookup
+        ) {
+            try {
+                $lookup();
+                self::fail('A missing basket lookup must throw the basket exception.');
+            } catch (ExceptionBasketNotFound) {
+                self::assertTrue(true);
+            }
+        }
+    }
+
+    public function testIdentifierAndCreatorMigrationsUsePortableDbalSchemaChanges(): void
+    {
+        $tableName = 'phpunit_order_identifier_migration';
+        $Table = new Table($tableName);
+        $Table->addColumn('id', 'integer', ['autoincrement' => true]);
+        $Table->addColumn('invoice_id', 'integer', ['notnull' => false]);
+        $Table->addColumn('customerId', 'integer', ['notnull' => true]);
+        $Table->addColumn('c_user', 'integer', ['notnull' => false]);
+        $Table->setPrimaryKey(['id']);
+        $this->connection->createSchemaManager()->createTable($Table);
+
+        $IdentifierMigration = new \ReflectionMethod(
+            \QUI\ERP\Order\EventHandling::class,
+            'migrateOrderIdentifierColumns'
+        );
+        $CreatorMigration = new \ReflectionMethod(
+            \QUI\ERP\Order\EventHandling::class,
+            'migrateOrderCreatorColumn'
+        );
+
+        $IdentifierMigration->invoke(null, 'phpunit_missing_migration_table');
+        $CreatorMigration->invoke(null, 'phpunit_missing_migration_table');
+        $IdentifierMigration->invoke(null, $tableName);
+        $CreatorMigration->invoke(null, $tableName);
+
+        $Migrated = $this->connection->createSchemaManager()->introspectTable($tableName);
+        self::assertSame(50, $Migrated->getColumn('invoice_id')->getLength());
+        self::assertFalse($Migrated->getColumn('invoice_id')->getNotnull());
+        self::assertSame(50, $Migrated->getColumn('customerId')->getLength());
+        self::assertFalse($Migrated->getColumn('customerId')->getNotnull());
+        self::assertSame(50, $Migrated->getColumn('c_user')->getLength());
+        self::assertTrue($Migrated->getColumn('c_user')->getNotnull());
+
+        $IdentifierMigration->invoke(null, $tableName);
+        $CreatorMigration->invoke(null, $tableName);
     }
 
     private function insertFixtures(): void

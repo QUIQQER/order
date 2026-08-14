@@ -14,7 +14,12 @@ use QUI\ERP\Currency\Currency;
 use QUI\ERP\Order\AbstractOrder;
 use QUI\ERP\Order\OrderView;
 use QUI\ERP\Shipping\Api\ShippingInterface;
+use QUI\ERP\Accounting\Payments\Api\AbstractPayment;
+use QUI\ERP\Accounting\Payments\Types\Payment;
+use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
+use QUI\Utils\Singleton;
 use QUI\ERP\User;
+use ReflectionProperty;
 
 class OrderViewUnitTest extends TestCase
 {
@@ -162,6 +167,42 @@ class OrderViewUnitTest extends TestCase
         $View->clearFrontendMessages();
 
         self::assertTrue(true);
+    }
+
+    public function testDocumentRenderingFailurePathsReturnStrings(): void
+    {
+        [$View, $Order] = $this->createView();
+        $Order->method('getUUID')->willReturn('missing-output-order');
+
+        self::assertIsString($View->previewHTML());
+        self::assertIsString($View->toHTML());
+    }
+
+    public function testTransactionTextUsesPaymentDeadlineWithoutTransactions(): void
+    {
+        [$View, $Order] = $this->createView();
+        $PaymentType = $this->createMock(AbstractPayment::class);
+        $Payment = $this->createMock(Payment::class);
+        $Payment->method('getPaymentType')->willReturn($PaymentType);
+        $Customer = $this->createMock(User::class);
+        $Customer->method('getLocale')->willReturn(QUI::getLocale());
+        $Order->method('getPayment')->willReturn($Payment);
+        $Order->method('getCustomer')->willReturn($Customer);
+        $Order->method('getUUID')->willReturn('transaction-text-order');
+        $Order->method('getAttribute')->with('time_for_payment')->willReturn('tomorrow');
+        $Handler = $this->createMock(TransactionHandler::class);
+        $Handler->method('getTransactionsByHash')->with('transaction-text-order')->willReturn([]);
+        $Instances = new ReflectionProperty(Singleton::class, 'instances');
+        $original = $Instances->getValue();
+        $instances = $original;
+        $instances[TransactionHandler::class] = $Handler;
+        $Instances->setValue(null, $instances);
+
+        try {
+            self::assertIsString($View->getTransactionText());
+        } finally {
+            $Instances->setValue(null, $original);
+        }
     }
 
     /**

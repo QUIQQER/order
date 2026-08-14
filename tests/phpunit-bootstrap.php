@@ -45,6 +45,14 @@ if (!class_exists(QUI\ERP\SalesOrders\Handler::class)) {
     require_once __DIR__ . '/phpstan-stubs/QUI/ERP/SalesOrders/Handler.php';
 }
 
+if (!interface_exists(QUI\ERP\Shipping\Api\ShippingInterface::class)) {
+    require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Shipping/Api/ShippingInterface.php';
+}
+
+if (!class_exists(QUI\ERP\Shipping\ShippingStatus\Status::class)) {
+    require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Shipping/ShippingStatus/Status.php';
+}
+
 $PackageLoader = new Composer\Autoload\ClassLoader();
 $PackageLoader->addPsr4('QUI\\ERP\\Order\\', dirname(__DIR__) . '/src/QUI/ERP/Order');
 $PackageLoader->addPsr4('QUITests\\ERP\\Order\\', __DIR__ . '/QUITests/ERP/Order');
