@@ -5,6 +5,9 @@ namespace QUITests\ERP\Order\Fixtures;
 use LogicException;
 use QUI;
 use QUI\ERP\Order\AbstractOrder;
+use QUI\ERP\Order\Basket\Basket;
+use QUI\ERP\Order\Basket\BasketGuest;
+use QUI\ERP\Order\Basket\BasketOrder;
 use QUI\ERP\Order\Controls\AbstractOrderingStep;
 use QUI\ERP\Order\OrderProcess;
 use QUI\ERP\Order\OrderProcess\OrderProcessMessage;
@@ -13,6 +16,7 @@ use QUI\ERP\Order\Utils\OrderProcessSteps;
 class TestableOrderProcess extends OrderProcess
 {
     private ?AbstractOrderingStep $testProcessingStep = null;
+    private Basket | BasketGuest | BasketOrder | null $testBasket = null;
     private string $testUrl = '/checkout';
     private int $cleanupCalls = 0;
 
@@ -51,6 +55,11 @@ class TestableOrderProcess extends OrderProcess
         $this->testProcessingStep = $ProcessingStep;
     }
 
+    public function setTestBasket(Basket | BasketGuest | BasketOrder $Basket): void
+    {
+        $this->testBasket = $Basket;
+    }
+
     protected function getProcessingStep(): AbstractOrderingStep
     {
         if ($this->testProcessingStep === null) {
@@ -58,6 +67,15 @@ class TestableOrderProcess extends OrderProcess
         }
 
         return $this->testProcessingStep;
+    }
+
+    protected function getBasket(): BasketGuest | Basket | BasketOrder
+    {
+        if ($this->testBasket !== null) {
+            return $this->testBasket;
+        }
+
+        return parent::getBasket();
     }
 
     public function setTestUrl(string $url): void
@@ -118,6 +136,11 @@ class TestableOrderProcess extends OrderProcess
         $this->checkSubmission();
     }
 
+    public function invokeCheckSuccessfulStatus(): void
+    {
+        $this->checkSuccessfulStatus();
+    }
+
     public function invokeCheckProcessing(): false | string
     {
         return $this->checkProcessing();
@@ -126,6 +149,11 @@ class TestableOrderProcess extends OrderProcess
     public function invokeSend(): void
     {
         $this->send();
+    }
+
+    public function invokeCleanup(): void
+    {
+        parent::cleanup();
     }
 
     /**

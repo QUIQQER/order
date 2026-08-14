@@ -15,10 +15,12 @@ use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Order\OrderView;
+use QUI\ERP\Order\Settings;
 use QUI\Interfaces\Users\User;
 use QUI\Permissions\Manager as PermissionManager;
 use QUI\Permissions\Permission;
 use QUI\Update;
+use QUI\Utils\Singleton;
 use QUITests\ERP\Order\Fixtures\TestableHandler;
 use ReflectionProperty;
 
@@ -37,6 +39,7 @@ class HandlerDatabaseUnitTest extends TestCase
     private array $originalCountriesState;
 
     private mixed $originalSessionCountry;
+    private mixed $originalSessionUser;
 
     protected function setUp(): void
     {
@@ -53,6 +56,10 @@ class HandlerDatabaseUnitTest extends TestCase
         $this->originalCurrencyState = $this->getCurrencyState();
         $this->originalCountriesState = $this->getCountriesState();
         $this->originalSessionCountry = QUI::getSession()->get('country');
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $this->originalSessionUser = $Session->getValue($Users);
+        $Session->setValue($Users, $Users->getSystemUser());
 
         $this->setConnection($this->connection);
         QUI::$Rights = null;
@@ -74,6 +81,8 @@ class HandlerDatabaseUnitTest extends TestCase
             'quiqqer/currency'
         );
         Update::importDatabase(OPT_DIR . 'quiqqer/currency/database.xml');
+        Update::importDatabase(OPT_DIR . 'quiqqer/areas/database.xml');
+        Update::importDatabase(OPT_DIR . 'quiqqer/payment-transactions/database.xml');
         Update::importDatabase(dirname(__DIR__, 4) . '/database.xml');
 
         $this->connection->insert(CurrencyHandler::table(), [
@@ -83,6 +92,11 @@ class HandlerDatabaseUnitTest extends TestCase
             'precision' => 2,
             'type' => CurrencyHandler::CURRENCY_TYPE_DEFAULT,
             'customData' => null
+        ]);
+        $this->connection->insert(QUI::getDBTableName('areas'), [
+            'id' => 1,
+            'countries' => 'DE',
+            'data' => '{}'
         ]);
         $this->createCountriesFixture();
 
@@ -105,6 +119,11 @@ class HandlerDatabaseUnitTest extends TestCase
         } else {
             QUI::getSession()->set('country', $this->originalSessionCountry);
         }
+
+        (new ReflectionProperty(QUI::getUsers(), 'Session'))->setValue(
+            QUI::getUsers(),
+            $this->originalSessionUser
+        );
 
         $this->connection->close();
 
@@ -170,6 +189,47 @@ class HandlerDatabaseUnitTest extends TestCase
         }
     }
 
+    public function testFinalOrderCreatesViewAfterCompleteSqliteHydration(): void
+    {
+        $Order = new Order('order-a');
+        $View = $Order->getView();
+
+        self::assertInstanceOf(OrderView::class, $View);
+        self::assertSame(1, $View->getId());
+        self::assertSame('order-a', $View->getUUID());
+    }
+
+    public function testFinalOrderPersistsPaymentStatusAndFrontendMessages(): void
+    {
+        $Order = new Order('order-a');
+
+        $Order->setPaymentStatus(QUI\ERP\Constants::PAYMENT_STATUS_PART);
+        $Order->addFrontendMessage('Visible final order message');
+
+        $storedOrder = $this->connection->fetchAssociative(
+            'SELECT paid_status, frontendMessages FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+            ['order-a']
+        );
+        self::assertIsArray($storedOrder);
+        self::assertSame(QUI\ERP\Constants::PAYMENT_STATUS_PART, (int)$storedOrder['paid_status']);
+        self::assertSame(
+            QUI\ERP\Constants::PAYMENT_STATUS_PART,
+            $Order->getAttribute('paid_status')
+        );
+        self::assertStringContainsString('Visible final order message', $storedOrder['frontendMessages']);
+
+        $Order->clearFrontendMessages();
+
+        self::assertTrue($Order->getFrontendMessages()->isEmpty());
+        self::assertSame(
+            $Order->getFrontendMessages()->toJSON(),
+            $this->connection->fetchOne(
+                'SELECT frontendMessages FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                ['order-a']
+            )
+        );
+    }
+
     public function testOrderProcessQueriesListCountAndSelectLatestOpenEntry(): void
     {
         $User = $this->createUser('user-a');
@@ -211,6 +271,137 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertInstanceOf(OrderView::class, $View);
         self::assertSame(11, $View->getId());
         self::assertSame('process-new', $View->getUUID());
+    }
+
+    public function testOrderInProcessPaymentStatusUpdatesDatabaseAndLoadedObject(): void
+    {
+        $OrderInProcess = new OrderInProcess('process-new');
+
+        self::assertSame(0, $OrderInProcess->getAttribute('paid_status'));
+
+        $OrderInProcess->setPaymentStatus(QUI\ERP\Constants::PAYMENT_STATUS_PART);
+
+        self::assertSame(
+            QUI\ERP\Constants::PAYMENT_STATUS_PART,
+            $OrderInProcess->getAttribute('paid_status')
+        );
+        self::assertSame(
+            QUI\ERP\Constants::PAYMENT_STATUS_PART,
+            (int)$this->connection->fetchOne(
+                'SELECT paid_status FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+                ['process-new']
+            )
+        );
+    }
+
+    public function testOrderInProcessPersistsFrontendMessages(): void
+    {
+        $OrderInProcess = new OrderInProcess('process-new');
+
+        $OrderInProcess->addFrontendMessage('Visible process message');
+
+        $storedMessages = (string)$this->connection->fetchOne(
+            'SELECT frontendMessages FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+            ['process-new']
+        );
+        self::assertStringContainsString('Visible process message', $storedMessages);
+        self::assertSame(
+            'Visible process message',
+            $OrderInProcess->getFrontendMessages()->toArray()[0]['message']
+        );
+
+        $OrderInProcess->clearFrontendMessages();
+
+        self::assertTrue($OrderInProcess->getFrontendMessages()->isEmpty());
+        self::assertSame(
+            $OrderInProcess->getFrontendMessages()->toJSON(),
+            $this->connection->fetchOne(
+                'SELECT frontendMessages FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+                ['process-new']
+            )
+        );
+    }
+
+    public function testOrderInProcessRebuildsArticlesFromBasketPriceFactors(): void
+    {
+        $OrderInProcess = new OrderInProcess('process-price');
+
+        self::assertSame(0, $OrderInProcess->count());
+
+        $OrderInProcess->addPriceFactors([]);
+
+        self::assertSame(0, $OrderInProcess->count());
+        self::assertJson((string)$this->connection->fetchOne(
+            'SELECT articles FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+            ['process-price']
+        ));
+    }
+
+    public function testOrderInProcessCalculatesPlannedPaymentWithoutCreatingOrder(): void
+    {
+        $OrderInProcess = new OrderInProcess('process-price');
+        $OrderInProcess->setPaymentStatus(QUI\ERP\Constants::PAYMENT_STATUS_PLAN);
+
+        $OrderInProcess->calculatePayments();
+
+        $storedPayment = $this->connection->fetchAssociative(
+            'SELECT paid_status, paid_data, paid_date, order_id FROM '
+            . $this->Handler->tableOrderProcess()
+            . ' WHERE hash = ?',
+            ['process-price']
+        );
+
+        self::assertIsArray($storedPayment);
+        self::assertSame(QUI\ERP\Constants::PAYMENT_STATUS_PLAN, (int)$storedPayment['paid_status']);
+        self::assertSame('[]', $storedPayment['paid_data']);
+        self::assertSame(0, (int)$storedPayment['paid_date']);
+        self::assertNull($storedPayment['order_id']);
+        self::assertSame(
+            QUI\ERP\Constants::PAYMENT_STATUS_PLAN,
+            $OrderInProcess->getAttribute('paid_status')
+        );
+    }
+
+    public function testOrderInProcessConvertsToFinalOrderWithoutInvoiceModule(): void
+    {
+        $SingletonInstances = new ReflectionProperty(Singleton::class, 'instances');
+        $originalInstances = $SingletonInstances->getValue();
+        $Settings = new Settings();
+        (new ReflectionProperty($Settings, 'isInvoiceInstalled'))->setValue($Settings, false);
+        $instances = $originalInstances;
+        $instances[Settings::class] = $Settings;
+        $SingletonInstances->setValue(null, $instances);
+        $Config = Settings::getConfig();
+        $originalOrderIndex = $Config->getValue('order', 'orderCurrentIdIndex');
+
+        try {
+            self::assertFalse($Settings->createInvoiceOnOrder());
+            self::assertFalse($Settings->createInvoiceByPayment());
+
+            $OrderInProcess = new OrderInProcess('process-price');
+            $Order = $OrderInProcess->createOrder(QUI::getUsers()->getSystemUser());
+
+            self::assertInstanceOf(Order::class, $Order);
+            self::assertSame('process-price', $Order->getUUID());
+            self::assertFalse($Order->hasInvoice());
+            self::assertFalse(
+                $this->connection->fetchOne(
+                    'SELECT 1 FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+                    ['process-price']
+                )
+            );
+            self::assertSame(
+                'process-price',
+                $this->connection->fetchOne(
+                    'SELECT hash FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                    ['process-price']
+                )
+            );
+        } finally {
+            $Config->set('order', 'orderCurrentIdIndex', $originalOrderIndex);
+            $Config->save();
+            $SingletonInstances->setValue(null, $originalInstances);
+        }
     }
 
     public function testMissingLatestOrderProcessUsesDocumentedErrorCode(): void
@@ -273,7 +464,14 @@ class HandlerDatabaseUnitTest extends TestCase
             [10, 'process-old', 'user-a', 0, '2026-01-01 10:00:00'],
             [11, 'process-new', 'user-a', 0, '2026-01-03 10:00:00'],
             [12, 'process-successful', 'user-a', 1, '2026-01-04 10:00:00'],
-            [13, 'process-other', 'user-b', 0, '2026-01-05 10:00:00']
+            [13, 'process-other', 'user-b', 0, '2026-01-05 10:00:00'],
+            [
+                14,
+                'process-price',
+                (string)QUI::getUsers()->getSystemUser()->getUUID(),
+                0,
+                '2026-01-06 10:00:00'
+            ]
         ];
 
         foreach ($processes as [$id, $hash, $customerId, $successful, $date]) {
@@ -288,6 +486,13 @@ class HandlerDatabaseUnitTest extends TestCase
                 'c_user' => $customerId
             ]);
         }
+
+        $this->connection->insert($this->Handler->tableBasket(), [
+            'id' => 30,
+            'uid' => (string)QUI::getUsers()->getSystemUser()->getUUID(),
+            'products' => '[]',
+            'hash' => 'process-price'
+        ]);
     }
 
     private function createCountriesFixture(): void

@@ -3,9 +3,11 @@
 namespace QUITests\ERP\Order\Fixtures;
 
 use QUI\ERP\Order\AbstractOrderProcessProvider;
+use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
+use QUI\Interfaces\Users\User;
 use ReflectionClass;
 
 class TestableHandler extends Handler
@@ -17,6 +19,8 @@ class TestableHandler extends Handler
     private array $loadedOrderProcessIds = [];
 
     private ?Order $resolvedOrder = null;
+    private ?OrderInProcess $resolvedOrderInProcess = null;
+    private ?Basket $resolvedBasket = null;
 
     /** @var list<AbstractOrderProcessProvider> */
     private array $orderProcessProviders = [];
@@ -38,6 +42,10 @@ class TestableHandler extends Handler
             return $this->resolvedOrder;
         }
 
+        if ($this->resolvedOrderInProcess !== null) {
+            return $this->resolvedOrderInProcess;
+        }
+
         return parent::getOrderByHash($hash);
     }
 
@@ -46,6 +54,24 @@ class TestableHandler extends Handler
         $this->loadedOrderProcessIds[] = $orderId;
 
         return (new ReflectionClass(OrderInProcess::class))->newInstanceWithoutConstructor();
+    }
+
+    public function getOrderInProcessByHash(string $hash): OrderInProcess
+    {
+        if ($this->resolvedOrderInProcess !== null) {
+            return $this->resolvedOrderInProcess;
+        }
+
+        return parent::getOrderInProcessByHash($hash);
+    }
+
+    public function getBasketByHash(string $hash, null | User $User = null): Basket
+    {
+        if ($this->resolvedBasket !== null) {
+            return $this->resolvedBasket;
+        }
+
+        return parent::getBasketByHash($hash, $User);
     }
 
     /**
@@ -73,6 +99,16 @@ class TestableHandler extends Handler
     public function setResolvedOrder(?Order $Order): void
     {
         $this->resolvedOrder = $Order;
+    }
+
+    public function setResolvedOrderInProcess(?OrderInProcess $OrderInProcess): void
+    {
+        $this->resolvedOrderInProcess = $OrderInProcess;
+    }
+
+    public function setResolvedBasket(?Basket $Basket): void
+    {
+        $this->resolvedBasket = $Basket;
     }
 
     /**

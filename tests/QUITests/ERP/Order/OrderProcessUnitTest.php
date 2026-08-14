@@ -6,6 +6,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use QUI;
 use QUI\ERP\Accounting\Payments\Types\Payment;
+use QUI\ERP\Comments;
 use QUI\ERP\Order\AbstractOrder;
 use QUI\ERP\Order\Controls\AbstractOrderingStep;
 use QUI\ERP\Order\Controls\OrderProcess\Checkout;
@@ -16,11 +17,33 @@ use QUI\ERP\Order\OrderProcess;
 use QUI\ERP\Order\Utils\OrderProcessSteps;
 use QUITests\ERP\Order\Fixtures\TestableOrderProcess;
 use QUITests\ERP\Order\Fixtures\TestOrderProcessMessageHandler;
+use QUITests\ERP\Order\Fixtures\RenderableOrderStep;
 use ReflectionClass;
 use ReflectionProperty;
 
 class OrderProcessUnitTest extends TestCase
 {
+    public function testGuestProcessConstructorAndBodyRenderLoginSelection(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $Site = $this->createMock(QUI\Interfaces\Projects\Site::class);
+        $Site->method('getAttribute')->willReturn(false);
+
+        try {
+            $Session->setValue($Users, $Users->getNobody());
+            $Process = new OrderProcess(['Site' => $Site]);
+
+            self::assertFalse($Process->getAttribute('orderHash'));
+            self::assertTrue($Process->getAttribute('basket'));
+            self::assertTrue($Process->getAttribute('basketEditable'));
+            self::assertStringContainsString('quiqqer-order', $Process->getBody());
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
     public function testStepNavigationUsesConfiguredOrderAndSteps(): void
     {
         $Order = $this->createMock(AbstractOrder::class);
@@ -77,6 +100,93 @@ class OrderProcessUnitTest extends TestCase
         self::assertInstanceOf(Finish::class, $Next);
         self::assertSame('successful-uuid', $Process->getAttribute('orderHash'));
         self::assertSame(1, $Process->getCleanupCalls());
+    }
+
+    public function testSuccessfulFinalOrderRendersFinishAndClearsBasket(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $Order = $this->createMock(\QUI\ERP\Order\Order::class);
+        $Order->method('isSuccessful')->willReturn(1);
+        $Order->method('getUUID')->willReturn('rendered-order-uuid');
+        $Order->method('getPayment')->willReturn(null);
+        $Order->method('count')->willReturn(0);
+        $Order->method('getId')->willReturn(42);
+        $Basket = $this->createMock(\QUI\ERP\Order\Basket\Basket::class);
+        $Basket->expects(self::once())->method('clear');
+        $Finish = new RenderableOrderStep('Finish', Finish::class);
+        $Processing = $this->createProcessingStep();
+        $Site = $this->createMock(QUI\Interfaces\Projects\Site::class);
+        $Site->method('getProject')->willReturn(
+            $this->createMock(QUI\Projects\Project::class)
+        );
+        $Process = $this->createProcess($Order, [$Finish], $Processing);
+        $Process->setTestBasket($Basket);
+        $Process->setAttribute('Site', $Site);
+        $Process->setAttribute('step', 'Finish');
+        $Process->setAttribute('backToShopUrl', '/shop');
+
+        try {
+            $Session->setValue($Users, $Users->getSystemUser());
+            $body = $Process->getBody();
+
+            self::assertStringContainsString('renderable-order-step', $body);
+            self::assertStringContainsString('data-order-hash=""', $body);
+            self::assertStringContainsString('name="orderId" value="42"', $body);
+            self::assertSame('rendered-order-uuid', $Process->getAttribute('orderHash'));
+            self::assertNull($Process->getOrder());
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
+    }
+
+    public function testLoggedInProcessRendersCurrentStepAndConsumesFrontendMessages(): void
+    {
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $originalUser = $Session->getValue($Users);
+        $FrontendMessages = new Comments();
+        $FrontendMessages->addComment('Persisted process notice');
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getUUID')->willReturn('active-order-uuid');
+        $Order->method('getPayment')->willReturn(null);
+        $Order->method('isSuccessful')->willReturn(0);
+        $Order->method('getFrontendMessages')->willReturn($FrontendMessages);
+        $Order->expects(self::once())->method('clearFrontendMessages');
+        $Basket = new RenderableOrderStep('Basket', AbstractOrderingStep::class);
+        $CustomerData = new RenderableOrderStep('CustomerData', CustomerData::class);
+        $Checkout = new RenderableOrderStep('Checkout', Checkout::class);
+        $Finish = new RenderableOrderStep('Finish', Finish::class);
+        $Processing = $this->createProcessingStep();
+        $OrderProcessSite = $this->createMock(QUI\Interfaces\Projects\Site::class);
+        $OrderProcessSite->method('getUrlRewritten')->willReturn('/order');
+        $Project = $this->createMock(QUI\Projects\Project::class);
+        $Project->method('getSites')->willReturn([$OrderProcessSite]);
+        $Site = $this->createMock(QUI\Interfaces\Projects\Site::class);
+        $Site->method('getProject')->willReturn($Project);
+        $Process = $this->createProcess(
+            $Order,
+            [$Basket, $CustomerData, $Checkout, $Finish],
+            $Processing
+        );
+        $Process->setAttribute('Site', $Site);
+        $Process->setAttribute('step', 'CustomerData');
+        $Process->setAttribute('orderHash', true);
+        $Process->setAttribute('backToShopUrl', '/shop');
+
+        try {
+            $Session->setValue($Users, $Users->getSystemUser());
+            $body = $Process->getBody();
+
+            self::assertStringContainsString('renderable-order-step">CustomerData', $body);
+            self::assertStringContainsString('Persisted process notice', $body);
+            self::assertStringContainsString('/checkout/Checkout/active-order-uuid', $body);
+            self::assertSame('/order', $Process->getAttribute('data-url'));
+            self::assertSame('CustomerData', $Process->getAttribute('step'));
+        } finally {
+            $Session->setValue($Users, $originalUser);
+        }
     }
 
     public function testProcessingPreviousStepResetsTermsAndReturnsStepBeforeCheckout(): void
@@ -166,6 +276,24 @@ class OrderProcessUnitTest extends TestCase
         } finally {
             $_REQUEST = $request;
         }
+    }
+
+    public function testSuccessfulPaymentMarksOrderSuccessfulOnProcessingStep(): void
+    {
+        $Payment = $this->createMock(Payment::class);
+        $Payment->expects(self::once())
+            ->method('isSuccessful')
+            ->with('payment-order-uuid')
+            ->willReturn(true);
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getUUID')->willReturn('payment-order-uuid');
+        $Order->method('getPayment')->willReturn($Payment);
+        $Order->expects(self::once())->method('setSuccessfulStatus');
+        $Processing = $this->createProcessingStep();
+        $Process = $this->createProcess($Order, [$this->createStep('Basket')], $Processing);
+        $Process->setAttribute('step', 'Processing');
+
+        $Process->invokeCheckSuccessfulStatus();
     }
 
     public function testStepMessagesAreValidatedReturnedOnceAndCleared(): void
@@ -281,6 +409,18 @@ class OrderProcessUnitTest extends TestCase
         $Step->method('getName')->willReturn($name);
         $Step->method('getType')->willReturn($type);
         $Step->setAttribute('priority', $priority);
+
+        return $Step;
+    }
+
+    private function createProcessingStep(): Processing & MockObject
+    {
+        $Step = $this->getMockBuilder(Processing::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getName', 'validate', 'save', 'getType'])
+            ->getMock();
+        $Step->method('getName')->willReturn('Processing');
+        $Step->method('getType')->willReturn(Processing::class);
 
         return $Step;
     }
