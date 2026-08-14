@@ -473,7 +473,7 @@ class OutputProviderOrder implements OutputProviderInterface
                 return false;
             }
 
-            $paymentTypeClassName = $Payment->getPaymentType();
+            $paymentTypeClassName = get_class($Payment->getPaymentType());
 
             $allowedPaymentTypeClasses = [
                 AdvancePayment::class,

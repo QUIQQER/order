@@ -3,13 +3,8 @@
 namespace QUI\ERP\Accounting\Invoice;
 
 if (!class_exists(Handler::class, false)) {
-    class Handler
+    class Handler extends \QUI\Utils\Singleton
     {
-        public static function getInstance(): self
-        {
-            return new self();
-        }
-
         public function getInvoice(int|string $id): Invoice
         {
             return new Invoice();

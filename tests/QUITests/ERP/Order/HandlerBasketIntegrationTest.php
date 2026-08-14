@@ -10,6 +10,7 @@ use QUI\ERP\Order\Basket\Basket;
 use QUI\ERP\Order\EventHandling;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
+use ReflectionProperty;
 use Throwable;
 
 use function getenv;
@@ -18,12 +19,16 @@ use function uniqid;
 class HandlerBasketIntegrationTest extends TestCase
 {
     private ?int $basketId = null;
+    private mixed $originalSessionUser;
 
     protected function setUp(): void
     {
-        if (!defined('SYSTEM_INTERN')) {
-            define('SYSTEM_INTERN', true);
-        }
+        parent::setUp();
+
+        $Users = QUI::getUsers();
+        $Session = new ReflectionProperty($Users, 'Session');
+        $this->originalSessionUser = $Session->getValue($Users);
+        $Session->setValue($Users, $Users->getSystemUser());
 
         if ($this->isCiEnvironment()) {
             self::markTestSkipped('DB integration tests are skipped in CI.');
@@ -40,16 +45,23 @@ class HandlerBasketIntegrationTest extends TestCase
 
     protected function tearDown(): void
     {
-        if ($this->basketId === null) {
-            return;
+        try {
+            if ($this->basketId !== null) {
+                $this->getConnection()->delete(
+                    Handler::getInstance()->tableBasket(),
+                    ['id' => $this->basketId]
+                );
+
+                $this->basketId = null;
+            }
+        } finally {
+            (new ReflectionProperty(QUI::getUsers(), 'Session'))->setValue(
+                QUI::getUsers(),
+                $this->originalSessionUser
+            );
+
+            parent::tearDown();
         }
-
-        $this->getConnection()->delete(
-            Handler::getInstance()->tableBasket(),
-            ['id' => $this->basketId]
-        );
-
-        $this->basketId = null;
     }
 
     public function testBasketCanBeLoadedByIdHashAndDataLookup(): void
