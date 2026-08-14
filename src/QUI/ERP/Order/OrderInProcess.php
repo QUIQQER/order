@@ -193,6 +193,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
                     ]
                 )
             );
+
+            $data['history'] = $this->History->toJSON();
         }
 
 
@@ -769,6 +771,13 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      */
     public function getInvoice(): QUI\ERP\Accounting\Invoice\Invoice | QUI\ERP\Accounting\Invoice\InvoiceTemporary
     {
+        if (!Settings::getInstance()->isInvoiceInstalled()) {
+            throw new QUI\Exception([
+                'quiqqer/order',
+                'exception.invoice.is.not.installed'
+            ]);
+        }
+
         if ($this->orderId) {
             $Order = Handler::getInstance()->get($this->orderId);
             return $Order->getInvoice();
@@ -854,6 +863,8 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
                 $this->triggerApprovalEvent();
             }
         }
+
+        $this->setAttribute('paid_status', $status);
     }
 
     /**

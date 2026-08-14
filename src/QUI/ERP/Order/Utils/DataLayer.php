@@ -60,7 +60,7 @@ class DataLayer
 
         $product = [
             'item_id' => $Product->getField(Fields::FIELD_PRODUCT_NO)->getValue(),
-            'item_name' => $Product->getTitle(),
+            'item_name' => $Product->getTitle($Locale),
             'category' => $Product->getCategory()?->getTitle() ?? '',
             'price' => $Product->getPrice()->getPrice(),
             'currency' => $Product->getPrice()->getCurrency()->getCode(),
@@ -90,7 +90,7 @@ class DataLayer
     ): array {
         try {
             $Product = Products::getProduct($Article->getId());
-            $item = self::parseProduct($Product);
+            $item = self::parseProduct($Product, $Locale);
         } catch (QUI\Exception) {
             // text article
             $item = [

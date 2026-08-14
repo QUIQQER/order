@@ -80,6 +80,18 @@ class EventHandling
             return;
         }
 
+        self::handleRequest($Rewrite, $requestedUrl);
+    }
+
+    /**
+     * Process frontend order routes after the request context was validated.
+     *
+     * @throws Exception
+     * @throws QUI\Exception
+     */
+    private static function handleRequest(QUI\Rewrite $Rewrite, string $requestedUrl): void
+    {
+
         try {
             $Project = $Rewrite->getProject();
 
@@ -421,7 +433,7 @@ class EventHandling
         // add to basket -> only for complete products
         // variant products cant be added directly
         if (
-            $Product instanceof QUI\ERP\Products\Product\Product
+            $Product instanceof QUI\ERP\Products\Product\Types\Product
             || $Product instanceof QUI\ERP\Products\Product\Types\VariantChild
         ) {
             $AddToBasket = new QUI\ERP\Order\Controls\Buttons\ProductToBasket([
@@ -437,7 +449,11 @@ class EventHandling
         }
 
         try {
-            $url = $Product->getUrl();
+            $url = '';
+
+            if (method_exists($Product, 'getUrl')) {
+                $url = $Product->getUrl();
+            }
 
             $Collection->append(
                 '<a href="' . $url . '"><span class="fa fa-chevron-right"></span></a>'

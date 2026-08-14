@@ -26,21 +26,21 @@
                 <span class="text-muted">
                     {locale group="quiqqer/order" var="ordering.step.title.CustomerData.customerNo"}
                 </span>
-                <span>{$User->getId()}</span>
+                <span>{$User->getId()|escape:'html'}</span>
             </div>
 
             <div class="quiqqer-order-customerData-display-eMail">
                 <span class="text-muted">
                     {locale group="quiqqer/order" var="ordering.step.title.CustomerData.eMail"}
                 </span>
-                <span>{$User->getAttribute('email')}</span>
+                <span>{$User->getAttribute('email')|escape:'html'}</span>
             </div>
 
             <div class="quiqqer-order-customerData-display-tel">
                 <span class="text-muted">
                     {locale group="quiqqer/order" var="ordering.step.title.CustomerData.tel"}
                 </span>
-                <span>{if $Address->getPhone()}{$Address->getPhone()}{else}-{/if}</span>
+                <span>{if $Address->getPhone()}{$Address->getPhone()|escape:'html'}{else}-{/if}</span>
             </div>
 
             <div class="quiqqer-order-customerData-display-address">
@@ -55,7 +55,7 @@
             <div class="quiqqer-order-customerData-edit" style="opacity: 0;">
             <input type="hidden"
                    name="addressId"
-                   value="{$Address->getId()}"
+                   value="{$Address->getId()|escape:'html'}"
             />
 
             <div class="quiqqer-order-customerData-requiredFields-message content-message-attention">
@@ -265,7 +265,7 @@
                 <input type="tel"
                        name="tel"
                        autocomplete="tel"
-                       value="{if $Address->getPhone()}{$Address->getPhone()}{/if}"
+                       value="{if $Address->getPhone()}{$Address->getPhone()|escape:'html'}{/if}"
                        {$r}
                 />
             </label>
@@ -282,7 +282,7 @@
                 <input type="tel"
                        name="mobile"
                        autocomplete="mobile"
-                       value="{if $Address->getMobile()}{$Address->getMobile()}{/if}"
+                       value="{if $Address->getMobile()}{$Address->getMobile()|escape:'html'}{/if}"
                        {$r}
                 />
             </label>
@@ -299,7 +299,7 @@
                 <input type="tel"
                        name="fax"
                        autocomplete="fax"
-                       value="{if $Address->getFax()}{$Address->getFax()}{/if}"
+                       value="{if $Address->getFax()}{$Address->getFax()|escape:'html'}{/if}"
                        {$r}
                 />
             </label>
@@ -335,7 +335,7 @@
         <span>
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.customer"}
         </span>
-        <input name="comment-customer" value="{$commentCustomer}" type="text"/>
+        <input name="comment-customer" value="{$commentCustomer|escape:'html'}" type="text"/>
     </label>
     *}
 
@@ -343,7 +343,7 @@
         <span>
             {locale group="quiqqer/order" var="ordering.step.title.CustomerData.Comment.comment"}
         </span>
-        <textarea name="comment-message">{$commentMessage}</textarea>
+        <textarea name="comment-message">{$commentMessage|escape:'html'}</textarea>
     </label>
 </section>
 

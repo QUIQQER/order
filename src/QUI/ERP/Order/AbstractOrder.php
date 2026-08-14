@@ -23,6 +23,7 @@ use QUI\ExceptionStack;
 
 use function array_filter;
 use function array_flip;
+use function array_key_exists;
 use function class_exists;
 use function date;
 use function is_array;
@@ -227,7 +228,7 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
         $needles = Factory::getInstance()->getOrderConstructNeedles();
 
         foreach ($needles as $needle) {
-            if (!isset($data[$needle]) && $data[$needle] !== null) {
+            if (!array_key_exists($needle, $data)) {
                 throw new Exception([
                     'quiqqer/order',
                     'exception.order.construct.needle.missing',
@@ -1602,7 +1603,8 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             Handler::getInstance()->table(),
             [
                 'paid_data' => json_encode($calculation['paidData']),
-                'paid_date' => $calculation['paidDate']
+                'paid_date' => $calculation['paidDate'],
+                'history' => $this->History->toJSON()
             ],
             ['hash' => $this->getUUID()]
         );
