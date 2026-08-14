@@ -128,6 +128,13 @@ class DataLayerUnitTest extends TestCase
 
     public function testOrderCombinesCalculationsCouponAndIndexedItems(): void
     {
+        $originalPackageManager = \QUI::$PackageManager;
+        $PackageManager = $this->createMock(\QUI\Package\Manager::class);
+        $PackageManager->expects(self::once())
+            ->method('isInstalled')
+            ->with('quiqqer/coupons')
+            ->willReturn(true);
+        \QUI::$PackageManager = $PackageManager;
         $productId = 910002;
         self::setProductCache([$productId => $this->createProduct('PRODUCT-2')]);
         $Article = $this->createArticle($productId, 50.0, 2, null);
@@ -152,7 +159,11 @@ class DataLayerUnitTest extends TestCase
         $Order->method('isSuccessful')->willReturn(1);
         $Order->method('getUUID')->willReturn('order-uuid');
 
-        $data = DataLayer::parseOrder($Order);
+        try {
+            $data = DataLayer::parseOrder($Order);
+        } finally {
+            \QUI::$PackageManager = $originalPackageManager;
+        }
 
         self::assertSame('EUR', $data['currency']);
         self::assertSame(119.0, $data['value']);

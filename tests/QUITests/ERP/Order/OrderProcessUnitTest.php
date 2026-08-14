@@ -199,6 +199,11 @@ class OrderProcessUnitTest extends TestCase
         $Session = new ReflectionProperty($Users, 'Session');
         $originalUser = $Session->getValue($Users);
         $Process = new TestableOrderProcess();
+        $Site = $this->createMock(QUI\Interfaces\Projects\Site::class);
+        $Site->method('getUrlRewritten')->willReturn('/checkout');
+        $Project = $this->createMock(QUI\Projects\Project::class);
+        $Project->method('getSites')->willReturn([$Site]);
+        $Process->setAttribute('Project', $Project);
 
         try {
             $Session->setValue($Users, $Users->getNobody());
@@ -208,7 +213,7 @@ class OrderProcessUnitTest extends TestCase
                 $Process->invokeBaseGetBasket()
             );
             self::assertNull($Process->invokeBaseGetOrder());
-            self::assertNotSame('', $Process->invokeBaseGetUrl());
+            self::assertSame('/checkout', $Process->invokeBaseGetUrl());
         } finally {
             $Session->setValue($Users, $originalUser);
         }

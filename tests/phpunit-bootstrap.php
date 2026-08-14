@@ -21,6 +21,8 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 require_once __DIR__ . '/stubs/QUI/ERP/DemoData/DemoDataStubs.php';
 
 $optionalInvoiceStubs = [
+    QUI\ERP\Accounting\Invoice\Utils\Invoice::class
+        => 'QUI/ERP/Accounting/Invoice/Utils/Invoice.php',
     QUI\ERP\Accounting\Invoice\Invoice::class
         => 'QUI/ERP/Accounting/Invoice/Invoice.php',
     QUI\ERP\Accounting\Invoice\InvoiceTemporary::class
@@ -57,3 +59,5 @@ $PackageLoader = new Composer\Autoload\ClassLoader();
 $PackageLoader->addPsr4('QUI\\ERP\\Order\\', dirname(__DIR__) . '/src/QUI/ERP/Order');
 $PackageLoader->addPsr4('QUITests\\ERP\\Order\\', __DIR__ . '/QUITests/ERP/Order');
 $PackageLoader->register(true);
+
+QUITests\ERP\Order\Fixtures\DefaultAreaEnvironment::ensure();
