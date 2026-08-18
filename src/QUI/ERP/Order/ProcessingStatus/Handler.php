@@ -129,6 +129,23 @@ class Handler extends QUI\Utils\Singleton
     }
 
     /**
+     * Get defined "finished" order status.
+     *
+     * @return Status|StatusUnknown
+     * @throws Exception
+     */
+    public function getFinishedStatus(): Status | StatusUnknown
+    {
+        $finishedStatusId = $this->OrderConfig->get('orderStatus', 'finished');
+
+        if (empty($finishedStatusId)) {
+            return new StatusUnknown();
+        }
+
+        return $this->getProcessingStatus($finishedStatusId);
+    }
+
+    /**
      * Delete / Remove a processing status
      *
      * @param int|string $id
