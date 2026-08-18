@@ -16,7 +16,7 @@
     "php81_bc/strftime": "^0.7",
     "ramsey/uuid": "^3|^4",
     "chillerlan/php-qrcode": "^6",
-    "quiqqer/core": "^2.25",
+    "quiqqer/core": "^2.30",
     "quiqqer/currency": "^2.3.2",
     "quiqqer/qui": "^1.12.3",
     "quiqqer/erp": "^4.0.3",
