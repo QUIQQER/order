@@ -35,10 +35,8 @@ try {
         $OrderProcessSite = $Project->firstChild();
     }
 
-    $checkoutUrl = $OrderProcessSite->getUrlRewritten([
-        '_getParams' => [
-            'checkout' => '1'
-        ]
+    $checkoutUrl = $OrderProcessSite->getUrlRewritten([], [
+        'checkout' => '1'
     ]);
 
     $Engine->assign([

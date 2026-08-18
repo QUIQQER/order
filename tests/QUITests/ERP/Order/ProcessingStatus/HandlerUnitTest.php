@@ -38,14 +38,18 @@ class HandlerUnitTest extends TestCase
         self::assertSame([], $this->createHandler($Config)->getList());
     }
 
-    public function testUnknownStatusAndEmptyCancelledStatusUseStatusUnknown(): void
+    public function testUnknownStatusAndEmptySemanticStatusesUseStatusUnknown(): void
     {
         $Config = $this->createMock(Config::class);
-        $Config->method('get')->with('orderStatus', 'cancelled')->willReturn(false);
+        $Config->method('get')->willReturnMap([
+            ['orderStatus', 'cancelled', false],
+            ['orderStatus', 'finished', false]
+        ]);
         $Handler = $this->createHandler($Config);
 
         self::assertInstanceOf(StatusUnknown::class, $Handler->getProcessingStatus(0));
         self::assertInstanceOf(StatusUnknown::class, $Handler->getCancelledStatus());
+        self::assertInstanceOf(StatusUnknown::class, $Handler->getFinishedStatus());
     }
 
     public function testStatusListCreatesUnknownStatusForIdZero(): void
@@ -88,20 +92,25 @@ class HandlerUnitTest extends TestCase
         self::assertTrue(true);
     }
 
-    public function testConfiguredStatusesAndCancelledStatusAreCreated(): void
+    public function testConfiguredStatusesAndSemanticStatusesAreCreated(): void
     {
         $Config = $this->createMock(Config::class);
         $Config->method('getSection')->with('processing_status')->willReturn([
             3 => '#333333',
+            4 => '#444444',
             5 => '#555555'
         ]);
-        $Config->method('get')->with('orderStatus', 'cancelled')->willReturn(5);
+        $Config->method('get')->willReturnMap([
+            ['orderStatus', 'cancelled', 5],
+            ['orderStatus', 'finished', 4]
+        ]);
         $Handler = $this->createHandler($Config);
 
         $this->withSingletonHandler($Handler, static function () use ($Handler): void {
             self::assertInstanceOf(Status::class, $Handler->getProcessingStatus(3));
             self::assertSame(5, $Handler->getCancelledStatus()->getId());
-            self::assertCount(2, $Handler->getProcessingStatusList());
+            self::assertSame(4, $Handler->getFinishedStatus()->getId());
+            self::assertCount(3, $Handler->getProcessingStatusList());
         });
     }
 

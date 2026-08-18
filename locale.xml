@@ -1081,6 +1081,18 @@
                 Defines the order status, which marks an order as "cancelled".
             ]]></en>
         </locale>
+        <locale name="order.settings.order.orderStatus.finished">
+            <de><![CDATA["Erledigt" Bestellstatus]]></de>
+            <en><![CDATA["Finished" order status]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.finished.description">
+            <de><![CDATA[
+                Legt den Bestellstatus fest, bei welchem eine Bestellung als "erledigt" gilt.
+            ]]></de>
+            <en><![CDATA[
+                Defines the order status which marks an order as "finished".
+            ]]></en>
+        </locale>
 
         <locale name="order.settings.autoInvoicePost">
             <de><![CDATA[Rechnung automatisch buchen]]></de>
