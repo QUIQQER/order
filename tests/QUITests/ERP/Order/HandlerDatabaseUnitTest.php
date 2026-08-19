@@ -91,6 +91,7 @@ class HandlerDatabaseUnitTest extends TestCase
         );
         Update::importDatabase(OPT_DIR . 'quiqqer/currency/database.xml');
         Update::importDatabase(OPT_DIR . 'quiqqer/areas/database.xml');
+        Update::importDatabase(OPT_DIR . 'quiqqer/tax/database.xml');
         Update::importDatabase(OPT_DIR . 'quiqqer/payment-transactions/database.xml');
         Update::importDatabase(dirname(__DIR__, 4) . '/database.xml');
 
