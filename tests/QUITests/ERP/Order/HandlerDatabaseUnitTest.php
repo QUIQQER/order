@@ -37,6 +37,7 @@ class HandlerDatabaseUnitTest extends TestCase
 {
     private Connection $originalConnection;
     private Connection $connection;
+    private bool $ownsConnection = false;
     private TestableHandler $Handler;
     private ?PermissionManager $originalPermissionManager;
     private mixed $originalPermissionUser;
@@ -49,16 +50,38 @@ class HandlerDatabaseUnitTest extends TestCase
 
     private mixed $originalSessionCountry;
     private mixed $originalSessionUser;
+    private string $fixturePrefix;
+
+    /** @var array<string, int> */
+    private array $orderIds = [];
+
+    /** @var array<string, int> */
+    private array $orderProcessIds = [];
+
+    /** @var array<string, int> */
+    private array $basketIds = [];
+
+    /** @var list<string> */
+    private array $temporaryTables = [];
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->originalConnection = QUI::getDataBaseConnection();
-        $this->connection = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ]);
+        $this->fixturePrefix = 'pu-' . bin2hex(random_bytes(8));
+
+        if (DatabaseEnvironment::usesCiDatabase()) {
+            $this->connection = $this->originalConnection;
+        } else {
+            $this->connection = DriverManager::getConnection([
+                'driver' => 'pdo_sqlite',
+                'memory' => true
+            ]);
+            $this->ownsConnection = true;
+            $this->setConnection($this->connection);
+        }
+
         $this->Handler = new TestableHandler();
         $this->originalPermissionManager = QUI::$Rights;
         $this->originalPermissionUser = (new ReflectionProperty(Permission::class, 'User'))->getValue();
@@ -70,7 +93,6 @@ class HandlerDatabaseUnitTest extends TestCase
         $this->originalSessionUser = $Session->getValue($Users);
         $Session->setValue($Users, $Users->getSystemUser());
 
-        $this->setConnection($this->connection);
         QUI::$Rights = null;
         Permission::setUser(QUI::getUsers()->getSystemUser());
         $this->setCurrencyState([
@@ -85,74 +107,93 @@ class HandlerDatabaseUnitTest extends TestCase
         QUI::getSession()->set('country', 'DE');
 
         PermissionManager::setup();
-        Update::importPermissions(
-            OPT_DIR . 'quiqqer/currency/permissions.xml',
-            'quiqqer/currency'
-        );
-        Update::importDatabase(OPT_DIR . 'quiqqer/currency/database.xml');
-        Update::importDatabase(OPT_DIR . 'quiqqer/areas/database.xml');
-        Update::importDatabase(OPT_DIR . 'quiqqer/tax/database.xml');
-        Update::importDatabase(OPT_DIR . 'quiqqer/payment-transactions/database.xml');
-        Update::importDatabase(dirname(__DIR__, 4) . '/database.xml');
+        if ($this->ownsConnection) {
+            Update::importPermissions(
+                OPT_DIR . 'quiqqer/currency/permissions.xml',
+                'quiqqer/currency'
+            );
+            Update::importDatabase(OPT_DIR . 'quiqqer/currency/database.xml');
+            Update::importDatabase(OPT_DIR . 'quiqqer/areas/database.xml');
+            Update::importDatabase(OPT_DIR . 'quiqqer/tax/database.xml');
+            Update::importDatabase(OPT_DIR . 'quiqqer/payment-transactions/database.xml');
+            Update::importDatabase(dirname(__DIR__, 4) . '/database.xml');
 
-        if (QUI::getPackageManager()->isInstalled('quiqqer/salesorders')) {
-            Update::importDatabase(OPT_DIR . 'quiqqer/salesorders/database.xml');
+            if (QUI::getPackageManager()->isInstalled('quiqqer/salesorders')) {
+                Update::importDatabase(OPT_DIR . 'quiqqer/salesorders/database.xml');
+            }
+
+            $this->connection->insert(CurrencyHandler::table(), [
+                'currency' => 'EUR',
+                'rate' => 1,
+                'autoupdate' => 0,
+                'precision' => 2,
+                'type' => CurrencyHandler::CURRENCY_TYPE_DEFAULT,
+                'customData' => null
+            ]);
+            $this->connection->insert(QUI::getDBTableName('areas'), [
+                'id' => 1,
+                'countries' => 'DE',
+                'data' => '{}'
+            ]);
+            $this->createCountriesFixture();
         }
-
-        $this->connection->insert(CurrencyHandler::table(), [
-            'currency' => 'EUR',
-            'rate' => 1,
-            'autoupdate' => 0,
-            'precision' => 2,
-            'type' => CurrencyHandler::CURRENCY_TYPE_DEFAULT,
-            'customData' => null
-        ]);
-        $this->connection->insert(QUI::getDBTableName('areas'), [
-            'id' => 1,
-            'countries' => 'DE',
-            'data' => '{}'
-        ]);
-        $this->createCountriesFixture();
 
         $this->insertFixtures();
     }
 
     protected function tearDown(): void
     {
-        $this->setConnection($this->originalConnection);
-        QUI::$Rights = $this->originalPermissionManager;
-        (new ReflectionProperty(Permission::class, 'User'))->setValue(
-            null,
-            $this->originalPermissionUser
-        );
-        $this->setCurrencyState($this->originalCurrencyState);
-        $this->setCountriesState($this->originalCountriesState);
+        try {
+            if (!$this->ownsConnection) {
+                $this->removeCiFixtures();
+            }
+        } finally {
+            $this->setConnection($this->originalConnection);
+            QUI::$Rights = $this->originalPermissionManager;
+            (new ReflectionProperty(Permission::class, 'User'))->setValue(
+                null,
+                $this->originalPermissionUser
+            );
+            $this->setCurrencyState($this->originalCurrencyState);
+            $this->setCountriesState($this->originalCountriesState);
 
-        if ($this->originalSessionCountry === false) {
-            QUI::getSession()->del('country');
-        } else {
-            QUI::getSession()->set('country', $this->originalSessionCountry);
+            if ($this->originalSessionCountry === false) {
+                QUI::getSession()->del('country');
+            } else {
+                QUI::getSession()->set('country', $this->originalSessionCountry);
+            }
+
+            (new ReflectionProperty(QUI::getUsers(), 'Session'))->setValue(
+                QUI::getUsers(),
+                $this->originalSessionUser
+            );
+
+            if ($this->ownsConnection) {
+                $this->connection->close();
+            }
+
+            parent::tearDown();
         }
-
-        (new ReflectionProperty(QUI::getUsers(), 'Session'))->setValue(
-            QUI::getUsers(),
-            $this->originalSessionUser
-        );
-
-        $this->connection->close();
-
-        parent::tearDown();
     }
 
     public function testHashLookupPrioritizesOrderAndFallsBackToOrderProcess(): void
     {
-        self::assertInstanceOf(Order::class, $this->Handler->getOrderByHash('order-a'));
-        self::assertSame(['1'], $this->normalizeIds($this->Handler->getLoadedOrderIds()));
+        self::assertInstanceOf(Order::class, $this->Handler->getOrderByHash($this->fixture('order-a')));
+        self::assertSame(
+            [(string)$this->orderId('order-a')],
+            $this->normalizeIds($this->Handler->getLoadedOrderIds())
+        );
 
         $this->Handler->clearLoadedIds();
 
-        self::assertInstanceOf(OrderInProcess::class, $this->Handler->getOrderByHash('process-new'));
-        self::assertSame(['11'], $this->normalizeIds($this->Handler->getLoadedOrderProcessIds()));
+        self::assertInstanceOf(
+            OrderInProcess::class,
+            $this->Handler->getOrderByHash($this->fixture('process-new'))
+        );
+        self::assertSame(
+            [(string)$this->orderProcessId('process-new')],
+            $this->normalizeIds($this->Handler->getLoadedOrderProcessIds())
+        );
 
         try {
             $this->Handler->getOrderByHash('missing');
@@ -164,12 +205,21 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testGlobalProcessAndIdLookupsUseAllowedDatabaseFields(): void
     {
-        self::assertInstanceOf(Order::class, $this->Handler->getOrderByGlobalProcessId('global-a'));
-        self::assertSame(['1'], $this->normalizeIds($this->Handler->getLoadedOrderIds()));
+        self::assertInstanceOf(
+            Order::class,
+            $this->Handler->getOrderByGlobalProcessId($this->fixture('global-a'))
+        );
+        self::assertSame(
+            [(string)$this->orderId('order-a')],
+            $this->normalizeIds($this->Handler->getLoadedOrderIds())
+        );
 
         $this->Handler->clearLoadedIds();
-        self::assertCount(2, $this->Handler->getOrdersByGlobalProcessId('global-a'));
-        self::assertSame(['1', '2'], $this->normalizeIds($this->Handler->getLoadedOrderIds()));
+        self::assertCount(2, $this->Handler->getOrdersByGlobalProcessId($this->fixture('global-a')));
+        self::assertSame(
+            [(string)$this->orderId('order-a'), (string)$this->orderId('order-b')],
+            $this->normalizeIds($this->Handler->getLoadedOrderIds())
+        );
         self::assertSame([], $this->Handler->getOrdersByGlobalProcessId('missing'));
 
         try {
@@ -180,14 +230,23 @@ class HandlerDatabaseUnitTest extends TestCase
         }
 
         $this->Handler->clearLoadedIds();
-        self::assertInstanceOf(Order::class, $this->Handler->getOrderById('order-a'));
-        self::assertInstanceOf(Order::class, $this->Handler->getOrderById(2));
-        self::assertInstanceOf(OrderInProcess::class, $this->Handler->getOrderById(11));
-        self::assertSame(['1', '2'], $this->normalizeIds($this->Handler->getLoadedOrderIds()));
-        self::assertSame(['11'], $this->normalizeIds($this->Handler->getLoadedOrderProcessIds()));
+        self::assertInstanceOf(Order::class, $this->Handler->getOrderById($this->fixture('order-a')));
+        self::assertInstanceOf(Order::class, $this->Handler->getOrderById($this->orderId('order-b')));
+        self::assertInstanceOf(
+            OrderInProcess::class,
+            $this->Handler->getOrderById($this->orderProcessId('process-new'))
+        );
+        self::assertSame(
+            [(string)$this->orderId('order-a'), (string)$this->orderId('order-b')],
+            $this->normalizeIds($this->Handler->getLoadedOrderIds())
+        );
+        self::assertSame(
+            [(string)$this->orderProcessId('process-new')],
+            $this->normalizeIds($this->Handler->getLoadedOrderProcessIds())
+        );
 
         try {
-            $this->Handler->getOrderById(999);
+            $this->Handler->getOrderById(-1);
             self::fail('A missing order ID must throw an exception.');
         } catch (Exception $Exception) {
             self::assertSame(Handler::ERROR_ORDER_NOT_FOUND, $Exception->getCode());
@@ -196,10 +255,16 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testOrderDataSupportsHashAndIdAndCountsCustomerOrders(): void
     {
-        self::assertSame('order-a', $this->Handler->getOrderData('order-a')['hash']);
-        self::assertSame('order-b', $this->Handler->getOrderData(2)['hash']);
+        self::assertSame(
+            $this->fixture('order-a'),
+            $this->Handler->getOrderData($this->fixture('order-a'))['hash']
+        );
+        self::assertSame(
+            $this->fixture('order-b'),
+            $this->Handler->getOrderData($this->orderId('order-b'))['hash']
+        );
 
-        $User = $this->createUser('user-a');
+        $User = $this->createUser($this->fixture('user-a'));
         self::assertSame(2, $this->Handler->countOrdersByUser($User));
 
         try {
@@ -210,46 +275,47 @@ class HandlerDatabaseUnitTest extends TestCase
         }
     }
 
-    public function testFinalOrderCreatesViewAfterCompleteSqliteHydration(): void
+    public function testFinalOrderCreatesViewAfterCompleteDatabaseHydration(): void
     {
-        $Order = new Order('order-a');
+        $Order = new Order($this->fixture('order-a'));
         $View = $Order->getView();
 
         self::assertInstanceOf(OrderView::class, $View);
-        self::assertSame(1, $View->getId());
-        self::assertSame('order-a', $View->getUUID());
+        self::assertSame($this->orderId('order-a'), $View->getId());
+        self::assertSame($this->fixture('order-a'), $View->getUUID());
     }
 
-    public function testOutputProviderResolvesSqliteOrderMetadata(): void
+    public function testOutputProviderResolvesDatabaseOrderMetadata(): void
     {
-        $Order = OutputProviderOrder::getEntity('order-a');
+        $orderHash = $this->fixture('order-a');
+        $Order = OutputProviderOrder::getEntity($orderHash);
 
         self::assertInstanceOf(Order::class, $Order);
-        self::assertSame($Order->getPrefixedNumber(), OutputProviderOrder::getDownloadFileName('order-a'));
+        self::assertSame($Order->getPrefixedNumber(), OutputProviderOrder::getDownloadFileName($orderHash));
         self::assertSame(
             $Order->getCustomer()->getLocale()->getCurrent(),
-            OutputProviderOrder::getLocale('order-a')->getCurrent()
+            OutputProviderOrder::getLocale($orderHash)->getCurrent()
         );
         self::assertContains(
-            OutputProviderOrder::getEmailAddress('order-a'),
+            OutputProviderOrder::getEmailAddress($orderHash),
             [false, '', null],
             true
         );
-        self::assertIsString(OutputProviderOrder::getMailSubject('order-a'));
-        self::assertIsString(OutputProviderOrder::getMailBody('order-a'));
-        $templateData = OutputProviderOrder::getTemplateData('order-a');
+        self::assertIsString(OutputProviderOrder::getMailSubject($orderHash));
+        self::assertIsString(OutputProviderOrder::getMailBody($orderHash));
+        $templateData = OutputProviderOrder::getTemplateData($orderHash);
         self::assertArrayHasKey('ArticleList', $templateData);
         self::assertArrayHasKey('Address', $templateData);
         self::assertArrayHasKey('DeliveryAddress', $templateData);
         self::assertArrayHasKey('transaction', $templateData);
     }
 
-    public function testAbstractOrderSerializesCompleteSqliteState(): void
+    public function testAbstractOrderSerializesCompleteDatabaseState(): void
     {
-        $Order = new Order('order-a');
+        $Order = new Order($this->fixture('order-a'));
         $data = $Order->toArray();
 
-        self::assertSame('order-a', $data['uuid']);
+        self::assertSame($this->fixture('order-a'), $data['uuid']);
         self::assertSame($Order->getPrefixedNumber(), $data['prefixedNumber']);
         self::assertArrayHasKey('articles', $data);
         self::assertArrayHasKey('paidStatus', $data);
@@ -260,14 +326,14 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testFinalOrderPersistsPaymentStatusAndFrontendMessages(): void
     {
-        $Order = new Order('order-a');
+        $Order = new Order($this->fixture('order-a'));
 
         $Order->setPaymentStatus(QUI\ERP\Constants::PAYMENT_STATUS_PART);
         $Order->addFrontendMessage('Visible final order message');
 
         $storedOrder = $this->connection->fetchAssociative(
             'SELECT paid_status, frontendMessages FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-            ['order-a']
+            [$this->fixture('order-a')]
         );
         self::assertIsArray($storedOrder);
         self::assertSame(QUI\ERP\Constants::PAYMENT_STATUS_PART, (int)$storedOrder['paid_status']);
@@ -284,14 +350,14 @@ class HandlerDatabaseUnitTest extends TestCase
             $Order->getFrontendMessages()->toJSON(),
             $this->connection->fetchOne(
                 'SELECT frontendMessages FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-                ['order-a']
+                [$this->fixture('order-a')]
             )
         );
     }
 
     public function testFinalOrderPersistsProcessingStatusHistoryAndCustomData(): void
     {
-        $Order = new Order('order-a');
+        $Order = new Order($this->fixture('order-a'));
         $Status = $this->createMock(QUI\ERP\Order\ProcessingStatus\Status::class);
         $Status->method('getId')->willReturn(888888);
 
@@ -301,7 +367,7 @@ class HandlerDatabaseUnitTest extends TestCase
 
         $storedOrder = $this->connection->fetchAssociative(
             'SELECT status, history, custom_data FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-            ['order-a']
+            [$this->fixture('order-a')]
         );
         self::assertIsArray($storedOrder);
         self::assertSame(888888, (int)$storedOrder['status']);
@@ -315,12 +381,12 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testFinalOrderSuccessfulLifecyclePersistsOnceAndKeepsOptionalFileApiStable(): void
     {
-        $Order = new Order('order-c');
+        $Order = new Order($this->fixture('order-c'));
 
         $Order->setSuccessfulStatus();
         $historyAfterFirstUpdate = (string)$this->connection->fetchOne(
             'SELECT history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-            ['order-c']
+            [$this->fixture('order-c')]
         );
         $Order->setSuccessfulStatus();
 
@@ -329,14 +395,14 @@ class HandlerDatabaseUnitTest extends TestCase
             1,
             (int)$this->connection->fetchOne(
                 'SELECT successful FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-                ['order-c']
+                [$this->fixture('order-c')]
             )
         );
         self::assertSame(
             $historyAfterFirstUpdate,
             $this->connection->fetchOne(
                 'SELECT history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-                ['order-c']
+                [$this->fixture('order-c')]
             )
         );
 
@@ -346,18 +412,19 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testFinalOrderLinksExternalTransactionAndPersistsCalculatedPaymentData(): void
     {
-        $Order = new Order('order-b');
+        $orderHash = $this->fixture('order-b');
+        $Order = new Order($orderHash);
         $Transaction = $this->createMock(Transaction::class);
         $Transaction->method('getTxId')->willReturn('external-transaction-1');
-        $Transaction->method('isHashLinked')->with('order-b')->willReturn(false);
-        $Transaction->expects(self::once())->method('addLinkedHash')->with('order-b');
+        $Transaction->method('isHashLinked')->with($orderHash)->willReturn(false);
+        $Transaction->expects(self::once())->method('addLinkedHash')->with($orderHash);
         $Transaction->method('getAmountFormatted')->willReturn('10.00 EUR');
 
         $Order->linkTransaction($Transaction);
 
         $stored = $this->connection->fetchAssociative(
             'SELECT paid_data, paid_date, history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-            ['order-b']
+            [$orderHash]
         );
         self::assertIsArray($stored);
         self::assertJson((string)$stored['paid_data']);
@@ -373,7 +440,8 @@ class HandlerDatabaseUnitTest extends TestCase
 
         $SingletonInstances = new ReflectionProperty(Singleton::class, 'instances');
         $originalInstances = $SingletonInstances->getValue();
-        $temporaryInvoiceTable = 'phpunit_temporary_invoice';
+        $temporaryInvoiceTable = $this->temporaryTableName('invoice');
+        $this->temporaryTables[] = $temporaryInvoiceTable;
         $Table = new Table($temporaryInvoiceTable);
         $Table->addColumn('hash', 'string', ['length' => 64]);
         $Table->addColumn('shipping_id', 'string', ['notnull' => false]);
@@ -447,7 +515,7 @@ class HandlerDatabaseUnitTest extends TestCase
         $instances[CustomerUtils::class] = $CustomerUtils;
         $SingletonInstances->setValue(null, $instances);
         $Order = $this->getMockBuilder(Order::class)
-            ->setConstructorArgs(['order-a'])
+            ->setConstructorArgs([$this->fixture('order-a')])
             ->onlyMethods([
                 'isPosted',
                 'refresh',
@@ -481,14 +549,14 @@ class HandlerDatabaseUnitTest extends TestCase
                 'temporary-invoice-uuid',
                 $this->connection->fetchOne(
                     'SELECT temporary_invoice_id FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-                    ['order-a']
+                    [$this->fixture('order-a')]
                 )
             );
             self::assertSame(
                 'posted-invoice-uuid',
                 $this->connection->fetchOne(
                     'SELECT invoice_id FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-                    ['order-a']
+                    [$this->fixture('order-a')]
                 )
             );
             self::assertSame(
@@ -525,7 +593,7 @@ class HandlerDatabaseUnitTest extends TestCase
         $instances[CustomerUtils::class] = $CustomerUtils;
         $SingletonInstances->setValue(null, $instances);
         $Order = $this->getMockBuilder(Order::class)
-            ->setConstructorArgs(['order-a'])
+            ->setConstructorArgs([$this->fixture('order-a')])
             ->onlyMethods([
                 'getPayment',
                 'getCustomer',
@@ -640,28 +708,44 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testOrderProcessQueriesListCountAndSelectLatestOpenEntry(): void
     {
-        $User = $this->createUser('user-a');
+        $User = $this->createUser($this->fixture('user-a'));
 
         self::assertInstanceOf(
             OrderInProcess::class,
-            $this->Handler->getOrderInProcessByHash('process-new')
+            $this->Handler->getOrderInProcessByHash($this->fixture('process-new'))
         );
-        self::assertSame(['11'], $this->normalizeIds($this->Handler->getLoadedOrderProcessIds()));
+        self::assertSame(
+            [(string)$this->orderProcessId('process-new')],
+            $this->normalizeIds($this->Handler->getLoadedOrderProcessIds())
+        );
 
         $this->Handler->clearLoadedIds();
         self::assertCount(3, $this->Handler->getOrdersInProcessFromUser($User));
         self::assertSame(
-            ['process-old', 'process-new', 'process-successful'],
+            [
+                $this->fixture('process-old'),
+                $this->fixture('process-new'),
+                $this->fixture('process-successful')
+            ],
             $this->normalizeIds($this->Handler->getLoadedOrderProcessIds())
         );
         self::assertSame(3, $this->Handler->countOrdersInProcessFromUser($User));
 
         $this->Handler->clearLoadedIds();
         self::assertInstanceOf(OrderInProcess::class, $this->Handler->getLastOrderInProcessFromUser($User));
-        self::assertSame(['process-new'], $this->normalizeIds($this->Handler->getLoadedOrderProcessIds()));
+        self::assertSame(
+            [$this->fixture('process-new')],
+            $this->normalizeIds($this->Handler->getLoadedOrderProcessIds())
+        );
 
-        self::assertSame('process-new', $this->Handler->getOrderProcessData(11)['hash']);
-        self::assertSame('process-old', $this->Handler->getOrderProcessData('process-old')['hash']);
+        self::assertSame(
+            $this->fixture('process-new'),
+            $this->Handler->getOrderProcessData($this->orderProcessId('process-new'))['hash']
+        );
+        self::assertSame(
+            $this->fixture('process-old'),
+            $this->Handler->getOrderProcessData($this->fixture('process-old'))['hash']
+        );
 
         try {
             $this->Handler->getOrderInProcessByHash('missing');
@@ -678,19 +762,19 @@ class HandlerDatabaseUnitTest extends TestCase
         }
     }
 
-    public function testOrderInProcessCreatesViewAfterCompleteSqliteHydration(): void
+    public function testOrderInProcessCreatesViewAfterCompleteDatabaseHydration(): void
     {
-        $OrderInProcess = new OrderInProcess('process-new');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-new'));
         $View = $OrderInProcess->getView();
 
         self::assertInstanceOf(OrderView::class, $View);
-        self::assertSame(11, $View->getId());
-        self::assertSame('process-new', $View->getUUID());
+        self::assertSame($this->orderProcessId('process-new'), $View->getId());
+        self::assertSame($this->fixture('process-new'), $View->getUUID());
     }
 
     public function testOrderInProcessPaymentStatusUpdatesDatabaseAndLoadedObject(): void
     {
-        $OrderInProcess = new OrderInProcess('process-new');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-new'));
 
         self::assertSame(0, $OrderInProcess->getAttribute('paid_status'));
 
@@ -704,20 +788,20 @@ class HandlerDatabaseUnitTest extends TestCase
             QUI\ERP\Constants::PAYMENT_STATUS_PART,
             (int)$this->connection->fetchOne(
                 'SELECT paid_status FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-                ['process-new']
+                [$this->fixture('process-new')]
             )
         );
     }
 
     public function testOrderInProcessPersistsFrontendMessages(): void
     {
-        $OrderInProcess = new OrderInProcess('process-new');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-new'));
 
         $OrderInProcess->addFrontendMessage('Visible process message');
 
         $storedMessages = (string)$this->connection->fetchOne(
             'SELECT frontendMessages FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-            ['process-new']
+            [$this->fixture('process-new')]
         );
         self::assertStringContainsString('Visible process message', $storedMessages);
         self::assertSame(
@@ -732,14 +816,14 @@ class HandlerDatabaseUnitTest extends TestCase
             $OrderInProcess->getFrontendMessages()->toJSON(),
             $this->connection->fetchOne(
                 'SELECT frontendMessages FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-                ['process-new']
+                [$this->fixture('process-new')]
             )
         );
     }
 
     public function testOrderInProcessRebuildsArticlesFromBasketPriceFactors(): void
     {
-        $OrderInProcess = new OrderInProcess('process-price');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-price'));
 
         self::assertSame(0, $OrderInProcess->count());
 
@@ -748,13 +832,13 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertSame(0, $OrderInProcess->count());
         self::assertJson((string)$this->connection->fetchOne(
             'SELECT articles FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-            ['process-price']
+            [$this->fixture('process-price')]
         ));
     }
 
     public function testOrderInProcessCalculatesPlannedPaymentWithoutCreatingOrder(): void
     {
-        $OrderInProcess = new OrderInProcess('process-price');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-price'));
         $OrderInProcess->setPaymentStatus(QUI\ERP\Constants::PAYMENT_STATUS_PLAN);
 
         $OrderInProcess->calculatePayments();
@@ -763,7 +847,7 @@ class HandlerDatabaseUnitTest extends TestCase
             'SELECT paid_status, paid_data, paid_date, order_id FROM '
             . $this->Handler->tableOrderProcess()
             . ' WHERE hash = ?',
-            ['process-price']
+            [$this->fixture('process-price')]
         );
 
         self::assertIsArray($storedPayment);
@@ -793,23 +877,23 @@ class HandlerDatabaseUnitTest extends TestCase
             self::assertFalse($Settings->createInvoiceOnOrder());
             self::assertFalse($Settings->createInvoiceByPayment());
 
-            $OrderInProcess = new OrderInProcess('process-price');
+            $OrderInProcess = new OrderInProcess($this->fixture('process-price'));
             $Order = $OrderInProcess->createOrder(QUI::getUsers()->getSystemUser());
 
             self::assertInstanceOf(Order::class, $Order);
-            self::assertSame('process-price', $Order->getUUID());
+            self::assertSame($this->fixture('process-price'), $Order->getUUID());
             self::assertFalse($Order->hasInvoice());
             self::assertFalse(
                 $this->connection->fetchOne(
                     'SELECT 1 FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-                    ['process-price']
+                    [$this->fixture('process-price')]
                 )
             );
             self::assertSame(
-                'process-price',
+                $this->fixture('process-price'),
                 $this->connection->fetchOne(
                     'SELECT hash FROM ' . $this->Handler->table() . ' WHERE hash = ?',
-                    ['process-price']
+                    [$this->fixture('process-price')]
                 )
             );
         } finally {
@@ -821,35 +905,35 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testOrderInProcessDropsMissingFinalOrderReference(): void
     {
-        $OrderInProcess = new OrderInProcess('process-orphaned');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-orphaned'));
 
         self::assertNull($OrderInProcess->getOrderId());
-        self::assertSame('process-orphaned', $OrderInProcess->getPrefixedId());
+        self::assertSame($this->fixture('process-orphaned'), $OrderInProcess->getPrefixedId());
     }
 
     public function testLinkedOrderInProcessRefreshesFinalOrderAndHandlesItsRemoval(): void
     {
-        $OrderInProcess = new OrderInProcess('process-linked');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-linked'));
 
-        self::assertSame('order-a', $OrderInProcess->getOrderId());
+        self::assertSame($this->fixture('order-a'), $OrderInProcess->getOrderId());
         $OrderInProcess->refresh();
 
-        $this->connection->delete($this->Handler->table(), ['hash' => 'order-a']);
+        $this->connection->delete($this->Handler->table(), ['hash' => $this->fixture('order-a')]);
 
-        self::assertSame('process-linked', $OrderInProcess->getPrefixedId());
+        self::assertSame($this->fixture('process-linked'), $OrderInProcess->getPrefixedId());
         self::assertFalse($OrderInProcess->isPosted());
         self::assertFalse($OrderInProcess->hasInvoice());
 
         $OrderInProcess->refresh();
-        self::assertSame('process-linked', $OrderInProcess->getUUID());
+        self::assertSame($this->fixture('process-linked'), $OrderInProcess->getUUID());
     }
 
     public function testSuccessfulLinkedOrderInProcessSkipsRefresh(): void
     {
-        $OrderInProcess = new OrderInProcess('process-linked-successful');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-linked-successful'));
 
         $this->connection->delete($this->Handler->tableOrderProcess(), [
-            'hash' => 'process-linked-successful'
+            'hash' => $this->fixture('process-linked-successful')
         ]);
 
         $OrderInProcess->refresh();
@@ -859,7 +943,7 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testOrderInProcessPersistsProcessingStatusChange(): void
     {
-        $OrderInProcess = new OrderInProcess('process-new');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-new'));
         $Status = $this->createMock(QUI\ERP\Order\ProcessingStatus\Status::class);
         $Status->method('getId')->willReturn(999999);
 
@@ -870,21 +954,21 @@ class HandlerDatabaseUnitTest extends TestCase
             999999,
             (int)$this->connection->fetchOne(
                 'SELECT status FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-                ['process-new']
+                [$this->fixture('process-new')]
             )
         );
         self::assertStringContainsString(
             '999999',
             (string)$this->connection->fetchOne(
                 'SELECT history FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
-                ['process-new']
+                [$this->fixture('process-new')]
             )
         );
     }
 
     public function testOrderProcessResolvesPersistedOrderAndBasketThroughBaseFlow(): void
     {
-        $OrderInProcess = new OrderInProcess('process-price');
+        $OrderInProcess = new OrderInProcess($this->fixture('process-price'));
         $Process = new TestableOrderProcess();
         $Process->setTestOrder($OrderInProcess);
         $Process->setAttribute('step', 'CustomerData');
@@ -902,7 +986,7 @@ class HandlerDatabaseUnitTest extends TestCase
         );
 
         $ProcessByBasketId = new TestableOrderProcess();
-        $ProcessByBasketId->setAttribute('basketId', 30);
+        $ProcessByBasketId->setAttribute('basketId', $this->basketId('process-price'));
         self::assertInstanceOf(
             QUI\ERP\Order\Basket\Basket::class,
             $ProcessByBasketId->invokeBaseGetBasket()
@@ -912,7 +996,7 @@ class HandlerDatabaseUnitTest extends TestCase
     public function testMissingLatestOrderProcessUsesDocumentedErrorCode(): void
     {
         try {
-            $this->Handler->getLastOrderInProcessFromUser($this->createUser('missing-user'));
+            $this->Handler->getLastOrderInProcessFromUser($this->createUser($this->fixture('missing-user')));
             self::fail('A user without open orders must trigger the documented exception.');
         } catch (Exception $Exception) {
             self::assertSame(Handler::ERROR_NO_ORDERS_FOUND, $Exception->getCode());
@@ -923,19 +1007,22 @@ class HandlerDatabaseUnitTest extends TestCase
     {
         $SessionUser = QUI::getUserBySession();
         $this->connection->insert($this->Handler->tableBasket(), [
-            'id' => 20,
             'uid' => $SessionUser->getUUID(),
-            'hash' => 'basket-a',
+            'hash' => $this->fixture('basket-a'),
             'products' => '[]'
         ]);
+        $this->basketIds['basket-a'] = $this->fetchIdByHash(
+            $this->Handler->tableBasket(),
+            $this->fixture('basket-a')
+        );
 
-        $data = $this->Handler->getBasketData(20, $SessionUser);
+        $data = $this->Handler->getBasketData($this->basketId('basket-a'), $SessionUser);
 
-        self::assertSame('basket-a', $data['hash']);
+        self::assertSame($this->fixture('basket-a'), $data['hash']);
         self::assertSame((string)$SessionUser->getUUID(), $data['uid']);
 
         try {
-            $this->Handler->getBasketData('20 OR 1=1', $SessionUser);
+            $this->Handler->getBasketData($this->basketId('basket-a') . ' OR 1=1', $SessionUser);
             self::fail('A manipulated basket ID must not match a row.');
         } catch (ExceptionBasketNotFound) {
             self::assertTrue(true);
@@ -944,7 +1031,7 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testOrdersByUserApplySupportedOrderingAndPagination(): void
     {
-        $User = $this->createUser('user-a');
+        $User = $this->createUser($this->fixture('user-a'));
 
         $orders = $this->Handler->getOrdersByUser($User, [
             'order' => 'c_date DESC',
@@ -952,7 +1039,7 @@ class HandlerDatabaseUnitTest extends TestCase
         ]);
 
         self::assertCount(1, $orders);
-        self::assertSame('order-b', $orders[0]->getUUID());
+        self::assertSame($this->fixture('order-b'), $orders[0]->getUUID());
 
         $orders = $this->Handler->getOrdersByUser($User, [
             'order' => 'id',
@@ -960,24 +1047,26 @@ class HandlerDatabaseUnitTest extends TestCase
         ]);
 
         self::assertCount(1, $orders);
-        self::assertSame('order-a', $orders[0]->getUUID());
+        self::assertSame($this->fixture('order-a'), $orders[0]->getUUID());
 
         self::assertCount(2, $this->Handler->getOrdersByUser($User, [
             'order' => 'unsupported SQL fragment'
         ]));
     }
 
-    public function testBasketLookupVariantsHydrateTheSqliteFixture(): void
+    public function testBasketLookupVariantsHydrateTheDatabaseFixture(): void
     {
         $SessionUser = QUI::getUserBySession();
+        $basketId = $this->basketId('process-price');
+        $basketHash = $this->fixture('process-price');
 
-        self::assertSame(30, $this->Handler->getBasket(30, $SessionUser)->getId());
-        self::assertSame(30, $this->Handler->getBasket('30')->getId());
-        self::assertSame(30, $this->Handler->getBasket('process-price')->getId());
-        self::assertSame(30, $this->Handler->getBasketById(30)->getId());
-        self::assertSame(30, $this->Handler->getBasketByHash('process-price')->getId());
-        self::assertSame(30, $this->Handler->getBasketFromUser($SessionUser)->getId());
-        self::assertSame('process-price', $this->Handler->getBasketData('30')['hash']);
+        self::assertSame($basketId, $this->Handler->getBasket($basketId, $SessionUser)->getId());
+        self::assertSame($basketId, $this->Handler->getBasket((string)$basketId)->getId());
+        self::assertSame($basketId, $this->Handler->getBasket($basketHash)->getId());
+        self::assertSame($basketId, $this->Handler->getBasketById($basketId)->getId());
+        self::assertSame($basketId, $this->Handler->getBasketByHash($basketHash)->getId());
+        self::assertSame($basketId, $this->Handler->getBasketFromUser($SessionUser)->getId());
+        self::assertSame($basketHash, $this->Handler->getBasketData((string)$basketId)['hash']);
     }
 
     public function testMissingBasketLookupVariantsUseTheBasketException(): void
@@ -986,10 +1075,10 @@ class HandlerDatabaseUnitTest extends TestCase
 
         foreach (
             [
-                fn() => $this->Handler->getBasketById(999, $SessionUser),
-                fn() => $this->Handler->getBasketByHash('missing', $SessionUser),
-                fn() => $this->Handler->getBasketFromUser($this->createUser('missing-user')),
-                fn() => $this->Handler->getBasketData(999, $SessionUser),
+                fn() => $this->Handler->getBasketById(-1, $SessionUser),
+                fn() => $this->Handler->getBasketByHash($this->fixture('missing'), $SessionUser),
+                fn() => $this->Handler->getBasketFromUser($this->createUser($this->fixture('missing-user'))),
+                fn() => $this->Handler->getBasketData(-1, $SessionUser),
                 fn() => $this->Handler->getBasketData('', $SessionUser)
             ] as $lookup
         ) {
@@ -1004,7 +1093,8 @@ class HandlerDatabaseUnitTest extends TestCase
 
     public function testIdentifierAndCreatorMigrationsUsePortableDbalSchemaChanges(): void
     {
-        $tableName = 'phpunit_order_identifier_migration';
+        $tableName = $this->temporaryTableName('migration');
+        $this->temporaryTables[] = $tableName;
         $Table = new Table($tableName);
         $Table->addColumn('id', 'integer', ['autoincrement' => true]);
         $Table->addColumn('invoice_id', 'integer', ['notnull' => false]);
@@ -1022,8 +1112,9 @@ class HandlerDatabaseUnitTest extends TestCase
             'migrateOrderCreatorColumn'
         );
 
-        $IdentifierMigration->invoke(null, 'phpunit_missing_migration_table');
-        $CreatorMigration->invoke(null, 'phpunit_missing_migration_table');
+        $missingTableName = $this->temporaryTableName('missing');
+        $IdentifierMigration->invoke(null, $missingTableName);
+        $CreatorMigration->invoke(null, $missingTableName);
         $IdentifierMigration->invoke(null, $tableName);
         $CreatorMigration->invoke(null, $tableName);
 
@@ -1042,78 +1133,173 @@ class HandlerDatabaseUnitTest extends TestCase
     private function insertFixtures(): void
     {
         $orders = [
-            [1, 'order-a', 'global-a', 'user-a', '2026-01-01 10:00:00'],
-            [2, 'order-b', 'global-a', 'user-a', '2026-01-02 10:00:00'],
-            [3, 'order-c', 'global-c', 'user-b', '2026-01-03 10:00:00']
+            ['order-a', 'global-a', 'user-a', '2026-01-01 10:00:00'],
+            ['order-b', 'global-a', 'user-a', '2026-01-02 10:00:00'],
+            ['order-c', 'global-c', 'user-b', '2026-01-03 10:00:00']
         ];
 
-        foreach ($orders as [$id, $hash, $globalId, $customerId, $date]) {
+        foreach ($orders as [$hash, $globalId, $customerId, $date]) {
             $this->connection->insert($this->Handler->table(), [
-                'id' => $id,
-                'hash' => $hash,
-                'global_process_id' => $globalId,
-                'customerId' => $customerId,
+                'hash' => $this->fixture($hash),
+                'global_process_id' => $this->fixture($globalId),
+                'customerId' => $this->fixture($customerId),
                 'status' => 1,
                 'paid_status' => 0,
                 'successful' => 0,
                 'c_date' => $date,
                 'paid_date' => null,
-                'c_user' => $customerId
+                'c_user' => $this->fixture($customerId)
             ]);
+
+            $this->orderIds[$hash] = $this->fetchIdByHash(
+                $this->Handler->table(),
+                $this->fixture($hash)
+            );
         }
 
         $processes = [
-            [10, 'process-old', 'user-a', 0, '2026-01-01 10:00:00'],
-            [11, 'process-new', 'user-a', 0, '2026-01-03 10:00:00'],
-            [12, 'process-successful', 'user-a', 1, '2026-01-04 10:00:00'],
-            [13, 'process-other', 'user-b', 0, '2026-01-05 10:00:00'],
+            ['process-old', 'user-a', 0, '2026-01-01 10:00:00'],
+            ['process-new', 'user-a', 0, '2026-01-03 10:00:00'],
+            ['process-successful', 'user-a', 1, '2026-01-04 10:00:00'],
+            ['process-other', 'user-b', 0, '2026-01-05 10:00:00'],
             [
-                14,
                 'process-price',
                 (string)QUI::getUsers()->getSystemUser()->getUUID(),
                 0,
                 '2026-01-06 10:00:00'
             ],
-            [15, 'process-orphaned', 'flow-user', 0, '2026-01-07 10:00:00'],
-            [16, 'process-linked', 'flow-user', 0, '2026-01-08 10:00:00'],
-            [17, 'process-linked-successful', 'flow-user', 1, '2026-01-09 10:00:00']
+            ['process-orphaned', 'flow-user', 0, '2026-01-07 10:00:00'],
+            ['process-linked', 'flow-user', 0, '2026-01-08 10:00:00'],
+            ['process-linked-successful', 'flow-user', 1, '2026-01-09 10:00:00']
         ];
+        $nextProcessId = max(
+            (int)$this->connection->fetchOne('SELECT MAX(id) FROM ' . $this->Handler->table()),
+            (int)$this->connection->fetchOne('SELECT MAX(id) FROM ' . $this->Handler->tableOrderProcess())
+        ) + 100;
 
-        foreach ($processes as [$id, $hash, $customerId, $successful, $date]) {
+        foreach ($processes as [$hash, $customerId, $successful, $date]) {
+            if ($customerId !== (string)QUI::getUsers()->getSystemUser()->getUUID()) {
+                $customerId = $this->fixture($customerId);
+            }
+
             $this->connection->insert($this->Handler->tableOrderProcess(), [
-                'id' => $id,
+                'id' => $nextProcessId++,
                 'status' => 1,
-                'hash' => $hash,
+                'hash' => $this->fixture($hash),
                 'customerId' => $customerId,
                 'paid_status' => 0,
                 'successful' => $successful,
                 'c_date' => $date,
                 'c_user' => $customerId
             ]);
+
+            $this->orderProcessIds[$hash] = $this->fetchIdByHash(
+                $this->Handler->tableOrderProcess(),
+                $this->fixture($hash)
+            );
         }
 
         $this->connection->update(
             $this->Handler->tableOrderProcess(),
-            ['order_id' => 'missing-order'],
-            ['hash' => 'process-orphaned']
+            ['order_id' => $this->fixture('missing-order')],
+            ['hash' => $this->fixture('process-orphaned')]
         );
         $this->connection->update(
             $this->Handler->tableOrderProcess(),
-            ['order_id' => 'order-a'],
-            ['hash' => 'process-linked']
+            ['order_id' => $this->fixture('order-a')],
+            ['hash' => $this->fixture('process-linked')]
         );
         $this->connection->update(
             $this->Handler->tableOrderProcess(),
-            ['order_id' => 'order-a'],
-            ['hash' => 'process-linked-successful']
+            ['order_id' => $this->fixture('order-a')],
+            ['hash' => $this->fixture('process-linked-successful')]
         );
 
         $this->connection->insert($this->Handler->tableBasket(), [
-            'id' => 30,
             'uid' => (string)QUI::getUsers()->getSystemUser()->getUUID(),
             'products' => '[]',
-            'hash' => 'process-price'
+            'hash' => $this->fixture('process-price')
         ]);
+        $this->basketIds['process-price'] = $this->fetchIdByHash(
+            $this->Handler->tableBasket(),
+            $this->fixture('process-price')
+        );
+    }
+
+    private function fixture(string $name): string
+    {
+        return $this->fixturePrefix . '-' . $name;
+    }
+
+    private function orderId(string $hash): int
+    {
+        return $this->orderIds[$hash];
+    }
+
+    private function orderProcessId(string $hash): int
+    {
+        return $this->orderProcessIds[$hash];
+    }
+
+    private function basketId(string $hash): int
+    {
+        return $this->basketIds[$hash];
+    }
+
+    private function fetchIdByHash(string $table, string $hash): int
+    {
+        return (int)$this->connection->fetchOne(
+            'SELECT id FROM ' . $this->connection->quoteIdentifier($table) . ' WHERE hash = ?',
+            [$hash]
+        );
+    }
+
+    private function temporaryTableName(string $purpose): string
+    {
+        return 'pu_order_' . $purpose . '_' . substr($this->fixturePrefix, 3);
+    }
+
+    private function removeCiFixtures(): void
+    {
+        $SchemaManager = $this->connection->createSchemaManager();
+
+        foreach (array_reverse($this->temporaryTables) as $tableName) {
+            if ($SchemaManager->tablesExist([$tableName])) {
+                $SchemaManager->dropTable($tableName);
+            }
+        }
+
+        foreach (['basket-a', 'process-price'] as $hash) {
+            $this->connection->delete(
+                $this->Handler->tableBasket(),
+                ['hash' => $this->fixture($hash)]
+            );
+        }
+
+        $processHashes = [
+            'process-old',
+            'process-new',
+            'process-successful',
+            'process-other',
+            'process-price',
+            'process-orphaned',
+            'process-linked',
+            'process-linked-successful'
+        ];
+
+        foreach ($processHashes as $hash) {
+            $this->connection->delete(
+                $this->Handler->tableOrderProcess(),
+                ['hash' => $this->fixture($hash)]
+            );
+        }
+
+        foreach (['order-a', 'order-b', 'order-c', 'process-price'] as $hash) {
+            $this->connection->delete(
+                $this->Handler->table(),
+                ['hash' => $this->fixture($hash)]
+            );
+        }
     }
 
     private function createCountriesFixture(): void

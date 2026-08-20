@@ -8,6 +8,8 @@ if (!defined('QUIQQER_AJAX')) {
     define('QUIQQER_AJAX', true);
 }
 
+require_once __DIR__ . '/QUITests/ERP/Order/DatabaseEnvironment.php';
+
 putenv("QUIQQER_OTHER_AUTOLOADERS=KEEP");
 
 if (file_exists(__DIR__ . '/../../../../bootstrap.php')) {
