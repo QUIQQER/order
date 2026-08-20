@@ -1065,7 +1065,10 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertSame($basketId, $this->Handler->getBasket($basketHash)->getId());
         self::assertSame($basketId, $this->Handler->getBasketById($basketId)->getId());
         self::assertSame($basketId, $this->Handler->getBasketByHash($basketHash)->getId());
-        self::assertSame($basketId, $this->Handler->getBasketFromUser($SessionUser)->getId());
+        self::assertSame(
+            $this->basketId('basket-user'),
+            $this->Handler->getBasketFromUser($this->createBasketUser($this->fixture('basket-user')))->getId()
+        );
         self::assertSame($basketHash, $this->Handler->getBasketData((string)$basketId)['hash']);
     }
 
@@ -1224,6 +1227,16 @@ class HandlerDatabaseUnitTest extends TestCase
             $this->Handler->tableBasket(),
             $this->fixture('process-price')
         );
+
+        $this->connection->insert($this->Handler->tableBasket(), [
+            'uid' => $this->fixture('basket-user'),
+            'products' => '[]',
+            'hash' => $this->fixture('basket-user')
+        ]);
+        $this->basketIds['basket-user'] = $this->fetchIdByHash(
+            $this->Handler->tableBasket(),
+            $this->fixture('basket-user')
+        );
     }
 
     private function fixture(string $name): string
@@ -1269,7 +1282,7 @@ class HandlerDatabaseUnitTest extends TestCase
             }
         }
 
-        foreach (['basket-a', 'process-price'] as $hash) {
+        foreach (['basket-a', 'process-price', 'basket-user'] as $hash) {
             $this->connection->delete(
                 $this->Handler->tableBasket(),
                 ['hash' => $this->fixture($hash)]
@@ -1333,6 +1346,18 @@ class HandlerDatabaseUnitTest extends TestCase
     {
         $User = $this->createMock(User::class);
         $User->method('getUUID')->willReturn($uuid);
+
+        return $User;
+    }
+
+    private function createBasketUser(string $uuid): User
+    {
+        $Address = $this->createMock(QUI\Users\Address::class);
+        $Address->method('getCountry')->willReturn(CountriesManager::getDefaultCountry());
+        $User = $this->createUser($uuid);
+        $User->method('getAttribute')->willReturnCallback(
+            static fn(string $name): mixed => $name === 'CurrentAddress' ? $Address : null
+        );
 
         return $User;
     }
