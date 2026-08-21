@@ -92,53 +92,109 @@ window.whenQuiLoaded().then(function() {
             });
         }
 
-        function trackProductView(productId, listData)
+        function getProductData(productId)
         {
-            QUIAjax.get(
-                'package_quiqqer_order_ajax_frontend_dataLayer_getProductData',
-                function(productData) {
+            return new Promise(function(resolve, reject) {
+                QUIAjax.get(
+                    'package_quiqqer_order_ajax_frontend_dataLayer_getProductData',
+                    resolve,
+                    {
+                        'package': 'quiqqer/order',
+                        productId: productId,
+                        onError: reject
+                    }
+                );
+            });
+        }
+
+        function trackProductView(productId)
+        {
+            trackData(
+                'view_item',
+                getProductData(productId).then(function(productData) {
+                    return Object.assign({}, productData, getPageData());
+                })
+            );
+        }
+
+        function trackProductSelection(Parent, productId)
+        {
+            const listData = getItemListData(Parent);
+
+            trackData(
+                'select_item',
+                getProductData(productId).then(function(productData) {
                     if (!hasItems(productData)) {
-                        return;
+                        return [];
                     }
 
-                    if (listData) {
-                        const selectionData = Object.assign({}, productData, listData);
-
-                        selectionData.items = productData.items.map(function(item) {
+                    return {
+                        item_list_id: listData.item_list_id,
+                        item_list_name: listData.item_list_name,
+                        items: productData.items.map(function(item) {
                             return Object.assign({}, item, listData);
-                        });
-
-                        window.qTrack('event', 'select_item', selectionData);
-                    }
-
-                    window.qTrack(
-                        'event',
-                        'view_item',
-                        Object.assign({}, productData, getPageData())
-                    );
-                },
-                {
-                    'package': 'quiqqer/order',
-                    productId: productId,
-                    onError: function(error) {
-                        console.error(error);
-                    }
-                }
+                        })
+                    };
+                })
             );
         }
 
         function getItemListData(Parent)
         {
             let listId = QUIQQER_SITE.id;
+            let listName = document.title;
 
             if (Parent && typeof Parent.getAttribute === 'function') {
-                listId = Parent.getAttribute('categoryId') || listId;
+                listId = Parent.getAttribute('itemListId') ||
+                    Parent.getAttribute('categoryId') ||
+                    listId;
+                listName = Parent.getAttribute('itemListName') || listName;
             }
 
             return {
                 item_list_id: String(listId),
-                item_list_name: document.title
+                item_list_name: listName
             };
+        }
+
+        function trackProductListView(listData)
+        {
+            if (!listData || !Array.isArray(listData.productIds) || !listData.productIds.length) {
+                return;
+            }
+
+            const itemListData = {
+                item_list_id: String(listData.id),
+                item_list_name: listData.name || document.title
+            };
+
+            const Data = new Promise(function(resolve, reject) {
+                QUIAjax.get(
+                    'package_quiqqer_order_ajax_frontend_dataLayer_getProductListData',
+                    function(productData) {
+                        if (!hasItems(productData)) {
+                            resolve([]);
+                            return;
+                        }
+
+                        resolve({
+                            item_list_id: itemListData.item_list_id,
+                            item_list_name: itemListData.item_list_name,
+                            items: productData.items.map(function(item) {
+                                return Object.assign({}, item, itemListData);
+                            })
+                        });
+                    },
+                    {
+                        'package': 'quiqqer/order',
+                        productIds: JSON.stringify(listData.productIds),
+                        startIndex: parseInt(listData.startIndex) || 0,
+                        onError: reject
+                    }
+                );
+            });
+
+            trackData('view_item_list', Data);
         }
 
         function getOrderData(OrderProcess)
@@ -248,11 +304,19 @@ window.whenQuiLoaded().then(function() {
         }
 
         if (window.QUIQQER_SITE.type === 'quiqqer/products:types/category' && getProductId()) {
-            trackProductView(getProductId(), null);
+            trackProductView(getProductId());
         }
 
-        QUI.addEvent('onQuiqqerProductsOpenProduct', function(Parent, productId) {
-            trackProductView(productId, getItemListData(Parent));
+        QUI.addEvent('onQuiqqerProductsSelectProduct', function(Parent, productId) {
+            trackProductSelection(Parent, productId);
+        });
+
+        QUI.addEvent('onQuiqqerProductsProductView', function(Parent, productId) {
+            trackProductView(productId);
+        });
+
+        QUI.addEvent('onQuiqqerProductsProductListView', function(Parent, listData) {
+            trackProductListView(listData);
         });
 
         QUI.addEvent('onQuiqqerOrderProcessOpenStep', function(OrderProcess, step) {

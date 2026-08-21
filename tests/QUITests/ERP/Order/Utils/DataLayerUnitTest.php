@@ -80,6 +80,22 @@ class DataLayerUnitTest extends TestCase
         self::assertArrayNotHasKey('currency', $data['items'][0]);
     }
 
+    public function testProductItemsPreserveListOrderAndIndexOffset(): void
+    {
+        self::setProductCache([
+            910006 => $this->createProduct('PRODUCT-LIST-1'),
+            910007 => $this->createProduct('PRODUCT-LIST-2')
+        ]);
+
+        $items = DataLayer::parseProductItems([910007, 910006], null, 9);
+
+        self::assertCount(2, $items);
+        self::assertSame('PRODUCT-LIST-2', $items[0]['item_id']);
+        self::assertSame(9, $items[0]['index']);
+        self::assertSame('PRODUCT-LIST-1', $items[1]['item_id']);
+        self::assertSame(10, $items[1]['index']);
+    }
+
     public function testProductListUsesCalculatedBasketPriceAndQuantity(): void
     {
         $productId = 910005;

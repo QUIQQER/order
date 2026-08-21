@@ -99,6 +99,31 @@ class DataLayer
     }
 
     /**
+     * @param array<int, int|string> $productIds
+     * @param QUI\Locale|null $Locale
+     * @return array<int, array<string, mixed>>
+     */
+    public static function parseProductItems(array $productIds, $Locale = null, int $startIndex = 0): array
+    {
+        $items = [];
+        $productIds = array_slice($productIds, 0, 100);
+
+        foreach ($productIds as $position => $productId) {
+            try {
+                $Product = Products::getProduct((int)$productId);
+            } catch (QUI\Exception) {
+                continue;
+            }
+
+            $item = self::parseProduct($Product, $Locale);
+            $item['index'] = $startIndex + $position;
+            $items[] = $item;
+        }
+
+        return $items;
+    }
+
+    /**
      * @param QUI\Locale|null $Locale
      * @return array<string, mixed>
      * @throws QUI\Exception
