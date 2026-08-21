@@ -10,7 +10,7 @@ QUI::getAjax()->registerFunction(
             $productId = (int)$productId;
             $Product = Products::getProduct($productId);
 
-            return DataLayer::parseProduct($Product);
+            return DataLayer::parseProductEvent($Product, QUI::getLocale());
         } catch (QUI\Exception) {
             return [];
         }

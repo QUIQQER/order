@@ -15,8 +15,8 @@
  * @event onRefresh [self]f
  *
  * @event QUI quiqqerOrderBasketAdd [self, Product]
- * @event QUI quiqqerOrderBasketRemove [self]
- * @event QUI quiqqerOrderBasketClear [self]
+ * @event QUI quiqqerOrderBasketRemove [self, Product]
+ * @event QUI quiqqerOrderBasketClear [self, Products]
  */
 define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
@@ -603,7 +603,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          */
         removeProductPos: function(pos) {
             const self = this,
-                index = pos - 1;
+                index = pos - 1,
+                RemovedProduct = this.$products[index];
+
+            if (typeof RemovedProduct === 'undefined') {
+                return Promise.resolve();
+            }
 
             if (!QUIQQER_USER.id) {
                 this.fireEvent('refreshBegin', [self]);
@@ -613,17 +618,13 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                 return this.save().then(() => {
                     this.fireEvent('remove', [self]);
-                    QUI.fireEvent('quiqqerOrderBasketRemove', [self]);
+                    QUI.fireEvent('quiqqerOrderBasketRemove', [self, RemovedProduct]);
                     this.fireEvent('refresh', [self]);
                 });
             }
 
             return new Promise(function(resolve) {
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_removePos', function(basket) {
-                    if (typeof self.$products[index] === 'undefined') {
-                        return resolve();
-                    }
-
                     self.fireEvent('refreshBegin', [self]);
                     self.fireEvent('removeBegin', [self]);
 
@@ -636,7 +637,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 });
             }).then(function() {
                 self.fireEvent('remove', [self]);
-                QUI.fireEvent('quiqqerOrderBasketRemove', [self]);
+                QUI.fireEvent('quiqqerOrderBasketRemove', [self, RemovedProduct]);
                 self.fireEvent('refresh', [self]);
             });
         },
@@ -647,14 +648,15 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         clear: function() {
-            const self = this;
+            const self = this,
+                RemovedProducts = this.$products.slice();
 
             this.fireEvent('clearBegin', [this]);
 
             if (!QUIQQER_USER.id) {
                 this.$products = [];
                 self.fireEvent('clear', [self]);
-                QUI.fireEvent('quiqqerOrderBasketClear', [self]);
+                QUI.fireEvent('quiqqerOrderBasketClear', [self, RemovedProducts]);
 
                 return this.save();
             }
@@ -663,7 +665,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 QUIAjax.post('package_quiqqer_order_ajax_frontend_basket_clear', function(result) {
                     self.refresh().then(function() {
                         self.fireEvent('clear', [self]);
-                        QUI.fireEvent('quiqqerOrderBasketClear', [self]);
+                        QUI.fireEvent('quiqqerOrderBasketClear', [self, RemovedProducts]);
                         resolve(result);
                     });
                 }, {

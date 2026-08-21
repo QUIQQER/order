@@ -4,6 +4,7 @@
  * @event onCreate [self]
  * @event onShowBasketBegin [self, pos, height]
  * @event onShowBasketEnd [self]
+ * @event QUI quiqqerOrderBasketView [Basket]
  *
  * CSS classes which can be used as placeholder
  * - .quiqqer-order-basketButton-sum
@@ -402,6 +403,13 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                 this.$BasketContainer.focus();
 
                 this.fireEvent('showBasketEnd', [this]);
+
+                loadBasket().then(function(Basket) {
+                    QUI.fireEvent('quiqqerOrderBasketView', [Basket]);
+                }).catch(function(error) {
+                    console.error(error);
+                });
+
                 return;
             }
 
@@ -418,6 +426,7 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
                         }).inject(self.$BasketContainer);
 
                         self.fireEvent('showBasketEnd', [self]);
+                        QUI.fireEvent('quiqqerOrderBasketView', [Basket]);
                         resolve();
                     }, reject);
                 });

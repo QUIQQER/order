@@ -53,6 +53,10 @@ if (!interface_exists(QUI\ERP\Shipping\Api\ShippingInterface::class)) {
     require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Shipping/Api/ShippingInterface.php';
 }
 
+if (!class_exists(QUI\ERP\Shipping\Types\ShippingEntry::class)) {
+    require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Shipping/Types/ShippingEntry.php';
+}
+
 if (!class_exists(QUI\ERP\Shipping\ShippingStatus\Status::class)) {
     require_once __DIR__ . '/phpstan-stubs/QUI/ERP/Shipping/ShippingStatus/Status.php';
 }
