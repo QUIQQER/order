@@ -3,6 +3,7 @@
  *
  * @event QUI Event: onQuiqqerOrderProcessLoad  [this]
  * @event QUI Event: onQuiqqerOrderProcessOpenStep  [this, step]
+ * @event QUI Event: onQuiqqerOrderProcessStepSubmitted  [this, step]
  * @event QUI Event: onQuiqqerOrderProcessFinish  [orderHash]
  */
 require.config({
@@ -664,6 +665,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             const self = this;
+            const submittedStep = this.getCurrentStepData().step;
 
             this.$beginResultRendering(-1);
 
@@ -672,6 +674,10 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     QUIAjax.get('package_quiqqer_order_ajax_frontend_order_getNext', function(result) {
                         self.$renderResult(result, 1).then(function() {
                             self.$endResultRendering();
+                            QUI.fireEvent('quiqqerOrderProcessStepSubmitted', [
+                                self,
+                                submittedStep
+                            ]);
                             resolve();
                         });
 
