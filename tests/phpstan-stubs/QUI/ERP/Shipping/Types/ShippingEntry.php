@@ -14,6 +14,8 @@ if (!class_exists(ShippingEntry::class, false)) {
 
         abstract public function toJSON(): string;
 
-        abstract public function getPrice(): \QUI\ERP\Money\Price;
+        abstract public function getPrice(): float | int;
+
+        abstract public function getTitle(null | \QUI\Locale $Locale = null): string;
     }
 }

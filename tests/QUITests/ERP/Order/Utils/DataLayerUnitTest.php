@@ -9,6 +9,7 @@ use QUI\Locale;
 use QUI\ERP\Accounting\ArticleDiscount;
 use QUI\ERP\Accounting\ArticleInterface;
 use QUI\ERP\Accounting\ArticleList;
+use QUI\ERP\Accounting\Payments\Types\Payment;
 use QUI\ERP\Currency\Currency;
 use QUI\ERP\Money\Price;
 use QUI\ERP\Order\OrderInterface;
@@ -18,7 +19,9 @@ use QUI\ERP\Products\Field\Field;
 use QUI\ERP\Products\Handler\Fields;
 use QUI\ERP\Products\Handler\Products;
 use QUI\ERP\Products\Product\Product;
+use QUI\ERP\Products\Product\ProductList;
 use QUI\ERP\Products\Product\Types\Product as ProductType;
+use QUI\ERP\Shipping\Types\ShippingEntry;
 use ReflectionClass;
 
 class DataLayerUnitTest extends TestCase
@@ -60,8 +63,50 @@ class DataLayerUnitTest extends TestCase
 
         $data = DataLayer::parseProduct($Product);
 
-        self::assertSame('', $data['category']);
+        self::assertSame('', $data['item_category']);
         self::assertSame('PHPUNIT-1', $data['item_id']);
+        self::assertArrayNotHasKey('currency', $data);
+    }
+
+    public function testProductEventContainsCurrencyValueAndQuantity(): void
+    {
+        $data = DataLayer::parseProductEvent($this->createProduct('PRODUCT-EVENT'));
+
+        self::assertSame('EUR', $data['currency']);
+        self::assertSame(99.0, $data['value']);
+        self::assertCount(1, $data['items']);
+        self::assertSame('PRODUCT-EVENT', $data['items'][0]['item_id']);
+        self::assertSame(1, $data['items'][0]['quantity']);
+        self::assertArrayNotHasKey('currency', $data['items'][0]);
+    }
+
+    public function testProductListUsesCalculatedBasketPriceAndQuantity(): void
+    {
+        $productId = 910005;
+        self::setProductCache([$productId => $this->createProduct('PRODUCT-LIST')]);
+
+        $Currency = $this->createMock(Currency::class);
+        $Currency->method('getCode')->willReturn('EUR');
+
+        $List = $this->createMock(ProductList::class);
+        $List->method('getCurrency')->willReturn($Currency);
+        $List->method('toArray')->willReturn([
+            'sum' => 36.75,
+            'products' => [[
+                'id' => $productId,
+                'quantity' => 3,
+                'calculated_price' => 12.25
+            ]]
+        ]);
+
+        $data = DataLayer::parseProductList($List);
+
+        self::assertSame('EUR', $data['currency']);
+        self::assertSame(36.75, $data['value']);
+        self::assertCount(1, $data['items']);
+        self::assertSame('PRODUCT-LIST', $data['items'][0]['item_id']);
+        self::assertSame(12.25, $data['items'][0]['price']);
+        self::assertSame(3, $data['items'][0]['quantity']);
     }
 
     public function testArticleUsesProductDataAndArticleAmounts(): void
@@ -75,9 +120,9 @@ class DataLayerUnitTest extends TestCase
         self::assertSame('PRODUCT-1', $data['item_id']);
         self::assertSame('PHPUnit product', $data['item_name']);
         self::assertSame(24.5, $data['price']);
-        self::assertSame('EUR', $data['currency']);
         self::assertSame(2, $data['quantity']);
         self::assertSame(3.5, $data['discount']);
+        self::assertArrayNotHasKey('currency', $data);
     }
 
     public function testArticlePassesLocaleToProductAndCategoryTitles(): void
@@ -117,12 +162,12 @@ class DataLayerUnitTest extends TestCase
 
         self::assertSame('', $data['item_id']);
         self::assertSame('Manual article', $data['item_name']);
-        self::assertSame('', $data['category']);
-        self::assertSame('', $data['manufacturer']);
-        self::assertSame('', $data['variant']);
+        self::assertSame('', $data['item_category']);
+        self::assertSame('', $data['item_brand']);
+        self::assertSame('', $data['item_variant']);
         self::assertSame(8.75, $data['price']);
-        self::assertSame('EUR', $data['currency']);
         self::assertSame(4, $data['quantity']);
+        self::assertArrayNotHasKey('currency', $data);
         self::assertArrayNotHasKey('discount', $data);
     }
 
@@ -151,10 +196,18 @@ class DataLayerUnitTest extends TestCase
         $Currency = $this->createMock(Currency::class);
         $Currency->method('getCode')->willReturn('EUR');
 
+        $Payment = $this->createMock(Payment::class);
+        $Payment->method('getTitle')->willReturn('Credit card');
+
+        $Shipping = $this->createMock(ShippingEntry::class);
+        $Shipping->method('getTitle')->willReturn('Standard shipping');
+        $Shipping->method('getPrice')->willReturn(4.95);
+
         $Order = $this->createMock(OrderInterface::class);
         $Order->method('getArticles')->willReturn($Articles);
         $Order->method('getCurrency')->willReturn($Currency);
-        $Order->method('getShipping')->willReturn(null);
+        $Order->method('getPayment')->willReturn($Payment);
+        $Order->method('getShipping')->willReturn($Shipping);
         $Order->method('getDataEntry')->with('quiqqer-coupons')->willReturn('SUMMER');
         $Order->method('isSuccessful')->willReturn(1);
         $Order->method('getUUID')->willReturn('order-uuid');
@@ -168,11 +221,56 @@ class DataLayerUnitTest extends TestCase
         self::assertSame('EUR', $data['currency']);
         self::assertSame(119.0, $data['value']);
         self::assertSame(19.0, $data['tax']);
+        self::assertSame('Credit card', $data['payment_type']);
+        self::assertSame(4.95, $data['shipping']);
+        self::assertSame('Standard shipping', $data['shipping_tier']);
         self::assertSame('SUMMER', $data['coupon']);
         self::assertSame('order-uuid', $data['transaction_id']);
         self::assertCount(1, $data['items']);
         self::assertSame(0, $data['items'][0]['index']);
         self::assertSame('PRODUCT-2', $data['items'][0]['item_id']);
+        self::assertArrayNotHasKey('currency', $data['items'][0]);
+    }
+
+    public function testOrderWithoutOptionalSelectionsOmitsTheirData(): void
+    {
+        $originalPackageManager = \QUI::$PackageManager;
+        $PackageManager = $this->createMock(\QUI\Package\Manager::class);
+        $PackageManager->expects(self::once())
+            ->method('isInstalled')
+            ->with('quiqqer/coupons')
+            ->willReturn(false);
+        \QUI::$PackageManager = $PackageManager;
+
+        $Articles = $this->createMock(ArticleList::class);
+        $Articles->method('getCalculations')->willReturn([
+            'sum' => 0.0,
+            'vatArray' => []
+        ]);
+        $Articles->method('getIterator')->willReturn(new ArrayIterator([]));
+
+        $Currency = $this->createMock(Currency::class);
+        $Currency->method('getCode')->willReturn('EUR');
+
+        $Order = $this->createMock(OrderInterface::class);
+        $Order->method('getArticles')->willReturn($Articles);
+        $Order->method('getCurrency')->willReturn($Currency);
+        $Order->method('getPayment')->willReturn(null);
+        $Order->method('getShipping')->willReturn(null);
+        $Order->method('isSuccessful')->willReturn(0);
+
+        try {
+            $data = DataLayer::parseOrder($Order);
+        } finally {
+            \QUI::$PackageManager = $originalPackageManager;
+        }
+
+        self::assertSame([], $data['items']);
+        self::assertArrayNotHasKey('payment_type', $data);
+        self::assertArrayNotHasKey('shipping', $data);
+        self::assertArrayNotHasKey('shipping_tier', $data);
+        self::assertArrayNotHasKey('coupon', $data);
+        self::assertArrayNotHasKey('transaction_id', $data);
     }
 
     /**

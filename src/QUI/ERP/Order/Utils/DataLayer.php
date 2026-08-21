@@ -10,6 +10,7 @@ use QUI;
 use QUI\ERP\Products\Handler\Fields;
 use QUI\ERP\Products\Handler\Products;
 use QUI\ERP\Products\Product\Product;
+use QUI\ERP\Products\Product\ProductList;
 use QUI\ERP\Products\Product\Types\VariantChild;
 
 /**
@@ -61,11 +62,10 @@ class DataLayer
         $product = [
             'item_id' => $Product->getField(Fields::FIELD_PRODUCT_NO)->getValue(),
             'item_name' => $Product->getTitle($Locale),
-            'category' => $Product->getCategory()?->getTitle() ?? '',
+            'item_brand' => $manufacturer,
+            'item_category' => $Product->getCategory()?->getTitle($Locale) ?? '',
+            'item_variant' => $variant,
             'price' => $Product->getPrice()->getPrice(),
-            'currency' => $Product->getPrice()->getCurrency()->getCode(),
-            'manufacturer' => $manufacturer,
-            'variant' => $variant
         ];
 
         // categories
@@ -79,6 +79,57 @@ class DataLayer
         }
 
         return $product;
+    }
+
+    /**
+     * @param QUI\Locale|null $Locale
+     * @return array<string, mixed>
+     */
+    public static function parseProductEvent(Product $Product, $Locale = null): array
+    {
+        $price = $Product->getPrice()->getPrice();
+        $item = self::parseProduct($Product, $Locale);
+        $item['quantity'] = 1;
+
+        return [
+            'currency' => $Product->getPrice()->getCurrency()->getCode(),
+            'value' => $price,
+            'items' => [$item]
+        ];
+    }
+
+    /**
+     * @param QUI\Locale|null $Locale
+     * @return array<string, mixed>
+     * @throws QUI\Exception
+     */
+    public static function parseProductList(ProductList $List, $Locale = null): array
+    {
+        $list = $List->toArray($Locale);
+        $items = [];
+
+        foreach ($list['products'] as $productData) {
+            try {
+                $Product = Products::getProduct((int)$productData['id']);
+            } catch (QUI\Exception) {
+                continue;
+            }
+
+            $item = self::parseProduct($Product, $Locale);
+            $item['quantity'] = $productData['quantity'] ?? 1;
+
+            if (isset($productData['calculated_price'])) {
+                $item['price'] = $productData['calculated_price'];
+            }
+
+            $items[] = $item;
+        }
+
+        return [
+            'currency' => $List->getCurrency()->getCode(),
+            'value' => $list['sum'],
+            'items' => $items
+        ];
     }
 
     /**
@@ -96,14 +147,13 @@ class DataLayer
             $item = [
                 'item_id' => '',
                 'item_name' => $Article->getTitle(),
-                'category' => '',
-                'manufacturer' => '',
-                'variant' => ''
+                'item_brand' => '',
+                'item_category' => '',
+                'item_variant' => ''
             ];
         }
 
         $item['price'] = $Article->getPrice()->getValue();
-        $item['currency'] = $Article->getPrice()->getCurrency()->getCode();
         $item['quantity'] = $Article->getQuantity();
 
         if ($Article->getDiscount()) {
@@ -128,11 +178,23 @@ class DataLayer
         $order = [
             'currency' => $Order->getCurrency()->getCode(),
             'value' => $calculations['sum'],
-            'tax' => $tax
+            'tax' => $tax,
+            'items' => []
         ];
 
-        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry') && $Order->getShipping()) {
-            $order['shipping'] = $Order->getShipping()->getPrice();
+        $Payment = $Order->getPayment();
+
+        if ($Payment) {
+            $order['payment_type'] = $Payment->getTitle($Locale);
+        }
+
+        if (class_exists('QUI\ERP\Shipping\Types\ShippingEntry')) {
+            $Shipping = $Order->getShipping();
+
+            if ($Shipping) {
+                $order['shipping'] = $Shipping->getPrice();
+                $order['shipping_tier'] = $Shipping->getTitle($Locale);
+            }
         }
 
         if (QUI::getPackageManager()->isInstalled('quiqqer/coupons')) {
