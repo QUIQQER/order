@@ -5,6 +5,8 @@ namespace QUI\ERP\SalesOrders;
 if (!class_exists(SalesOrder::class, false)) {
     class SalesOrder
     {
+        private bool $isRevision = false;
+
         public function getUUID(): string
         {
             return '';
@@ -34,6 +36,16 @@ if (!class_exists(SalesOrder::class, false)) {
 
         public function update(): void
         {
+        }
+
+        public function isRevision(): bool
+        {
+            return $this->isRevision;
+        }
+
+        public function setIsRevision(bool $isRevision): void
+        {
+            $this->isRevision = $isRevision;
         }
 
         public function getShipping(): ?\QUI\ERP\Shipping\Api\ShippingInterface
