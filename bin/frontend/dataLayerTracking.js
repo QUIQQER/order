@@ -15,17 +15,6 @@ window.whenQuiLoaded().then(function() {
             return data && Array.isArray(data.items) && data.items.length > 0;
         }
 
-        function getPageData()
-        {
-            return {
-                page_location: window.location.toString(),
-                page_title: document.title,
-                visitor_type: QUIQQER_USER.id ? 'user' : 'visitor',
-                site_type: QUIQQER_SITE.type.replace('quiqqer/', ''),
-                site_id: QUIQQER_SITE.id
-            };
-        }
-
         function getBasketData(Basket)
         {
             const options = {
@@ -90,111 +79,6 @@ window.whenQuiLoaded().then(function() {
             }).catch(function(error) {
                 console.error(error);
             });
-        }
-
-        function getProductData(productId)
-        {
-            return new Promise(function(resolve, reject) {
-                QUIAjax.get(
-                    'package_quiqqer_order_ajax_frontend_dataLayer_getProductData',
-                    resolve,
-                    {
-                        'package': 'quiqqer/order',
-                        productId: productId,
-                        onError: reject
-                    }
-                );
-            });
-        }
-
-        function trackProductView(productId)
-        {
-            trackData(
-                'view_item',
-                getProductData(productId).then(function(productData) {
-                    return Object.assign({}, productData, getPageData());
-                })
-            );
-        }
-
-        function trackProductSelection(Parent, productId)
-        {
-            const listData = getItemListData(Parent);
-
-            trackData(
-                'select_item',
-                getProductData(productId).then(function(productData) {
-                    if (!hasItems(productData)) {
-                        return [];
-                    }
-
-                    return {
-                        item_list_id: listData.item_list_id,
-                        item_list_name: listData.item_list_name,
-                        items: productData.items.map(function(item) {
-                            return Object.assign({}, item, listData);
-                        })
-                    };
-                })
-            );
-        }
-
-        function getItemListData(Parent)
-        {
-            let listId = QUIQQER_SITE.id;
-            let listName = document.title;
-
-            if (Parent && typeof Parent.getAttribute === 'function') {
-                listId = Parent.getAttribute('itemListId') ||
-                    Parent.getAttribute('categoryId') ||
-                    listId;
-                listName = Parent.getAttribute('itemListName') || listName;
-            }
-
-            return {
-                item_list_id: String(listId),
-                item_list_name: listName
-            };
-        }
-
-        function trackProductListView(listData)
-        {
-            if (!listData || !Array.isArray(listData.productIds) || !listData.productIds.length) {
-                return;
-            }
-
-            const itemListData = {
-                item_list_id: String(listData.id),
-                item_list_name: listData.name || document.title
-            };
-
-            const Data = new Promise(function(resolve, reject) {
-                QUIAjax.get(
-                    'package_quiqqer_order_ajax_frontend_dataLayer_getProductListData',
-                    function(productData) {
-                        if (!hasItems(productData)) {
-                            resolve([]);
-                            return;
-                        }
-
-                        resolve({
-                            item_list_id: itemListData.item_list_id,
-                            item_list_name: itemListData.item_list_name,
-                            items: productData.items.map(function(item) {
-                                return Object.assign({}, item, itemListData);
-                            })
-                        });
-                    },
-                    {
-                        'package': 'quiqqer/order',
-                        productIds: JSON.stringify(listData.productIds),
-                        startIndex: parseInt(listData.startIndex) || 0,
-                        onError: reject
-                    }
-                );
-            });
-
-            trackData('view_item_list', Data);
         }
 
         function getOrderData(OrderProcess)
@@ -264,15 +148,6 @@ window.whenQuiLoaded().then(function() {
             window.qTrack('event', 'purchase', order);
         }
 
-        function getProductId()
-        {
-            if (typeof window.QUIQQER_PRODUCT_ID === 'undefined') {
-                return false;
-            }
-
-            return window.QUIQQER_PRODUCT_ID;
-        }
-
         if (typeof window.QUIQQER_ORDER_ORDER_PROCESS_MERGE !== 'undefined') {
             QUI.addEvent('onQuiqqerOrderBasketAdd', function(Basket, Product) {
                 if (!Basket.isLoaded()) {
@@ -302,22 +177,6 @@ window.whenQuiLoaded().then(function() {
                 console.error(error);
             });
         }
-
-        if (window.QUIQQER_SITE.type === 'quiqqer/products:types/category' && getProductId()) {
-            trackProductView(getProductId());
-        }
-
-        QUI.addEvent('onQuiqqerProductsSelectProduct', function(Parent, productId) {
-            trackProductSelection(Parent, productId);
-        });
-
-        QUI.addEvent('onQuiqqerProductsProductView', function(Parent, productId) {
-            trackProductView(productId);
-        });
-
-        QUI.addEvent('onQuiqqerProductsProductListView', function(Parent, listData) {
-            trackProductListView(listData);
-        });
 
         QUI.addEvent('onQuiqqerOrderProcessOpenStep', function(OrderProcess, step) {
             if (String(step).toLowerCase() === 'basket') {
