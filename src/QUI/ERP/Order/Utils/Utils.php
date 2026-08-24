@@ -429,9 +429,10 @@ class Utils
      */
     public static function getMergedProductList($products): array
     {
+        /** @var array<int, array<string, mixed>> $newProductList */
         $newProductList = [];
-        $getProductIndex = function ($product) use (&$newProductList) {
-            // @phpstan-ignore-next-line
+
+        $getProductIndex = function (array $product) use (&$newProductList): int | false {
             foreach ($newProductList as $index => $p) {
                 $p1 = serialize(self::getCompareProductArray($product));
                 $p2 = serialize(self::getCompareProductArray($p));
