@@ -8,6 +8,50 @@
             <locale group="quiqqer/order" var="package.title"/>
         </description>
 
+        <capabilities schemaVersion="1">
+            <capability id="commerce.shopping-cart">
+                <title>Shopping cart</title>
+                <description>
+                    Maintains persistent guest and customer shopping carts with product quantities and price calculation.
+                </description>
+            </capability>
+
+            <capability id="commerce.checkout">
+                <title>Checkout</title>
+                <description>
+                    Provides configurable checkout flows for customer data, delivery, payment and order submission.
+                </description>
+            </capability>
+
+            <capability id="sales.order-management">
+                <title>Order management</title>
+                <description>
+                    Creates and manages orders with processing, payment and shipping statuses, history and notifications.
+                </description>
+            </capability>
+
+            <capability id="sales.order-self-service">
+                <title>Order self-service</title>
+                <description>
+                    Lets customers review current and past orders, continue unpaid orders and access available documents.
+                </description>
+            </capability>
+
+            <capability id="billing.order-invoicing">
+                <title>Order invoicing</title>
+                <description>
+                    Creates draft or posted invoices from orders manually or automatically based on order and payment state.
+                </description>
+            </capability>
+
+            <capability id="analytics.ecommerce-tracking">
+                <title>E-commerce tracking</title>
+                <description>
+                    Supplies product, cart, checkout and purchase event data to the QUIQQER data layer.
+                </description>
+            </capability>
+        </capabilities>
+
         <provider>
             <erp src="\QUI\ERP\Order\ErpProvider"/>
             <erpDemoDataProvider src="\QUI\ERP\Order\DemoData\OrderDemoDataProvider"/>
