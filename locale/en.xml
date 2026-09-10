@@ -1,0 +1,1833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales xmlns="https://doc.quiqqer.com/xml/quiqqer-quiqqer-locale.xsd">
+    <groups name="quiqqer/order" datatype="php,js">
+        <locale name="package.title">
+<en><![CDATA[QUIQQER - Shop - Orders]]></en>
+        </locale>
+        <locale name="package.description">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="demo_data.provider.title">
+<en><![CDATA[Orders]]></en>
+        </locale>
+
+        <locale name="OutputProvider.entity.title.Order">
+<en><![CDATA[Orders]]></en>
+        </locale>
+
+        <locale name="erp.panel.accounting.text">
+<en><![CDATA[Accounting]]></en>
+        </locale>
+        <locale name="erp.panel.order.text">
+<en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="erp.panel.order.create.text">
+<en><![CDATA[Create Order]]></en>
+        </locale>
+        <locale name="erp.panel.order.list.text">
+<en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="erp.panel.order.orderFiles">
+<en><![CDATA[Files]]></en>
+        </locale>
+        <locale name="erp.panel.order.files_no_customer">
+<en><![CDATA[Please select a customer for this order first to be able to attach files.]]></en>
+        </locale>
+        <locale name="panel.order.currency.title">
+<en><![CDATA[Currency]]></en>
+        </locale>
+        <locale name="panel.order.currency.label">
+<en><![CDATA[Currency]]></en>
+        </locale>
+
+        <locale name="customerData">
+<en><![CDATA[Customer data]]></en>
+        </locale>
+        <locale name="invoiceAddress">
+<en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="deliveryAddress">
+<en><![CDATA[Delivery address]]></en>
+        </locale>
+        <locale name="customer">
+<en><![CDATA[Customer]]></en>
+        </locale>
+        <locale name="customerTitle">
+<en><![CDATA[Customer data]]></en>
+        </locale>
+        <locale name="address">
+<en><![CDATA[Address]]></en>
+        </locale>
+        <locale name="company">
+<en><![CDATA[Company]]></en>
+        </locale>
+        <locale name="street">
+<en><![CDATA[Street]]></en>
+        </locale>
+        <locale name="zip">
+<en><![CDATA[ZIP]]></en>
+        </locale>
+        <locale name="city">
+<en><![CDATA[City]]></en>
+        </locale>
+        <locale name="country">
+<en><![CDATA[Country]]></en>
+        </locale>
+
+        <locale name="statusMailsTitle">
+<en><![CDATA[Status emails]]></en>
+        </locale>
+        <locale name="commentsTitle">
+<en><![CDATA[Comments]]></en>
+        </locale>
+        <locale name="vatId">
+<en><![CDATA[VAT ID]]></en>
+        </locale>
+        <locale name="chUID">
+<en><![CDATA[Company ID (UID)]]></en>
+        </locale>
+
+        <locale name="exception.order.construct.needle.missing">
+<en><![CDATA[Missing value for order constructor [needle]]]></en>
+        </locale>
+        <locale name="exception.order.is.not.finished">
+<en><![CDATA[The order has not yet been completed.]]></en>
+        </locale>
+        <locale name="exception.missing.payment">
+<en><![CDATA[Please select a payment method to proceed with the order.]]></en>
+        </locale>
+        <locale name="exception.basket.has.no.articles">
+<en><![CDATA[Your shopping basket contains no items.]]></en>
+        </locale>
+        <locale name="exception.missing.address.field" html="true">
+<en><![CDATA[
+            The address is not filled in correctly to proceed with the order.<br />
+            Please fill in the field <strong>[field]</strong> correctly.
+            ]]></en>
+        </locale>
+        <locale name="exception.invoice.is.not.installed">
+<en><![CDATA[
+            The Invoice module is not installed. This function cannot be used.<br />
+            Please install quiqqer/invoice to create invoices.
+            ]]></en>
+        </locale>
+        <locale name="exception.to.invoice.missing.payment">
+<en><![CDATA[
+            Please add a payment type to the order to complete the billing process.
+            ]]></en>
+        </locale>
+        <locale name="exception.missing.address.for.invoice">
+<en><![CDATA[
+            Unfortunately the invoice could not be created. Please fill in all the necessary address details.
+            ]]></en>
+        </locale>
+
+        <locale name="message.select.customer">
+<en><![CDATA[Please select a customer.]]></en>
+        </locale>
+
+        <locale name="order.products.articleNo">
+<en><![CDATA[Article No.]]></en>
+        </locale>
+        <locale name="order.products.description">
+<en><![CDATA[Product description]]></en>
+        </locale>
+        <locale name="order.products.quantity">
+<en><![CDATA[Quantity]]></en>
+        </locale>
+        <locale name="order.products.unitPrice">
+<en><![CDATA[Unit price]]></en>
+        </locale>
+        <locale name="order.products.price">
+<en><![CDATA[Price]]></en>
+        </locale>
+        <locale name="order.btn.pdf">
+<en><![CDATA[Print / PDF]]></en>
+        </locale>
+        <locale name="order.send.mail.subject">
+<en><![CDATA[Your order - [orderPrefixedId]]]></en>
+        </locale>
+        <locale name="order.send.mail.title">
+<en><![CDATA[Order e-mail]]></en>
+        </locale>
+        <locale name="order.send.mail.description">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="order.send.mail.message">
+<en><![CDATA[
+            <h1>Hello [user],</h1>
+            <p>Your order ([orderPrefixedId]) is attached to this e-mail as a PDF;
+            just click on the attachment to access it.</p>
+
+            <p>You will need a PDF reader such as Adobe Acrobat Reader to view this order.
+            If you do not yet have a reader installed, you can download one quickly, easily,
+            and at no cost at all. To install the Acrobat Reader, just go to Acrobat's free download site or copy
+            the following URL to your browser's address bar:<br />
+            http://get.adobe.com/reader/</p>
+
+            <p>Your order is also available online in your account. Just click on "My orders" to access them.</p>
+
+            <p>If you have any questions or remarks, please contact us by answering this e-mail.
+            Our support team will contact you shortly.</p>
+
+            <p>All best wishes,<br />
+            [systemCompany]
+            </p>
+            ]]></en>
+        </locale>
+
+        <locale name="message.copy.from">
+<en><![CDATA[Copy from order #[orderId]]]></en>
+        </locale>
+        <locale name="message.basket.is.empty">
+<en><![CDATA[There are no products in your shopping cart]]></en>
+        </locale>
+
+        <locale name="control.basket.buttonAdd.text">
+<en><![CDATA[Add to basket]]></en>
+        </locale>
+        <locale name="control.basket.buttonAdd.title">
+<en><![CDATA[Add [product] to basket]]></en>
+        </locale>
+        <locale name="control.basket.quantity.text">
+<en><![CDATA[Quantity]]></en>
+        </locale>
+        <locale name="control.basket.quantity.button.decrease">
+<en><![CDATA[Decrease quantity]]></en>
+        </locale>
+        <locale name="control.basket.quantity.button.increase">
+<en><![CDATA[Increase quantity]]></en>
+        </locale>
+        <locale name="control.basket.buttonVariantAdd.text">
+<en><![CDATA[Select options]]></en>
+        </locale>
+
+        <locale name="ordering.btn.next">
+<en><![CDATA[Apply and continue]]></en>
+        </locale>
+        <locale name="ordering.btn.previous">
+<en><![CDATA[Back]]></en>
+        </locale>
+        <locale name="ordering.btn.pay.to.order">
+<en><![CDATA[Order and pay]]></en>
+        </locale>
+        <locale name="ordering.btn.backToShop">
+<en><![CDATA[Back to the Shop]]></en>
+        </locale>
+        <locale name="ordering.btn.backToBasket">
+<en><![CDATA[Back to shopping cart]]></en>
+        </locale>
+        <locale name="ordering.btn.changePayment">
+<en><![CDATA[Change payment type]]></en>
+        </locale>
+        <locale name="ordering.title">
+<en><![CDATA[Order]]></en>
+        </locale>
+        <locale name="order.numberrange.title">
+<en><![CDATA[Orders]]></en>
+        </locale>
+
+        <locale name="payment.status.0">
+<en><![CDATA[open]]></en>
+        </locale>
+        <locale name="payment.status.1">
+<en><![CDATA[paid]]></en>
+        </locale>
+        <locale name="payment.status.2">
+<en><![CDATA[part payment]]></en>
+        </locale>
+        <locale name="payment.status.3">
+<en><![CDATA[canceled]]></en>
+        </locale>
+        <locale name="payment.status.4">
+<en><![CDATA[error]]></en>
+        </locale>
+        <locale name="payment.status.5">
+<en><![CDATA[canceled]]></en>
+        </locale>
+        <locale name="payment.status.11">
+<en><![CDATA[Direct debit]]></en>
+        </locale>
+        <locale name="payment.status.12">
+<en><![CDATA[Subscription plan]]></en>
+        </locale>
+        <locale name="dunning.level.0">
+<en><![CDATA[---]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.frontendUsers.profile.view.erp._header">
+<en><![CDATA[Profile categories: ERP / E-commerce]]></en>
+        </locale>
+        <locale name="profile.orders.title">
+<en><![CDATA[My orders]]></en>
+        </locale>
+        <locale name="control.frontendUsers.orders.title">
+<en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="profile.opened.orders.title">
+<en><![CDATA[My open orders]]></en>
+        </locale>
+        <locale name="control.frontendUsers.opened.orders.title">
+<en><![CDATA[Open orders]]></en>
+        </locale>
+        <locale name="message.orders.panel.empty.articles">
+<en><![CDATA[The order does not contain any items.]]></en>
+        </locale>
+        <locale name="message.different,delivery.address">
+<en><![CDATA[The delivery address differs from the billing address.]]></en>
+        </locale>
+        <locale name="dialog.edit.date.title">
+<en><![CDATA[Change order date]]></en>
+        </locale>
+        <locale name="dialog.edit.date.text">
+<en><![CDATA[Please enter a new order date.]]></en>
+        </locale>
+
+        <locale name="control.productList.add">
+<en><![CDATA[Add to basket]]></en>
+        </locale>
+        <locale name="processing.status.unknown">
+<en><![CDATA[---]]></en>
+        </locale>
+
+        <locale name="ordering.nobody.nav.login.title">
+<en><![CDATA[Already a customer]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.login.desc">
+<en><![CDATA[I already have a customer account]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.signup.title">
+<en><![CDATA[Create an account]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.signup.desc">
+<en><![CDATA[I would like to sign up]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.guest.title">
+<en><![CDATA[Order as a guest]]></en>
+        </locale>
+        <locale name="ordering.nobody.nav.guest.desc">
+<en><![CDATA[I do not want to create a customer account]]></en>
+        </locale>
+        <locale name="ordering.nobody.mainContent.btn.back">
+<en><![CDATA[Back]]></en>
+        </locale>
+
+        <locale name="ordering.nobody.login.text.prefix" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.login.text.suffix" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.registration.text.prefix" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.registration.text.suffix" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.guest.text.prefix" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="ordering.nobody.guest.text.suffix" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+
+        <locale name="filter.status.all">
+<en><![CDATA[Status: all]]></en>
+        </locale>
+        <locale name="filter.status">
+<en><![CDATA[Status: [status]]]></en>
+        </locale>
+
+        <locale name="shipping.confirmation.title">
+<en><![CDATA[Orders - Shipping confirmation]]></en>
+        </locale>
+        <locale name="shipping.confirmation.description">
+<en><![CDATA[Shipping confirmation E-mail]]></en>
+        </locale>
+
+        <locale name="history.order.created">
+<en><![CDATA[Order created]]></en>
+        </locale>
+        <locale name="history.order.edit">
+<en><![CDATA[Order was edited by #[userId] - [username]]]></en>
+        </locale>
+        <locale name="history.order.invoice.created">
+<en><![CDATA[Invoice [invoiceHash] created from order]]></en>
+        </locale>
+        <locale name="history.order.salesOrder.created">
+<en><![CDATA[Sales order [salesOrderHash] created from order]]></en>
+        </locale>
+        <locale name="history.order.copy.created">
+<en><![CDATA[Order copy [orderHash] created from order]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.order._header">
+<en><![CDATA[Shop - Order]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.order.addPayment">
+<en><![CDATA[May add payments]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.update">
+<en><![CDATA[May edit orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.delete">
+<en><![CDATA[May delete orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.copy">
+<en><![CDATA[May copy orders]]></en>
+        </locale>
+        <locale name="permission.quiqqer.order.create">
+<en><![CDATA[May create orders]]></en>
+        </locale>
+
+    </groups>
+
+    <groups name="quiqqer/order" datatype="php">
+
+
+        <locale name="message.ajax.backend.linkTransaction.error.tx_already_linked">
+<en><![CDATA[Transaction "[txId]" is already linked to order "[orderNo]".]]></en>
+        </locale>
+
+        <locale name="history.SalesOrder.created_from_order">
+<en><![CDATA[Created from order "[id]" by [user] (#[userId]).]]></en>
+        </locale>
+        <locale name="exception.createSalesOrder.package_not_installed">
+<en>
+                <![CDATA[
+                No sales order can be created from an order since the sales order package (quiqqer/salesorders) is not installed.]]></en>
+        </locale>
+        <locale name="exception.Factory.order_id_already_exists">
+<en><![CDATA[An order with ID #[id] cannot be created since this ID is already taken.]]></en>
+        </locale>
+
+        <locale name="PaymentReceiver.Order.title">
+<en><![CDATA[Order]]></en>
+        </locale>
+
+        <locale name="controls.UsedOrders.Article.buy_again">
+<en><![CDATA[Buy again]]></en>
+        </locale>
+
+        <locale name="message.backend.update.success">
+<en><![CDATA[Order [orderId] was successfully saved.]]></en>
+        </locale>
+        <locale name="message.backend.update.status">
+<en><![CDATA[The status of order [orderId] was changed.]]></en>
+        </locale>
+        <locale name="message.backend.update.status">
+<en><![CDATA[The status of order [orderId] was changed.]]></en>
+        </locale>
+
+        <locale name="order.history.set_successful">
+<en><![CDATA[Order successfully completed]]></en>
+        </locale>
+
+        <locale name="admin.types.orderingProcess">
+<en><![CDATA[Checkout]]></en>
+        </locale>
+        <locale name="admin.types.orderingProcess.desc">
+<en><![CDATA[
+            Specify the address at which the checkout can be called.
+            At this address, your customer will also find his shopping cart
+            ]]></en>
+        </locale>
+
+        <locale name="admin.types.shoppingCart">
+<en><![CDATA[Basket]]></en>
+        </locale>
+        <locale name="admin.types.shoppingCart.desc">
+<en><![CDATA[
+            This page shows your customers the products they have added to the shopping cart.
+            From here you can access the ordering process or return to the shop.
+            ]]></en>
+        </locale>
+
+        <locale name="ordering.step.title.Registration">
+<en><![CDATA[Login / Registration]]></en>
+        </locale>
+        <locale name="order.step.registration.login.title">
+<en><![CDATA[Sign in]]></en>
+        </locale>
+        <locale name="order.step.registration.login.description">
+<en><![CDATA[I already have an account]]></en>
+        </locale>
+        <locale name="order.step.registration.reg.title">
+<en><![CDATA[Sign up]]></en>
+        </locale>
+        <locale name="order.step.registration.reg.description">
+<en><![CDATA[I don't have an account yet and would like to create one.]]></en>
+        </locale>
+
+        <locale name="ordering.step.title.Basket">
+<en><![CDATA[Basket]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData">
+<en><![CDATA[Customer Information]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.Comment">
+<en><![CDATA[Further information]]></en>
+        </locale>
+        <locale name="ordering.step.title.Address">
+<en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="ordering.step.title.Delivery">
+<en><![CDATA[Delivery]]></en>
+        </locale>
+        <locale name="ordering.step.title.Payment">
+<en><![CDATA[Payment]]></en>
+        </locale>
+        <locale name="ordering.step.title.Payment.description" html="true">
+<en><![CDATA[Please select a payment type.]]></en>
+        </locale>
+        <locale name="ordering.step.title.Checkout">
+<en><![CDATA[Checkout & Order]]></en>
+        </locale>
+        <locale name="ordering.step.title.Processing">
+<en><![CDATA[Perform payment]]></en>
+        </locale>
+        <locale name="ordering.step.title.CheckoutPayment">
+<en><![CDATA[Process payment]]></en>
+        </locale>
+        <locale name="ordering.step.title.Finish">
+<en><![CDATA[Done!]]></en>
+        </locale>
+
+        <locale name="ordering.processing.change.payment.title">
+<en><![CDATA[Change payment type]]></en>
+        </locale>
+        <locale name="ordering.processing.change.payment.message" html="true">
+<en><![CDATA[If your payment did not work you can choose an alternative payment type.]]></en>
+        </locale>
+        <locale name="ordering.processing.change.payment.button">
+<en><![CDATA[Change and accept the payment type]]></en>
+        </locale>
+
+        <locale name="ordering.step.title.CustomerData.customerNo">
+<en><![CDATA[Customer no]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.eMail">
+<en><![CDATA[Email address]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.tel">
+<en><![CDATA[Phone]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.address">
+<en><![CDATA[Address]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.addressEdit">
+<en><![CDATA[Edit address]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.addressSave">
+<en><![CDATA[Save address]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.Comment.customer">
+<en><![CDATA[Buyer]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.Comment.comment">
+<en><![CDATA[Comment]]></en>
+        </locale>
+
+        <locale name="ordering.step.title.CustomerData.Comment.description">
+<en><![CDATA[
+            Here you have the possibility to make a comment about your order.
+            ]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.businessType">
+<en><![CDATA[Customer type]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.businessType.b2c">
+<en><![CDATA[Private customer]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.businessType.b2b">
+<en><![CDATA[Business customer]]></en>
+        </locale>
+        <locale name="ordering.step.title.CustomerData.requiredField.text">
+<en><![CDATA[Fields with a * are mandatory. Please fill in all these fields correctly.]]></en>
+        </locale>
+
+        <locale name="ordering.step.checkout.text" html="true">
+<en><![CDATA[Please check all the details of your order.<br />By clicking "Order and pay", you confirm your details and complete your order. You will receive a confirmation at the email address you provided.]]></en>
+        </locale>
+
+
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay">
+<en><![CDATA[Display of mandatory links]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay.description">
+<en><![CDATA[
+            Determines whether the mandatory links (e.g. terms and conditions, privacy policy, revocation instructions)
+            are displayed as individual checkboxes or combined in a single checkbox.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay.single_checkbox">
+<en><![CDATA[Display as one checkbox]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mandatoryLinksDisplay.multiple_checkboxes">
+<en><![CDATA[Display as multiple checkboxes]]></en>
+        </locale>
+
+        <locale name="ordering.step.checkout.checkoutAcceptText">
+<en><![CDATA[I have read [links] and accept them.]]></en>
+        </locale>
+        <locale name="exception.order.termsAndConditions.missing">
+<en><![CDATA[Please confirm the General Terms and Conditions.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.termsAndConditionsAcceptText">
+<en><![CDATA[I have read the [terms_and_conditions] and accept them.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.privacyPolicyAcceptText">
+<en><![CDATA[I have read the [privacy_policy] and accept it.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.revocationAcceptText">
+<en><![CDATA[I have read the [revocation] and accept it.]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.termsAndConditionsEntry">
+<en><![CDATA[the [terms_and_conditions]]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.privacyPolicyEntry">
+<en><![CDATA[the [privacy_policy]]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.revocationEntry">
+<en><![CDATA[the [revocation]]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.and">
+<en><![CDATA[and]]></en>
+        </locale>
+
+
+        <locale name="ordering.step.checkoutPayment.text" html="true">
+<en><![CDATA[
+            Thank you for your order. Your order has been successfully submitted.<br />
+            To complete the order now, please perform the payment.
+            ]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.billing.address">
+<en><![CDATA[Billing address]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.payment.shipping">
+<en><![CDATA[Payment and shipping]]></en>
+        </locale>
+
+        <locale name="salutation">
+<en><![CDATA[Salutation]]></en>
+        </locale>
+        <locale name="firstname">
+<en><![CDATA[First name]]></en>
+        </locale>
+        <locale name="lastname">
+<en><![CDATA[Last name]]></en>
+        </locale>
+        <locale name="company">
+<en><![CDATA[Company]]></en>
+        </locale>
+        <locale name="street_no">
+<en><![CDATA[Street and house number]]></en>
+        </locale>
+        <locale name="zip">
+<en><![CDATA[Zip]]></en>
+        </locale>
+        <locale name="city">
+<en><![CDATA[City]]></en>
+        </locale>
+        <locale name="country">
+<en><![CDATA[Country]]></en>
+        </locale>
+
+
+        <locale name="exception.no.orders.found">
+<en><![CDATA[No orders were found.]]></en>
+        </locale>
+        <locale name="exception.order.not.found">
+<en><![CDATA[The requested order was not found.]]></en>
+        </locale>
+
+        <locale name="window.erp.title">
+<en><![CDATA[Shop]]></en>
+        </locale>
+        <locale name="window.erp.order.title">
+<en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="order.settings.title">
+<en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="order.process.settings.title">
+<en><![CDATA[Checkout]]></en>
+        </locale>
+        <locale name="order.settings.failedPaymentProcedure">
+<en><![CDATA[Procedure for failed payment]]></en>
+        </locale>
+
+        <locale name="order.settings.userProfile.title">
+<en><![CDATA[User profile]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.showArticleImage">
+<en><![CDATA[Show article images]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.showArticleImage.desc">
+<en>
+                <![CDATA[When enabled, product images are displayed in the user profile's order history and open orders section.]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.disableProductLinks">
+<en><![CDATA[Disable product links]]></en>
+        </locale>
+        <locale name="order.settings.userProfile.disableProductLinks.desc">
+<en><![CDATA[When enabled, no links to products will be displayed in the user profile.]]></en>
+        </locale>
+
+        <locale name="order.settings.mails.attachments">
+<en><![CDATA[Automatic mail attachments]]></en>
+        </locale>
+        <locale name="order.settings.mails.attachments.description">
+<en><![CDATA[
+            The selected pages are automatically attached to each order mail as mail attachments.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.mails.termsAndConditions">
+<en><![CDATA[Terms and Conditions]]></en>
+        </locale>
+        <locale name="order.settings.mails.privacyPolicy">
+<en><![CDATA[Privacy Policy]]></en>
+        </locale>
+        <locale name="order.settings.mails.cancellationPolicy">
+<en><![CDATA[Cancellation Policy (Only B2C)]]></en>
+        </locale>
+        <locale name="order.settings.mails.attachments">
+<en><![CDATA[File attachments]]></en>
+        </locale>
+
+        <locale name="order.settings.failedPaymentProcedure,execute">
+<en><![CDATA[Execute order]]></en>
+        </locale>
+        <locale name="order.settings.failedPaymentProcedure.returning">
+<en><![CDATA[Returning Users to the Order Process]]></en>
+        </locale>
+        <locale name="order.settings.paymentsChangeable.title">
+<en><![CDATA[Payment type is changeable]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice">
+<en><![CDATA[Create invoice automatically]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.noAuto">
+<en><![CDATA[Do not create automatically]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.onOrder">
+<en><![CDATA[On ordering]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.onPaid">
+<en><![CDATA[On full payment]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoice.byPayment">
+<en><![CDATA[Determination by payment type]]></en>
+        </locale>
+        <locale name="order.settings.processingStatus.title">
+<en><![CDATA[Order status]]></en>
+        </locale>
+        <locale name="order.settings.order.orderAdminMails">
+<en><![CDATA[E-mail addresses for order mails]]></en>
+        </locale>
+        <locale name="order.settings.order.orderAdminMails.description">
+<en><![CDATA[All email addresses entered here receive the order emails. You can enter multiple email addresses separated by commas. If no email addresses are specified, the default administration setting is used.]]></en>
+        </locale>
+
+        <locale name="order.settings.order.prefix">
+<en><![CDATA[Prefix for order numbers]]></en>
+        </locale>
+        <locale name="order.settings.order.prefix.description">
+<en><![CDATA[
+            Prefixes for order numbers can also handle date formatting.
+            For possible date formats, see:
+            <a href="http://php.net/manual/de/function.strftime.php#refsect1-function.strftime-parameters" target="_blank">
+                http://php.net/manual/de/function.strftime.php#refsect1-function.strftime-parameters
+            </a>
+            ]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmation">
+<en><![CDATA[Confirmation of order]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmation.description">
+<en><![CDATA[Send order confirmation automatically]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmationToAdmin">
+<en><![CDATA[Copy of order (Administrator)]]></en>
+        </locale>
+        <locale name="order.settings.order.sendOrderConfirmationToAdmin.description">
+<en><![CDATA[
+            Send order confirmation copy to the admin.
+            The administrator is entered here as a BCC e-mail if an order confirmation has been sent.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.order.sendAdminOrderConfirmation">
+<en><![CDATA[Order information for the administrator]]></en>
+        </locale>
+        <locale name="order.settings.order.sendAdminOrderConfirmation.description">
+<en><![CDATA[This email provides information about an incoming order. It is not a copy of the order confirmation.]]></en>
+        </locale>
+
+        <locale name="order.status.settings.title">
+<en><![CDATA[Status settings]]></en>
+        </locale>
+        <locale name="order.settings.order.defaultOrderStatus">
+<en><![CDATA[Default Order status]]></en>
+        </locale>
+        <locale name="order.settings.order.defaultOrderStatus.description">
+<en><![CDATA[
+                Defines the standard order status, which an order receives directly when it is created.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.cancelled">
+<en><![CDATA["Cancelled" order status]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.cancelled.description">
+<en><![CDATA[
+                Defines the order status, which marks an order as "cancelled".
+            ]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.finished">
+<en><![CDATA["Finished" order status]]></en>
+        </locale>
+        <locale name="order.settings.order.orderStatus.finished.description">
+<en><![CDATA[
+                Defines the order status which marks an order as "finished".
+            ]]></en>
+        </locale>
+
+        <locale name="order.settings.autoInvoicePost">
+<en><![CDATA[Posting Invoices automatically]]></en>
+        </locale>
+        <locale name="order.settings.autoInvoicePost.description">
+<en><![CDATA[
+            The invoice is posted automatically when the invoice is created
+            ]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.showArticleNumberInBasket">
+<en><![CDATA[Show article number in shopping cart]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mergeSameProducts">
+<en><![CDATA[Merge the same products]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.mergeSameProducts.description">
+<en><![CDATA[
+            When a product is added, identical products are merged into one product and the number is increased accordingly.
+            If this option is not activated, each product added will have its own position.
+            ]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.backToShopUrl">
+<en><![CDATA[Back to the Shop Link]]></en>
+        </locale>
+        <locale name="order.settings.orderProcess.backToShopUrl.description">
+<en><![CDATA[This property defines where the 'Back to the Shop' link should lead to.]]></en>
+        </locale>
+
+        <locale name="exception.order.process.not.found">
+<en><![CDATA[Checkout not found. Please create an order process.]]></en>
+        </locale>
+
+        <locale name="message.no.orders">
+<en><![CDATA[You do not have any orders.]]></en>
+        </locale>
+        <locale name="message.no.open.orders">
+<en><![CDATA[You do not have any open orders.]]></en>
+        </locale>
+
+        <locale name="exception.basket.not.found" html="true">
+<en><![CDATA[
+            An error has occurred. Your shopping cart could not be loaded.<br />
+            If you think this is an error, please contact the administrator.
+            ]]></en>
+        </locale>
+        <locale name="exception.order.unknown.error">
+<en><![CDATA[
+            An unexpected error has occurred, support has been notified.
+            ]]></en>
+        </locale>
+
+        <locale name="control.profile.orders.order.date">
+<en><![CDATA[Order date]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.total">
+<en><![CDATA[Total]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.invoiceAddress">
+<en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.orderNo">
+<en><![CDATA[Order No.]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.orderStatus">
+<en><![CDATA[Order status]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.invoice.label">
+<en><![CDATA[Invoice]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.invoice">
+<en><![CDATA[Download invoice]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.continuePayment.label">
+<en><![CDATA[Required action]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.continuePayment">
+<en><![CDATA[Continue payment]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.paymentMethod">
+<en><![CDATA[Payment method]]></en>
+        </locale>
+        <locale name="control.profile.orders.order.paymentStatus">
+<en><![CDATA[Payment status]]></en>
+        </locale>
+
+        <locale name="processing.status.notification.subject">
+<en><![CDATA[Change of your order [orderNo]]]></en>
+        </locale>
+        <locale name="processing.status.notification.template" html="true">
+<en><![CDATA[
+<p>Hello [customerName],</p>
+<p>the status of your order <b>[orderNo]</b> from <b>[orderDate]</b> changed. The order is now <b>[orderStatus]</b>.</p>
+]]></en>
+        </locale>
+        <locale name="processing.status.default.1">
+<en><![CDATA[new]]></en>
+        </locale>
+        <locale name="processing.status.default.2">
+<en><![CDATA[in processing]]></en>
+        </locale>
+        <locale name="processing.status.default.3">
+<en><![CDATA[done]]></en>
+        </locale>
+        <locale name="processing.status.default.4">
+<en><![CDATA[finished]]></en>
+        </locale>
+        <locale name="processing.status.default.5">
+<en><![CDATA[cancelled]]></en>
+        </locale>
+        <locale name="message.change.order.status">
+<en><![CDATA[The status of the order has been changed to: [status]]]></en>
+        </locale>
+        <locale name="message.change.order.shipping.status">
+<en><![CDATA[The shipping status of the order has been changed to: [status]]]></en>
+        </locale>
+
+        <locale name="control.order.details.title">
+<en><![CDATA[Order details]]></en>
+        </locale>
+        <locale name="control.order.details.date">
+<en><![CDATA[Order date]]></en>
+        </locale>
+        <locale name="control.order.details.orderNo">
+<en><![CDATA[Order no.]]></en>
+        </locale>
+        <locale name="control.order.details.invoice">
+<en><![CDATA[Invoice]]></en>
+        </locale>
+        <locale name="control.order.invoiceAddress.title">
+<en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="control.order.overview.title">
+<en><![CDATA[Order overview]]></en>
+        </locale>
+        <locale name="control.order.overview.subSum">
+<en><![CDATA[Subtotal]]></en>
+        </locale>
+        <locale name="control.order.overview.sum">
+<en><![CDATA[Grand total]]></en>
+        </locale>
+        <locale name="control.order.overview.grandSubSum">
+<en><![CDATA[Total]]></en>
+        </locale>
+        <locale name="control.order.article.title">
+<en><![CDATA[Article]]></en>
+        </locale>
+        <locale name="control.order.payment.title">
+<en><![CDATA[Payment method]]></en>
+        </locale>
+        <locale name="control.order.deliveryAddress.title">
+<en><![CDATA[Delivery address]]></en>
+        </locale>
+        <locale name="control.order.shipping.title">
+<en><![CDATA[Shipping]]></en>
+        </locale>
+
+        <locale name="message.address.saved.successfully">
+<en><![CDATA[The address has been saved successfully.]]></en>
+        </locale>
+
+        <locale name="message.order.success" html="true">
+<en><![CDATA[
+            <h1>Thank you for your order</h1>
+            <p>We have received your order and will process it as soon as possible.</p>
+            ]]></en>
+        </locale>
+
+        <locale name="history.message.linkTransaction">
+<en><![CDATA[Transaction "[txId]" in the amount of [txAmount] linked to order by [username] #[uid].]]></en>
+        </locale>
+        <locale name="history.message.addTransaction">
+<en><![CDATA[Transaction added]]></en>
+        </locale>
+        <locale name="history.message.edit">
+<en><![CDATA[Order edited by [username] ([uid])]]></en>
+        </locale>
+
+        <locale name="order.confirmation.subject">
+<en><![CDATA[Thank you for your order - [orderPrefixedId]]]></en>
+        </locale>
+        <locale name="order.confirmation.body" html="true">
+<en><![CDATA[
+            Dear [user],<br />
+            Thank you for your order. Here are the details:<br />
+            <h4 style="margin-bottom: 10px;">Order no.</h4> [orderPrefixedId]
+            ]]></en>
+        </locale>
+
+        <locale name="cron.cleanup.orderInProcess">
+<en><![CDATA[Cleanup orders in process]]></en>
+        </locale>
+        <locale name="cron.cleanup.orderInProcess.description">
+<en><![CDATA[This cron removes old, incomplete orders that are no longer needed. It only affects abandoned checkout processes, not orders that have already been placed.]]></en>
+        </locale>
+
+        <locale name="control.basket.small.shoppingCart.button">
+<en><![CDATA[Shopping cart]]></en>
+        </locale>
+        <locale name="control.basket.small.buy.button">
+<en><![CDATA[Checkout]]></en>
+        </locale>
+        <locale name="exception.order.already.exists">
+<en><![CDATA[
+            The order already exists, so unfortunately this action cannot be performed.
+            ]]></en>
+        </locale>
+
+        <locale name="control.button.backToShop">
+<en><![CDATA[Back to the Shop]]></en>
+        </locale>
+        <locale name="control.button.toCheckout">
+<en><![CDATA[Checkout]]></en>
+        </locale>
+
+        <locale name="mail.order.confirmation.delivery.title">
+<en><![CDATA[Delivery address]]></en>
+        </locale>
+        <locale name="ordering.step.checkout.delivery.address">
+<en><![CDATA[Delivery address]]></en>
+        </locale>
+
+        <locale name="mail.order.confirmation.delivery.same.as.invoice">
+<en><![CDATA[Same as billing address]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.shipping.title">
+<en><![CDATA[Shipping]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.payment.title">
+<en><![CDATA[Payment]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.invoice.title">
+<en><![CDATA[Invoice address]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.details" html="true">
+<en><![CDATA[ ]]></en>
+        </locale>
+        <locale name="mail.order.confirmation.comments.title">
+<en><![CDATA[Comment]]></en>
+        </locale>
+        <locale name="message.order.missing.customer.mail">
+<en><![CDATA[
+                The customer [customerId] has not set an e-mail.
+                No order confirmation could be sent for [orderId].
+            ]]></en>
+        </locale>
+        <locale name="message.order.payment_success.missing.customer.mail">
+<en><![CDATA[
+                The customer [customerId] has no e-mail address.
+                The payment confirmation for order [orderId] could not be sent.
+            ]]></en>
+        </locale>
+        <locale name="mail.payment_success.missing_customer_email.admin.subject">
+<en><![CDATA[Payment confirmation for order [orderId] was not sent]]></en>
+        </locale>
+        <locale name="mail.payment_success.missing_customer_email.admin.body">
+<en><![CDATA[
+                Order [orderId] was reported as paid.
+                However, customer [customerId] has no e-mail address.
+                The payment confirmation could therefore not be sent to the customer.
+            ]]></en>
+        </locale>
+        <locale name="message.order.missing.admin.mail">
+<en><![CDATA[
+            No administrator e-mail address has been set up.
+            No order confirmation information could be sent.
+            ]]></en>
+        </locale>
+
+        <locale name="order.confirmation.admin.subject">
+<en><![CDATA[An order was placed: [orderPrefixedId]]]></en>
+        </locale>
+        <locale name="order.confirmation.admin.body" html="true">
+<en><![CDATA[
+            <h2>Order details</h2>
+            Order ID: [orderId]<br />
+            User ID: [userId]<br />
+            Username: [username]<br />
+            ]]></en>
+        </locale>
+        <locale name="exception.order.confirmation.admin">
+<en><![CDATA[
+            Unfortunately an error occurred when sending an order confirmation for the administrator.
+            Order: [orderId]; Error: [message]
+            ]]></en>
+        </locale>
+
+        <locale name="basket.articles.articleNo">
+<en><![CDATA[Article No.:]]></en>
+        </locale>
+
+        <locale name="console.SendOrderConfirmationMail.desc">
+<en>
+                <![CDATA[Sends an order confirmation email. The order number is required. The ID can be entered with or without a prefix (--orderId=1234).]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.help.orderId">
+<en>
+                <![CDATA[The internal order id for the desired (already placed) order. The system sends each time a confirmation mail to the admin email address.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.noOrderFound">
+<en><![CDATA[The order with the ID [orderId] was not found.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.cantSendEmail">
+<en><![CDATA[The email could not be sent.]]></en>
+        </locale>
+        <locale name="console.SendOrderConfirmationMail.message.success">
+<en><![CDATA[The email was sent.]]></en>
+        </locale>
+
+        <locale name="erp.comment.order.created">
+<en><![CDATA[Created order #[orderId]]]></en>
+        </locale>
+
+        <locale name="order.process.product.not.available">
+<en><![CDATA[The product [articleNo] [title] is no longer available.]]></en>
+        </locale>
+
+        <locale name="mail.text.orderConfirmation.title">
+<en><![CDATA[Orders - Order confirmation]]></en>
+        </locale>
+        <locale name="mail.text.orderConfirmation.description">
+<en><![CDATA[
+            An order confirmation is sent to the customer when they have placed an order.
+            ]]></en>
+        </locale>
+        <locale name="mail.text.orderPaymentSuccess.title">
+<en><![CDATA[Orders - Payment confirmation]]></en>
+        </locale>
+        <locale name="mail.text.orderPaymentSuccess.description">
+<en><![CDATA[
+            Can be sent when an order has been paid in full. Currently only triggered manually (by code).
+            ]]></en>
+        </locale>
+        <locale name="mail.payment_success.subject">
+<en><![CDATA[Your order #[orderId] has been paid]]></en>
+        </locale>
+        <locale name="mail.payment_success.body" html="true">
+<en><![CDATA[<h3>Hello [contactPersonOrName],</h3>
+<p>the receipt of payment for your order with the no. <b>[orderId]</b> from [date] was successfully booked. Your order is hereby considered paid. We will process your order as soon as possible.</p>
+<p>Best regards,<br/>
+[systemCompany]
+</p>]]></en>
+        </locale>
+
+        <locale name="exception.shipping.is.not.valid.no.articles">
+<en><![CDATA[
+            A shipping method cannot be assigned to the order because the order does not yet have any items.
+            ]]></en>
+        </locale>
+        <locale name="exception.shipping.is.not.valid">
+<en><![CDATA[
+            This shipping method cannot be used for this order, please select a different shipping method.
+            ]]></en>
+        </locale>
+
+        <locale name="exception.shipping.order.no.customer.mail">
+<en><![CDATA[
+            No shipping confirmation could be sent, no email could be found for the customer.
+            ]]></en>
+        </locale>
+        <locale name="exception.shipping.order.mail">
+<en><![CDATA[
+            An error occurred while sending the shipping confirmation of the order [orderId].
+            [message]
+            ]]></en>
+        </locale>
+        <locale name="shipping.order.mail.subject">
+<en><![CDATA[Your order #[orderPrefixedId] has been shipped.]]></en>
+        </locale>
+        <locale name="shipping.order.mail.body" html="true">
+<en><![CDATA[
+            <p>Hello [name],</p>
+            <p>your order with order no. "[orderPrefixedId]" from [date] has just been shipped.</p>
+            [trackingInfo]
+
+            <p>If you have any questions about your order, please contact us.</p>
+            <p>Best regards<br/>
+            [company]</p>
+            ]]></en>
+        </locale>
+
+        <locale name="shipping.order.mail.body.shippingInformation" html="true">
+<en><![CDATA[<p>You can track the shipping status of your order at [trackingLink].</p>]]></en>
+        </locale>
+
+        <locale name="exception.no.permission.for.this.order">
+<en><![CDATA[Sorry, you do not have permission for this operation.]]></en>
+        </locale>
+        <locale name="order.siteSettings">
+<en><![CDATA[Order settings]]></en>
+        </locale>
+        <locale name="quiqqer.order.checkoutType">
+<en><![CDATA[Checkout design]]></en>
+        </locale>
+        <locale name="quiqqer.order.checkoutType.one.page">
+<en><![CDATA[One page checkout]]></en>
+        </locale>
+        <locale name="quiqqer.order.checkoutType.step.by.step">
+<en><![CDATA[Step by step checkout]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroText">
+<en><![CDATA[Title (not logged in)]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroText.desc">
+<en><![CDATA[This title is only visible to users who are not logged in.]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroDesc">
+<en><![CDATA[Short text (not logged in)]]></en>
+        </locale>
+        <locale name="quiqqer.order.nobodyIntroDesc.desc">
+<en><![CDATA[This text is only visible to users who are not logged in.]]></en>
+        </locale>
+    </groups>
+
+    <groups name="quiqqer/order" datatype="js">
+        <locale name="orders.panel.title">
+<en><![CDATA[Orders]]></en>
+        </locale>
+        <locale name="order.panel.title">
+<en><![CDATA[Order: [orderId]]]></en>
+        </locale>
+        <locale name="erp.panel.orderProcess.text">
+<en><![CDATA[Orders (in process)]]></en>
+        </locale>
+
+        <locale name="panel.btn.createInvoice">
+<en><![CDATA[Create invoice]]></en>
+        </locale>
+        <locale name="panel.btn.createSalesOrder">
+<en><![CDATA[Create sales order]]></en>
+        </locale>
+        <locale name="panel.btn.createOrder">
+<en><![CDATA[Create order]]></en>
+        </locale>
+        <locale name="panel.btn.copyOrder">
+<en><![CDATA[Copy order]]></en>
+        </locale>
+        <locale name="panel.btn.deleteOrder">
+<en><![CDATA[Delete order]]></en>
+        </locale>
+        <locale name="panel.btn.openOrder">
+<en><![CDATA[Open order]]></en>
+        </locale>
+
+        <locale name="panel.btn.actions">
+<en><![CDATA[Actions]]></en>
+        </locale>
+        <locale name="panel.btn.total">
+<en><![CDATA[Show sum]]></en>
+        </locale>
+
+        <locale name="panel.order.button.buttonAdd">
+<en><![CDATA[Add Article]]></en>
+        </locale>
+        <locale name="panel.order.article.buttonAdd.custom">
+<en><![CDATA[Custom Article]]></en>
+        </locale>
+        <locale name="panel.order.article.buttonAdd.text">
+<en><![CDATA[Text]]></en>
+        </locale>
+        <locale name="panel.order.button.article.sort.text">
+<en><![CDATA[Sort articles]]></en>
+        </locale>
+
+        <locale name="panel.order.category.data">
+<en><![CDATA[Order data]]></en>
+        </locale>
+        <locale name="panel.order.category.articles">
+<en><![CDATA[Articles]]></en>
+        </locale>
+        <locale name="panel.order.category.payment">
+<en><![CDATA[Payment information]]></en>
+        </locale>
+        <locale name="panel.order.category.history">
+<en><![CDATA[History]]></en>
+        </locale>
+        <locale name="panel.order.category.preview">
+<en><![CDATA[Preview]]></en>
+        </locale>
+
+        <locale name="panel.order.data.title">
+<en><![CDATA[Order data]]></en>
+        </locale>
+        <locale name="panel.order.data.date">
+<en><![CDATA[Ordered at]]></en>
+        </locale>
+        <locale name="panel.order.data.orderedBy">
+<en><![CDATA[Ordered by]]></en>
+        </locale>
+        <locale name="panel.order.data.status">
+<en><![CDATA[Order status]]></en>
+        </locale>
+        <locale name="panel.order.data.textProjectName">
+<en><![CDATA[Project name]]></en>
+        </locale>
+        <locale name="panel.order.shipping">
+<en><![CDATA[Shipping type]]></en>
+        </locale>
+        <locale name="panel.order.shipping.data.title">
+<en><![CDATA[Shipping]]></en>
+        </locale>
+        <locale name="panel.order.shipping.data.status">
+<en><![CDATA[Status]]></en>
+        </locale>
+        <locale name="panel.order.shipping.tracking">
+<en><![CDATA[Tracking ID]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.button">
+<en><![CDATA[Send shipping confirmation]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.title">
+<en><![CDATA[Send shipping confirmation?]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.text">
+<en><![CDATA[Do you want to send a shipping confirmation?]]></en>
+        </locale>
+        <locale name="panel.order.shipping.confirmation.information">
+<en><![CDATA[
+            Send a shipping confirmation to the customer and mark this order as shipped.
+            This shipping confirmation does not change the order or shipping status.
+            ]]></en>
+        </locale>
+
+        <locale name="panel.orders.contextMenu.open.order">
+<en><![CDATA[Open order]]></en>
+        </locale>
+        <locale name="panel.orders.contextMenu.open.user">
+<en><![CDATA[Open user]]></en>
+        </locale>
+        <locale name="panel.orders.contextMenu.open.invoice">
+<en><![CDATA[Open invoice]]></en>
+        </locale>
+        <locale name="panel.orders.contextMenu.change.status">
+<en><![CDATA[Change order status]]></en>
+        </locale>
+
+        <locale name="grid.orderNo">
+<en><![CDATA[Order no]]></en>
+        </locale>
+        <locale name="grid.orderStatus">
+<en><![CDATA[Order status]]></en>
+        </locale>
+        <locale name="grid.invoiceNo">
+<en><![CDATA[Invoice no]]></en>
+        </locale>
+        <locale name="grid.customerNo">
+<en><![CDATA[Customer no]]></en>
+        </locale>
+        <locale name="grid.status">
+<en><![CDATA[Payment status]]></en>
+        </locale>
+        <locale name="grid.vat">
+<en><![CDATA[VAT]]></en>
+        </locale>
+        <locale name="grid.sum">
+<en><![CDATA[Total]]></en>
+        </locale>
+        <locale name="grid.paymentMethod">
+<en><![CDATA[Payment type]]></en>
+        </locale>
+        <locale name="grid.paymentStatus">
+<en><![CDATA[Payment status]]></en>
+        </locale>
+        <locale name="grid.timeForPayment">
+<en><![CDATA[Payment term (days)]]></en>
+        </locale>
+        <locale name="grid.paymentDate">
+<en><![CDATA[Payment date]]></en>
+        </locale>
+        <locale name="grid.paid">
+<en><![CDATA[paid]]></en>
+        </locale>
+        <locale name="grid.open">
+<en><![CDATA[open]]></en>
+        </locale>
+        <locale name="grid.brutto">
+<en><![CDATA[Gross]]></en>
+        </locale>
+        <locale name="grid.netto">
+<en><![CDATA[Net]]></en>
+        </locale>
+        <locale name="grid.taxId">
+<en><![CDATA[Tax number]]></en>
+        </locale>
+        <locale name="grid.euVatId">
+<en><![CDATA[EU VAT ID]]></en>
+        </locale>
+        <locale name="grid.orderDate">
+<en><![CDATA[Order date]]></en>
+        </locale>
+        <locale name="grid.dunning">
+<en><![CDATA[Dunning level]]></en>
+        </locale>
+        <locale name="grid.processingStatus">
+<en><![CDATA[Processing status]]></en>
+        </locale>
+        <locale name="grid.comments">
+<en><![CDATA[Comments]]></en>
+        </locale>
+        <locale name="grid.paymentData">
+<en><![CDATA[Payment data]]></en>
+        </locale>
+        <locale name="grid.hash">
+<en><![CDATA[Hash]]></en>
+        </locale>
+        <locale name="grid.globalProcessId">
+<en><![CDATA[Procedure number]]></en>
+        </locale>
+
+        <locale name="processingStatus.grid.id">
+<en><![CDATA[ID]]></en>
+        </locale>
+        <locale name="processingStatus.grid.color">
+<en><![CDATA[Color]]></en>
+        </locale>
+        <locale name="processingStatus.grid.notification">
+<en><![CDATA[Auto notification]]></en>
+        </locale>
+
+        <locale name="order.address.confirm.title">
+<en><![CDATA[Please choose an address]]></en>
+        </locale>
+        <locale name="order.address.confirm.information">
+<en><![CDATA[The user has several addresses. Which address should be used?]]></en>
+        </locale>
+
+        <locale name="order.payment.panel.paymentTitle">
+<en><![CDATA[Payment information]]></en>
+        </locale>
+        <locale name="order.payment.panel.payment">
+<en><![CDATA[Payment method]]></en>
+        </locale>
+
+        <locale name="panel.order.category.details">
+<en><![CDATA[Details]]></en>
+        </locale>
+
+        <locale name="dialog.order.delete.title">
+<en><![CDATA[Delete order]]></en>
+        </locale>
+        <locale name="dialog.order.delete.text">
+<en><![CDATA[Are you sure you want to delete the order?]]></en>
+        </locale>
+        <locale name="dialog.order.delete.information">
+<en><![CDATA[The Order <b>[id]</b> will be irrevocably deleted.]]></en>
+        </locale>
+        <locale name="dialog.orders.delete.title">
+<en><![CDATA[Delete orders]]></en>
+        </locale>
+        <locale name="dialog.orders.delete.text">
+<en><![CDATA[Are you sure you want to delete the selected orders?]]></en>
+        </locale>
+        <locale name="dialog.orders.delete.information">
+<en><![CDATA[The selected [count] orders will be irrevocably deleted.]]></en>
+        </locale>
+
+        <locale name="dialog.order.post.title">
+<en><![CDATA[Create Invoice]]></en>
+        </locale>
+        <locale name="dialog.order.post.text">
+<en><![CDATA[Do you really want to create the invoice?]]></en>
+        </locale>
+        <locale name="dialog.order.post.information">
+<en><![CDATA[
+            A new invoice will be created for the order. The invoice is opened directly after creation.
+            ]]></en>
+        </locale>
+
+        <locale name="dialog.order.copy.title">
+<en><![CDATA[Copy order]]></en>
+        </locale>
+        <locale name="dialog.order.copy.text">
+<en><![CDATA[Are you sure you want to copy the order?]]></en>
+        </locale>
+        <locale name="dialog.order.copy.information">
+<en><![CDATA[
+                The order <b>#[id]</b> would be copied with all the data contained therein. <br />
+                After the creation, the order would be opened for further processing.
+            ]]></en>
+        </locale>
+
+        <locale name="dialog.order.create.title">
+<en><![CDATA[Create order]]></en>
+        </locale>
+        <locale name="dialog.order.create.text">
+<en><![CDATA[Do you want to create a new order?]]></en>
+        </locale>
+        <locale name="dialog.order.create.information">
+<en><![CDATA[
+                The new order is opened immediately and can be edited further.
+            ]]></en>
+        </locale>
+        <locale name="dialog.order.create.button">
+<en><![CDATA[Create order]]></en>
+        </locale>
+
+        <locale name="dialog.add.comment.title">
+<en><![CDATA[Add a comment]]></en>
+        </locale>
+
+        <locale name="dialog.processingStatus.create.title">
+<en><![CDATA[Create order status]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.edit.title">
+<en><![CDATA[Edit order status]]></en>
+        </locale>
+
+        <locale name="dialog.processingStatus.delete.title">
+<en><![CDATA[Remove order status]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.delete.text">
+<en><![CDATA[Really remove order status?]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.delete.information" html="true">
+<en><![CDATA[
+            The following order status will be removed: <br />
+            <strong>#[id] - [title]</strong>
+            <br /><br />
+            The order status is not recoverable.
+            ]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelTitle">
+<en><![CDATA[Title]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelStatusNo">
+<en><![CDATA[Status no.]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelColor">
+<en><![CDATA[Color]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.labelNotification">
+<en><![CDATA[Notify customer]]></en>
+        </locale>
+        <locale name="dialog.processingStatus.template.descNotification" html="true">
+<en>
+                <![CDATA[Customers should be automatically notified by e-mail when the status of an order <b>automatically</b> is changed to this status. In case of a <b>manual status change</b> you will be asked if you want to send a notification.]]></en>
+        </locale>
+
+        <locale name="dialog.order.createInvoice.title">
+<en><![CDATA[Create invoice]]></en>
+        </locale>
+        <locale name="dialog.order.createInvoice.text">
+<en><![CDATA[Create invoice]]></en>
+        </locale>
+        <locale name="dialog.order.createInvoice.information" html="true">
+<en><![CDATA[Would you like to create an invoice from this order?<br /><br />An invoice draft will be created from the order. You can still edit this invoice.]]></en>
+        </locale>
+
+        <locale name="dialog.order.createSalesOrder.title">
+<en><![CDATA[Create sales order]]></en>
+        </locale>
+        <locale name="dialog.order.createSalesOrder.text">
+<en><![CDATA[Create sales order]]></en>
+        </locale>
+        <locale name="dialog.order.createSalesOrder.information" html="true">
+<en><![CDATA[
+            Shall a sales order be created from order "[id]"?
+            <br /><br />
+            A sales order in draft state is created from the order.
+            The sales order can be edited directly afterwards.
+            ]]></en>
+        </locale>
+
+<!-- frontend controls -->
+        <locale name="control.basket.button.text">
+<en><![CDATA[Basket]]></en>
+        </locale>
+
+        <locale name="control.order.window.title">
+<en><![CDATA[Order details of order no. [orderId]]]></en>
+        </locale>
+
+        <locale name="window.unlock.order.title">
+<en><![CDATA[Order is locked]]></en>
+        </locale>
+        <locale name="window.unlock.order.text">
+<en><![CDATA[Currently being processed]]></en>
+        </locale>
+
+        <locale name="control.orders.backButton">
+<en><![CDATA[Back to the orders]]></en>
+        </locale>
+
+        <locale name="message.order.is.locked" html="true">
+<en><![CDATA[
+            The order is currently being processed by [username] ([id]). The order can therefore unfortunately not be changed.
+            ]]></en>
+        </locale>
+
+        <locale name="button.unlock.order.is.locked">
+<en><![CDATA[
+            Unlock the order and still edit it.
+            ]]></en>
+        </locale>
+
+        <locale name="basket.merge.button.cancel">
+<en><![CDATA[Keep old basket]]></en>
+        </locale>
+        <locale name="basket.merge.button.use.new">
+<en><![CDATA[Use new basket]]></en>
+        </locale>
+        <locale name="basket.merge.button.merge">
+<en><![CDATA[Merge basket]]></en>
+        </locale>
+        <locale name="basket.merge.text" html="true">
+<en><![CDATA[
+            You have already placed products in your shopping cart as a guest,
+            but there are already other or older products in your order.
+            <br />
+            <br />
+            How would you like to proceed?
+            ]]></en>
+        </locale>
+        <locale name="basket.merge.title">
+<en><![CDATA[Existing products found]]></en>
+        </locale>
+
+        <locale name="panel.btn.paymentBook">
+<en><![CDATA[Post payment]]></en>
+        </locale>
+        <locale name="dialog.add.payment.amount">
+<en><![CDATA[Amount]]></en>
+        </locale>
+        <locale name="dialog.add.payment.paymentMethod">
+<en><![CDATA[Payment type]]></en>
+        </locale>
+        <locale name="dialog.add.payment.date">
+<en><![CDATA[Date]]></en>
+        </locale>
+
+        <locale name="panel.payments.date">
+<en><![CDATA[Date]]></en>
+        </locale>
+        <locale name="panel.payments.amount">
+<en><![CDATA[Amount]]></en>
+        </locale>
+        <locale name="panel.payments.paymentMethod">
+<en><![CDATA[Payment method]]></en>
+        </locale>
+        <locale name="panel.payments.txid">
+<en><![CDATA[TX ID]]></en>
+        </locale>
+
+        <locale name="dialog.statusChangeNotification.title">
+<en><![CDATA[Order status has changed]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.text">
+<en><![CDATA[Order status has changed]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.information" html="true">
+<en><![CDATA[
+            The status of the order was changed to <b>[statusTitle]</b>.
+            Should a notification of this change be sent to the customer by e-mail?
+            ]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.notification.label">
+<en><![CDATA[Please specify the message to the user:]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.btn.confirm">
+<en><![CDATA[Notify customer]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.btn.cancel">
+<en><![CDATA[Do not send a notification]]></en>
+        </locale>
+        <locale name="dialog.statusChangeNotification.btn.confirm_message">
+<en><![CDATA[Confirm message]]></en>
+        </locale>
+        <locale name="basket.add.information">
+<en><![CDATA[Product was added]]></en>
+        </locale>
+
+        <locale name="dialog.shippingStatusChangeNotification.title">
+<en><![CDATA[Shipping status has changed]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.text">
+<en><![CDATA[Shipping status has changed]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.information" html="true">
+<en><![CDATA[
+            The shipping status of the order was changed to <b>[statusTitle]</b>.
+            Should a notification of this change be sent to the customer by e-mail?
+            ]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.notification.label">
+<en><![CDATA[Please specify the message to the user:]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.btn.confirm">
+<en><![CDATA[Notify customer]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.btn.cancel">
+<en><![CDATA[Do not send a notification]]></en>
+        </locale>
+        <locale name="dialog.shippingStatusChangeNotification.btn.confirm_message">
+<en><![CDATA[Confirm message]]></en>
+        </locale>
+
+        <locale name="order.confirmation.subject.description" html="true">
+<en><![CDATA[
+            <p>Subject of the order E-mail. Available variables:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - First name of the customer</li>
+                <li><b>[lastname]:</b> - Last name of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="order.confirmation.body.description" html="true">
+<en><![CDATA[
+            <p>Content of the order E-mail. Available variables:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - First name of the customer</li>
+                <li><b>[lastname]:</b> - Last name of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.orderPaymentSuccess.subject">
+<en><![CDATA[
+            <p>Subject of the payment confirmation mail. Available placeholders:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order no.</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty customer first and last name is used</li>
+                <li><b>[contactPerson]:</b> - Contact person</li>
+                <li><b>[contactPersonOrName]:</b> - Contact person, if this is empty customer first and last name is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - First name of the customer</li>
+                <li><b>[lastname]:</b> - Last name of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.orderPaymentSuccess.body">
+<en><![CDATA[
+            <p>Content of the payment confirmation mail. Available placeholders:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order no.</li>
+                <li><b>[orderPrefixedId]:</b> Full order no.</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty customer first and last name is used</li>
+                <li><b>[contactPerson]:</b> - Contact person</li>
+                <li><b>[contactPersonOrName]:</b> - Contact person, if this is empty customer first and last name is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - First name of the customer</li>
+                <li><b>[lastname]:</b> - Last name of the customer</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.shipping.confirmation.subject">
+<en><![CDATA[
+            <p>Subject of the order shipping confirmation E-mail. Available variables:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - First name of the customer</li>
+                <li><b>[lastname]:</b> - Last name of the customer</li>
+                <li><b>[trackingInfo]:</b> - Tracking Info (The [quiqqer/order] shipping.order.mail.body.shippingInformation language variable is used for this).</li>
+                <li><b>[trackingNumber]:</b> - Tracking Number (If one exists)</li>
+                <li><b>[trackingLink]:</b> - Tracking Link (If one exists)</li>
+            </ul>
+            ]]></en>
+        </locale>
+        <locale name="mail.description.shipping.confirmation.body">
+<en><![CDATA[
+            <p>Body of the order shipping confirmation E-mail. Available variables:</p>
+            <ul>
+                <li><b>[orderId]:</b> Order Id</li>
+                <li><b>[hash]:</b> Order hash</li>
+                <li><b>[date]:</b> Order date</li>
+                <li><b>[systemCompany]:</b> Company of the QUIQQER system</li>
+                <li><b>[user]:</b> - Name of the customer</li>
+                <li><b>[company]:</b> - Company of the customer</li>
+                <li><b>[companyOrName]:</b> - Company of the customer, if this is empty [name] is used</li>
+                <li><b>[email]:</b> - Customer email</li>
+                <li><b>[salutation]:</b> - Salutation of the customer</li>
+                <li><b>[firstname]:</b> - First name of the customer</li>
+                <li><b>[lastname]:</b> - Last name of the customer</li>
+                <li><b>[trackingInfo]:</b> - Tracking Info (The [quiqqer/order] shipping.order.mail.body.shippingInformation language variable is used for this).</li>
+                <li><b>[trackingNumber]:</b> - Tracking Number (If one exists)</li>
+                <li><b>[trackingLink]:</b> - Tracking Link (If one exists)</li>
+            </ul>
+            ]]></en>
+        </locale>
+
+        <locale name="customer.data.vat.chaning.not.allowed">
+<en><![CDATA[
+            The VAT ID must be checked in case of changes, therefore you cannot change it. Please contact the store owner about this.
+            ]]></en>
+        </locale>
+        <locale name="shipping.confirmation.list.message">
+<en><![CDATA[A shipping confirmation was sent to [email] on [date].]]></en>
+        </locale>
+
+        <locale name="window.status.title">
+<en><![CDATA[Status change for order: [orderId]]]></en>
+        </locale>
+        <locale name="window.status.text" html="true">
+<en><![CDATA[
+            Change the status of the order <strong>[orderId]</strong>.
+            Note, status changes can trigger different actions.
+            ]]></en>
+        </locale>
+
+    </groups>
+</locales>
