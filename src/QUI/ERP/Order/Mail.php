@@ -470,10 +470,6 @@ class Mail
 
         $Project = QUI::getProjectManager()->getStandard();
 
-        if ($Project === null) {
-            return;
-        }
-
         $Media = $Project->getMedia();
 
         foreach (explode(',', $attachments) as $attachment) {
