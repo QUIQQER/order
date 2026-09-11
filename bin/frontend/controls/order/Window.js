@@ -24,7 +24,7 @@ define('package/quiqqer/order/bin/frontend/controls/order/Window', [
             maxHeight      : 800,
             maxWidth       : 800,
             icon           : 'fa fa-shopping-basket',
-            closeButtonText: QUILocale.get('quiqqer/system', 'close')
+            closeButtonText: QUILocale.get('quiqqer/core', 'close')
         },
 
         initialize: function (options) {

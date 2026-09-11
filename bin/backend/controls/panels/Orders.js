@@ -713,7 +713,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
-                    text: QUILocale.get('quiqqer/system', 'delete'),
+                    text: QUILocale.get('quiqqer/core', 'delete'),
                     textimage: 'fa fa-trash'
                 },
                 events: {
@@ -1138,7 +1138,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             columns = columns.concat([
                 {
-                    header: QUILocale.get('quiqqer/system', 'name'),
+                    header: QUILocale.get('quiqqer/core', 'name'),
                     dataIndex: 'customer_name',
                     dataType: 'string',
                     width: 200,
@@ -1260,7 +1260,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     className: 'monospace clickable'
                 },
                 {
-                    header: QUILocale.get('quiqqer/system', 'id'),
+                    header: QUILocale.get('quiqqer/core', 'id'),
                     dataIndex: 'id',
                     dataType: 'integer',
                     hidden: true
