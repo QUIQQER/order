@@ -124,17 +124,17 @@ define('package/quiqqer/order/bin/backend/controls/settings/Payments', [
                     dataType: 'QUI',
                     width: 60
                 }, {
-                    header: QUILocale.get('quiqqer/system', 'id'),
+                    header: QUILocale.get('quiqqer/core', 'id'),
                     dataIndex: 'id',
                     dataType: 'integer',
                     width: 60
                 }, {
-                    header: QUILocale.get('quiqqer/system', 'title'),
+                    header: QUILocale.get('quiqqer/core', 'title'),
                     dataIndex: 'title',
                     dataType: 'text',
                     width: 140
                 }, {
-                    header: QUILocale.get('quiqqer/system', 'type'),
+                    header: QUILocale.get('quiqqer/core', 'type'),
                     dataIndex: 'type',
                     dataType: 'text',
                     width: 140
