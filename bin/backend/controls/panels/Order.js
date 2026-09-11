@@ -793,13 +793,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         textTAXNo: QUILocale.get('quiqqer/erp', 'user.settings.taxId'),
                         textAddresses: QUILocale.get(lg, 'address'),
                         textCustomer: QUILocale.get(lg, 'customer'),
-                        textCompany: QUILocale.get('quiqqer/system', 'company'),
-                        textFirstname: QUILocale.get('quiqqer/system', 'firstname'),
-                        textLastname: QUILocale.get('quiqqer/system', 'lastname'),
-                        textStreet: QUILocale.get('quiqqer/system', 'street'),
-                        textZip: QUILocale.get('quiqqer/system', 'zip'),
-                        textCity: QUILocale.get('quiqqer/system', 'city'),
-                        textCountry: QUILocale.get('quiqqer/system', 'country'),
+                        textCompany: QUILocale.get('quiqqer/core', 'company'),
+                        textFirstname: QUILocale.get('quiqqer/core', 'firstname'),
+                        textLastname: QUILocale.get('quiqqer/core', 'lastname'),
+                        textStreet: QUILocale.get('quiqqer/core', 'street'),
+                        textZip: QUILocale.get('quiqqer/core', 'zip'),
+                        textCity: QUILocale.get('quiqqer/core', 'city'),
+                        textCountry: QUILocale.get('quiqqer/core', 'country'),
                         textOrderData: QUILocale.get(lg, 'panel.order.data.title'),
                         textOrderDate: QUILocale.get(lg, 'panel.order.data.date'),
                         textOrderedBy: QUILocale.get(lg, 'panel.order.data.orderedBy'),
@@ -1420,7 +1420,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
-                    text: QUILocale.get('quiqqer/system', 'delete'),
+                    text: QUILocale.get('quiqqer/core', 'delete'),
                     textimage: 'fa fa-trash'
                 },
                 events: {
@@ -1455,7 +1455,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 maxWidth: 600,
                 autoclose: false,
                 ok_button: {
-                    text: QUILocale.get('quiqqer/system', 'copy'),
+                    text: QUILocale.get('quiqqer/core', 'copy'),
                     textimage: 'fa fa-copy'
                 },
                 events: {
