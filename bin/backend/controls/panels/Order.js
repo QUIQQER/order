@@ -742,34 +742,48 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 btnText = QUILocale.get(lg, 'button.unlock.order.is.locked');
             }
 
-            new QUIConfirm({
-                title: QUILocale.get(lg, 'window.unlock.order.title'),
-                icon: 'fa fa-warning',
-                texticon: 'fa fa-warning',
-                text: QUILocale.get(lg, 'window.unlock.order.text', this.$locked),
-                information: QUILocale.get(lg, 'message.order.is.locked', this.$locked),
-                autoclose: false,
-                maxHeight: 400,
-                maxWidth: 600,
-                ok_button: {
-                    text: btnText
-                },
+            this.Loader.show();
 
-                events: {
-                    onSubmit: function (Win) {
-                        if (!window.USER.isSU) {
-                            Win.close();
-                            return;
+            return Users.get(this.$locked).loadIfNotLoaded().then((User) => {
+                const attributes = User.getAttributes();
+                const lockUser = {
+                    username: Mustache.escape(String(attributes.username)),
+                    id: Mustache.escape(String(attributes.id))
+                };
+
+                new QUIConfirm({
+                    title: QUILocale.get(lg, 'window.unlock.order.title'),
+                    icon: 'fa fa-warning',
+                    texticon: 'fa fa-warning',
+                    text: QUILocale.get(lg, 'window.unlock.order.text', lockUser),
+                    information: QUILocale.get(lg, 'message.order.is.locked', lockUser),
+                    autoclose: false,
+                    maxHeight: 400,
+                    maxWidth: 600,
+                    ok_button: {
+                        text: btnText
+                    },
+
+                    events: {
+                        onSubmit: function (Win) {
+                            if (!window.USER.isSU) {
+                                Win.close();
+                                return;
+                            }
+
+                            Win.Loader.show();
+
+                            self.unlockPanel().then(function () {
+                                Win.close();
+                            });
                         }
-
-                        Win.Loader.show();
-
-                        self.unlockPanel().then(function () {
-                            Win.close();
-                        });
                     }
-                }
-            }).open();
+                }).open();
+            }).catch((error) => {
+                console.error(error);
+            }).finally(() => {
+                this.Loader.hide();
+            });
         },
 
         //region categories
