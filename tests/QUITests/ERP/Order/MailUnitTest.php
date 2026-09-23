@@ -101,6 +101,12 @@ class MailUnitTest extends TestCase
         self::assertSame('ms', $variables['salutation']);
         self::assertSame('Ada', $variables['firstname']);
         self::assertSame('Lovelace', $variables['lastname']);
+
+        $MailLocale = new \QUI\Locale();
+        $MailLocale->setCurrent('de');
+        $mailVariables = $this->invokeMailMethod('getOrderLocaleVar', $Order, $Customer, $MailLocale);
+        self::assertSame(Mail::dateFormat('2024-01-01', $MailLocale), $mailVariables['date']);
+        self::assertNotSame($variables['date'], $mailVariables['date']);
     }
 
     public function testCompanyOrNameFallsBackToCustomerName(): void

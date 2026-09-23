@@ -232,7 +232,9 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                     }
 
                     const productLoading = self.$products.map(function(Product) {
-                        return Product.refresh();
+                        return Product.refresh().then(() => {
+                            self.$getBasketCondition(Product);
+                        });
                     });
 
                     Promise.all(productLoading).then(resolve);
@@ -257,7 +259,7 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                 if (product && 'id' in product && 'quantity' in product) {
                     return self.addProductToOrderInProcess(
                         product.id,
-                        {},
+                        product.fields || {},
                         product.quantity
                     ).then(function(orderHash) {
                         newHash = orderHash;
@@ -407,6 +409,38 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
          * @return {Promise}
          */
         $addProduct: function(product, quantity, fields) {
+            // Loading persisted products and rapid clicks must apply basket conditions in order.
+            const pending = this.$addProductQueue || Promise.resolve();
+            const added = pending.then(() => this.$insertProduct(product, quantity, fields));
+            this.$addProductQueue = added.catch(() => {});
+            return added;
+        },
+
+        /**
+         * Return the catalog basket condition of a loaded product.
+         *
+         * @param {Object} Product
+         * @return {Number}
+         */
+        $getBasketCondition: function(Product) {
+            // getAttributes() replaces catalog fields with custom values during serialization.
+            if (Array.isArray(Product.$data.fields)) {
+                const condition = Product.$data.fields.find(field => field.type === 'BasketConditions');
+                Product.$basketCondition = Number(condition?.value) || 1;
+            }
+
+            return Product.$basketCondition || 1;
+        },
+
+        /**
+         * Insert a product after earlier additions have completed.
+         *
+         * @param {Number|Object} product
+         * @param {Number} [quantity]
+         * @param {Object} [fields]
+         * @return {Promise}
+         */
+        $insertProduct: function(product, quantity, fields) {
             const self = this;
             let productId = product;
 
@@ -453,35 +487,36 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
                         // normal basket
                         Product.refresh().then((productData) => {
-                            const fields = productData.$data.fields;
                             const productType = productData.calc.type;
-
-                            // check & get BasketConditions
-                            let basketConditionValue = 1;
-
-                            for (let i = 0, len = fields.length; i < len; i++) {
-                                if (fields[i].type === 'BasketConditions') {
-                                    basketConditionValue = fields[i].value;
-                                    break;
-                                }
-                            }
+                            const basketConditionValue = self.$getBasketCondition(productData);
 
                             if (basketConditionValue === 1) {
                                 return Product.setQuantity(quantity);
                             }
 
-                            // create a new order
                             if (basketConditionValue === 2 || basketConditionValue === 6) {
-                                // 2 = Kann nur alleine in den Warenkorb
-                                // 6 = Kann nur alleine in den Warenkorb
-                                // daher neue order in process
+                                if (basketConditionValue === 2) {
+                                    quantity = 1;
+                                }
+
+                                const hasRegularProducts = self.$products.some(ExistingProduct => {
+                                    const condition = self.$getBasketCondition(ExistingProduct);
+                                    return condition !== 2 && condition !== 6;
+                                });
+
+                                if (!hasRegularProducts) {
+                                    return Product.setQuantity(quantity);
+                                }
+
+                                // Preserve a filled regular basket by using a separate checkout.
                                 let newHash;
 
                                 // nobody
                                 if (!QUIQQER_USER.id) {
-                                    QUI.Storage.set('condition-product', JSON.encode({
+                                    QUI.Storage.set('condition-product', JSON.stringify({
                                         id: productId,
-                                        quantity: quantity
+                                        quantity: quantity,
+                                        fields: fields
                                     }));
 
                                     return getOrderProcessUrl().then(function(processUrl) {
@@ -516,7 +551,12 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                                 for (p = 0, pLen = self.$products.length; p < pLen; p++) {
                                     product = self.$products[p];
 
-                                    if (productType === product.calc.type) {
+                                    const existingCondition = self.$getBasketCondition(product);
+
+                                    if (
+                                        productType === product.calc.type &&
+                                        existingCondition !== 2 && existingCondition !== 6
+                                    ) {
                                         //throw new Error('BASKET_CONDITION_PRODUCT_NOT_ALLOWED');
                                         console.info(
                                             'BASKET_CONDITION_PRODUCT_NOT_ALLOWED',
@@ -540,6 +580,18 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
                         }).then(function() {
                             return Product.setFieldValues(fields);
                         }).then(function() {
+                            const previousCount = self.$products.length;
+                            self.$products = self.$products.filter(ExistingProduct => {
+                                const condition = self.$getBasketCondition(ExistingProduct);
+                                return condition !== 2 && condition !== 6;
+                            });
+
+                            if (self.$products.length !== previousCount) {
+                                QUI.getMessageHandler().then(MH => {
+                                    MH.addAttention(QUILocale.get(lg, 'basket.standalone.product.replaced'));
+                                });
+                            }
+
                             if (window.QUIQQER_ORDER_ORDER_PROCESS_MERGE === 0) {
                                 self.$products.push(Product);
                             } else {
@@ -708,6 +760,10 @@ define('package/quiqqer/order/bin/frontend/classes/Basket', [
 
             const self = this,
                 Product = this.$products[pos];
+
+            if (this.$getBasketCondition(Product) === 2) {
+                quantity = 1;
+            }
 
             return Product.setQuantity(quantity).then(function() {
                 self.$products[pos] = Product;

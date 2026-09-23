@@ -283,7 +283,7 @@ class Utils
         array $products = [],
         null | QUI\ERP\Order\AbstractOrder | QUI\ERP\Order\Basket\Basket $Order = null
     ): QUI\ERP\Products\Product\ProductList {
-        $count = count($products);
+        $hasStandaloneProduct = false;
 
         foreach ($products as $productData) {
             if (!isset($productData['id'])) {
@@ -310,7 +310,12 @@ class Utils
                 $Product = new QUI\ERP\Products\Product\TextProduct($productData);
 
                 try {
+                    if ($hasStandaloneProduct) {
+                        $List->clear();
+                    }
+
                     $List->addProduct($Product);
+                    $hasStandaloneProduct = false;
                 } catch (QUI\Exception $Exception) {
                     QUI\System\Log::write($Exception->getMessage());
                 }
@@ -357,17 +362,14 @@ class Utils
                 }
 
                 $Product = new QUI\ERP\Order\Basket\Product($productData['id'], $productData);
-                $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Product);
+                // Basket restrictions come from the catalog, never from submitted custom fields.
+                $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Real);
+                $isStandaloneProduct = $condition === BasketConditions::TYPE_2
+                    || $condition === BasketConditions::TYPE_6;
 
-                if (
-                    $condition === BasketConditions::TYPE_2 ||
-                    $condition === BasketConditions::TYPE_6
-                ) {
-                    // if several products are to be imported and a Type2 and Type6 are to be imported.
-                    // this product is ignored and not imported
-                    if ($count >= 2) {
-                        continue;
-                    }
+                // A standalone product must not replace an existing regular basket.
+                if ($isStandaloneProduct && !$hasStandaloneProduct && $List->count() > 0) {
+                    continue;
                 }
 
                 if (
@@ -381,7 +383,13 @@ class Utils
                     $Product->setQuantity($productData['quantity']);
                 }
 
+                // A subsequent valid product replaces the previous standalone product.
+                if ($hasStandaloneProduct) {
+                    $List->clear();
+                }
+
                 $List->addProduct($Product);
+                $hasStandaloneProduct = $isStandaloneProduct;
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
