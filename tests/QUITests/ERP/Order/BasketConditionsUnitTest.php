@@ -29,10 +29,13 @@ class BasketConditionsUnitTest extends TestCase
             $Price->setValue(10.0);
             $Vat = new \QUI\ERP\Products\Field\Types\Vat(2);
             $Vat->setValue(-1);
+            $ArticleNo = new \QUI\ERP\Products\Field\Types\Input(3);
+            $ArticleNo->setValue('TEST-' . $id);
             $Product = $this->createMock(Product::class);
             $Product->method('isActive')->willReturn($id !== 900008);
             $Product->method('getMaximumQuantity')->willReturn(99.0);
-            $Product->method('getFields')->willReturn([$Price, $Vat, $Condition]);
+            $Product->method('getFields')->willReturn([$Price, $Vat, $ArticleNo, $Condition]);
+            $Product->method('getField')->willReturnMap([[1, $Price], [2, $Vat], [3, $ArticleNo], [900009, $Condition]]);
             $Product->method('getFieldsByType')->with('BasketConditions')->willReturn([$Condition]);
             $products[$id] = $Product;
         }
