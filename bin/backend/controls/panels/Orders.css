@@ -57,8 +57,7 @@
 }
 
 .order-shipping-status,
-.order-payment-status,
-.order-status {
+.order-payment-status {
     border-color: #dedede;
     border-style: solid;
     border-width: 1px;
@@ -68,9 +67,10 @@
     width: 100%;
 }
 
-.td.clickable:hover .order-status {
-    border-color: #fff !important;
-    color: #fff !important;
+.order-status {
+    --_status-color: var(--quiqqer-order-status-color, var(--_q-controlConf-color, var(--qui-colors-secondary)));
+    --qui-badge-color: var(--quiqqer-order-status-text-color, color-mix(in srgb, var(--_status-color) 40%, var(--qui-colors-black)));
+    --qui-badge-bgColor: var(--quiqqer-order-status-background, color-mix(in srgb, var(--_status-color) 20%, var(--qui-colors-white)));
 }
 
 /** product details

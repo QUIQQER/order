@@ -155,14 +155,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 gridData.data = gridData.data.map(function(entry) {
                     entry.opener = '&nbsp;';
 
-                    entry.status = new Element('span', {
-                        'class': 'order-status',
-                        text: entry.status_title,
-                        styles: {
-                            color: entry.status_color !== '---' ? entry.status_color : '',
-                            borderColor: entry.status_color !== '---' ? entry.status_color : ''
-                        }
-                    });
+                    entry.status = document.createElement('span');
+                    entry.status.className = 'badge badge-pill badge-lg order-status';
+                    entry.status.textContent = entry.status_title;
+
+                    if (entry.status_color && CSS.supports('color', entry.status_color)) {
+                        entry.status.style.setProperty('--_q-controlConf-color', entry.status_color);
+                    }
 
                     if (shippingInstalled) {
                         entry.shipping_status = new Element('span', {
