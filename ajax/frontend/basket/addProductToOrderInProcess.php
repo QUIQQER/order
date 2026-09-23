@@ -30,7 +30,11 @@ QUI::getAjax()->registerFunction(
                 return false;
             }
 
-            if (!empty($quantity)) {
+            $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Real);
+
+            if ($condition === QUI\ERP\Products\Field\Types\BasketConditions::TYPE_2) {
+                $Product->setQuantity(1);
+            } elseif (!empty($quantity)) {
                 $Product->setQuantity($quantity);
             }
 

@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order\Basket;
 
 use QUI;
+use QUI\ERP\Products\Field\Types\BasketConditions;
 use QUI\ERP\Products\Field\UniqueField;
 use QUI\ERP\Products\Product\ProductList;
 use QUI\ExceptionStack;
@@ -98,6 +99,8 @@ class BasketGuest
             $products = [];
         }
 
+        $hasStandaloneProduct = false;
+
         foreach ($products as $productData) {
             if (!isset($productData['id'])) {
                 continue;
@@ -110,6 +113,14 @@ class BasketGuest
                 $Real = QUI\ERP\Products\Handler\Products::getProduct((int)$productData['id']);
 
                 if (!$Real->isActive()) {
+                    continue;
+                }
+
+                $condition = QUI\ERP\Products\Utils\Products::getBasketCondition($Real);
+                $isStandaloneProduct = $condition === BasketConditions::TYPE_2
+                    || $condition === BasketConditions::TYPE_6;
+
+                if ($isStandaloneProduct && !$hasStandaloneProduct && $this->List->count() > 0) {
                     continue;
                 }
 
@@ -127,7 +138,16 @@ class BasketGuest
                     $Product->setQuantity($productData['quantity']);
                 }
 
+                if ($condition === BasketConditions::TYPE_2) {
+                    $Product->setQuantity(1);
+                }
+
+                if ($hasStandaloneProduct) {
+                    $this->List->clear();
+                }
+
                 $this->List->addProduct($Product);
+                $hasStandaloneProduct = $isStandaloneProduct;
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
