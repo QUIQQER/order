@@ -36,8 +36,27 @@ class Mail
      */
     public static function sendOrderConfirmationMail(Order $Order): void
     {
+        $Project = self::getProjectForCustomerMail($Order);
+        $Locale = new QUI\Locale();
+        $Locale->setCurrent($Project?->getLang() ?: $Order->getCustomer()->getLocale()->getCurrent());
+        $GlobalLocale = QUI::getLocale();
+        $previousLanguage = $GlobalLocale->getCurrent();
+
+        try {
+            // Address, payment and mail-wrapper templates also use the global locale.
+            $GlobalLocale->setCurrent($Locale->getCurrent());
+            self::sendOrderConfirmationMailInLocale($Order, $Locale, $Project);
+        } finally {
+            $GlobalLocale->setCurrent($previousLanguage);
+        }
+    }
+
+    private static function sendOrderConfirmationMailInLocale(
+        Order $Order,
+        QUI\Locale $CustomerLocale,
+        ?QUI\Projects\Project $Project
+    ): void {
         $Customer = $Order->getCustomer();
-        $CustomerLocale = $Customer->getLocale();
         $email = $Customer->getAttribute('email');
 
         if (empty($email)) {
@@ -68,7 +87,7 @@ class Mail
         }
 
         // mail
-        $Mailer = self::getMailerForCustomerMail($Order);
+        $Mailer = QUI::getMailManager()->getMailer($Project ? ['Project' => $Project] : []);
 
         $Mailer->addRecipient($email);
 
@@ -80,7 +99,7 @@ class Mail
             $CustomerLocale->get(
                 'quiqqer/order',
                 'order.confirmation.subject',
-                self::getOrderLocaleVar($Order, $Customer)
+                self::getOrderLocaleVar($Order, $Customer, $CustomerLocale)
             )
         );
 
@@ -90,6 +109,7 @@ class Mail
         $Order = $OrderControl->getOrder();
 
         $Articles = $Order->getArticles()->toUniqueList();
+        $Articles->setLocale($CustomerLocale);
         $Articles->hideHeader();
 
         $Shipping = null;
@@ -123,6 +143,7 @@ class Mail
 
 
         $Engine->assign([
+            'Locale' => $CustomerLocale,
             'Shipping' => $Shipping,
             'DeliveryAddress' => $DeliveryAddress,
             'InvoiceAddress' => $InvoiceAddress,
@@ -136,7 +157,7 @@ class Mail
             'message' => $CustomerLocale->get(
                 'quiqqer/order',
                 'order.confirmation.body',
-                self::getOrderLocaleVar($Order, $Customer)
+                self::getOrderLocaleVar($Order, $Customer, $CustomerLocale)
             )
         ]);
 
@@ -544,7 +565,8 @@ class Mail
      */
     protected static function getOrderLocaleVar(
         QUI\ERP\ErpEntityInterface $Order,
-        QUI\Interfaces\Users\User $Customer
+        QUI\Interfaces\Users\User $Customer,
+        ?QUI\Locale $Locale = null
     ): array {
         if ($Customer instanceof QUI\ERP\User) {
             $Address = $Customer->getAddress();
@@ -576,7 +598,7 @@ class Mail
             'orderId' => $Order->getUUID(),
             'orderPrefixedId' => $Order->getPrefixedNumber(),
             'hash' => $Order->getAttribute('hash'),
-            'date' => self::dateFormat($Order->getAttribute('date'), $Customer->getLocale()),
+            'date' => self::dateFormat($Order->getAttribute('date'), $Locale ?? $Customer->getLocale()),
             'systemCompany' => self::getCompanyName(),
             'user' => $user,
             'name' => $user,

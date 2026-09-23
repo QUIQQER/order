@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <locales xmlns="https://doc.quiqqer.com/xml/quiqqer-quiqqer-locale.xsd">
     <groups name="quiqqer/order" datatype="php,js">
+        <locale name="basket.standalone.product.replaced">
+<pt><![CDATA[O produto anterior foi substituído porque só pode ser encomendado separadamente.]]></pt>
+        </locale>
         <locale name="package.title">
 <pt><![CDATA[QUIQQER - Loja - Encomendas]]></pt>
         </locale>
