@@ -112,6 +112,52 @@ class Handler extends QUI\Utils\Singleton
     }
 
     /**
+     * Repair legacy status titles during setup; publish only when data changed.
+     *
+     * @return int Number of repaired translation entries
+     * @throws QUI\Exception
+     */
+    public function repairTitleTranslations(): int
+    {
+        $languages = QUI::availableLanguages();
+        $Locale = QUI::getLocale();
+        $repaired = 0;
+
+        foreach (array_keys($this->getList()) as $statusId) {
+            $key = 'processing.status.' . $statusId;
+            $translations = QUI\Translator::get('quiqqer/order', $key, 'quiqqer/order');
+
+            foreach ($translations ?: [[]] as $translation) {
+                $updates = TitleMigration::getUpdates($statusId, $translation, $languages, $Locale);
+
+                if ($updates === []) {
+                    continue;
+                }
+
+                // Translator edits also write metadata, so retain existing values.
+                $updates['datatype'] = $translation['datatype'] ?? 'php,js';
+                $updates['html'] = $translation['html'] ?? 1;
+                $updates['priority'] = $translation['priority'] ?? 0;
+
+                if (isset($translation['id'])) {
+                    QUI\Translator::editById((int)$translation['id'], $updates);
+                } else {
+                    $updates['package'] = 'quiqqer/order';
+                    QUI\Translator::addUserVar('quiqqer/order', $key, $updates);
+                }
+
+                $repaired++;
+            }
+        }
+
+        if ($repaired > 0) {
+            QUI\Translator::publish('quiqqer/order');
+        }
+
+        return $repaired;
+    }
+
+    /**
      * Get defined "cancelled" order status.
      *
      * @return Status|StatusUnknown

@@ -389,6 +389,8 @@ class EventHandling
         }
 
         if (!empty($list)) {
+            $Handler->repairTitleTranslations();
+
             return;
         }
 
