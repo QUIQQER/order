@@ -1123,6 +1123,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 {
                     header: QUILocale.get(lg, 'grid.orderStatus'),
                     dataIndex: 'status',
+                    styles: {
+                        'text-align': 'center',
+                        'justify-content': 'center'
+                    },
                     dataType: 'node',
                     width: 100,
                     className: 'grid-align-center clickable'
@@ -1191,6 +1195,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 {
                     header: QUILocale.get(lg, 'grid.paymentStatus'),
                     dataIndex: 'paid_status_display',
+                    styles: {
+                        'text-align': 'center',
+                        'justify-content': 'center'
+                    },
                     dataType: 'string',
                     width: 100,
                     sortable: false,
@@ -1203,6 +1211,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 columns.push({
                     header: QUILocale.get('quiqqer/shipping', 'grid.shippingStatus'),
                     dataIndex: 'shipping_status',
+                    styles: {
+                        'text-align': 'center',
+                        'justify-content': 'center'
+                    },
                     dataType: 'node',
                     width: 140,
                     className: 'grid-align-center'
