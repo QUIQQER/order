@@ -6,34 +6,14 @@
  ================================================= */
 
 .orders-order-details {
-    border: 1px solid #DDDDDD;
+    box-sizing: border-box;
     float: left;
-    margin-bottom: 10px;
-    max-width: 800px;
-    padding-bottom: 10px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
-.orders-order-details h1 {
+.orders-order-details .articles-header {
     display: none;
-}
-
-.orders-order-details .articles-article {
-    margin-top: 0;
-}
-
-.orders-order-details .articles-article-header th {
-    background: #dedede;
-    line-height: normal;
-}
-
-.orders-order-details td {
-    background: #fefefe;
-    border-right: 0 !important;
-}
-
-.orders-order-details .articles-sum td {
-    text-align: right;
 }
 
 .order-data-shipping-status-field,
