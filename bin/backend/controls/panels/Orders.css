@@ -47,15 +47,6 @@
     font-family: monospace, monospace;
 }
 
-.omnigrid .articles-sum td {
-    font-size: 12px;
-}
-
-.omnigrid .articles-article-unitprice,
-.omnigrid .articles-article-price {
-    text-align: right;
-}
-
 .order-shipping-status,
 .order-payment-status {
     border-color: #dedede;
@@ -73,46 +64,45 @@
     --qui-badge-bgColor: var(--quiqqer-order-status-background, color-mix(in srgb, var(--_status-color) 20%, var(--qui-colors-white)));
 }
 
+.order-payment-status-0 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-open-color, var(--qui-colors-primary));
+}
+
+.order-payment-status-1 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-paid-color, var(--qui-colors-success));
+}
+
+.order-payment-status-2 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-partial-color, var(--qui-colors-warning));
+}
+
+.order-payment-status-4 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-error-color, var(--qui-colors-danger));
+}
+
+.order-payment-status-3,
+.order-payment-status-5 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-canceled-color, var(--qui-colors-gray));
+}
+
+.order-payment-status-11 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-debit-color, color-mix(in srgb, var(--qui-colors-primary), var(--qui-colors-danger)));
+}
+
+.order-payment-status-12 {
+    --_q-controlConf-color: var(--quiqqer-order-payment-plan-color, var(--qui-colors-info));
+}
+
 /** product details
  ================================================= */
 
 .orders-order-details {
-    border: 1px solid #DDDDDD;
+    box-sizing: border-box;
     float: left;
-    margin-bottom: 10px;
-    max-width: 800px;
-    padding-bottom: 10px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
-.orders-order-details h1 {
+.orders-order-details .articles-header {
     display: none;
-}
-
-.orders-order-details table {
-    border-collapse: collapse;
-    border: 0 solid;
-    font: normal 11px verdana, arial, helvetica, sans-serif;
-    width: 100%;
-}
-
-.orders-order-details thead,
-.orders-order-details tfoot {
-    height: 24px;
-}
-
-.orders-order-details tfoot th {
-    padding: 5px;
-}
-
-.orders-order-details thead th {
-    background: #dedede;
-    border-right: 1px solid #DDDDDD;
-    line-height: normal;
-    padding: 5px;
-}
-
-.orders-order-details td {
-    vertical-align: top;
-    padding: 3px 10px;
 }
