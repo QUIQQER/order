@@ -163,6 +163,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         entry.status.style.setProperty('--_q-controlConf-color', entry.status_color);
                     }
 
+                    const paymentStatus = document.createElement('span');
+                    paymentStatus.className = 'badge badge-pill badge-lg order-status order-payment-status-' +
+                        Number.parseInt(entry.paid_status, 10);
+                    paymentStatus.textContent = entry.paid_status_display;
+                    entry.paid_status_display = paymentStatus;
+
                     if (shippingInstalled) {
                         entry.shipping_status = new Element('span', {
                             'class': 'order-shipping-status',
@@ -1199,7 +1205,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         'text-align': 'center',
                         'justify-content': 'center'
                     },
-                    dataType: 'string',
+                    dataType: 'node',
                     width: 100,
                     sortable: false,
                     className: 'grid-align-center'
