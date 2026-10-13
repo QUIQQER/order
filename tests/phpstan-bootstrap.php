@@ -47,3 +47,4 @@ foreach ($optionalClassStubs as $className => $stubFile) {
 }
 
 require_once __DIR__ . '/stubs/QUI/ERP/DemoData/DemoDataStubs.php';
+require_once __DIR__ . '/mcp-bootstrap.php';

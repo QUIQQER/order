@@ -30,6 +30,41 @@ Installation
 The Package name is: quiqqer/order
 
 
+MCP integration
+---------------
+
+Install the optional `quiqqer/ai-mcp` package and run package setup to expose the order tools.
+Grant `quiqqer.order.mcp` to the MCP account. This permission allows reading orders and drafts;
+write tools additionally require the corresponding order permissions.
+
+| Tool | Purpose | Additional permission |
+| --- | --- | --- |
+| `order_get` | Read an order, or a draft with `draft=true` | — |
+| `order_search` | Search orders or drafts with pagination, customer and status filters | — |
+| `order_draft_create` | Prepare a new order draft | `quiqqer.order.create` |
+| `order_draft_update` | Edit an unsubmitted draft owned by the request user, or accessible to a superuser | `quiqqer.order.update` |
+| `order_draft_review` | Refresh prices and quantities, validate addresses and list available payment methods | `quiqqer.order.update` |
+| `order_draft_submit` | Convert a reviewed draft into a real order | `quiqqer.order.create` |
+| `order_reorder` | Prepare a fresh draft from an existing order | `quiqqer.order.copy`, `quiqqer.order.create` |
+| `order_update` | Apply permitted changes to an existing order | `quiqqer.order.update` |
+
+Identifiers accept numeric ids, prefixed order numbers and UUIDs/hashes. Orders and drafts
+are resolved separately, so identical numeric ids do not select the wrong record.
+Draft data supports `customerId`, `currency`, `addressInvoice`, `addressDelivery`, `articles`,
+`paymentId`, `status` and `comment`. Supplying `articles` replaces the complete article list;
+an empty delivery address removes it. Address fields follow the existing order address API.
+Successful or invoiced orders only allow `comment` and processing `status` changes.
+
+Reorders copy customer, addresses, currency and article snapshots into a new draft.
+Use `order_draft_review` to refresh prices and check the draft. It returns eligible payment methods,
+which can be selected through `paymentId`. Then call `order_draft_submit` with the draft's `uuid`,
+the reviewed `totals.sum` as `expectedTotal`, and its `currency`. Submission checks the final
+recalculation before creating the order; changed totals, missing articles or changed quantities
+stop creation. Retrying the same draft UUID returns the existing order instead of creating another.
+
+Submission uses the existing order creation workflow, including configured automatic invoicing
+and order events. Preparation and review keep the record as a draft until submission.
+
 Contribution
 ----------
 
