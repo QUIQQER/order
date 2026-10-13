@@ -399,14 +399,17 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
      * Create the order
      *
      * @param null|QUI\Interfaces\Users\User $PermissionUser
+     * @param callable(OrderInProcess): void|null $BeforeCreate Validate recalculated data before creating the order.
      * @return Order
      *
      * @throws QUI\Permissions\Exception
      * @throws Exception
      * @throws Exception
      */
-    public function createOrder(null | QUI\Interfaces\Users\User $PermissionUser = null): Order
-    {
+    public function createOrder(
+        null | QUI\Interfaces\Users\User $PermissionUser = null,
+        ?callable $BeforeCreate = null
+    ): Order {
         QUI\ERP\Debug::getInstance()->log('OrderInProcess:: Create Order');
 
         if ($this->hasPermissions($PermissionUser) === false) {
@@ -436,6 +439,10 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
 
         $SystemUser = QUI::getUsers()->getSystemUser();
         $this->recalculate();
+
+        if ($BeforeCreate !== null) {
+            $BeforeCreate($this);
+        }
 
         $Order = Factory::getInstance()->create($SystemUser, $this->getUUID());
 

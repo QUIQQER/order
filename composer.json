@@ -32,6 +32,7 @@
     "quiqqer-asset/history-events": "^1"
   },
   "suggest": {
+    "quiqqer/ai-mcp": "Expose order access and draft management through MCP",
     "quiqqer/erp-demo-data": "Create demo orders for customers"
   },
   "autoload": {
