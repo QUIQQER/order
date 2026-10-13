@@ -351,6 +351,9 @@
         <locale name="permission.quiqqer.order.copy">
 <pl><![CDATA[Może kopiować zamówienia]]></pl>
         </locale>
+        <locale name="permission.quiqqer.order.mcp">
+<pl><![CDATA[Może odczytywać zamówienia i zarządzać nimi przez MCP]]></pl>
+        </locale>
         <locale name="permission.quiqqer.order.create">
 <pl><![CDATA[Może tworzyć zamówienia]]></pl>
         </locale>

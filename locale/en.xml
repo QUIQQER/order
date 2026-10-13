@@ -380,6 +380,9 @@
         <locale name="permission.quiqqer.order.copy">
 <en><![CDATA[May copy orders]]></en>
         </locale>
+        <locale name="permission.quiqqer.order.mcp">
+<en><![CDATA[May read and manage orders through MCP]]></en>
+        </locale>
         <locale name="permission.quiqqer.order.create">
 <en><![CDATA[May create orders]]></en>
         </locale>

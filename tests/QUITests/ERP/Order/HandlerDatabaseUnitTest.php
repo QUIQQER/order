@@ -6,7 +6,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Schema\Table;
 use PHPUnit\Framework\TestCase;
+use Mcp\Server\Builder;
 use QUI;
+use QUI\AI\MCP\Server as McpServer;
 use QUI\Countries\Manager as CountriesManager;
 use QUI\ERP\Currency\Handler as CurrencyHandler;
 use QUI\ERP\Accounting\Invoice\Factory as InvoiceFactory;
@@ -19,11 +21,15 @@ use QUI\ERP\Customer\Utils as CustomerUtils;
 use QUI\ERP\Order\Basket\ExceptionBasketNotFound;
 use QUI\ERP\Order\Exception;
 use QUI\ERP\Order\Handler;
+use QUI\ERP\Order\McpProvider;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Order\OrderInProcess;
 use QUI\ERP\Order\OrderView;
 use QUI\ERP\Order\Output\OutputProviderOrder;
 use QUI\ERP\Order\Settings;
+use QUI\ERP\Products\Handler\Products;
+use QUI\ERP\Products\Product\Types\Product as CatalogProduct;
+use QUI\ERP\Products\Utils\Tables as ProductTables;
 use QUI\Interfaces\Users\User;
 use QUI\Permissions\Manager as PermissionManager;
 use QUI\Permissions\Permission;
@@ -878,8 +884,21 @@ class HandlerDatabaseUnitTest extends TestCase
             self::assertFalse($Settings->createInvoiceByPayment());
 
             $OrderInProcess = new OrderInProcess($this->fixture('process-price'));
-            $Order = $OrderInProcess->createOrder(QUI::getUsers()->getSystemUser());
+            $beforeCreateCalled = false;
+            $Order = $OrderInProcess->createOrder(
+                QUI::getUsers()->getSystemUser(),
+                function (OrderInProcess $Draft) use (&$beforeCreateCalled, $OrderInProcess): void {
+                    $beforeCreateCalled = true;
+                    self::assertSame($OrderInProcess, $Draft);
+                    self::assertArrayHasKey('sum', $Draft->getArticles()->getCalculations());
+                    self::assertFalse($this->connection->fetchOne(
+                        'SELECT 1 FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                        [$Draft->getUUID()]
+                    ));
+                }
+            );
 
+            self::assertTrue($beforeCreateCalled);
             self::assertInstanceOf(Order::class, $Order);
             self::assertSame($this->fixture('process-price'), $Order->getUUID());
             self::assertFalse($Order->hasInvoice());
@@ -900,6 +919,138 @@ class HandlerDatabaseUnitTest extends TestCase
             $Config->set('order', 'orderCurrentIdIndex', $originalOrderIndex);
             $Config->save();
             $SingletonInstances->setValue(null, $originalInstances);
+        }
+    }
+
+    public function testRejectedRecalculatedOrderDoesNotCreateFinalOrder(): void
+    {
+        $hash = $this->fixture('process-price');
+        $Draft = new OrderInProcess($hash);
+
+        try {
+            $this->connection->transactional(function () use ($Draft): void {
+                $Draft->createOrder(
+                    QUI::getUsers()->getSystemUser(),
+                    static function (OrderInProcess $Recalculated): void {
+                        self::assertArrayHasKey('sum', $Recalculated->getArticles()->getCalculations());
+
+                        throw new QUI\Exception('Reviewed total changed.');
+                    }
+                );
+            });
+            self::fail('Submission validation must stop order creation.');
+        } catch (QUI\Exception $Exception) {
+            self::assertSame('Reviewed total changed.', $Exception->getMessage());
+        }
+
+        self::assertFalse($this->connection->fetchOne(
+            'SELECT 1 FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+            [$hash]
+        ));
+        self::assertNull($this->connection->fetchOne(
+            'SELECT order_id FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+            [$hash]
+        ));
+    }
+
+    public function testMcpReviewsSubmitsAndRetriesRealDatabaseDraft(): void
+    {
+        if ($this->ownsConnection) {
+            $MediaTable = new Table(QUI::getProjectManager()->getStandard()->getMedia()->getTable());
+            $MediaTable->addColumn('id', 'integer');
+            $this->connection->createSchemaManager()->createTable($MediaTable);
+            Update::importDatabase(OPT_DIR . 'quiqqer/products/database.xml');
+            Update::importDatabase(OPT_DIR . 'quiqqer/payments/database.xml');
+        }
+
+        $hash = $this->fixture('process-price');
+        $this->connection->insert(ProductTables::getProductTableName(), [
+            'type' => CatalogProduct::class,
+            'active' => 1,
+            'categories' => '',
+            'category' => 0,
+            'fieldData' => json_encode([
+                ['id' => 1, 'value' => 10],
+                ['id' => 2, 'value' => 0],
+                ['id' => 3, 'value' => $this->fixture('product-number')],
+                ['id' => 4, 'value' => ['en' => 'MCP fixture product', 'de' => 'MCP fixture product']]
+            ], JSON_THROW_ON_ERROR)
+        ]);
+        $productId = (int)$this->connection->lastInsertId();
+        $ProductCache = new ReflectionProperty(Products::class, 'list');
+        $originalProducts = $ProductCache->getValue();
+        $products = $originalProducts;
+        unset($products[$productId]);
+        $ProductCache->setValue(null, $products);
+        $address = [
+            'id' => 7,
+            'uuid' => $this->fixture('invoice-address'),
+            'firstname' => 'Test',
+            'lastname' => 'Customer',
+            'street_no' => 'Fixture Street 1',
+            'zip' => '52062',
+            'city' => 'Aachen',
+            'country' => 'DE'
+        ];
+        $this->connection->update($this->Handler->tableOrderProcess(), [
+            'addressInvoice' => json_encode($address, JSON_THROW_ON_ERROR),
+            'articles' => json_encode([
+                'articles' => [
+                    [
+                        'id' => $productId,
+                        'title' => 'MCP fixture product',
+                        'unitPrice' => 10,
+                        'quantity' => 2,
+                        'vat' => 0
+                    ]
+                ]
+            ], JSON_THROW_ON_ERROR)
+        ], ['hash' => $hash]);
+
+        $Instances = new ReflectionProperty(Singleton::class, 'instances');
+        $originalInstances = $Instances->getValue();
+        $Settings = new Settings();
+        (new ReflectionProperty($Settings, 'isInvoiceInstalled'))->setValue($Settings, false);
+        $instances = $originalInstances;
+        $instances[Settings::class] = $Settings;
+        $Instances->setValue(null, $instances);
+        $RequestUser = new ReflectionProperty(McpServer::class, 'RequestUser');
+        $originalRequestUser = $RequestUser->getValue();
+        $RequestUser->setValue(null, QUI::getUsers()->getSystemUser());
+        $Config = Settings::getConfig();
+        $originalOrderIndex = $Config->getValue('order', 'orderCurrentIdIndex');
+
+        try {
+            $Builder = new Builder();
+            (new McpProvider())->register($Builder);
+            $tools = array_column((new ReflectionProperty(Builder::class, 'tools'))->getValue($Builder), null, 'name');
+            $review = $tools['order_draft_review']['handler']($hash);
+            self::assertIsArray($review);
+            self::assertTrue($review['readyToSubmit'], implode(' ', $review['validationErrors']));
+            self::assertCount(1, $review['articles']);
+            self::assertGreaterThan(0, $review['totals']['sum']);
+            self::assertSame(2.0, (float)$review['articles'][0]['quantity']);
+            $result = $tools['order_draft_submit']['handler']($hash, (float)$review['totals']['sum'], $review['currency']);
+            self::assertIsArray($result);
+            self::assertFalse($result['draft']);
+            self::assertSame($hash, $result['uuid']);
+            self::assertCount(1, $result['articles']);
+            self::assertFalse($this->connection->fetchOne(
+                'SELECT 1 FROM ' . $this->Handler->tableOrderProcess() . ' WHERE hash = ?',
+                [$hash]
+            ));
+            $retry = $tools['order_draft_submit']['handler']($hash, (float)$review['totals']['sum'], $review['currency']);
+            self::assertIsArray($retry);
+            self::assertTrue($retry['alreadySubmitted']);
+            self::assertSame($result['id'], $retry['id']);
+        } finally {
+            $Config->set('order', 'orderCurrentIdIndex', $originalOrderIndex);
+            $Config->save();
+            $RequestUser->setValue(null, $originalRequestUser);
+            $Instances->setValue(null, $originalInstances);
+            $ProductCache->setValue(null, $originalProducts);
+            $this->connection->delete(ProductTables::getProductTableName(), ['id' => $productId]);
+            $this->connection->delete(ProductTables::getProductCacheTableName(), ['id' => $productId]);
         }
     }
 
