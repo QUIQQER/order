@@ -81,37 +81,48 @@
         {$currentStepContent}
     </div>
 
-    <div class="quiqqer-order-ordering-buttons">
+    <div class="quiqqer-order-ordering-buttons"
+         data-name="buttons"
+         data-button-texts="{$this->getAttribute('buttonTexts')|json_encode|escape:'html'}"
+    >
         {if $CurrentStep->getName() === 'Basket'}
         <a href="{$backToShopUrl}"
            class="quiqqer-order-ordering-buttons-backToShop"
+           data-name="backToShop"
         >
-            {locale group="quiqqer/order" var="ordering.btn.backToShop"}
+            {$this->getButtonText('backToShop', $CurrentStep->getName())|escape:'html'}
         </a>
         {/if}
 
         {if $previous}
         <a href="{$this->getStepUrl($previous)}"
            class="btn btn-light quiqqer-order-ordering-buttons-previous"
+           data-name="previous"
         >
-            {locale group="quiqqer/order" var="ordering.btn.previous"}
+            {$this->getButtonText('previous', $CurrentStep->getName())|escape:'html'}
         </a>
         {/if}
 
         {if isset($changePayment) && $changePayment}
-        <button name="changePayment" class="btn btn-light quiqqer-order-ordering-buttons-changePayment">
-            {locale group="quiqqer/order" var="ordering.btn.changePayment"}
+        <button name="changePayment" class="btn btn-light quiqqer-order-ordering-buttons-changePayment"
+                data-name="changePayment"
+        >
+            {$this->getButtonText('changePayment', $CurrentStep->getName())|escape:'html'}
         </button>
         {/if}
 
 
         {if $payableToOrder}
-        <button name="step" value="payableToOrder" class="btn btn-success quiqqer-order-ordering-buttons-next">
-            {locale group="quiqqer/order" var="ordering.btn.pay.to.order"}
+        <button name="step" value="payableToOrder" class="btn btn-success quiqqer-order-ordering-buttons-next"
+                data-name="payToOrder"
+        >
+            {$this->getButtonText('payToOrder', $CurrentStep->getName())|escape:'html'}
         </button>
         {else if $next}
-        <button name="step" value="{$next}" class="btn btn-success quiqqer-order-ordering-buttons-next">
-            {locale group="quiqqer/order" var="ordering.btn.next"}
+        <button name="step" value="{$next}" class="btn btn-success quiqqer-order-ordering-buttons-next"
+                data-name="next"
+        >
+            {$this->getButtonText('next', $CurrentStep->getName())|escape:'html'}
         </button>
         {/if}
     </div>

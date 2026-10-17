@@ -93,7 +93,8 @@ class OrderProcess extends QUI\Control
             'orderHash' => false,
             'basket' => true, // import basket articles to the order, use the basket
             'basketEditable' => true,
-            'backToShopUrl' => false
+            'backToShopUrl' => false,
+            'buttonTexts' => false
         ]);
 
         parent::__construct($attributes);
@@ -986,6 +987,37 @@ class OrderProcess extends QUI\Control
         $this->Events->fireEvent('renderFinish', [$this]);
 
         return QUI\Output::getInstance()->parse($Engine->fetch($template));
+    }
+
+    /**
+     * Resolve a step-specific button text, a general override or the existing locale.
+     */
+    public function getButtonText(string $name, ?string $step = null): string
+    {
+        $texts = $this->getAttribute('buttonTexts');
+        $step ??= (string)$this->getAttribute('step');
+
+        if (is_array($texts)) {
+            $steps = $texts['steps'] ?? null;
+            $stepTexts = is_array($steps) ? ($steps[$step] ?? null) : null;
+            $stepText = is_array($stepTexts) ? ($stepTexts[$name] ?? null) : null;
+
+            foreach ([$stepText, $texts[$name] ?? null] as $text) {
+                if (is_string($text) && trim($text) !== '') {
+                    return $text;
+                }
+            }
+        }
+
+        $locales = [
+            'next' => 'ordering.btn.next',
+            'previous' => 'ordering.btn.previous',
+            'backToShop' => 'ordering.btn.backToShop',
+            'changePayment' => 'ordering.btn.changePayment',
+            'payToOrder' => 'ordering.btn.pay.to.order'
+        ];
+
+        return isset($locales[$name]) ? QUI::getLocale()->get('quiqqer/order', $locales[$name]) : '';
     }
 
     /**

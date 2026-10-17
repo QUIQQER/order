@@ -59,6 +59,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             orderHash: false,
             basket: true, // use the basket for the loading
             basketEditable: true,
+            buttonTexts: false,
             buttons: true,
             showLoader: true
         },
@@ -184,6 +185,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             }
 
             this.$Buttons = this.getElm().getElement('.quiqqer-order-ordering-buttons');
+            this.$readButtonTexts();
             this.$StepContainer = this.getElm().getElement('.quiqqer-order-ordering-step');
             this.$Timeline = this.getElm().getElement('.quiqqer-order-ordering-timeline');
             this.$TimelineContainer = this.getElm().getElement('.quiqqer-order-ordering-timeline-container');
@@ -210,8 +212,6 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                 this.$Buttons.setStyle('display', 'none');
             }
 
-            this.$refreshButtonEvents();
-
             if (this.$Form.get('data-order-hash') && this.$Form.get('data-order-hash') !== '') {
                 this.setAttribute('orderHash', this.$Form.get('data-order-hash'));
             }
@@ -231,6 +231,8 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             if (Current) {
                 this.setAttribute('current', Current.get('data-step'));
             }
+
+            this.$refreshButtonEvents();
 
             if (this.getAttribute('current') === 'Basket' && !this.$Next) {
                 if (!Basket.isLoaded()) {
@@ -1366,12 +1368,75 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
         },
 
         /**
+         * Import PHP control options without replacing explicit JavaScript options.
+         */
+        $readButtonTexts: function() {
+            const configured = this.getAttribute('buttonTexts');
+
+            if (configured && typeof configured === 'object' && !Array.isArray(configured)) {
+                return;
+            }
+
+            try {
+                const texts = JSON.parse(this.$Buttons?.getAttribute('data-button-texts') || 'false');
+
+                if (texts && typeof texts === 'object' && !Array.isArray(texts)) {
+                    this.setAttribute('buttonTexts', texts);
+                }
+            } catch (error) {
+                // Invalid options leave the existing locale defaults in place.
+            }
+        },
+
+        /**
+         * Apply plain-text labels after initial rendering and AJAX step changes.
+         */
+        $applyButtonTexts: function() {
+            if (!this.$Buttons) {
+                return;
+            }
+
+            const configured = this.getAttribute('buttonTexts');
+            const texts = configured && typeof configured === 'object' && !Array.isArray(configured)
+                ? configured : {};
+            const step = this.getAttribute('current');
+            const steps = texts.steps;
+            const stepTexts = steps && typeof steps === 'object' && !Array.isArray(steps)
+                ? steps[step] : null;
+            const locales = {
+                next: 'ordering.btn.next',
+                previous: 'ordering.btn.previous',
+                backToShop: 'ordering.btn.backToShop',
+                changePayment: 'ordering.btn.changePayment',
+                payToOrder: 'ordering.btn.pay.to.order'
+            };
+
+            for (const [name, locale] of Object.entries(locales)) {
+                const Button = this.$Buttons.querySelector('[data-name="' + name + '"]');
+
+                if (!Button) {
+                    continue;
+                }
+
+                const stepText = stepTexts && typeof stepTexts === 'object' && !Array.isArray(stepTexts)
+                    ? stepTexts[name] : null;
+                const text = [stepText, texts[name]].find((value) => {
+                    return typeof value === 'string' && value.trim() !== '';
+                });
+
+                Button.textContent = text ?? QUILocale.get(lg, locale);
+            }
+        },
+
+        /**
          * Refresh the button events
          */
         $refreshButtonEvents: function() {
             if (!this.$Buttons) {
                 return;
             }
+
+            this.$applyButtonTexts();
 
             this.$Next = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-next');
             this.$Previous = this.$Buttons.getElements('.quiqqer-order-ordering-buttons-previous');
