@@ -28,7 +28,7 @@
     "quiqqer/payment-transactions": "^2.1.1",
     "quiqqer/fontawesome": "^6.2",
     "quiqqer/data-layer": "^2.0.1",
-    "quiqqer-asset/navigo": "^5",
+    "quiqqer-asset/navigo": "^5 || ^8",
     "quiqqer-asset/history-events": "^1"
   },
   "suggest": {

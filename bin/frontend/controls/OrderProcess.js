@@ -177,7 +177,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
             url = this.getElm().get('data-url');
 
             if (window.location.pathname.indexOf(url) === 0) {
-                Router = new Navigo(null, false, '');
+                Router = new Navigo('/');
 
                 // workaround - don't know why its needed, but its needed :D
                 Router.on(url + '/*', function() {
@@ -684,7 +684,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         });
 
                         if (Router) {
-                            Router.navigate(result.url);
+                            Router.navigate(result.url.replace(/^\/+/, ''));
                         }
                     }, {
                         'package': 'quiqqer/order',
@@ -730,7 +730,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         });
 
                         if (Router) {
-                            Router.navigate(result.url);
+                            Router.navigate(result.url.replace(/^\/+/, ''));
                         }
                     }, {
                         'package': 'quiqqer/order',
@@ -847,7 +847,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         });
 
                         if (Router) {
-                            Router.navigate(result.url);
+                            Router.navigate(result.url.replace(/^\/+/, ''));
                         }
                     }, {
                         'package': 'quiqqer/order',
@@ -909,7 +909,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                         }
 
                         if (Router) {
-                            Router.navigate(result.url);
+                            Router.navigate(result.url.replace(/^\/+/, ''));
                         }
                     }, {
                         'package': 'quiqqer/order',
@@ -953,7 +953,7 @@ define('package/quiqqer/order/bin/frontend/controls/OrderProcess', [
                     });
 
                     if (Router) {
-                        Router.navigate(result.url);
+                        Router.navigate(result.url.replace(/^\/+/, ''));
                     }
 
                     Basket.refresh();
