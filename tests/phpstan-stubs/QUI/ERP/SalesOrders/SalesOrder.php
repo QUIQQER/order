@@ -34,7 +34,7 @@ if (!class_exists(SalesOrder::class, false)) {
         {
         }
 
-        public function update(): void
+        public function update(?\QUI\Interfaces\Users\User $PermissionUser = null): void
         {
         }
 

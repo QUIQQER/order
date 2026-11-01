@@ -350,10 +350,11 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
     /**
      * Create a sales order from this order.
      *
+     * @param User|null $PermissionUser - optional, permission user, default = session user
      * @return SalesOrder
      * @throws QUI\Exception
      */
-    public function createSalesOrder(): SalesOrder
+    public function createSalesOrder(?User $PermissionUser = null): SalesOrder
     {
         if (!QUI::getPackageManager()->isInstalled('quiqqer/salesorders')) {
             throw new QUI\Exception([
@@ -362,23 +363,33 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             ]);
         }
 
-        $SalesOrder = SalesOrdersHandler::createSalesOrder(null, $this->getGlobalProcessId());
-
-        $this->History->addComment(
-            QUI::getLocale()->get(
-                'quiqqer/order',
-                'history.order.salesOrder.created',
-                [
-                    'userId' => QUI::getUserBySession()->getUUID(),
-                    'username' => QUI::getUserBySession()->getUsername(),
-                    'salesOrderHash' => $SalesOrder->getUUID()
-                ]
-            )
+        QUI\Permissions\Permission::checkPermission(
+            SalesOrdersHandler::PERMISSION_UPDATE,
+            $PermissionUser
         );
 
-        $this->updateHistory();
+        $PreviousHistory = clone $this->History;
 
-        // set the data to the temporary invoice
+        try {
+            return QUI::getDataBaseConnection()->transactional(
+                fn (): SalesOrder => $this->createSalesOrderDraft($PermissionUser)
+            );
+        } catch (\Throwable $Exception) {
+            $this->History = $PreviousHistory;
+            throw $Exception;
+        }
+    }
+
+    /**
+     * Populate a new draft inside the conversion transaction.
+     *
+     * @throws QUI\Exception
+     */
+    private function createSalesOrderDraft(?User $PermissionUser): SalesOrder
+    {
+        $SalesOrder = SalesOrdersHandler::createSalesOrder($PermissionUser, $this->getGlobalProcessId());
+
+        // Set the data to the sales order.
         $payment = '';
 
         $deliveryAddress = '';
@@ -459,7 +470,21 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
 
         $SalesOrder->setData('orderId', $this->getUUID());
 
-        $SalesOrder->update();
+        $SalesOrder->update($PermissionUser);
+
+        $this->History->addComment(
+            QUI::getLocale()->get(
+                'quiqqer/order',
+                'history.order.salesOrder.created',
+                [
+                    'userId' => $SessionUser->getUUID(),
+                    'username' => $SessionUser->getUsername(),
+                    'salesOrderHash' => $SalesOrder->getUUID()
+                ]
+            )
+        );
+
+        $this->updateHistory();
 
         return $SalesOrder;
     }
@@ -537,8 +562,11 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         if ($this->getShipping() && class_exists('QUI\ERP\Shipping\Shipping')) {
             $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
             $Shipping = $ShippingHandler->getShippingByObject($this);
-            $Address = $Shipping->getAddress();
-            $deliveryAddress = $Address->toJSON();
+            $Address = $Shipping instanceof QUI\ERP\Shipping\Types\ShippingEntry
+                ? $Shipping->getAddress()
+                : null;
+
+            $deliveryAddress = $Address?->toJSON() ?? $deliveryAddress;
         }
 
         // customer
