@@ -17,5 +17,7 @@ if (!class_exists(ShippingEntry::class, false)) {
         abstract public function getPrice(): float | int;
 
         abstract public function getTitle(null | \QUI\Locale $Locale = null): string;
+
+        abstract public function getAddress(): \QUI\ERP\Address | \QUI\Users\Address | null;
     }
 }

@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use QUI;
 use QUI\ERP\Accounting\Article;
 use QUI\ERP\Accounting\ArticleList;
-use QUI\ERP\ErpEntityInterface;
 use QUI\ERP\Order\Order;
 use QUI\ERP\Shipping\Api\ShippingInterface;
 use ReflectionClass;
@@ -24,41 +23,17 @@ class ShippingValidationUnitTest extends TestCase
         $Articles->addArticle(new Article());
         $this->setProperty($Order, 'Articles', $Articles);
 
-        $Shipping = new class implements ShippingInterface {
-            public ?ErpEntityInterface $Entity = null;
+        $Shipping = $this->getMockBuilder(ShippingInterface::class)
+            ->onlyMethods(get_class_methods(ShippingInterface::class))
+            ->addMethods(['setErpEntity', 'isValid', 'canUsedInErpEntity', 'canUsedBy'])
+            ->getMock();
+        $Shipping->expects(self::once())->method('setErpEntity')->with($Order);
+        $Shipping->expects(self::once())->method('isValid')->willReturn(true);
+        $Shipping->expects(self::once())->method('canUsedInErpEntity')->with($Order)->willReturn(false);
+        $Shipping->expects(self::never())->method('canUsedBy');
 
-            public function getId(): int
-            {
-                return 1;
-            }
-
-            public function setErpEntity(ErpEntityInterface $Entity): void
-            {
-                $this->Entity = $Entity;
-            }
-
-            public function isValid(): bool
-            {
-                return true;
-            }
-
-            public function canUsedInErpEntity(ErpEntityInterface $Entity): bool
-            {
-                return false;
-            }
-
-            public function canUsedBy(mixed $User, ErpEntityInterface $Entity): bool
-            {
-                return true;
-            }
-        };
-
-        try {
-            $Order->validateShipping($Shipping);
-            self::fail('An invalid shipping entry must be rejected.');
-        } catch (QUI\Exception) {
-            self::assertSame($Order, $Shipping->Entity);
-        }
+        $this->expectException(QUI\Exception::class);
+        $Order->validateShipping($Shipping);
     }
 
     private function setProperty(object $Object, string $name, mixed $value): void

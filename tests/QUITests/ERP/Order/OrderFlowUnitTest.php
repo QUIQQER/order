@@ -444,6 +444,22 @@ class OrderFlowUnitTest extends TestCase
         }
     }
 
+    public function testSalesOrderConversionRejectsExplicitlyDeniedActorBeforeCreatingDraft(): void
+    {
+        $originalPackageManager = \QUI::$PackageManager;
+        $PackageManager = $this->createMock(\QUI\Package\Manager::class);
+        $PackageManager->method('isInstalled')->with('quiqqer/salesorders')->willReturn(true);
+        \QUI::$PackageManager = $PackageManager;
+        $Order = (new ReflectionClass(Order::class))->newInstanceWithoutConstructor();
+
+        try {
+            $this->expectException(\QUI\Permissions\Exception::class);
+            $Order->createSalesOrder(\QUI::getUsers()->getNobody());
+        } finally {
+            \QUI::$PackageManager = $originalPackageManager;
+        }
+    }
+
     public function testProcessingProviderPausesOrderCreation(): void
     {
         $OrderInProcess = $this->createMock(OrderInProcess::class);

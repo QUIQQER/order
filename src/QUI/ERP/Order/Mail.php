@@ -117,9 +117,12 @@ class Mail
 
         if (class_exists('QUI\ERP\Shipping\Shipping') && $Order->getShipping()) {
             $Shipping = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
-            $DeliveryAddress = $Shipping->getAddress();
+            $ShippingAddress = $Shipping instanceof QUI\ERP\Shipping\Types\ShippingEntry
+                ? $Shipping->getAddress()
+                : null;
+            $DeliveryAddress = $ShippingAddress ?? $Order->getDeliveryAddress();
 
-            $DeliveryAddress?->setAttribute(
+            $DeliveryAddress->setAttribute(
                 'template',
                 dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
             );
@@ -247,7 +250,10 @@ class Mail
 
         if (class_exists('QUI\ERP\Shipping\Shipping') && $Order->getShipping()) {
             $Shipping = QUI\ERP\Shipping\Shipping::getInstance()->getShippingByObject($Order);
-            $DeliveryAddress = $Shipping->getAddress();
+            $ShippingAddress = $Shipping instanceof QUI\ERP\Shipping\Types\ShippingEntry
+                ? $Shipping->getAddress()
+                : null;
+            $DeliveryAddress = $ShippingAddress ?? $Order->getDeliveryAddress();
             $DeliveryAddress->setAttribute(
                 'template',
                 dirname(__FILE__) . '/MailTemplates/orderConfirmationAddress.html'
