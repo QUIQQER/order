@@ -404,12 +404,14 @@ class OrderUnitTest extends TestCase
         $this->setProperty($Order, 'Customer', null);
 
         $Articles->expects(self::exactly(2))->method('setUser');
-        $Order->setCustomer($Customer);
-        self::assertSame($Customer, $Order->getCustomer());
+        $this->withoutPackageEvents(function () use ($Order, $Customer): void {
+            $Order->setCustomer($Customer);
+            self::assertSame($Customer, $Order->getCustomer());
 
-        $Order->setCustomer([]);
-        self::assertSame(0, $this->getProperty($Order, 'customerId'));
-        self::assertNull($this->getProperty($Order, 'Customer'));
+            $Order->setCustomer([]);
+            self::assertSame(0, $this->getProperty($Order, 'customerId'));
+            self::assertNull($this->getProperty($Order, 'Customer'));
+        });
     }
 
     public function testCustomerAssignmentConvertsCoreUserAndInitializesInvoiceAddress(): void
@@ -421,11 +423,13 @@ class OrderUnitTest extends TestCase
         $this->setProperty($Order, 'Customer', null);
         $this->setProperty($Order, 'addressInvoice', []);
 
-        $Order->setCustomer(\QUI::getUsers()->getSystemUser());
+        $this->withoutPackageEvents(function () use ($Order): void {
+            $Order->setCustomer(\QUI::getUsers()->getSystemUser());
 
-        self::assertNotNull($this->getProperty($Order, 'Customer'));
-        self::assertNotEmpty($this->getProperty($Order, 'customerId'));
-        self::assertIsArray($this->getProperty($Order, 'addressInvoice'));
+            self::assertNotNull($this->getProperty($Order, 'Customer'));
+            self::assertNotEmpty($this->getProperty($Order, 'customerId'));
+            self::assertIsArray($this->getProperty($Order, 'addressInvoice'));
+        });
     }
 
     public function testApprovalChecksPaymentProviderAndHandlesMissingPayment(): void
@@ -643,6 +647,20 @@ class OrderUnitTest extends TestCase
             ->setConstructorArgs([$data])
             ->onlyMethods($abstractMethods)
             ->getMock();
+    }
+
+    private function withoutPackageEvents(callable $Callback): void
+    {
+        $Manager = \QUI::getEvents();
+        $Events = new ReflectionProperty($Manager, 'Events');
+        $PreviousEvents = $Events->getValue($Manager);
+        $Events->setValue($Manager, new \QUI\Events\Event());
+
+        try {
+            $Callback();
+        } finally {
+            $Events->setValue($Manager, $PreviousEvents);
+        }
     }
 
     private function createOrderWithoutConstructor(): Order
