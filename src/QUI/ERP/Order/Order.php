@@ -562,8 +562,11 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
         if ($this->getShipping() && class_exists('QUI\ERP\Shipping\Shipping')) {
             $ShippingHandler = QUI\ERP\Shipping\Shipping::getInstance();
             $Shipping = $ShippingHandler->getShippingByObject($this);
-            $Address = $Shipping->getAddress();
-            $deliveryAddress = $Address->toJSON();
+            $Address = $Shipping instanceof QUI\ERP\Shipping\Types\ShippingEntry
+                ? $Shipping->getAddress()
+                : null;
+
+            $deliveryAddress = $Address?->toJSON() ?? $deliveryAddress;
         }
 
         // customer
