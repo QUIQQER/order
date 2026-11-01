@@ -3,6 +3,8 @@
 namespace QUITests\ERP\Order;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
@@ -23,6 +25,8 @@ use QUITests\ERP\Order\Fixtures\TestableHandler;
 use ReflectionMethod;
 use ReflectionProperty;
 
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState(false)]
 class ShippingAddressFallbackTest extends TestCase
 {
     /** @var array<string, mixed> */
@@ -36,6 +40,16 @@ class ShippingAddressFallbackTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // The shipping package is optional. Keep these fallback types confined to this test process.
+        if (!class_exists(Shipping::class)) {
+            require_once dirname(__DIR__, 3) . '/stubs/QUI/ERP/Shipping/Shipping.php';
+        }
+
+        if (!class_exists(ShippingUnique::class)) {
+            require_once dirname(__DIR__, 3) . '/stubs/QUI/ERP/Shipping/Types/ShippingUnique.php';
+        }
+
         $this->previousInstances = (new ReflectionProperty(Singleton::class, 'instances'))->getValue();
         $this->PreviousTemplate = QUI::$Template;
         $this->PreviousMailManager = QUI::$MailManager;
@@ -231,7 +245,7 @@ class ShippingAddressFallbackTest extends TestCase
         $Shipping = $this->createMock(Shipping::class);
         $resolvedShipping = match ($state) {
             'none', 'missing' => null,
-            'stored' => new ShippingUnique(['id' => 17]),
+            'stored' => $this->createMock(ShippingUnique::class),
             default => $ShippingEntry
         };
         $Shipping->expects($state === 'none' ? self::never() : self::once())
