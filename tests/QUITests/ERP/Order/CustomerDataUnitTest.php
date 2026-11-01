@@ -245,9 +245,20 @@ class CustomerDataUnitTest extends TestCase
             $Address->expects(self::once())->method('editPhone')->with(0, '+44 123');
             $Address->expects(self::once())->method('save');
 
-            $Order = $this->createMock(AbstractOrder::class);
+            $Order = $this->getMockBuilder(QUI\ERP\Order\Order::class)
+                ->disableOriginalConstructor()
+                ->onlyMethods([
+                    'getCustomer',
+                    'getInvoiceAddress',
+                    'save',
+                    'setInvoiceAddress',
+                    'setCustomer',
+                    'update'
+                ])
+                ->getMock();
+            $Order->method('getCustomer')->willReturn($this->createMock(QUI\ERP\User::class));
+            $Order->method('getInvoiceAddress')->willReturn($this->createErpAddress('invoice-address'));
             $Order->expects(self::once())->method('setInvoiceAddress')->with($Address);
-            $Order->expects(self::once())->method('setDeliveryAddress')->with(['id' => -1]);
             $Order->expects(self::once())->method('setCustomer')->with($User);
             $Order->expects(self::once())->method('update');
 
@@ -258,6 +269,10 @@ class CustomerDataUnitTest extends TestCase
             $Step->setAttribute('Order', $Order);
             $Step->save();
 
+            self::assertSame(
+                ['id' => -1],
+                (new ReflectionProperty(AbstractOrder::class, 'addressDelivery'))->getValue($Order)
+            );
             self::assertSame('Example Street 42', $addressAttributes['street_no']);
             self::assertSame('Example Ltd.', $addressAttributes['company']);
             self::assertSame(QUI\ERP\Utils\User::IS_NETTO_USER, $userAttributes['quiqqer.erp.isNettoUser']);
