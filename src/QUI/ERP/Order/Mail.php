@@ -414,10 +414,16 @@ class Mail
         );
 
         try {
-            $Mailer->send();
+            if (!$Mailer->send()) {
+                throw new Exception([
+                    'quiqqer/order',
+                    'exception.shipping.order.mail',
+                    ['orderId' => $Order->getPrefixedNumber(), 'message' => '']
+                ]);
+            }
         } catch (\Exception $Exception) {
             QUI\System\Log::addAlert(
-                QUI::getLocale()->get('quiqqer/shipping', 'exception.shipping.order.mail', [
+                QUI::getLocale()->get('quiqqer/order', 'exception.shipping.order.mail', [
                     'orderId' => $Order->getPrefixedNumber(),
                     'message' => $Exception->getMessage()
                 ])
