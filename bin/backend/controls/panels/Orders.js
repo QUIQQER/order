@@ -170,14 +170,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     entry.paid_status_display = paymentStatus;
 
                     if (shippingInstalled) {
-                        entry.shipping_status = new Element('span', {
-                            'class': 'order-shipping-status',
-                            html: entry.shipping_status_title,
-                            styles: {
-                                color: entry.shipping_status_color !== '---' ? entry.shipping_status_color : '',
-                                borderColor: entry.shipping_status_color !== '---' ? entry.shipping_status_color : ''
-                            }
-                        });
+                        entry.shipping_status = document.createElement('span');
+                        entry.shipping_status.className = 'badge badge-pill badge-lg order-status order-shipping-status';
+                        entry.shipping_status.textContent = entry.shipping_status_title;
+
+                        if (entry.shipping_status_color && CSS.supports('color', entry.shipping_status_color)) {
+                            entry.shipping_status.style.setProperty('--_q-controlConf-color', entry.shipping_status_color);
+                        }
                     }
 
                     if (typeof entry.customer_no !== 'undefined') {
