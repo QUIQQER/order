@@ -47,7 +47,6 @@
     font-family: monospace, monospace;
 }
 
-.order-shipping-status,
 .order-payment-status {
     border-color: #dedede;
     border-style: solid;
