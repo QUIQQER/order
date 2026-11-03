@@ -136,7 +136,9 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
         ],
 
         options: {
-            action: 'openSmallBasket', // openSmallBasket, openOrderProcessUrl, openOrderProcess (qui popup). These options are only used on desktop. Mobile always opens order process page
+            action: 'openSmallBasket', // openSmallBasket, openOrderProcessUrl, openOrderProcess, openShoppingCart
+            mobileAction: 'openOrderProcessUrl', // Preserve the mobile default for existing consumers.
+            getNavigationUrl: null, // Optional (mobile: boolean) => Promise<string|null> resolver for page actions.
             text: true,
             styles: false,
             batchPosition: {
@@ -287,26 +289,42 @@ define('package/quiqqer/order/bin/frontend/controls/basket/Button', [
             Elm.addEventListener('click', function() {
                 loadAndConnectBasket();
 
-                // on mobile always go to order process page
-                if (QUI.getWindowSize().x <= 768) {
-                    loadOrderProcessUrl().then(function(getOrderProcessUrl) {
-                        return getOrderProcessUrl();
+                const mobile = QUI.getWindowSize().x <= 768;
+                const action = self.getAttribute(mobile ? 'mobileAction' : 'action');
+                const resolveUrl = self.getAttribute('getNavigationUrl');
+
+                if (
+                    action === 'openShoppingCart'
+                    || (action === 'openOrderProcessUrl' && typeof resolveUrl === 'function')
+                ) {
+                    if (self.$navigationPending) {
+                        return;
+                    }
+
+                    self.$navigationPending = true;
+
+                    Promise.resolve().then(function() {
+                        return typeof resolveUrl === 'function' ? resolveUrl(mobile) : null;
                     }).then(function(url) {
-                        window.location = url;
+                        if (typeof url === 'string' && url) {
+                            window.location = url;
+                        }
                     }).catch(function(error) {
                         console.error(error);
+                    }).finally(function() {
+                        self.$navigationPending = false;
                     });
 
                     return;
                 }
 
-                if (self.getAttribute('action') === 'openSmallBasket') {
+                if (action === 'openSmallBasket') {
                     self.showSmallBasket();
 
                     return;
                 }
 
-                if (self.getAttribute('action') === 'openOrderProcessUrl') {
+                if (action === 'openOrderProcessUrl') {
                     loadOrderProcessUrl().then(function(getOrderProcessUrl) {
                         return getOrderProcessUrl();
                     }).then(function(url) {
