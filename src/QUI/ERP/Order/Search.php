@@ -212,7 +212,7 @@ class Search extends Singleton
      * @return array<string, mixed>
      * @throws QUI\Exception
      */
-    public function searchForGrid(): array
+    public function searchForGrid(bool $includeTotals = true): array
     {
         $this->cache = [];
 
@@ -226,28 +226,35 @@ class Search extends Singleton
         $count = $this->executeQueryParams($queryCount);
         $count = (int)$count[0]['count'];
 
-        // total - calculation is without limit and paid_status
-        $oldFiler = $this->filter;
-        $oldLimit = $this->limit;
+        $total = null;
 
-        $this->limit = false;
-        $this->filter = array_filter($this->filter, function ($filter) {
-            return $filter['filter'] != 'paid_status';
-        });
+        if ($includeTotals) {
+            // Totals include every matching order, without pagination or paid_status.
+            $oldFilter = $this->filter;
+            $oldLimit = $this->limit;
 
-        $calc = $this->parseListForGrid($this->executeQueryParams($this->getQuery()));
-
-        $this->filter = $oldFiler;
-        $this->limit = $oldLimit;
-
-        // currency
-        $Currency = null;
-
-        if (!empty($this->currency)) {
             try {
-                $Currency = QUI\ERP\Currency\Handler::getCurrency($this->currency);
-            } catch (QUI\Exception) {
+                $this->limit = false;
+                $this->filter = array_filter($this->filter, function ($filter) {
+                    return $filter['filter'] != 'paid_status';
+                });
+
+                $calc = $this->parseListForGrid($this->executeQueryParams($this->getQuery()));
+            } finally {
+                $this->filter = $oldFilter;
+                $this->limit = $oldLimit;
             }
+
+            $Currency = null;
+
+            if (!empty($this->currency)) {
+                try {
+                    $Currency = QUI\ERP\Currency\Handler::getCurrency($this->currency);
+                } catch (QUI\Exception) {
+                }
+            }
+
+            $total = QUI\ERP\Accounting\Calc::calculateTotal($calc, $Currency);
         }
 
         // result
@@ -263,7 +270,7 @@ class Search extends Singleton
 
         return [
             'grid' => $Grid->parseResult($result, $count),
-            'total' => QUI\ERP\Accounting\Calc::calculateTotal($calc, $Currency)
+            'total' => $total
         ];
     }
 
