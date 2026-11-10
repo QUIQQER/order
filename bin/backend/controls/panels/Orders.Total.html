@@ -1,24 +1,24 @@
-<header>
-    <div>&nbsp;</div>
-    <div>Offen</div>
-    <div>Bezahlt</div>
-    <div>Gesamt</div>
-</header>
-<div class="order-total-row">
-    <div class="order-total-title">Netto</div>
-    <div class="order-total-netto-open">{{display_netto_toPay}}</div>
-    <div class="order-total-netto-paid">{{display_netto_paid}}</div>
-    <div class="order-total-netto-total">{{display_netto_total}}</div>
-</div>
-<div class="order-total-row">
-    <div class="order-total-title">MwSt</div>
-    <div class="order-total-open">{{display_vat_toPay}}</div>
-    <div class="order-total-paid">{{display_vat_paid}}</div>
-    <div class="order-total-total">{{display_vat_total}}</div>
-</div>
-<div class="order-total-row">
-    <div class="order-total-brutto-title">Brutto</div>
-    <div class="order-total-brutto-open">{{display_brutto_toPay}}</div>
-    <div class="order-total-brutto-paid">{{display_brutto_paid}}</div>
-    <div class="order-total-brutto-total">{{display_brutto_total}}</div>
+<div class="quiqqer-order-totals-row">
+    <div class="quiqqer-order-totals-context">
+        <p class="quiqqer-order-totals-title">{{title}}</p>
+        <div class="quiqqer-order-totals-meta">
+            {{#currency}}<span class="quiqqer-order-totals-currency">{{currency}}</span>{{/currency}}
+            <span>{{countLabel}}: {{count}}</span>
+        </div>
+    </div>
+    <div class="quiqqer-order-totals-groups">
+        {{#groups}}
+        <section class="quiqqer-order-totals-group quiqqer-order-totals-group--{{type}}" aria-label="{{title}}">
+            <p class="quiqqer-order-totals-title">{{title}}</p>
+            <dl class="quiqqer-order-totals-breakdown">
+                {{#metrics}}
+                <div class="quiqqer-order-totals-metric quiqqer-order-totals-metric--{{type}}{{#gross}} quiqqer-order-totals-metric--gross{{/gross}}">
+                    <dt>{{label}}</dt>
+                    <dd>{{value}}</dd>
+                </div>
+                {{/metrics}}
+            </dl>
+        </section>
+        {{/groups}}
+    </div>
 </div>

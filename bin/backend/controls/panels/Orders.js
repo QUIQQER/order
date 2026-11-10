@@ -70,6 +70,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.$Grid = null;
             this.$Total = null;
+            this.$totalsVisible = false;
+            this.$totalsAnimation = null;
+            this.$refreshId = 0;
+            this.$destroyed = false;
             this.$TimeFilter = null;
             this.$Search = null;
             this.$Currency = null;
@@ -102,13 +106,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @return {Promise}
          */
         refresh: function() {
-            if (!this.$Grid) {
+            if (!this.$Grid || this.$destroyed) {
                 return Promise.resolve();
             }
 
             const self = this;
+            const refreshId = ++this.$refreshId;
 
             this.Loader.show();
+
+            if (this.$totalsVisible) {
+                this.$Total.setAttribute('aria-busy', 'true');
+            }
 
             // db mapping
             let sortOn = self.$Grid.options.sortOn;
@@ -120,7 +129,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     break;
             }
 
-            this.$currentSearch = this.$Search.value;
+            this.$currentSearch = this.$Search.value.trim();
             this.$Grid.setAttribute('exportName', this.$TimeFilter.$Select.$placeholderText);
 
             let status = '',
@@ -142,7 +151,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 perPage: this.$Grid.options.perPage,
                 page: this.$Grid.options.page,
                 sortBy: this.$Grid.options.sortBy,
-                sortOn: sortOn
+                sortOn: sortOn,
+                includeTotals: this.$totalsVisible
             }, {
                 from: from,
                 to: to,
@@ -150,6 +160,10 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 currency: this.$Currency.getAttribute('value'),
                 status: status
             }).then(function(result) {
+                if (self.$destroyed || refreshId !== self.$refreshId) {
+                    return;
+                }
+
                 const gridData = result.grid;
 
                 gridData.data = gridData.data.map(function(entry) {
@@ -189,13 +203,22 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 self.$Grid.setData(gridData);
                 self.$refreshButtonStatus();
 
-                self.$Total.set(
-                    'html',
-                    Mustache.render(templateTotal, result.total)
-                );
+                if (self.$totalsVisible && result.total) {
+                    self.$renderTotals(result.total, gridData.total);
+                }
 
                 self.Loader.hide();
             }).catch(function(Err) {
+                if (self.$destroyed || refreshId !== self.$refreshId) {
+                    return;
+                }
+
+                self.Loader.hide();
+
+                if (self.$totalsVisible) {
+                    self.hideTotal();
+                }
+
                 if ('getMessage' in Err) {
                     console.error(Err.getMessage());
                     return;
@@ -269,18 +292,37 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             const self = this;
 
             // panel buttons
-            this.getContent().setStyles({
-                padding: 10
-            });
+            const Body = this.getContent();
+            Body.style.padding = '0';
+
+            this.$Total = document.createElement('section');
+            this.$Total.className = 'quiqqer-order-totals';
+            this.$Total.id = this.getId() + '-totals';
+            this.$Total.hidden = true;
+            this.$Total.setAttribute('aria-label', QUILocale.get(lg, 'orders.totals.title'));
+            this.$Total.setAttribute('aria-live', 'polite');
+            Body.appendChild(this.$Total);
 
             this.addButton({
                 name: 'total',
-                text: QUILocale.get(lg, 'panel.btn.total'),
-                textimage: 'fa fa-calculator',
+                title: QUILocale.get(lg, 'panel.btn.total'),
+                icon: 'fa fa-calculator',
+                disabled: true,
                 events: {
                     onClick: this.toggleTotal
                 }
             });
+
+            const TotalButton = this.getButtons('total').getElm();
+            TotalButton.classList.add('quiqqer-order-totals-button');
+            TotalButton.tabIndex = 0;
+            TotalButton.style.removeProperty('outline');
+            TotalButton.firstElementChild?.setAttribute('aria-hidden', 'true');
+            TotalButton.setAttribute('aria-label', QUILocale.get(lg, 'panel.btn.total'));
+            TotalButton.setAttribute('aria-pressed', 'false');
+            TotalButton.setAttribute('aria-controls', this.$Total.id);
+
+            this.$createSearchControl();
 
             // currency
             this.$Currency = new QUIButton({
@@ -352,41 +394,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             });
 
             this.addButton(this.$TimeFilter);
-
-            this.addButton({
-                type: 'separator',
-                styles: {
-                    'float': 'right'
-                }
-            });
-
-            this.addButton({
-                name: 'search',
-                icon: 'fa fa-search',
-                styles: {
-                    'float': 'right'
-                },
-                events: {
-                    onClick: this.refresh
-                }
-            });
-
-            this.$Search = new Element('input', {
-                type: 'search',
-                placeholder: 'Search...', // #locale
-                styles: {
-                    'float': 'right',
-                    margin: '10px 0 0 0',
-                    width: 200
-                },
-                events: {
-                    keyup: this.$onSearchKeyUp,
-                    search: this.$onSearchKeyUp,
-                    click: this.$onSearchKeyUp
-                }
-            });
-
-            this.addButton(this.$Search);
 
             // grid buttons
             this.$Actions = new QUIButton({
@@ -466,8 +473,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             const size = Body.getSize();
 
-            this.$Grid.setHeight(size.y - 20);
-            this.$Grid.setWidth(size.x - 20);
+            const totalsHeight = this.$totalsVisible ? this.$Total.offsetHeight : 0;
+
+            return Promise.all([
+                this.$Grid.setHeight(Math.max(100, size.y - 20 - totalsHeight)),
+                this.$Grid.setWidth(size.x - 20)
+            ]);
         },
 
         /**
@@ -527,16 +538,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 Orders.isShippingAvailable(),
                 QUIPackages.isInstalled('quiqqer/salesorders')
             ]).then((result) => {
+                if (this.$destroyed) {
+                    return;
+                }
+
                 shippingInstalled = result[0];
 
                 this.$installed['quiqqer/salesorders'] = result[1];
 
                 this.$createGrid();
                 this.$onResize();
-
-                this.$Total = new Element('div', {
-                    'class': 'order-total'
-                }).inject(self.getContent());
+                this.getButtons('total').enable();
 
                 this.refresh().catch(function(err) {
                     console.error(err);
@@ -548,6 +560,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * event: on panel destroy
          */
         $onDestroy: function() {
+            this.$destroyed = true;
+            ++this.$refreshId;
+            clearTimeout(this.$searchDelay);
+            this.$totalsAnimation?.cancel();
+
             Orders.removeEvents({
                 onOrderCreate: this.$onOrderChange,
                 onOrderCopy: this.$onOrderChange,
@@ -917,64 +934,127 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * Toggle the total display
          */
         toggleTotal: function() {
-            if (parseInt(this.$Total.getStyle('opacity')) === 1) {
-                this.hideTotal();
-                return;
+            if (this.$totalsVisible) {
+                return this.hideTotal();
             }
 
-            this.showTotal();
+            return this.showTotal();
         },
 
         /**
          * Show the total display
          */
         showTotal: function() {
+            if (!this.$Grid || this.$destroyed) {
+                return Promise.resolve();
+            }
+
+            this.$totalsVisible = true;
             this.getButtons('total').setActive();
-            this.getContent().setStyle('overflow', 'hidden');
+            this.getButtons('total').getElm().setAttribute('aria-pressed', 'true');
 
-            return new Promise(function(resolve) {
-                this.$Total.setStyles({
-                    display: 'inline-block',
-                    opacity: 0
-                });
-
-                this.$Grid.setHeight(this.getContent().getSize().y - 130);
-
-                moofx(this.$Total).animate({
-                    bottom: 1,
-                    opacity: 1
-                }, {
-                    duration: 200,
-                    callback: resolve
-                });
-            }.bind(this));
+            return this.refresh();
         },
 
         /**
          * Hide the total display
          */
         hideTotal: function() {
-            const self = this;
-
+            this.$totalsVisible = false;
+            this.$Total.removeAttribute('aria-busy');
             this.getButtons('total').setNormal();
+            this.getButtons('total').getElm().setAttribute('aria-pressed', 'false');
 
-            return new Promise(function(resolve) {
-                self.$Grid.setHeight(self.getContent().getSize().y - 20);
+            return this.$animateTotals(false);
+        },
 
-                moofx(self.$Total).animate({
-                    bottom: -20,
-                    opacity: 0
-                }, {
-                    duration: 200,
-                    callback: function() {
-                        self.$Total.setStyles({
-                            display: 'none'
-                        });
+        $animateTotals: function(visible) {
+            const Total = this.$Total;
+            const startHeight = Total.hidden ? 0 : Total.getBoundingClientRect().height;
+            this.$totalsAnimation?.cancel();
+            this.$totalsAnimation = null;
 
-                        resolve();
-                    }
-                });
+            if (!visible && Total.hidden) {
+                Total.classList.remove('quiqqer-order-totals--resizing');
+                this.$onResize();
+                return Promise.resolve();
+            }
+
+            if (typeof Total.animate !== 'function' ||
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                Total.hidden = !visible;
+                Total.style.overflow = '';
+                Total.classList.remove('quiqqer-order-totals--resizing');
+                this.$onResize();
+                return Promise.resolve();
+            }
+
+            if (visible) {
+                Total.hidden = false;
+            }
+
+            Total.classList.add('quiqqer-order-totals--resizing');
+            const endHeight = visible ? Total.offsetHeight : 0;
+            const resized = this.$onResize();
+            Total.style.overflow = 'hidden';
+
+            const Animation = Total.animate([
+                {height: startHeight + 'px'},
+                {height: endHeight + 'px'}
+            ], {
+                duration: 200,
+                easing: 'ease-in-out',
+                fill: 'forwards'
             });
+            this.$totalsAnimation = Animation;
+
+            return Promise.all([Animation.finished, resized]).then(() => {
+                if (this.$totalsAnimation !== Animation || this.$destroyed) {
+                    return;
+                }
+
+                Total.hidden = !visible;
+                Animation.cancel();
+                Total.style.overflow = '';
+                this.$totalsAnimation = null;
+                Total.classList.remove('quiqqer-order-totals--resizing');
+            }).catch(() => {});
+        },
+
+        $renderTotals: function(total, count) {
+            const labels = {
+                netto: QUILocale.get('quiqqer/erp', 'article.summary.tpl.labelNet'),
+                vat: QUILocale.get('quiqqer/erp', 'article.summary.tpl.labelVat'),
+                brutto: QUILocale.get('quiqqer/erp', 'article.summary.tpl.labelGross')
+            };
+            const groupKeys = ['toPay', 'paid', 'total'];
+            const groups = groupKeys.map((group) => ({
+                type: group,
+                title: QUILocale.get(lg, 'orders.totals.' + group),
+                metrics: ['netto', 'vat', 'brutto'].map((field) => ({
+                    type: field,
+                    label: labels[field],
+                    value: total['display_' + field + '_' + group],
+                    gross: field === 'brutto'
+                }))
+            }));
+
+            const wasHidden = this.$Total.hidden;
+
+            this.$Total.innerHTML = Mustache.render(templateTotal, {
+                title: QUILocale.get(lg, 'orders.totals.title'),
+                countLabel: QUILocale.get(lg, 'orders.panel.title'),
+                count: count,
+                currency: this.$Currency.getAttribute('value') || '',
+                groups: groups
+            });
+            this.$Total.removeAttribute('aria-busy');
+
+            if (wasHidden) {
+                this.$animateTotals(true);
+            } else {
+                this.$onResize();
+            }
         },
 
         /**
@@ -999,34 +1079,62 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          * @param {DOMEvent} event
          */
         $onSearchKeyUp: function(event) {
-            if (event.key === 'up' || event.key === 'down' || event.key === 'left' || event.key === 'right') {
+            clearTimeout(this.$searchDelay);
+
+            if (this.$currentSearch === this.$Search.value.trim()) {
                 return;
             }
 
-            if (this.$searchDelay) {
-                clearTimeout(this.$searchDelay);
+            if (event.key === 'Enter' || event.type === 'search' || !this.$Search.value) {
+                this.$searchDelay = setTimeout(() => this.$submitSearch(), 150);
+            }
+        },
+
+        $submitSearch: function() {
+            clearTimeout(this.$searchDelay);
+
+            if (this.$Grid) {
+                this.$Grid.options.page = 1;
             }
 
-            if (event.type === 'click') {
-                // workaround, cancel needs time to clear
-                (() => {
-                    if (this.$currentSearch !== this.$Search.value) {
-                        this.$searchDelay = (() => {
-                            this.refresh();
-                        }).delay(250);
-                    }
-                }).delay(100);
-            }
+            return this.refresh();
+        },
 
-            if (this.$currentSearch === this.$Search.value) {
-                return;
-            }
+        $createSearchControl: function() {
+            const label = QUILocale.get(lg, 'orders.search.placeholder');
+            const SearchGroup = document.createElement('div');
+            SearchGroup.className = 'quiqqer-order-search';
+            SearchGroup.setAttribute('role', 'search');
 
-            if (event.key === 'enter') {
-                this.$searchDelay = (() => {
-                    this.refresh();
-                }).delay(250);
-            }
+            this.$Search = document.createElement('input');
+            this.$Search.type = 'search';
+            this.$Search.placeholder = label;
+            this.$Search.maxLength = 200;
+            this.$Search.dataset.name = 'order-search';
+            this.$Search.setAttribute('aria-label', label);
+
+            ['keyup', 'search', 'input'].forEach((event) => {
+                this.$Search.addEventListener(event, this.$onSearchKeyUp);
+            });
+
+            SearchGroup.appendChild(this.$Search);
+
+            const SearchButton = new QUIButton({
+                name: 'search',
+                icon: 'fa fa-search',
+                events: {
+                    onClick: () => this.$submitSearch()
+                }
+            });
+            this.addButton(SearchButton);
+
+            const ButtonElm = SearchButton.getElm();
+            ButtonElm.tabIndex = 0;
+            ButtonElm.style.removeProperty('outline');
+            ButtonElm.firstElementChild?.setAttribute('aria-hidden', 'true');
+            ButtonElm.setAttribute('aria-label', label);
+            ButtonElm.before(SearchGroup);
+            SearchGroup.appendChild(ButtonElm);
         },
 
         /**
@@ -1303,7 +1411,12 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             const self = this;
 
             // Grid
-            const Container = new Element('div').inject(this.getContent());
+            const GridContainer = document.createElement('div');
+            GridContainer.className = 'quiqqer-order-grid-container';
+            this.getContent().appendChild(GridContainer);
+
+            const Container = document.createElement('div');
+            GridContainer.appendChild(Container);
 
             // Add additional actions based on isntalled packages
             if (this.$installed['quiqqer/salesorders']) {

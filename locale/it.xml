@@ -1111,6 +1111,21 @@
         <locale name="panel.btn.actions">
 <it><![CDATA[Azioni]]></it>
         </locale>
+        <locale name="orders.totals.title">
+<it><![CDATA[Totali degli ordini filtrati]]></it>
+        </locale>
+        <locale name="orders.totals.toPay">
+<it><![CDATA[Da pagare]]></it>
+        </locale>
+        <locale name="orders.totals.paid">
+<it><![CDATA[Pagato]]></it>
+        </locale>
+        <locale name="orders.totals.total">
+<it><![CDATA[Totale]]></it>
+        </locale>
+        <locale name="orders.search.placeholder">
+<it><![CDATA[Cerca ordini …]]></it>
+        </locale>
         <locale name="panel.btn.total">
 <it><![CDATA[Mostra totale]]></it>
         </locale>

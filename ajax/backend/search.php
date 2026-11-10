@@ -44,7 +44,9 @@ QUI::getAjax()->registerFunction(
             $Search->order($query['order']);
         }
 
-        return $Search->searchForGrid();
+        $includeTotals = ($params['includeTotals'] ?? true) !== false;
+
+        return $Search->searchForGrid($includeTotals);
     },
     ['params', 'filter'],
     'Permission::checkAdminUser'
