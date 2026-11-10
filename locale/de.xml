@@ -1249,6 +1249,21 @@
         <locale name="panel.btn.actions">
 <de><![CDATA[Aktionen]]></de>
         </locale>
+        <locale name="orders.totals.title">
+<de><![CDATA[Summen der gefilterten Bestellungen]]></de>
+        </locale>
+        <locale name="orders.totals.toPay">
+<de><![CDATA[Offen]]></de>
+        </locale>
+        <locale name="orders.totals.paid">
+<de><![CDATA[Bezahlt]]></de>
+        </locale>
+        <locale name="orders.totals.total">
+<de><![CDATA[Gesamt]]></de>
+        </locale>
+        <locale name="orders.search.placeholder">
+<de><![CDATA[Bestellungen durchsuchen …]]></de>
+        </locale>
         <locale name="panel.btn.total">
 <de><![CDATA[Summe anzeigen]]></de>
         </locale>

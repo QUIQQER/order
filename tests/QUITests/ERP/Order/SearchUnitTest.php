@@ -84,6 +84,116 @@ class SearchUnitTest extends TestCase
         self::assertSame('%customer@example.test%', $parameters['search']);
     }
 
+    public function testHiddenTotalsSkipTheUnpaginatedQuery(): void
+    {
+        $Search = $this->getMockBuilder(Search::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['executeQueryParams', 'parseListForGrid'])
+            ->getMock();
+        $Search->limit(0, 1);
+        $queries = [];
+
+        $Search->expects(self::exactly(2))
+            ->method('executeQueryParams')
+            ->willReturnCallback(function (QueryBuilder $Query) use (&$queries): array {
+                $queries[] = $Query;
+
+                return count($queries) === 1 ? [['id' => 42]] : [['count' => 3]];
+            });
+        $Search->expects(self::once())
+            ->method('parseListForGrid')
+            ->with([['id' => 42]])
+            ->willReturn([['id' => 42]]);
+
+        $result = $Search->searchForGrid(false);
+
+        self::assertNull($result['total']);
+        self::assertSame(3, $result['grid']['total']);
+        self::assertCount(1, $result['grid']['data']);
+        self::assertSame(1, $queries[0]->getMaxResults());
+        self::assertSame([0, 1], $this->getProperty($Search, 'limit'));
+    }
+
+    public function testDefaultSearchKeepsTotalsAcrossAllPages(): void
+    {
+        $Search = $this->getMockBuilder(Search::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['executeQueryParams', 'parseListForGrid'])
+            ->getMock();
+        $Search->limit(0, 1);
+        $Search->setFilter('currency', 'EUR');
+        $queries = [];
+        $rows = [];
+
+        foreach ([10, 20, 30] as $index => $net) {
+            $rows[] = [
+                'id' => $index + 1,
+                'currency_data' => '{"code":"EUR"}',
+                'calculated_sum' => $net * 1.2,
+                'calculated_vatsum' => $net * 0.2,
+                'calculated_nettosum' => $net,
+                'calculated_paid' => 0,
+                'calculated_toPay' => $net * 1.2,
+                'paid_status' => 0
+            ];
+        }
+
+        $Search->expects(self::exactly(3))
+            ->method('executeQueryParams')
+            ->willReturnCallback(function (QueryBuilder $Query) use (&$queries, $rows): array {
+                $queries[] = $Query;
+
+                return match (count($queries)) {
+                    1 => [$rows[0]],
+                    2 => [['count' => 3]],
+                    3 => $rows
+                };
+            });
+        $Search->method('parseListForGrid')->willReturnArgument(0);
+
+        $result = $Search->searchForGrid();
+
+        self::assertCount(1, $result['grid']['data']);
+        self::assertEquals(60, $result['total']['netto_total']);
+        self::assertEquals(12, $result['total']['vat_total']);
+        self::assertEquals(72, $result['total']['brutto_total']);
+        self::assertNull($queries[2]->getMaxResults());
+        self::assertSame([0, 1], $this->getProperty($Search, 'limit'));
+    }
+
+    public function testTotalsFailureRestoresFiltersAndPagination(): void
+    {
+        $Search = $this->getMockBuilder(Search::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['executeQueryParams', 'parseListForGrid'])
+            ->getMock();
+        $Search->limit(5, 10);
+        $Search->setFilter('status', '3');
+        $filters = $this->getProperty($Search, 'filter');
+        $executions = 0;
+
+        $Search->method('executeQueryParams')
+            ->willReturnCallback(function () use (&$executions): array {
+                ++$executions;
+
+                if ($executions === 3) {
+                    throw new \RuntimeException('Totals query failed');
+                }
+
+                return $executions === 1 ? [] : [['count' => 0]];
+            });
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Totals query failed');
+
+        try {
+            $Search->searchForGrid();
+        } finally {
+            self::assertSame($filters, $this->getProperty($Search, 'filter'));
+            self::assertSame([5, 10], $this->getProperty($Search, 'limit'));
+        }
+    }
+
     private function createSearch(): Search
     {
         return (new ReflectionClass(Search::class))->newInstanceWithoutConstructor();
