@@ -1003,7 +1003,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 {height: endHeight + 'px'}
             ], {
                 duration: 200,
-                easing: 'ease-in-out'
+                easing: 'ease-in-out',
+                fill: 'forwards'
             });
             this.$totalsAnimation = Animation;
 
@@ -1013,6 +1014,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
 
                 Total.hidden = !visible;
+                Animation.cancel();
                 Total.style.overflow = '';
                 this.$totalsAnimation = null;
                 Total.classList.remove('quiqqer-order-totals--resizing');

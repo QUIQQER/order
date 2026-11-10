@@ -322,3 +322,28 @@ test('totals content stays hidden until both expansion and grid resizing have fi
     await new Promise(setImmediate);
     assert.equal(panel.$Total.classList.contains('quiqqer-order-totals--resizing'), false);
 });
+
+test('collapse holds its zero-height end state while waiting for the grid width', async () => {
+    const {panel, animations} = fixture({motion: true});
+    panel.$totalsVisible = true;
+    panel.$Total.hidden = false;
+    let finishWidth;
+    panel.$Grid.setWidth = () => new Promise(resolve => { finishWidth = resolve; });
+
+    const hiding = panel.hideTotal();
+    const animation = animations[0];
+    animation.finish();
+    await animation.finished;
+    await new Promise(setImmediate);
+
+    assert.equal(panel.$Total.hidden, false);
+    assert.equal(animation.frames.at(-1).height, '0px');
+    assert.equal(animation.options.fill, 'forwards');
+    assert.equal(panel.$totalsAnimation, animation);
+
+    finishWidth();
+    await hiding;
+    assert.equal(panel.$Total.hidden, true);
+    assert.equal(panel.$totalsAnimation, null);
+    assert.equal(panel.$Total.classList.contains('quiqqer-order-totals--resizing'), false);
+});
