@@ -17,9 +17,12 @@ use QUI\ERP\Accounting\Invoice\InvoiceTemporary;
 use QUI\ERP\Accounting\Invoice\Invoice;
 use QUI\ERP\Accounting\Payments\Types\Payment;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
+use QUI\ERP\Accounting\Payments\Transactions\Factory as TransactionFactory;
+use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\ERP\Customer\Utils as CustomerUtils;
 use QUI\ERP\Order\Basket\ExceptionBasketNotFound;
 use QUI\ERP\Order\Exception;
+use QUI\ERP\Order\EventHandling;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\McpProvider;
 use QUI\ERP\Order\Order;
@@ -436,6 +439,66 @@ class HandlerDatabaseUnitTest extends TestCase
         self::assertJson((string)$stored['paid_data']);
         self::assertNotNull($stored['paid_date']);
         self::assertNotEmpty($stored['history']);
+    }
+
+    public function testInvoicePaymentEventMarksOrderPaidWithoutDuplicatingTransaction(): void
+    {
+        $orderHash = $this->fixture('order-c');
+        $invoiceHash = $this->fixture('invoice-draft');
+        $Order = new Order($orderHash);
+        $Articles = $this->createMock(QUI\ERP\Accounting\ArticleList::class);
+        $Articles->method('getCalculations')->willReturn(['sum' => 11.78]);
+        (new ReflectionProperty($Order, 'Articles'))->setValue($Order, $Articles);
+        $this->Handler->setResolvedOrder($Order);
+
+        $Instances = new ReflectionProperty(Singleton::class, 'instances');
+        $originalInstances = $Instances->getValue();
+        $instances = $originalInstances;
+        $instances[Handler::class] = $this->Handler;
+        unset($instances[TransactionHandler::class]);
+        $Instances->setValue(null, $instances);
+        $Transaction = null;
+
+        try {
+            $Transaction = TransactionFactory::createPaymentTransaction(
+                11.78,
+                $Order->getCurrency(),
+                $invoiceHash,
+                '',
+                [],
+                QUI::getUsers()->getSystemUser(),
+                1794314805,
+                $Order->getGlobalProcessId()
+            );
+            EventHandling::onTransactionCreate($Transaction);
+
+            $stored = $this->connection->fetchAssociative(
+                'SELECT paid_status, paid_data, history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                [$orderHash]
+            );
+            self::assertIsArray($stored);
+            self::assertSame(QUI\ERP\Constants::PAYMENT_STATUS_PAID, (int)$stored['paid_status']);
+            $paidData = json_decode($stored['paid_data'], true);
+            self::assertCount(1, $paidData);
+            self::assertSame($Transaction->getTxId(), $paidData[0]['txid']);
+            self::assertSame(11.78, $paidData[0]['amount']);
+            self::assertSame($invoiceHash, $Transaction->getHash());
+            self::assertTrue($Transaction->isHashLinked($orderHash));
+
+            EventHandling::onTransactionCreate($Transaction);
+
+            self::assertSame($stored, $this->connection->fetchAssociative(
+                'SELECT paid_status, paid_data, history FROM ' . $this->Handler->table() . ' WHERE hash = ?',
+                [$orderHash]
+            ));
+            self::assertCount(1, $Order->getTransactions());
+        } finally {
+            if ($Transaction !== null) {
+                $this->connection->delete(TransactionFactory::table(), ['txid' => $Transaction->getTxId()]);
+            }
+
+            $Instances->setValue(null, $originalInstances);
+        }
     }
 
     public function testFinalOrderCreatesAndPostsInvoiceWhenOptionalModuleIsAvailable(): void
