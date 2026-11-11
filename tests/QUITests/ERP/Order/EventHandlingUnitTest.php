@@ -272,7 +272,9 @@ class EventHandlingUnitTest extends TestCase
     public function testTransactionEventsDelegateToResolvedOrder(): void
     {
         $Order = $this->createMock(Order::class);
+        $Order->method('getUUID')->willReturn('transaction-order');
         $Order->expects(self::once())->method('addTransaction');
+        $Order->expects(self::never())->method('linkTransaction');
         $Order->expects(self::once())->method('calculatePayments');
         $Order->expects(self::once())
             ->method('setAttribute')
@@ -281,10 +283,28 @@ class EventHandlingUnitTest extends TestCase
         $Handler->setResolvedOrder($Order);
         $Transaction = $this->createMock(Transaction::class);
         $Transaction->method('getGlobalProcessId')->willReturn('global-process');
+        $Transaction->method('getHash')->willReturn('transaction-order');
 
         $this->withHandler($Handler, static function () use ($Transaction): void {
             EventHandling::onTransactionCreate($Transaction);
             EventHandling::onTransactionStatusChange($Transaction);
+        });
+    }
+
+    public function testInvoiceTransactionIsLinkedToOrderFromSameProcess(): void
+    {
+        $Order = $this->createMock(Order::class);
+        $Order->method('getUUID')->willReturn('transaction-order');
+        $Order->expects(self::never())->method('addTransaction');
+        $Transaction = $this->createMock(Transaction::class);
+        $Transaction->method('getGlobalProcessId')->willReturn('global-process');
+        $Transaction->method('getHash')->willReturn('invoice-draft');
+        $Order->expects(self::once())->method('linkTransaction')->with($Transaction);
+        $Handler = new TestableHandler();
+        $Handler->setResolvedOrder($Order);
+
+        $this->withHandler($Handler, static function () use ($Transaction): void {
+            EventHandling::onTransactionCreate($Transaction);
         });
     }
 

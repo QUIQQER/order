@@ -250,7 +250,11 @@ class EventHandling
         }
 
         try {
-            $Order->addTransaction($Transaction);
+            if ($Order->getUUID() === $Transaction->getHash()) {
+                $Order->addTransaction($Transaction);
+            } else {
+                $Order->linkTransaction($Transaction);
+            }
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
