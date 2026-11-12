@@ -19,6 +19,7 @@ function element() {
         classList: {
             add(name) { classes.add(name); },
             remove(name) { classes.delete(name); },
+            toggle(name, force) { force ? classes.add(name) : classes.delete(name); },
             contains(name) { return classes.has(name); }
         },
         setAttribute(name, value) { this.attributes[name] = value; },
@@ -27,7 +28,7 @@ function element() {
     };
 }
 
-function fixture({motion = false, reducedMotion = false} = {}) {
+function fixture({motion = false, reducedMotion = false, viewport = {}} = {}) {
     let definition;
     const requests = [];
     const renders = [];
@@ -58,7 +59,14 @@ function fixture({motion = false, reducedMotion = false} = {}) {
         document: {createElement: element},
         CSS: {supports: () => false},
         console: {error: error => errors.push(error)},
-        window: {matchMedia: () => ({matches: reducedMotion})},
+        window: {
+            matchMedia: () => ({matches: reducedMotion}),
+            innerWidth: 1280,
+            innerHeight: 720,
+            scrollX: 0,
+            scrollY: 0,
+            ...viewport
+        },
         setTimeout(callback) {
             const id = timers.size + 1;
             timers.set(id, callback);
@@ -127,6 +135,44 @@ function response(prefix = 'current') {
     }
     return {grid: {data: [], total: 176}, total};
 }
+
+test('the actions menu aligns below the button at its right edge, including page scroll', () => {
+    const {panel} = fixture({viewport: {scrollX: 40, scrollY: 60}});
+    panel.$Actions = {getElm: () => ({
+        getBoundingClientRect: () => ({right: 1200, top: 120, bottom: 150})
+    })};
+    const menuElement = element();
+    menuElement.getBoundingClientRect = () => ({width: 200, height: 300});
+    let position;
+
+    panel.$positionActionsMenu({
+        getElm: () => menuElement,
+        setPosition: (left, top) => { position = {left, top}; }
+    });
+
+    assert.deepEqual(position, {left: 1040, top: 218});
+    assert.equal(menuElement.classList.contains('qui-context-corner-topRight'), true);
+    assert.equal(menuElement.classList.contains('qui-context-corner-bottomRight'), false);
+});
+
+test('the actions menu stays inside the viewport and opens above when space below is insufficient', () => {
+    const {panel} = fixture();
+    panel.$Actions = {getElm: () => ({
+        getBoundingClientRect: () => ({right: 150, top: 660, bottom: 690})
+    })};
+    const menuElement = element();
+    menuElement.getBoundingClientRect = () => ({width: 200, height: 300});
+    let position;
+
+    panel.$positionActionsMenu({
+        getElm: () => menuElement,
+        setPosition: (left, top) => { position = {left, top}; }
+    });
+
+    assert.deepEqual(position, {left: 8, top: 352});
+    assert.equal(menuElement.classList.contains('qui-context-corner-topRight'), false);
+    assert.equal(menuElement.classList.contains('qui-context-corner-bottomRight'), true);
+});
 
 test('the hidden overview requests only rows and count, with the current filters', async () => {
     const {panel, requests, renders} = fixture();

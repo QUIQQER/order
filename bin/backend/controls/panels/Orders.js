@@ -290,6 +290,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          */
         $onCreate: function() {
             const self = this;
+            this.getElm().classList.add('quiqqer-order-panel');
 
             // panel buttons
             const Body = this.getContent();
@@ -327,12 +328,16 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             // currency
             this.$Currency = new QUIButton({
                 name: 'currency',
+                'class': 'quiqqer-order-currency',
+                text: '---',
+                title: QUILocale.get(lg, 'panel.order.currency.label'),
                 disabled: true,
                 showIcons: false,
+                dropDownIcon: false,
                 events: {
                     onChange: function(Menu, Item) {
                         self.$Currency.setAttribute('value', Item.getAttribute('value'));
-                        self.$Currency.setAttribute('text', Item.getAttribute('value'));
+                        self.$Currency.setAttribute('text', Item.getAttribute('value') || '---');
                         self.refresh();
                     }
                 }
@@ -340,8 +345,18 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.addButton(this.$Currency);
 
+            const CurrencyButton = this.$Currency.getElm();
+            CurrencyButton.tabIndex = 0;
+            CurrencyButton.style.removeProperty('outline');
+
+            const CurrencyArrow = document.createElement('span');
+            CurrencyArrow.className = 'quiqqer-order-currency-arrow fa fa-chevron-down';
+            CurrencyArrow.setAttribute('aria-hidden', 'true');
+            CurrencyButton.appendChild(CurrencyArrow);
+
 
             this.$Status = new QUISelect({
+                'class': 'quiqqer-order-status',
                 disabled: true,
                 showIcons: false,
                 styles: {
@@ -376,13 +391,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
             this.addButton(this.$Status);
 
-            this.addButton({
-                type: 'separator',
-                styles: {
-                    'float': 'right'
-                }
-            });
-
             this.$TimeFilter = new TimeFilter({
                 name: 'timeFilter',
                 styles: {
@@ -398,6 +406,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             // grid buttons
             this.$Actions = new QUIButton({
                 name: 'actions',
+                'class': 'quiqqer-order-actions-button',
                 text: QUILocale.get(lg, 'panel.btn.actions'),
                 menuCorner: 'topRight',
                 position: 'right'
@@ -454,7 +463,44 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ]);
 
             this.addButton(this.$Actions);
+
+            const ActionsButton = this.$Actions.getElm();
+            ActionsButton.tabIndex = 0;
+            ActionsButton.style.removeProperty('outline');
+            ActionsButton.setAttribute('aria-haspopup', 'menu');
+            ActionsButton.setAttribute('aria-expanded', 'false');
+
+            this.$Actions.getContextMenu((Menu) => {
+                Menu.getElm().classList.add('quiqqer-order-actions-menu');
+                Menu.addEvent('show', () => {
+                    this.$positionActionsMenu(Menu);
+                    ActionsButton.setAttribute('aria-expanded', 'true');
+                });
+                Menu.addEvent('hide', () => ActionsButton.setAttribute('aria-expanded', 'false'));
+            });
+
             this.Loader.show();
+        },
+
+        $positionActionsMenu: function(Menu) {
+            const MenuElement = Menu.getElm();
+            const button = this.$Actions.getElm().getBoundingClientRect();
+            const menu = MenuElement.getBoundingClientRect();
+            const left = Math.max(
+                8,
+                Math.min(button.right - menu.width, window.innerWidth - menu.width - 8)
+            );
+            const above =
+                button.bottom + menu.height + 8 > window.innerHeight &&
+                button.top - menu.height - 8 >= 8;
+            const top = above ? button.top - menu.height - 8 : button.bottom + 8;
+
+            MenuElement.classList.toggle('qui-context-corner-topRight', !above);
+            MenuElement.classList.toggle('qui-context-corner-bottomRight', above);
+            Menu.setPosition(
+                left + window.scrollX,
+                Math.max(8, Math.min(top, window.innerHeight - menu.height - 8)) + window.scrollY
+            );
         },
 
         /**
@@ -495,8 +541,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ], function(currencies, currency) {
                 let i, len, entry, text;
 
-                if (!currencies.length || currencies.length === 1) {
-                    self.$Currency.hide();
+                self.$Currency.setAttribute('value', currency.code);
+                self.$Currency.setAttribute('text', currency.code);
+
+                if (currencies.length <= 1) {
+                    self.$Currency.disable();
                     return;
                 }
 
@@ -524,8 +573,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
 
                 self.$Currency.enable();
-                self.$Currency.setAttribute('value', currency.code);
-                self.$Currency.setAttribute('text', currency.code);
             }, {
                 'package': 'quiqqer/currency'
             });
@@ -1230,7 +1277,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     header: '&nbsp;',
                     dataIndex: 'opener',
                     dataType: 'int',
-                    width: 30,
+                    width: 44,
                     showNotInExport: true
                 },
                 {
@@ -1241,7 +1288,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         'justify-content': 'center'
                     },
                     dataType: 'node',
-                    width: 100,
+                    width: 150,
                     className: 'grid-align-center clickable'
                 },
                 {
