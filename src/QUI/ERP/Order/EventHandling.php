@@ -100,6 +100,11 @@ class EventHandling
             }
 
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+
+            if ($CheckoutSite->getAttribute('type') === 'quiqqer/order-simple-checkout:types/simpleCheckout') {
+                return;
+            }
+
             $path = trim($CheckoutSite->getUrlRewritten(), '/');
 
             if (mb_strpos($path, 'http') === 0) {
@@ -380,6 +385,8 @@ class EventHandling
         self::migrateOrderIdentifierColumns($OrderHandler->tableOrderProcess());
         self::migrateOrderCreatorColumn($OrderHandler->table());
         self::migrateOrderCreatorColumn($OrderHandler->tableOrderProcess());
+        self::migrateOrderHistoryColumn($OrderHandler->table());
+        self::migrateOrderHistoryColumn($OrderHandler->tableOrderProcess());
         self::migrateBasketUserIds();
 
         // create order status
@@ -764,6 +771,52 @@ class EventHandling
             $Table,
             changedColumns: [
                 'c_user' => new \Doctrine\DBAL\Schema\ColumnDiff(
+                    $CurrentColumn,
+                    $TargetColumn
+                )
+            ]
+        ));
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private static function migrateOrderHistoryColumn(string $table): void
+    {
+        $Platform = QUI::getDataBaseConnection()->getDatabasePlatform();
+
+        if (!$Platform instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform) {
+            return;
+        }
+
+        $SchemaManager = QUI::getSchemaManager();
+
+        if (!$SchemaManager->tablesExist([$table])) {
+            return;
+        }
+
+        $Table = $SchemaManager->introspectTable($table);
+
+        if (!$Table->hasColumn('history')) {
+            return;
+        }
+
+        $CurrentColumn = $Table->getColumn('history');
+
+        if (
+            !$CurrentColumn->getType() instanceof \Doctrine\DBAL\Types\TextType
+            || $CurrentColumn->getLength() !== \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_TEXT
+        ) {
+            return;
+        }
+
+        $TargetColumn = clone $CurrentColumn;
+        $TargetColumn->setLength(4294967295);
+
+        $SchemaManager->alterTable(new \Doctrine\DBAL\Schema\TableDiff(
+            $Table,
+            changedColumns: [
+                'history' => new \Doctrine\DBAL\Schema\ColumnDiff(
                     $CurrentColumn,
                     $TargetColumn
                 )

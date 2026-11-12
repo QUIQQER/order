@@ -2,7 +2,16 @@
 
 namespace QUITests\ERP\Order;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Schema\MySQLSchemaManager;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 use DusanKasan\Knapsack\Collection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use QUI\Control;
 use QUI\ERP\Order\AbstractOrder;
@@ -136,6 +145,28 @@ class EventHandlingUnitTest extends TestCase
         self::assertTrue(true);
     }
 
+    public function testSimpleCheckoutIsNotInterceptedByClassicRequestRouting(): void
+    {
+        $CheckoutSite = $this->createMock(Site::class);
+        $CheckoutSite->method('getAttribute')->with('type')->willReturn(
+            'quiqqer/order-simple-checkout:types/simpleCheckout'
+        );
+        $CheckoutSite->expects(self::never())->method('getUrlRewritten');
+        $CheckoutSite->expects(self::never())->method('setAttribute');
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::exactly(2))->method('getSites')->willReturnCallback(
+            static fn(array $query): array => $query['where']['type'] === 'quiqqer/order-simple-checkout:types/simpleCheckout'
+                ? [$CheckoutSite]
+                : []
+        );
+        $Rewrite = $this->createMock(Rewrite::class);
+        $Rewrite->method('getProject')->willReturn($Project);
+        $Rewrite->expects(self::never())->method('setSite');
+
+        (new ReflectionMethod(EventHandling::class, 'handleRequest'))
+            ->invoke(null, $Rewrite, 'shop/checkout.html');
+    }
+
     public function testRequestRoutingRejectsUnrelatedPathsAndAcceptsStepWithoutOrder(): void
     {
         $CheckoutSite = $this->createMock(Site::class);
@@ -208,6 +239,115 @@ class EventHandlingUnitTest extends TestCase
 
         EventHandling::onPackageSetup($Package);
         self::assertTrue(true);
+    }
+
+    public static function mysqlPlatforms(): iterable
+    {
+        yield 'MySQL' => [new MySQLPlatform()];
+        yield 'MariaDB' => [new MariaDBPlatform()];
+    }
+
+    #[DataProvider('mysqlPlatforms')]
+    public function testHistoryMigrationWidensTextOnceAndPreservesColumnOptions(AbstractMySQLPlatform $Platform): void
+    {
+        $tableName = \QUI::getDBTableName('orders');
+        $Table = new Table($tableName);
+        $Table->addColumn('id', 'integer');
+        $Table->addColumn('history', 'text', [
+            'length' => AbstractMySQLPlatform::LENGTH_LIMIT_TEXT,
+            'notnull' => false,
+            'default' => null,
+            'comment' => 'Order audit history'
+        ]);
+        $originalOptions = $Table->getColumn('history')->toArray();
+        $SchemaManager = $this->createMock(MySQLSchemaManager::class);
+        $SchemaManager->method('tablesExist')->with([$tableName])->willReturn(true);
+        $SchemaManager->method('introspectTable')->with($tableName)->willReturn($Table);
+        $SchemaManager->expects(self::once())->method('alterTable')->willReturnCallback(
+            static function (TableDiff $Diff) use ($Table, $Platform, $originalOptions): void {
+                $changedColumns = $Diff->getChangedColumns();
+                self::assertSame(['history'], array_keys($changedColumns));
+                $TargetColumn = $changedColumns['history']->getNewColumn();
+                self::assertSame(4294967295, $TargetColumn->getLength());
+                $expectedOptions = $originalOptions;
+                $expectedOptions['length'] = 4294967295;
+                self::assertSame($expectedOptions, $TargetColumn->toArray());
+                self::assertStringContainsString('LONGTEXT', implode("\n", $Platform->getAlterTableSQL($Diff)));
+                self::assertSame([], $Diff->getAddedColumns());
+                self::assertSame([], $Diff->getDroppedColumns());
+                $Table->modifyColumn('history', ['length' => 4294967295]);
+            }
+        );
+        $Connection = $this->createMock(Connection::class);
+        $Connection->method('getDatabasePlatform')->willReturn($Platform);
+        $Connection->method('createSchemaManager')->willReturn($SchemaManager);
+
+        $this->withDatabaseConnection($Connection, static function () use ($tableName): void {
+            $Migration = new ReflectionMethod(EventHandling::class, 'migrateOrderHistoryColumn');
+            $Migration->invoke(null, $tableName);
+            $Migration->invoke(null, $tableName);
+        });
+    }
+
+    public static function unchangedHistoryColumns(): iterable
+    {
+        yield 'missing column' => [null, null];
+        yield 'unlimited longtext' => ['text', null];
+        yield 'explicit longtext' => ['text', 4294967295];
+        yield 'mediumtext' => ['text', AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMTEXT];
+        yield 'tinytext' => ['text', AbstractMySQLPlatform::LENGTH_LIMIT_TINYTEXT];
+        yield 'other type' => ['string', AbstractMySQLPlatform::LENGTH_LIMIT_TEXT];
+    }
+
+    #[DataProvider('unchangedHistoryColumns')]
+    public function testHistoryMigrationLeavesOtherColumnsUnchanged(?string $type, ?int $length): void
+    {
+        $Table = new Table('orders_history_skip');
+
+        if ($type !== null) {
+            $Table->addColumn('history', $type, ['length' => $length]);
+        }
+
+        $SchemaManager = $this->createMock(MySQLSchemaManager::class);
+        $SchemaManager->method('tablesExist')->willReturn(true);
+        $SchemaManager->method('introspectTable')->willReturn($Table);
+        $SchemaManager->expects(self::never())->method('alterTable');
+        $Connection = $this->createMock(Connection::class);
+        $Connection->method('getDatabasePlatform')->willReturn(new MySQLPlatform());
+        $Connection->method('createSchemaManager')->willReturn($SchemaManager);
+
+        $this->withDatabaseConnection($Connection, static function (): void {
+            (new ReflectionMethod(EventHandling::class, 'migrateOrderHistoryColumn'))
+                ->invoke(null, 'orders_history_skip');
+        });
+    }
+
+    public function testHistoryMigrationSkipsMissingTables(): void
+    {
+        $SchemaManager = $this->createMock(MySQLSchemaManager::class);
+        $SchemaManager->method('tablesExist')->willReturn(false);
+        $SchemaManager->expects(self::never())->method('introspectTable');
+        $SchemaManager->expects(self::never())->method('alterTable');
+        $Connection = $this->createMock(Connection::class);
+        $Connection->method('getDatabasePlatform')->willReturn(new MySQLPlatform());
+        $Connection->method('createSchemaManager')->willReturn($SchemaManager);
+
+        $this->withDatabaseConnection($Connection, static function (): void {
+            (new ReflectionMethod(EventHandling::class, 'migrateOrderHistoryColumn'))
+                ->invoke(null, 'missing_orders');
+        });
+    }
+
+    public function testHistoryMigrationLeavesPostgreSqlUnchanged(): void
+    {
+        $Connection = $this->createMock(Connection::class);
+        $Connection->method('getDatabasePlatform')->willReturn(new PostgreSQLPlatform());
+        $Connection->expects(self::never())->method('createSchemaManager');
+
+        $this->withDatabaseConnection($Connection, static function (): void {
+            (new ReflectionMethod(EventHandling::class, 'migrateOrderHistoryColumn'))
+                ->invoke(null, 'orders');
+        });
     }
 
     public function testDetailEquipmentFallbackCreatesProductLink(): void
@@ -379,6 +519,19 @@ class EventHandlingUnitTest extends TestCase
         $this->withHandler($Handler, static function () use ($SalesOrder): void {
             EventHandling::onQuiqqerSalesOrdersSaveEnd($SalesOrder);
         });
+    }
+
+    private function withDatabaseConnection(Connection $Connection, callable $callback): void
+    {
+        $Property = new ReflectionProperty(\QUI::class, 'QueryBuilder');
+        $original = $Property->getValue();
+        $Property->setValue(null, $Connection);
+
+        try {
+            $callback();
+        } finally {
+            $Property->setValue(null, $original);
+        }
     }
 
     private function withHandler(TestableHandler $Handler, callable $callback): void

@@ -29,9 +29,9 @@ use function strpos;
 class Utils
 {
     /**
-     * @var null|string
+     * @var array<string, array{url: string, simple: bool}>
      */
-    protected static ?string $url = null;
+    protected static array $orderProcessUrls = [];
 
     /**
      * Return the url to the checkout / order process
@@ -46,6 +46,17 @@ class Utils
         $sites = $Project->getSites([
             'where' => [
                 'type' => 'quiqqer/order:types/orderingProcess'
+            ],
+            'limit' => 1
+        ]);
+
+        if (isset($sites[0])) {
+            return $sites[0];
+        }
+
+        $sites = $Project->getSites([
+            'where' => [
+                'type' => 'quiqqer/order-simple-checkout:types/simpleCheckout'
             ],
             'limit' => 1
         ]);
@@ -111,16 +122,16 @@ class Utils
      */
     public static function getOrderProcessUrl(QUI\Projects\Project $Project, $Step = null): ?string
     {
-        if (self::$url === null) {
-            self::$url = self::getOrderProcess($Project)->getUrlRewritten();
+        $checkout = self::getOrderProcessUrlData($Project);
+
+        if (
+            !$checkout['simple']
+            && $Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep
+        ) {
+            return $checkout['url'] . '/' . $Step->getName();
         }
 
-        if ($Step instanceof QUI\ERP\Order\Controls\AbstractOrderingStep) {
-            $url = self::$url;
-            return $url . '/' . $Step->getName();
-        }
-
-        return self::$url;
+        return $checkout['url'];
     }
 
     /**
@@ -133,9 +144,29 @@ class Utils
      */
     public static function getOrderProcessUrlForHash(QUI\Projects\Project $Project, $hash): string
     {
-        $url = self::getOrderProcessUrl($Project);
+        $checkout = self::getOrderProcessUrlData($Project);
+        $separator = $checkout['simple'] ? '#' : '/Order/';
 
-        return $url . '/Order/' . $hash;
+        return $checkout['url'] . $separator . rawurlencode((string)$hash);
+    }
+
+    /**
+     * @return array{url: string, simple: bool}
+     * @throws QUI\Exception
+     */
+    private static function getOrderProcessUrlData(Project $Project): array
+    {
+        $key = $Project->getName() . ':' . $Project->getLang();
+
+        if (!isset(self::$orderProcessUrls[$key])) {
+            $Site = self::getOrderProcess($Project);
+            self::$orderProcessUrls[$key] = [
+                'url' => $Site->getUrlRewritten(),
+                'simple' => $Site->getAttribute('type') === 'quiqqer/order-simple-checkout:types/simpleCheckout'
+            ];
+        }
+
+        return self::$orderProcessUrls[$key];
     }
 
     /**
