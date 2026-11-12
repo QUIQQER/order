@@ -24,13 +24,13 @@ class UtilsUnitTest extends TestCase
 {
     protected function setUp(): void
     {
-        self::setCachedOrderProcessUrl(null);
+        self::clearCachedOrderProcessUrls();
         self::setProductCache([]);
     }
 
     protected function tearDown(): void
     {
-        self::setCachedOrderProcessUrl(null);
+        self::clearCachedOrderProcessUrls();
         self::setProductCache([]);
     }
 
@@ -70,6 +70,80 @@ class UtilsUnitTest extends TestCase
         Utils::getShoppingCart($Project);
     }
 
+    public function testClassicCheckoutIsPreferredWithoutQueryingSimpleCheckout(): void
+    {
+        $ClassicCheckout = $this->createMock(Site::class);
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::once())->method('getSites')->with([
+            'where' => [
+                'type' => 'quiqqer/order:types/orderingProcess'
+            ],
+            'limit' => 1
+        ])->willReturn([$ClassicCheckout]);
+
+        self::assertSame($ClassicCheckout, Utils::getOrderProcess($Project));
+    }
+
+    public function testSimpleCheckoutIsUsedOnlyAfterClassicCheckoutWasNotFound(): void
+    {
+        $SimpleCheckout = $this->createMock(Site::class);
+        $queries = [];
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::exactly(2))->method('getSites')->willReturnCallback(
+            static function (array $query) use ($SimpleCheckout, &$queries): array {
+                $queries[] = $query;
+
+                return $query['where']['type'] === 'quiqqer/order-simple-checkout:types/simpleCheckout'
+                    ? [$SimpleCheckout]
+                    : [];
+            }
+        );
+
+        self::assertSame($SimpleCheckout, Utils::getCheckout($Project));
+        self::assertSame([
+            [
+                'where' => [
+                    'type' => 'quiqqer/order:types/orderingProcess'
+                ],
+                'limit' => 1
+            ],
+            [
+                'where' => [
+                    'type' => 'quiqqer/order-simple-checkout:types/simpleCheckout'
+                ],
+                'limit' => 1
+            ]
+        ], $queries);
+    }
+
+    public function testMissingBothCheckoutTypesPreservesTheExistingError(): void
+    {
+        $queries = [];
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::exactly(2))->method('getSites')->willReturnCallback(
+            static function (array $query) use (&$queries): array {
+                $queries[] = $query['where']['type'];
+
+                return [];
+            }
+        );
+
+        try {
+            Utils::getOrderProcess($Project);
+            self::fail('A missing checkout must still throw the existing exception.');
+        } catch (\QUI\ERP\Order\Exception $Exception) {
+            self::assertSame(
+                \QUI::getLocale()->get('quiqqer/order', 'exception.order.process.not.found'),
+                $Exception->getMessage()
+            );
+        }
+
+        self::assertSame([
+            'quiqqer/order:types/orderingProcess',
+            'quiqqer/order-simple-checkout:types/simpleCheckout'
+        ], $queries);
+    }
+
     public function testOrderProcessUrlsUseCacheStepAndHash(): void
     {
         $Site = $this->createMock(Site::class);
@@ -84,6 +158,60 @@ class UtilsUnitTest extends TestCase
         self::assertSame('/checkout', Utils::getOrderProcessUrl($Project));
         self::assertSame('/checkout/CustomerData', Utils::getOrderProcessUrl($Project, $Step));
         self::assertSame('/checkout/Order/hash-123', Utils::getOrderProcessUrlForHash($Project, 'hash-123'));
+    }
+
+    public function testSimpleCheckoutUsesFragmentLinksAndDoesNotAppendClassicSteps(): void
+    {
+        $Site = $this->createUrlSite('/checkout.html');
+        $Site->method('getAttribute')->with('type')->willReturn('quiqqer/order-simple-checkout:types/simpleCheckout');
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::exactly(2))->method('getSites')->willReturnCallback(
+            static fn(array $query): array => $query['where']['type'] === 'quiqqer/order-simple-checkout:types/simpleCheckout'
+                ? [$Site]
+                : []
+        );
+        $Step = $this->createMock(AbstractOrderingStep::class);
+        $Step->expects(self::never())->method('getName');
+
+        self::assertSame('/checkout.html', Utils::getOrderProcessUrl($Project));
+        self::assertSame('/checkout.html', Utils::getOrderProcessUrl($Project, $Step));
+        self::assertSame('/checkout.html#order-uuid', Utils::getOrderProcessUrlForHash($Project, 'order-uuid'));
+        self::assertSame('/checkout.html#order-uuid', Utils::getOrderUrl($Project, $this->createOrderView()));
+        self::assertSame('/checkout.html#hash%2Fwith%20space', Utils::getOrderProcessUrlForHash($Project, 'hash/with space'));
+    }
+
+    public function testCheckoutUrlCacheSeparatesProjectsLanguagesAndCheckoutTypes(): void
+    {
+        $projects = [];
+        $cases = [
+            ['PCSGShop', 'de', '/de/checkout', false],
+            ['PCSGShop', 'en', '/en/checkout.html', true],
+            ['OtherShop', 'en', 'https://other.example/checkout', false]
+        ];
+
+        foreach ($cases as [$name, $lang, $url, $simple]) {
+            $Site = $this->createMock(Site::class);
+            $Site->expects(self::once())->method('getUrlRewritten')->willReturn($url);
+            $type = $simple
+                ? 'quiqqer/order-simple-checkout:types/simpleCheckout'
+                : 'quiqqer/order:types/orderingProcess';
+            $Site->method('getAttribute')->with('type')->willReturn($type);
+            $Project = $this->createMock(Project::class);
+            $Project->method('getName')->willReturn($name);
+            $Project->method('getLang')->willReturn($lang);
+            $Project->expects(self::exactly($simple ? 2 : 1))->method('getSites')->willReturnCallback(
+                static fn(array $query): array => $query['where']['type'] === $type ? [$Site] : []
+            );
+            $projects[] = [$Project, $url, $simple];
+
+            self::assertSame($url, Utils::getOrderProcessUrl($Project));
+        }
+
+        foreach ($projects as [$Project, $url, $simple]) {
+            $ending = $simple ? '#order-uuid' : '/Order/order-uuid';
+            self::assertSame($url . $ending, Utils::getOrderProcessUrlForHash($Project, 'order-uuid'));
+            self::assertSame($url, Utils::getOrderProcessUrl($Project));
+        }
     }
 
     public function testOrderUrlRejectsUnsupportedOrderAndBuildsViewUrl(): void
@@ -437,10 +565,10 @@ class UtilsUnitTest extends TestCase
         return new OrderView($Order);
     }
 
-    private static function setCachedOrderProcessUrl(?string $url): void
+    private static function clearCachedOrderProcessUrls(): void
     {
         $Reflection = new ReflectionClass(Utils::class);
-        $Reflection->getProperty('url')->setValue(null, $url);
+        $Reflection->getProperty('orderProcessUrls')->setValue(null, []);
     }
 
     /**

@@ -205,6 +205,15 @@ class UserOrders extends Control implements ControlInterface
             $shippingStatus = $Order->getShippingStatus()->getTitle();
         }
 
+        $orderUrl = '';
+
+        if ($showContinuePayment) {
+            $orderUrl = QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
+                $this->getProject(),
+                $Order->getHash()
+            );
+        }
+
         $Engine->assign([
             'this' => $this,
             'Project' => $this->getProject(),
@@ -220,10 +229,7 @@ class UserOrders extends Control implements ControlInterface
             'orderStatus' => $orderStatus,
             'shippingStatus' => $shippingStatus,
             'Utils' => new QUI\ERP\Order\Utils\Utils(),
-            'orderUrl' => QUI\ERP\Order\Utils\Utils::getOrderProcessUrlForHash(
-                $this->getProject(),
-                $Order->getHash()
-            )
+            'orderUrl' => $orderUrl
         ]);
 
         return $Engine->fetch(dirname(__FILE__) . '/UserOrders.Order.html');

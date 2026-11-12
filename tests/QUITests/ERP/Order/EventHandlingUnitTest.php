@@ -145,6 +145,28 @@ class EventHandlingUnitTest extends TestCase
         self::assertTrue(true);
     }
 
+    public function testSimpleCheckoutIsNotInterceptedByClassicRequestRouting(): void
+    {
+        $CheckoutSite = $this->createMock(Site::class);
+        $CheckoutSite->method('getAttribute')->with('type')->willReturn(
+            'quiqqer/order-simple-checkout:types/simpleCheckout'
+        );
+        $CheckoutSite->expects(self::never())->method('getUrlRewritten');
+        $CheckoutSite->expects(self::never())->method('setAttribute');
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::exactly(2))->method('getSites')->willReturnCallback(
+            static fn(array $query): array => $query['where']['type'] === 'quiqqer/order-simple-checkout:types/simpleCheckout'
+                ? [$CheckoutSite]
+                : []
+        );
+        $Rewrite = $this->createMock(Rewrite::class);
+        $Rewrite->method('getProject')->willReturn($Project);
+        $Rewrite->expects(self::never())->method('setSite');
+
+        (new ReflectionMethod(EventHandling::class, 'handleRequest'))
+            ->invoke(null, $Rewrite, 'shop/checkout.html');
+    }
+
     public function testRequestRoutingRejectsUnrelatedPathsAndAcceptsStepWithoutOrder(): void
     {
         $CheckoutSite = $this->createMock(Site::class);

@@ -100,6 +100,11 @@ class EventHandling
             }
 
             $CheckoutSite = QUI\ERP\Order\Utils\Utils::getOrderProcess($Project);
+
+            if ($CheckoutSite->getAttribute('type') === 'quiqqer/order-simple-checkout:types/simpleCheckout') {
+                return;
+            }
+
             $path = trim($CheckoutSite->getUrlRewritten(), '/');
 
             if (mb_strpos($path, 'http') === 0) {
