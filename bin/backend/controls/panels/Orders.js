@@ -290,6 +290,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
          */
         $onCreate: function() {
             const self = this;
+            this.getElm().classList.add('quiqqer-order-panel');
 
             // panel buttons
             const Body = this.getContent();
@@ -355,6 +356,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
 
             this.$Status = new QUISelect({
+                'class': 'quiqqer-order-status',
                 disabled: true,
                 showIcons: false,
                 styles: {
@@ -388,13 +390,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
 
 
             this.addButton(this.$Status);
-
-            this.addButton({
-                type: 'separator',
-                styles: {
-                    'float': 'right'
-                }
-            });
 
             this.$TimeFilter = new TimeFilter({
                 name: 'timeFilter',
