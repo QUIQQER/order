@@ -411,6 +411,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             // grid buttons
             this.$Actions = new QUIButton({
                 name: 'actions',
+                'class': 'quiqqer-order-actions-button',
                 text: QUILocale.get(lg, 'panel.btn.actions'),
                 menuCorner: 'topRight',
                 position: 'right'
@@ -467,7 +468,44 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ]);
 
             this.addButton(this.$Actions);
+
+            const ActionsButton = this.$Actions.getElm();
+            ActionsButton.tabIndex = 0;
+            ActionsButton.style.removeProperty('outline');
+            ActionsButton.setAttribute('aria-haspopup', 'menu');
+            ActionsButton.setAttribute('aria-expanded', 'false');
+
+            this.$Actions.getContextMenu((Menu) => {
+                Menu.getElm().classList.add('quiqqer-order-actions-menu');
+                Menu.addEvent('show', () => {
+                    this.$positionActionsMenu(Menu);
+                    ActionsButton.setAttribute('aria-expanded', 'true');
+                });
+                Menu.addEvent('hide', () => ActionsButton.setAttribute('aria-expanded', 'false'));
+            });
+
             this.Loader.show();
+        },
+
+        $positionActionsMenu: function(Menu) {
+            const MenuElement = Menu.getElm();
+            const button = this.$Actions.getElm().getBoundingClientRect();
+            const menu = MenuElement.getBoundingClientRect();
+            const left = Math.max(
+                8,
+                Math.min(button.right - menu.width, window.innerWidth - menu.width - 8)
+            );
+            const above =
+                button.bottom + menu.height + 8 > window.innerHeight &&
+                button.top - menu.height - 8 >= 8;
+            const top = above ? button.top - menu.height - 8 : button.bottom + 8;
+
+            MenuElement.classList.toggle('qui-context-corner-topRight', !above);
+            MenuElement.classList.toggle('qui-context-corner-bottomRight', above);
+            Menu.setPosition(
+                left + window.scrollX,
+                Math.max(8, Math.min(top, window.innerHeight - menu.height - 8)) + window.scrollY
+            );
         },
 
         /**

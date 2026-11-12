@@ -120,6 +120,27 @@
     color: var(--qui-colors-gray-400);
 }
 
+.quiqqer-order-actions-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.quiqqer-order-actions-button .qui-button-text {
+    margin: 0;
+}
+
+.quiqqer-order-actions-button .qui-button-drop {
+    position: static;
+    width: auto;
+    height: auto;
+    line-height: 1;
+}
+
+.quiqqer-order-actions-menu.qui-contextmenu::after {
+    right: 6px;
+}
+
 .quiqqer-order-totals {
     --_spacing: var(--quiqqer-order-totals-spacing, 8px);
     --_padding: var(--quiqqer-order-totals-padding, 10px);
