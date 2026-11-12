@@ -327,18 +327,31 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             // currency
             this.$Currency = new QUIButton({
                 name: 'currency',
+                'class': 'quiqqer-order-currency',
+                text: '---',
+                title: QUILocale.get(lg, 'panel.order.currency.label'),
                 disabled: true,
                 showIcons: false,
+                dropDownIcon: false,
                 events: {
                     onChange: function(Menu, Item) {
                         self.$Currency.setAttribute('value', Item.getAttribute('value'));
-                        self.$Currency.setAttribute('text', Item.getAttribute('value'));
+                        self.$Currency.setAttribute('text', Item.getAttribute('value') || '---');
                         self.refresh();
                     }
                 }
             });
 
             this.addButton(this.$Currency);
+
+            const CurrencyButton = this.$Currency.getElm();
+            CurrencyButton.tabIndex = 0;
+            CurrencyButton.style.removeProperty('outline');
+
+            const CurrencyArrow = document.createElement('span');
+            CurrencyArrow.className = 'quiqqer-order-currency-arrow fa fa-chevron-down';
+            CurrencyArrow.setAttribute('aria-hidden', 'true');
+            CurrencyButton.appendChild(CurrencyArrow);
 
 
             this.$Status = new QUISelect({
@@ -495,8 +508,11 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
             ], function(currencies, currency) {
                 let i, len, entry, text;
 
-                if (!currencies.length || currencies.length === 1) {
-                    self.$Currency.hide();
+                self.$Currency.setAttribute('value', currency.code);
+                self.$Currency.setAttribute('text', currency.code);
+
+                if (currencies.length <= 1) {
+                    self.$Currency.disable();
                     return;
                 }
 
@@ -524,8 +540,6 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                 }
 
                 self.$Currency.enable();
-                self.$Currency.setAttribute('value', currency.code);
-                self.$Currency.setAttribute('text', currency.code);
             }, {
                 'package': 'quiqqer/currency'
             });

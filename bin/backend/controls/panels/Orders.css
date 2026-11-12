@@ -88,6 +88,38 @@
     outline-offset: 1px;
 }
 
+.qui-panel-buttons .quiqqer-order-currency {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 34px;
+    margin: 8px 10px;
+    padding: 0 10px;
+    border: 1px solid var(--qui-colors-gray-200);
+    border-radius: 5px;
+    background: var(--qui-colors-primary--accent);
+    color: var(--qui-colors-gray-800);
+    font-weight: 400;
+    line-height: 1;
+}
+
+.quiqqer-order-currency .qui-button-text {
+    margin: 0;
+}
+
+.quiqqer-order-currency-arrow {
+    font-size: 10px;
+}
+
+.qui-panel-buttons .quiqqer-order-currency:not(:disabled):hover {
+    background: var(--qui-colors-gray-25);
+}
+
+.qui-panel-buttons .quiqqer-order-currency:disabled {
+    background: var(--qui-colors-gray-50);
+    color: var(--qui-colors-gray-400);
+}
+
 .quiqqer-order-totals {
     --_spacing: var(--quiqqer-order-totals-spacing, 8px);
     --_padding: var(--quiqqer-order-totals-padding, 10px);
