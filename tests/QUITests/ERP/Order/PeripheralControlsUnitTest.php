@@ -2,6 +2,7 @@
 
 namespace QUITests\ERP\Order;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use QUI\ERP\Order\AbstractOrder;
 use QUI\ERP\Order\AbstractOrderProcessProvider;
@@ -27,6 +28,25 @@ use ReflectionMethod;
 
 class PeripheralControlsUnitTest extends TestCase
 {
+    private array $originalOrderProcessUrls;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $Cache = new ReflectionProperty(\QUI\ERP\Order\Utils\Utils::class, 'orderProcessUrls');
+        $this->originalOrderProcessUrls = $Cache->getValue();
+        $Cache->setValue(null, []);
+    }
+
+    protected function tearDown(): void
+    {
+        (new ReflectionProperty(\QUI\ERP\Order\Utils\Utils::class, 'orderProcessUrls'))
+            ->setValue(null, $this->originalOrderProcessUrls);
+
+        parent::tearDown();
+    }
+
     public function testSendOrderConfirmationConsoleToolCanBeRegistered(): void
     {
         self::assertInstanceOf(
@@ -332,12 +352,33 @@ class PeripheralControlsUnitTest extends TestCase
         self::assertIsString($Control->getBody());
     }
 
-    public function testUserOrderRenderingAndArticleRendering(): void
+    public static function checkoutTypes(): iterable
+    {
+        yield 'unpaid classic checkout' => [
+            'quiqqer/order:types/orderingProcess',
+            \QUI\ERP\Constants::PAYMENT_STATUS_OPEN
+        ];
+        yield 'unpaid simple checkout' => [
+            'quiqqer/order-simple-checkout:types/simpleCheckout',
+            \QUI\ERP\Constants::PAYMENT_STATUS_OPEN
+        ];
+        yield 'paid simple checkout' => [
+            'quiqqer/order-simple-checkout:types/simpleCheckout',
+            \QUI\ERP\Constants::PAYMENT_STATUS_PAID
+        ];
+        yield 'paid without checkout' => [null, \QUI\ERP\Constants::PAYMENT_STATUS_PAID];
+    }
+
+    #[DataProvider('checkoutTypes')]
+    public function testUserOrderRenderingAndArticleRendering(?string $checkoutType, int $paidStatus): void
     {
         $Project = $this->createMock(Project::class);
         $Site = $this->createMock(Site::class);
         $Site->method('getUrlRewritten')->willReturn('/order-process');
-        $Project->method('getSites')->willReturn([$Site]);
+        $Site->method('getAttribute')->with('type')->willReturn($checkoutType);
+        $Project->method('getSites')->willReturnCallback(
+            static fn(array $query): array => $query['where']['type'] === $checkoutType ? [$Site] : []
+        );
         $Control = new \QUI\ERP\Order\FrontendUsers\Controls\UserOrders([
             'Project' => $Project,
             'Site' => $Site
@@ -349,8 +390,8 @@ class PeripheralControlsUnitTest extends TestCase
         $Order->method('getArticles')->willReturn($Articles);
         $Order->method('getAttribute')->willReturnCallback(
             static fn(string $key): mixed => match ($key) {
-                'paid_status' => \QUI\ERP\Constants::PAYMENT_STATUS_OPEN,
-                'paid_date' => null,
+                'paid_status' => $paidStatus,
+                'paid_date' => 1700000000,
                 default => null
             }
         );
@@ -359,8 +400,17 @@ class PeripheralControlsUnitTest extends TestCase
         $Order->method('getShippingStatus')->willReturn(null);
         $Order->method('getPayment')->willReturn(null);
         $Order->method('getHash')->willReturn('profile-order');
+        $Order->method('getUUID')->willReturn('profile-order');
 
-        self::assertIsString($Control->renderOrder($Order));
+        $html = $Control->renderOrder($Order);
+
+        if ($paidStatus === \QUI\ERP\Constants::PAYMENT_STATUS_PAID) {
+            self::assertStringNotContainsString('order-continuePayment', $html);
+        } else {
+            $separator = $checkoutType === 'quiqqer/order-simple-checkout:types/simpleCheckout' ? '#' : '/Order/';
+            self::assertStringContainsString('href="/order-process' . $separator . 'profile-order"', $html);
+            self::assertStringContainsString('order-continuePayment', $html);
+        }
 
         $Article = $this->createMock(\QUI\ERP\Accounting\Article::class);
         $Article->method('getArticleNo')->willReturn('phpunit-missing-product');
