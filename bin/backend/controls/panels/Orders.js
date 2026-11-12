@@ -1277,7 +1277,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                     header: '&nbsp;',
                     dataIndex: 'opener',
                     dataType: 'int',
-                    width: 30,
+                    width: 44,
                     showNotInExport: true
                 },
                 {
@@ -1288,7 +1288,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Orders', [
                         'justify-content': 'center'
                     },
                     dataType: 'node',
-                    width: 100,
+                    width: 150,
                     className: 'grid-align-center clickable'
                 },
                 {
