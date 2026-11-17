@@ -191,6 +191,10 @@
                             <text>
                                 <locale group="quiqqer/order" var="order.settings.failedPaymentProcedure"/>
                             </text>
+                            <description>
+                                <locale group="quiqqer/order"
+                                        var="order.settings.failedPaymentProcedure.description"/>
+                            </description>
                             <option value="execute">
                                 <locale group="quiqqer/order" var="order.settings.failedPaymentProcedure,execute"/>
                             </option>

@@ -665,6 +665,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <de><![CDATA[Vorgehen bei gescheiterter Zahlung]]></de>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<de><![CDATA[Bestimmt bei Online-Zahlungsarten wie PayPal auch den Zeitpunkt der Bestellanlage und damit den Versand der aktivierten Bestellbestätigung. „Bestellung ausführen“ legt die Bestellung bereits vor Abschluss des Zahlungsvorgangs an; sie bleibt auch bei einer später gescheiterten oder abgebrochenen Zahlung bestehen. „Benutzer zum Bestellprozess zurückleiten“ legt die Bestellung erst nach erfolgreichem Abschluss des Zahlungsvorgangs an. Bei einer gescheiterten oder abgebrochenen Zahlung bleibt sie eine Bestellung in Bearbeitung. Ein erfolgreicher Zahlungsvorgang bedeutet nicht zwingend einen vollständigen Zahlungseingang. Bei Zahlungsarten ohne Online-Zahlung, etwa Vorkasse oder Kauf auf Rechnung, wird die Bestellung unabhängig von dieser Auswahl vor dem Zahlungseingang angelegt.]]></de>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <de><![CDATA[Benutzerprofil]]></de>
@@ -754,7 +757,7 @@
 <de><![CDATA[Bestellbestätigung]]></de>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<de><![CDATA[Bestellbestätigung automatisch versenden]]></de>
+<de><![CDATA[Versendet die Bestellbestätigung automatisch, sobald die Bestellung angelegt wird. Bei Online-Zahlungsarten bestimmt „Vorgehen bei gescheiterter Zahlung“, ob dies bereits vor oder erst nach dem erfolgreichen Abschluss des Zahlungsvorgangs geschieht. Die Bestellbestätigung bestätigt den Eingang der Bestellung, nicht den Zahlungseingang.]]></de>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <de><![CDATA[Bestellbestätigung (Administrator)]]></de>

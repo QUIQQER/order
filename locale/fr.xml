@@ -619,6 +619,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <fr><![CDATA[Action en cas d’échec du paiement]]></fr>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<fr><![CDATA[Pour les moyens de paiement en ligne comme PayPal, ce réglage détermine aussi quand la commande est créée et donc quand sa confirmation est envoyée, si elle est activée. « Exécuter la commande » crée la commande avant la fin du processus de paiement ; elle est conservée même si le paiement échoue ou est annulé par la suite. « Renvoyer l’utilisateur au processus de commande » crée la commande uniquement après la réussite du processus de paiement. Si le paiement échoue ou est annulé, la commande reste en cours. La réussite du processus de paiement ne signifie pas nécessairement que le montant a été intégralement reçu. Pour les moyens sans paiement en ligne, comme le paiement anticipé ou sur facture, la commande est créée avant la réception du paiement, quel que soit ce choix.]]></fr>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <fr><![CDATA[Profil utilisateur]]></fr>
@@ -699,7 +702,7 @@
 <fr><![CDATA[Confirmation de commande]]></fr>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<fr><![CDATA[Envoyer automatiquement la confirmation de commande]]></fr>
+<fr><![CDATA[Envoie automatiquement la confirmation dès que la commande est créée. Pour les moyens de paiement en ligne, « Action en cas d’échec du paiement » détermine si cet envoi intervient avant ou après la réussite du processus de paiement. La confirmation atteste la réception de la commande, pas celle du paiement.]]></fr>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <fr><![CDATA[Confirmation de commande (administrateur)]]></fr>
