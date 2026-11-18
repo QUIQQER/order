@@ -1255,6 +1255,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             this.getCategory('articles').setActive();
 
             return this.$closeCategory().then(function (Container) {
+                Container.style.padding = '0';
+
                 return new Promise(function (resolve, reject) {
                     require([
                         'package/quiqqer/erp/bin/backend/controls/articles/ArticleList',
