@@ -14,6 +14,8 @@ require_once __DIR__ . '/../../../autoload.php';
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 $optionalClassStubs = [
+    QUI\ERP\Order\SimpleCheckout\Settings::class
+        => 'QUI/ERP/Order/SimpleCheckout/Settings.php',
     QUI\ERP\Accounting\Invoice\Invoice::class
         => 'QUI/ERP/Accounting/Invoice/Invoice.php',
     QUI\ERP\Accounting\Invoice\InvoiceTemporary::class

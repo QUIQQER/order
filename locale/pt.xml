@@ -619,6 +619,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <pt><![CDATA[Procedimento em caso de falha no pagamento]]></pt>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<pt><![CDATA[Nos métodos de pagamento online, como o PayPal, também determina quando a encomenda é criada e, consequentemente, quando a confirmação é enviada, se estiver ativada. «Processar encomenda» cria a encomenda antes de o processo de pagamento terminar; a encomenda mantém-se mesmo que o pagamento falhe ou seja cancelado posteriormente. «Redirecionar o utilizador para o processo de compra» cria a encomenda apenas quando o processo de pagamento termina com sucesso. Se o pagamento falhar ou for cancelado, a encomenda permanece em processamento. Um processo de pagamento bem-sucedido não significa necessariamente que o pagamento tenha sido recebido na totalidade. Nos métodos sem pagamento online, como o pagamento antecipado ou por fatura, a encomenda é criada antes de receber o pagamento, independentemente desta seleção.]]></pt>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <pt><![CDATA[Perfil do utilizador]]></pt>
@@ -699,7 +702,7 @@
 <pt><![CDATA[Confirmação da encomenda]]></pt>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<pt><![CDATA[Enviar confirmação da encomenda automaticamente]]></pt>
+<pt><![CDATA[Envia automaticamente a confirmação da encomenda assim que esta é criada. Nos métodos de pagamento online, «Procedimento em caso de falha no pagamento» determina se o envio ocorre antes ou depois de o processo de pagamento terminar com sucesso. A confirmação comprova a receção da encomenda, não a do pagamento.]]></pt>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <pt><![CDATA[Confirmação da encomenda (administrador)]]></pt>
