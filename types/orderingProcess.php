@@ -28,6 +28,8 @@ try {
         && !$Site->getAttribute('order::hash')
     ) {
         // simple checkout can be used
+        QUI\ERP\Order\SimpleCheckout\Settings::startGuestCheckout();
+
         $SimpleCheckout = new QUI\ERP\Order\SimpleCheckout\Checkout([
             'data-qui-load-hash-from-url' => 1
         ]);

@@ -619,6 +619,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <es><![CDATA[Acción si falla el pago]]></es>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<es><![CDATA[En los métodos de pago en línea como PayPal, también determina cuándo se crea el pedido y, por tanto, cuándo se envía su confirmación, si está activada. «Tramitar pedido» crea el pedido antes de finalizar el proceso de pago; el pedido se conserva aunque el pago falle o se cancele posteriormente. «Devolver al usuario al proceso de compra» crea el pedido solo cuando el proceso de pago finaliza correctamente. Si el pago falla o se cancela, el pedido permanece en proceso. Que el proceso de pago finalice correctamente no implica necesariamente haber recibido el importe completo. En los métodos sin pago en línea, como el pago anticipado o por factura, el pedido se crea antes de recibir el pago, independientemente de esta selección.]]></es>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <es><![CDATA[Perfil de usuario]]></es>
@@ -699,7 +702,7 @@
 <es><![CDATA[Confirmación del pedido]]></es>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<es><![CDATA[Enviar confirmación del pedido automáticamente]]></es>
+<es><![CDATA[Envía automáticamente la confirmación del pedido en cuanto se crea. En los métodos de pago en línea, «Acción si falla el pago» determina si se envía antes o después de que el proceso de pago finalice correctamente. La confirmación acredita la recepción del pedido, no la del pago.]]></es>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <es><![CDATA[Confirmación del pedido (administrador)]]></es>

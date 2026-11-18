@@ -619,6 +619,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <it><![CDATA[Azione in caso di pagamento non riuscito]]></it>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<it><![CDATA[Per i metodi di pagamento online come PayPal, determina anche quando viene creato l’ordine e quindi quando viene inviata la conferma, se attivata. «Esegui ordine» crea l’ordine prima che il processo di pagamento sia completato; l’ordine viene mantenuto anche se il pagamento successivamente non riesce o viene annullato. «Riporta l’utente alla procedura d’acquisto» crea l’ordine solo dopo che il processo di pagamento si è concluso correttamente. Se il pagamento non riesce o viene annullato, l’ordine rimane in corso. Un processo di pagamento concluso correttamente non implica necessariamente la ricezione dell’intero importo. Per i metodi senza pagamento online, come il pagamento anticipato o su fattura, l’ordine viene creato prima della ricezione del pagamento, indipendentemente da questa scelta.]]></it>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <it><![CDATA[Profilo utente]]></it>
@@ -699,7 +702,7 @@
 <it><![CDATA[Conferma dell’ordine]]></it>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<it><![CDATA[Invia automaticamente la conferma dell’ordine]]></it>
+<it><![CDATA[Invia automaticamente la conferma non appena l’ordine viene creato. Per i metodi di pagamento online, «Azione in caso di pagamento non riuscito» determina se l’invio avviene prima o dopo che il processo di pagamento si è concluso correttamente. La conferma attesta la ricezione dell’ordine, non quella del pagamento.]]></it>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <it><![CDATA[Conferma dell’ordine (amministratore)]]></it>

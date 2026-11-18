@@ -619,6 +619,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <pl><![CDATA[Działanie w przypadku nieudanej płatności]]></pl>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<pl><![CDATA[W przypadku metod płatności online, takich jak PayPal, ustawienie określa również moment utworzenia zamówienia, a tym samym wysłania jego potwierdzenia, jeśli jest włączone. „Zrealizuj zamówienie” tworzy zamówienie przed zakończeniem procesu płatności; zamówienie zostaje zachowane nawet wtedy, gdy płatność później się nie powiedzie lub zostanie anulowana. „Przekieruj użytkownika do procesu zamawiania” tworzy zamówienie dopiero po pomyślnym zakończeniu procesu płatności. Jeśli płatność się nie powiedzie lub zostanie anulowana, zamówienie pozostaje w toku. Pomyślne zakończenie procesu płatności nie musi oznaczać otrzymania pełnej kwoty. W przypadku metod bez płatności online, takich jak przedpłata lub płatność na podstawie faktury, zamówienie jest tworzone przed otrzymaniem płatności, niezależnie od tego wyboru.]]></pl>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <pl><![CDATA[Profil użytkownika]]></pl>
@@ -699,7 +702,7 @@
 <pl><![CDATA[Potwierdzenie zamówienia]]></pl>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<pl><![CDATA[Automatycznie wyślij potwierdzenie zamówienia]]></pl>
+<pl><![CDATA[Automatycznie wysyła potwierdzenie zamówienia w momencie jego utworzenia. W przypadku metod płatności online ustawienie „Działanie w przypadku nieudanej płatności” określa, czy następuje to przed pomyślnym zakończeniem procesu płatności, czy po nim. Potwierdzenie dotyczy otrzymania zamówienia, a nie płatności.]]></pl>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <pl><![CDATA[Potwierdzenie zamówienia (administrator)]]></pl>

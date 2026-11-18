@@ -664,6 +664,9 @@
         <locale name="order.settings.failedPaymentProcedure">
 <en><![CDATA[Procedure for failed payment]]></en>
         </locale>
+        <locale name="order.settings.failedPaymentProcedure.description">
+<en><![CDATA[For online payment methods such as PayPal, this also determines when the order is created and thus when the order confirmation is sent, if enabled. “Execute order” creates the order before the payment process is completed; the order remains even if payment subsequently fails or is cancelled. “Returning Users to the Order Process” creates the order only after the payment process completes successfully. If payment fails or is cancelled, it remains an order in progress. A successful payment process does not necessarily mean that payment has been received in full. For methods without online payment, such as advance payment or payment by invoice, the order is created before payment is received, regardless of this selection.]]></en>
+        </locale>
 
         <locale name="order.settings.userProfile.title">
 <en><![CDATA[User profile]]></en>
@@ -753,7 +756,7 @@
 <en><![CDATA[Confirmation of order]]></en>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmation.description">
-<en><![CDATA[Send order confirmation automatically]]></en>
+<en><![CDATA[Automatically sends the order confirmation when the order is created. For online payment methods, “Procedure for failed payment” determines whether this happens before or after the payment process completes successfully. The order confirmation confirms receipt of the order, not receipt of payment.]]></en>
         </locale>
         <locale name="order.settings.order.sendOrderConfirmationToAdmin">
 <en><![CDATA[Copy of order (Administrator)]]></en>
