@@ -236,6 +236,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                     this.$initialStatus = parseInt(orderData.status);
                     this.$initialShippingStatus = parseInt(orderData.shippingStatus);
 
+                    let restored = Promise.resolve();
+
                     if (orderData.articles) {
                         this.$serializedList = orderData.articles;
 
@@ -244,12 +246,17 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         }
 
                         if (this.$ArticleList) {
-                            this.$ArticleList.unserialize(this.$serializedList);
+                            const restoration = this.$ArticleList.unserialize(this.$serializedList);
+                            if (this.$serializedList.calculationMode === 'manual') {
+                                restored = restoration;
+                            }
                         }
                     }
 
-                    this.$refresh();
-                    resolve();
+                    Promise.resolve(restored).then(() => {
+                        this.$refresh();
+                        resolve();
+                    }, reject);
                 }, reject);
             });
         },
@@ -276,7 +283,8 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                 addressInvoice: this.getAttribute('addressInvoice'),
                 addressDelivery: this.getAttribute('addressDelivery'),
                 data: this.getAttribute('data'),
-                articles: this.getAttribute('articles'),
+                articles: this.$serializedList?.calculationMode === 'manual'
+                    ? this.$serializedList : this.getAttribute('articles'),
                 paymentId: this.getAttribute('paymentId'),
                 status: this.getAttribute('status'),
                 shippingStatus: this.getAttribute('shippingStatus'),
@@ -1271,8 +1279,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                             }
                         }).inject(Container);
 
+                        let restored = Promise.resolve();
+
                         if (self.$serializedList) {
-                            self.$ArticleList.unserialize(self.$serializedList);
+                            const restoration = self.$ArticleList.unserialize(self.$serializedList);
+                            if (self.$serializedList.calculationMode === 'manual') {
+                                restored = restoration;
+                            }
                         }
 
                         self.$ArticleListSummary = new Summary({
@@ -1296,7 +1309,7 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
                         self.$SortSeparator.show();
                         self.$ArticleSort.show();
 
-                        resolve();
+                        restored.then(resolve, reject);
                     }, reject);
                 });
             }).then(function () {
@@ -1695,8 +1708,13 @@ define('package/quiqqer/order/bin/backend/controls/panels/Order', [
             }
 
             if (this.$ArticleList) {
-                this.setAttribute('articles', this.$ArticleList.save());
-                this.$serializedList = this.$ArticleList.serialize();
+                if (this.$ArticleList.getCalculationMode() === 'manual') {
+                    this.$serializedList = this.$ArticleList.serialize();
+                    this.setAttribute('articles', this.$serializedList.articles);
+                } else {
+                    this.setAttribute('articles', this.$ArticleList.save());
+                    this.$serializedList = this.$ArticleList.serialize();
+                }
             }
 
             // processing status

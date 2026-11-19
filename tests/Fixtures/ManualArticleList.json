@@ -1,0 +1,37 @@
+{
+    "calculationMode": "manual",
+    "articles": [
+        {
+            "title": "Paketpreis",
+            "unitPrice": 8.395,
+            "quantity": 1,
+            "vat": 19,
+            "calculated": {
+                "price": 8.395,
+                "basisPrice": 8.395,
+                "nettoPriceNotRounded": 8.395,
+                "sum": 8.395,
+                "nettoPrice": 8.395,
+                "nettoBasisPrice": 8.395,
+                "nettoSubSum": 8.395,
+                "nettoSum": 8.395,
+                "vatArray": {"vat": 19, "sum": 1.5951, "text": "VAT 19%"},
+                "isNetto": true,
+                "isEuVat": false
+            }
+        }
+    ],
+    "calculations": {
+        "sum": 9.99,
+        "subSum": 8.395,
+        "grandSubSum": 9.9901,
+        "nettoSubSum": 8.395,
+        "nettoSum": 8.395,
+        "vatArray": {"19": {"vat": 19, "sum": 1.5951, "text": "VAT 19%"}},
+        "vatText": {"19": "VAT 19%"},
+        "vatSum": 1.5951,
+        "isNetto": true,
+        "isEuVat": false
+    },
+    "priceFactors": []
+}

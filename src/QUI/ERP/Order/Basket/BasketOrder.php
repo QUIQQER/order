@@ -456,6 +456,10 @@ class BasketOrder
      */
     public function updateOrder(): void
     {
+        if ($this->Order->getArticles()->getCalculationMode() === QUI\ERP\Enums\Accounting\CalculationMode::MANUAL) {
+            return;
+        }
+
         $this->Order->getArticles()->clear();
         $products = $this->List->getProducts();
 

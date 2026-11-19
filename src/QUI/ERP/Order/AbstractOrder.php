@@ -9,6 +9,7 @@ namespace QUI\ERP\Order;
 use QUI;
 use QUI\ERP\Accounting\ArticleList;
 use QUI\ERP\Accounting\Payments\Payments;
+use QUI\ERP\Enums\Accounting\CalculationMode;
 use QUI\ERP\Accounting\Payments\Transactions\Handler as TransactionHandler;
 use QUI\ERP\Accounting\Payments\Transactions\Transaction;
 use QUI\ERP\ErpEntityInterface;
@@ -524,6 +525,10 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
             $this->Articles->recalculate();
             $this->save();
 
+            return;
+        }
+
+        if ($this->Articles->getCalculationMode() === CalculationMode::MANUAL) {
             return;
         }
 
@@ -1970,6 +1975,42 @@ abstract class AbstractOrder extends QUI\QDOM implements OrderInterface, ErpEnti
     public function addArticle(QUI\ERP\Accounting\ArticleInterface $Article): void
     {
         $this->Articles->addArticle($Article);
+    }
+
+    /**
+     * Append automatic legacy positions or replace a complete article list snapshot.
+     *
+     * @param array<int|string, mixed> $articles
+     * @throws QUI\Exception
+     */
+    public function importArticles(array $articles = []): void
+    {
+        if (
+            isset($articles['articles'])
+            && ($articles['calculationMode'] ?? null) === CalculationMode::MANUAL->value
+        ) {
+            $Articles = new ArticleList($articles);
+            $Articles->setCurrency($this->getCurrency());
+            $Articles->setUser($this->getCustomer());
+            $this->Articles = $Articles;
+
+            return;
+        }
+
+        if (isset($articles['articles'])) {
+            $articles = $articles['articles'];
+        }
+
+        if ($this->Articles->getCalculationMode() === CalculationMode::MANUAL) {
+            $this->Articles->setCalculationMode(CalculationMode::AUTOMATIC);
+        }
+
+        foreach ($articles as $article) {
+            try {
+                $this->addArticle(new QUI\ERP\Accounting\Article($article));
+            } catch (\Exception) {
+            }
+        }
     }
 
     /**
