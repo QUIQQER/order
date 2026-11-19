@@ -197,18 +197,28 @@ QUI::getAjax()->registerFunction(
         if (isset($data['articles'])) {
             $Order->clearArticles();
 
-            foreach ($data['articles'] as $article) {
-                try {
-                    $Order->addArticle(
-                        new QUI\ERP\Accounting\Article($article)
-                    );
-                } catch (Exception) {
+            if (($data['articles']['calculationMode'] ?? null) === 'manual') {
+                $Order->importArticles($data['articles']);
+            } else {
+                $Articles = $Order->getArticles();
+                if ($Articles->getCalculationMode() === QUI\ERP\Enums\Accounting\CalculationMode::MANUAL) {
+                    $Articles->setCalculationMode(QUI\ERP\Enums\Accounting\CalculationMode::AUTOMATIC);
+                }
+
+                $articles = $data['articles']['articles'] ?? $data['articles'];
+                foreach ($articles as $article) {
+                    try {
+                        $Order->addArticle(
+                            new QUI\ERP\Accounting\Article($article)
+                        );
+                    } catch (Exception) {
+                    }
                 }
             }
         }
 
         // import factor list
-        if (isset($data['priceFactors'])) {
+        if (isset($data['priceFactors']) && ($data['articles']['calculationMode'] ?? null) !== 'manual') {
             /* @var $Articles ArticleList */
             /* @var $FactorList FactorList */
             $Articles = $Order->getArticles();

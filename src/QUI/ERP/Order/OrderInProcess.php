@@ -238,6 +238,21 @@ class OrderInProcess extends AbstractOrder implements OrderInterface, ErpEntityI
             );
         }
 
+        if ($this->Articles->getCalculationMode() === QUI\ERP\Enums\Accounting\CalculationMode::MANUAL) {
+            $Factors = new QUI\ERP\Products\Utils\PriceFactors();
+            $Factors->setCurrency($this->getCurrency());
+
+            foreach ($priceFactors as $PriceFactor) {
+                if ($PriceFactor instanceof QUI\ERP\Products\Interfaces\PriceFactorInterface) {
+                    $Factors->addToEnd($PriceFactor);
+                }
+            }
+
+            $this->Articles->importPriceFactors($Factors->toErpPriceFactorList());
+            $this->update();
+            return;
+        }
+
         $Basket = new QUI\ERP\Order\Basket\BasketOrder(
             $this->getUUID(),
             $this->getCustomer()

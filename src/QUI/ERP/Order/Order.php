@@ -7,6 +7,7 @@
 namespace QUI\ERP\Order;
 
 use QUI;
+use QUI\ERP\Enums\Accounting\CalculationMode;
 use QUI\Database\Exception;
 use QUI\ERP\Accounting\Invoice\Handler as InvoiceHandler;
 use QUI\ERP\Accounting\Invoice\Invoice;
@@ -270,18 +271,26 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $TemporaryInvoice->setData($key, $value);
         }
 
-        $articles = $this->getArticles()->getArticles();
+        $Articles = $this->getArticles();
 
-        $TemporaryInvoice->getArticles()->setUser($this->getCustomer());
-        $TemporaryInvoice->getArticles()->setCurrency($this->getCurrency());
+        if ($Articles->getCalculationMode() === CalculationMode::MANUAL) {
+            $TemporaryInvoice->setAttribute('isbrutto', (int)!$Articles->getCalculations()['isNetto']);
+            $TemporaryInvoice->setCurrency($this->getCurrency());
+            $TemporaryInvoice->importArticles($Articles->toArray());
+        } else {
+            $articles = $this->getArticles()->getArticles();
 
-        foreach ($articles as $Article) {
-            $TemporaryInvoice->getArticles()->addArticle($Article);
+            $TemporaryInvoice->getArticles()->setUser($this->getCustomer());
+            $TemporaryInvoice->getArticles()->setCurrency($this->getCurrency());
+
+            foreach ($articles as $Article) {
+                $TemporaryInvoice->getArticles()->addArticle($Article);
+            }
+
+            $TemporaryInvoice->getArticles()->importPriceFactors(
+                $this->getArticles()->getPriceFactors()
+            );
         }
-
-        $TemporaryInvoice->getArticles()->importPriceFactors(
-            $this->getArticles()->getPriceFactors()
-        );
 
         $TemporaryInvoice->save($PermissionUser);
 
@@ -440,19 +449,26 @@ class Order extends AbstractOrder implements OrderInterface, ErpEntityI, ErpTran
             $SalesOrder->setData($key, $value);
         }
 
-        // Set articles
-        $articles = $this->getArticles()->getArticles();
+        $Articles = $this->getArticles();
 
-        $SalesOrder->getArticles()->setUser($this->getCustomer());
-        $SalesOrder->getArticles()->setCurrency($this->getCurrency());
+        if ($Articles->getCalculationMode() === CalculationMode::MANUAL) {
+            $SalesOrder->setCurrency($this->getCurrency());
+            $SalesOrder->importArticles($Articles->toArray());
+        } else {
+            // Set articles
+            $articles = $this->getArticles()->getArticles();
 
-        foreach ($articles as $Article) {
-            $SalesOrder->getArticles()->addArticle($Article);
+            $SalesOrder->getArticles()->setUser($this->getCustomer());
+            $SalesOrder->getArticles()->setCurrency($this->getCurrency());
+
+            foreach ($articles as $Article) {
+                $SalesOrder->getArticles()->addArticle($Article);
+            }
+
+            $SalesOrder->getArticles()->importPriceFactors(
+                $this->getArticles()->getPriceFactors()
+            );
         }
-
-        $SalesOrder->getArticles()->importPriceFactors(
-            $this->getArticles()->getPriceFactors()
-        );
 
         $SessionUser = QUI::getUserBySession();
 

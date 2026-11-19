@@ -6,6 +6,11 @@ if (!class_exists(SalesOrder::class, false)) {
     class SalesOrder
     {
         private bool $isRevision = false;
+        private ?\QUI\ERP\Accounting\ArticleList $Articles = null;
+
+        public function setCurrency(\QUI\ERP\Currency\Currency $Currency): void
+        {
+        }
 
         public function getUUID(): string
         {
@@ -27,7 +32,23 @@ if (!class_exists(SalesOrder::class, false)) {
 
         public function getArticles(): \QUI\ERP\Accounting\ArticleList
         {
-            return new \QUI\ERP\Accounting\ArticleList();
+            return $this->Articles ??= new \QUI\ERP\Accounting\ArticleList();
+        }
+
+        /** @var array<int|string, mixed> */
+        private array $importedArticles = [];
+
+        /** @return array<int|string, mixed> */
+        public function getImportedArticles(): array
+        {
+            return $this->importedArticles;
+        }
+
+        /** @param array<int|string, mixed> $articles */
+        public function importArticles(array $articles = []): void
+        {
+            $this->importedArticles = $articles;
+            $this->Articles = new \QUI\ERP\Accounting\ArticleList($articles);
         }
 
         public function addHistory(string $message): void

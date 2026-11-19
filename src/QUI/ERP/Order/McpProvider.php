@@ -10,6 +10,7 @@ use QUI\AI\MCP\ProviderInterface;
 use QUI\AI\MCP\Server;
 use QUI\AI\MCP\ToolHelper;
 use QUI\ERP\Accounting\Article;
+use QUI\ERP\Enums\Accounting\CalculationMode;
 use QUI\ERP\Accounting\Payments\Payments;
 use QUI\ERP\Order\Controls\OrderProcess\CustomerData;
 use QUI\Permissions\Permission;
@@ -284,13 +285,17 @@ class McpProvider implements ProviderInterface
                             $Draft->setDeliveryAddress($Source->getDeliveryAddress());
                         }
 
-                        // Recalculate a clean article snapshot without inherited payment or invoice state.
+                        // Copy manual values; recalculate automatic positions without inherited payment or invoice state.
                         $fields = $this->getDataSchema()['properties']['articles']['items']['properties'];
 
                         $sourceArticles = $Source->getArticles()->toArray();
 
-                        foreach ($sourceArticles['articles'] ?? [] as $article) {
-                            $Draft->addArticle(new Article(array_intersect_key($article, $fields)));
+                        if ($Source->getArticles()->getCalculationMode() === CalculationMode::MANUAL) {
+                            $Draft->importArticles($sourceArticles);
+                        } else {
+                            foreach ($sourceArticles['articles'] ?? [] as $article) {
+                                $Draft->addArticle(new Article(array_intersect_key($article, $fields)));
+                            }
                         }
 
                         $Draft->getArticles()->recalculate();
