@@ -185,6 +185,11 @@ class ManualCalculationTransferTest extends TestCase
 
     private function isolateSalesOrderFactory(): void
     {
+        // The optional-module stub factory has no database or configuration side effects.
+        if (!method_exists(QUI\ERP\SalesOrders\Handler::class, 'getTableSalesOrders')) {
+            return;
+        }
+
         // The installed static factory also writes its number-range config; isolate both dependencies.
         QUI::getUserBySession();
         $Connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true]);

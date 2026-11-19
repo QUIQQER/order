@@ -33,7 +33,9 @@ $optionalInvoiceStubs = [
     QUI\ERP\Accounting\Invoice\Exception::class
         => 'QUI/ERP/Accounting/Invoice/Exception.php',
     QUI\ERP\Accounting\Invoice\Handler::class
-        => 'QUI/ERP/Accounting/Invoice/Handler.php'
+        => 'QUI/ERP/Accounting/Invoice/Handler.php',
+    QUI\ERP\Accounting\Invoice\Factory::class
+        => 'QUI/ERP/Accounting/Invoice/Factory.php'
 ];
 
 foreach ($optionalInvoiceStubs as $className => $stubFile) {
