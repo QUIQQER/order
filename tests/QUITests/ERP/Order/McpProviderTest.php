@@ -20,6 +20,7 @@ use QUI\ERP\Address;
 use QUI\ERP\Comments;
 use QUI\ERP\Currency\Currency;
 use QUI\ERP\Currency\Handler as CurrencyHandler;
+use QUI\ERP\Enums\Accounting\CalculationMode;
 use QUI\ERP\Order\Factory;
 use QUI\ERP\Order\Handler;
 use QUI\ERP\Order\McpProvider;
@@ -551,6 +552,7 @@ class McpProviderTest extends TestCase
         $Currency->method('getPrecision')->willReturn(2);
         $Order->method('getCurrency')->willReturn($Currency);
         $Articles = $this->createMock(ArticleList::class);
+        $Articles->method('getCalculationMode')->willReturn(CalculationMode::AUTOMATIC);
         $Articles->method('calc')->willReturnSelf();
         $Articles->method('getCalculations')->willReturn(['sum' => 20.0]);
         $Articles->method('toArray')->willReturn([

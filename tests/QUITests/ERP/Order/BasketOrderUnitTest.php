@@ -89,6 +89,7 @@ class BasketOrderUnitTest extends TestCase
         $List->method('getPriceFactors')->willReturn($PriceFactors);
 
         $Articles = $this->createMock(ArticleList::class);
+        $Articles->method('getCalculationMode')->willReturn(\QUI\ERP\Enums\Accounting\CalculationMode::AUTOMATIC);
         $Articles->expects(self::once())->method('clear');
         $Articles->expects(self::once())->method('setCurrency')->with($Currency);
         $Articles->expects(self::once())->method('importPriceFactors')->with($FactorList);
@@ -100,6 +101,20 @@ class BasketOrderUnitTest extends TestCase
         $Order->expects(self::once())->method('update');
 
         $this->createBasketOrder($List, $Order)->updateOrder();
+    }
+
+    public function testBasketUpdateKeepsManualPositionsAndTotalsWithoutProductCalculation(): void
+    {
+        $snapshot = json_decode(file_get_contents(__DIR__ . '/../../../Fixtures/ManualArticleList.json'), true);
+        $Articles = new ArticleList($snapshot);
+        $before = $Articles->toArray();
+        $List = $this->createMock(ProductList::class);
+        $List->expects(self::never())->method('getProducts');
+        $Order = $this->createMock(AbstractOrder::class);
+        $Order->method('getArticles')->willReturn($Articles);
+        $Order->expects(self::never())->method('update');
+        $this->createBasketOrder($List, $Order)->updateOrder();
+        self::assertSame($before, $Articles->toArray());
     }
 
     public function testEmptyOrderBasketIsSerializedWithCalculationsAndPriceFactors(): void

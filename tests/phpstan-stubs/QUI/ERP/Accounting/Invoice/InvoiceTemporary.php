@@ -5,6 +5,10 @@ namespace QUI\ERP\Accounting\Invoice;
 if (!class_exists(InvoiceTemporary::class, false)) {
     class InvoiceTemporary extends \QUI\QDOM
     {
+        public function setCurrency(\QUI\ERP\Currency\Currency $Currency): void
+        {
+        }
+
         public function getUUID(): string
         {
             return '';
@@ -25,6 +29,11 @@ if (!class_exists(InvoiceTemporary::class, false)) {
         public function getArticles(): \QUI\ERP\Accounting\ArticleList
         {
             return new \QUI\ERP\Accounting\ArticleList();
+        }
+
+        /** @param array<int|string, mixed> $articles */
+        public function importArticles(array $articles = []): void
+        {
         }
 
         public function save(?\QUI\Interfaces\Users\User $PermissionUser = null): void
